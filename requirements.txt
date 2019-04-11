@@ -1,0 +1,7 @@
+Click
+google-cloud-bigquery
+google-cloud-storage
+mysql.connector
+cx_Oracle
+gspread
+oauth2client
