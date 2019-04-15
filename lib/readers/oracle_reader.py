@@ -62,7 +62,6 @@ class OracleReader(BaseReader):
                 self._pass,
                 self.format_host(self._host, self._port, self._database)
             )
-            logging.info("Connecting to {}".format(connection_string))
             self._client = cx_Oracle.connect(connection_string)
         except cx_Oracle.Error as err:
             raise err
