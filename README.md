@@ -40,12 +40,11 @@ Current writing strategy : Stream objects are written as uncompressed JSON file 
 
 ## TODO
 
-1. Documentation
-2. Docker image
-3. API READER
+1. Docker image
+2. API READER
     3a. SAP
     3b. Salesforce
     3c. PYS
-4. Append vs Replace (BQ Writer)
-5. Disable BQ writing
+3. Append vs Replace (BQ Writer)
+4. Disable BQ writing
 5. Saver implementation (GCS, PostgreSQL)
