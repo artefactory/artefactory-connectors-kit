@@ -6,7 +6,7 @@ from config import logging
 import click
 
 import cx_Oracle
-from lib.commands.execute import execute_builder, app_default_options
+from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
 
@@ -20,7 +20,7 @@ from lib.streams.json_stream import JSONStream
 @click.option("--oracle-query")
 @app_default_options
 def oracle(**kwargs):
-    reader = OracleReader(
+    return OracleReader(
         kwargs.get("oracle_host"),
         kwargs.get("oracle_port"),
         kwargs.get("oracle_user"),
@@ -28,7 +28,6 @@ def oracle(**kwargs):
         kwargs.get("oracle_database"),
         kwargs.get("oracle_query")
     )
-    execute_builder(reader, **kwargs)
 
 
 class OracleReader(BaseReader):

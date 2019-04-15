@@ -22,9 +22,17 @@ class BaseReader():
         self.close()
 
     def list(self):
+        """
+            List all elements to be read by current NCK execution
+            return:
+                List of files, queries to be read
+        """
         pass
 
     def connect(self):
+        """
+            Instance connection with distant source
+        """
         pass
 
     def read(self, element):
@@ -39,4 +47,7 @@ class BaseReader():
         pass
 
     def close(self):
+        """
+            Close connection with distant source
+        """
         pass

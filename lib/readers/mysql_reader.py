@@ -5,7 +5,7 @@ from config import logging
 import click
 
 import mysql.connector
-from lib.commands.execute import execute_builder, app_default_options
+from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
 
@@ -17,13 +17,12 @@ from lib.streams.json_stream import JSONStream
 @click.option("--mysql-query")
 @app_default_options
 def mysql(**kwargs):
-    reader = MySQLReader(
+    return MySQLReader(
         kwargs.get("mysql_host"),
         kwargs.get("mysql_user"),
         kwargs.get("mysql_password"),
         kwargs.get("mysql_query")
     )
-    execute_builder(reader, **kwargs)
 
 
 class MySQLReader(BaseReader):

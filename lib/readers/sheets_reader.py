@@ -5,7 +5,7 @@ import click
 from oauth2client.service_account import ServiceAccountCredentials
 
 import gspread
-from lib.commands.execute import execute_builder, app_default_options
+from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
 
@@ -15,12 +15,10 @@ from lib.streams.json_stream import JSONStream
 @click.option("--sheets-file-url", required=True)
 @app_default_options
 def sheets(**kwargs):
-
-    reader = SheetsReader(
+    return SheetsReader(
         json.loads(kwargs.get("sheets_credentials")),
         kwargs.get("sheets_file_url")
     )
-    execute_builder(reader, **kwargs)
 
 
 class SheetsReader(BaseReader):

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import time
 
 
@@ -26,18 +26,22 @@ class StreamBase():
         self._content = content
 
     def as_file():
+        """
+            Transform stream in a IO object.
+        """
         raise NotImplementedError
 
     def readline():
+        """
+            Yield each element of a stream, one by one. 
+            (ex: line by line for file)
+        """
         for line in self._content:
             yield line
 
-    def formatted_content(self):
-        return self._content
-
     def stream_name(self, name):
         ts = time.time()
-        ts_as_string = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
+        ts_as_string = datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
         return '{}_{}'.format(name, ts_as_string)
 
     def set_gcs_url(self, gcs_url):

@@ -16,10 +16,10 @@ class Builder():
 
     def execute(self):
         logging.info("Execution is loading")
-        for element in self._reader.collection():
-            updated_element = self._gcs_writer.write(element)
-            self._bq_writer.write(updated_element)
-            self.save(updated_element.name)
+        for stream in self._reader.collection():
+            updated_stream = self._gcs_writer.write(stream)
+            self._bq_writer.write(updated_stream)
+            self.save(updated_stream.name)
 
     def save(self, content):
         if self._saver is not None:

@@ -11,7 +11,8 @@ def app_default_options(func):
     @click.option('--bq-schema', help="BigQuery Schema")
     @click.option('--bq-partition-field', help="BigQuery Partition Field", default=None)
     def function_wrapper(**kwargs):
-        return func(**kwargs)
+        reader = func(**kwargs)
+        execute_builder(reader, **kwargs)
     return function_wrapper
 
 

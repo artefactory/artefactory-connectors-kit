@@ -69,7 +69,7 @@ class GCSBucket():
         return self._client.get_bucket(self._name)
 
     def create(self):
-        bucket = self._client.bucket(bucket_name)
+        bucket = self._client.bucket(self._name)
         bucket.location = "EU"
         bucket.create()
 
