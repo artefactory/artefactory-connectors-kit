@@ -1,10 +1,8 @@
-import datetime
-import time
 from config import logging
 
 import click
-
 import mysql.connector
+
 from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
