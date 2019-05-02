@@ -4,7 +4,7 @@ from lib.builder import Builder
 
 
 def app_default_options(func):
-    @click.option('--gcs-bucket', help="GCS Bucket without gs://", required=True)
+    @click.option('--gcs-bucket', help="GCS Bucket without gs:// and without project name", required=True)
     @click.option('--gcs-folder', help="GCS Folder")
     @click.option('--bq-dataset', help="BigQuery Dataset", required=True)
     @click.option('--bq-table', help="BigQuery Table", required=True)

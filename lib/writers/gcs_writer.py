@@ -7,9 +7,10 @@ from lib.writers.writer import BaseWriter
 
 class GCSWriter(BaseWriter):
 
-    _client = storage.Client()
+    _client = None
 
     def __init__(self, bucket="raw", folder=None):
+        self._client = storage.Client()
         self._bucket = GCSBucket(self._client, bucket)
         self._folder = folder
 

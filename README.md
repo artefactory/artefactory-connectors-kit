@@ -5,6 +5,10 @@ Finally files can be transfered to BigQuery tables for analysis purposes.
 
 ## Getting started
 
+### Pre-requisities
+
+1. Set GOOGLE_APPLICATION_CREDENTIALS env var
+
 ### Docker image
 
 1. Build docker image from container registry (TODO Create dedicated project)
@@ -40,11 +44,11 @@ Current writing strategy : Stream objects are written as uncompressed JSON file 
 
 ## TODO
 
-1. Docker image
-2. API READER
+1. API READER
     3a. SAP
     3b. Salesforce
     3c. PYS
-3. Append vs Replace (BQ Writer)
-4. Disable BQ writing
-5. Saver implementation (GCS, PostgreSQL)
+2. Append vs Replace (BQ Writer)
+3. Disable BQ writing
+4. Saver implementation (GCS, PostgreSQL)
+5. SFTP READER

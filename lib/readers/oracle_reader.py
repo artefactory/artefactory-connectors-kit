@@ -9,15 +9,19 @@ import cx_Oracle
 from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
+from lib.utils.rdb_utils import (rdb_format_query, rdb_format_tables,
+                                 rdb_query_or_tables,
+                                 rdb_table_name_from_query)
 
 
 @click.command(name="oracle")
-@click.option("--oracle-host")
-@click.option("--oracle-port")
-@click.option("--oracle-user")
-@click.option("--oracle-password")
-@click.option("--oracle-database")
+@click.option("--oracle-host", required=True)
+@click.option("--oracle-port", required=True)
+@click.option("--oracle-user", required=True)
+@click.option("--oracle-password", required=True)
+@click.option("--oracle-database", required=True)
 @click.option("--oracle-query")
+@click.option("--oracle-tables")
 @app_default_options
 def oracle(**kwargs):
     return OracleReader(
@@ -41,7 +45,7 @@ class OracleReader(BaseReader):
 
     _client = None
 
-    def __init__(self, host, port, user, password, database, query):
+    def __init__(self, host, port, user, password, database, query=None, tables=None):
         logging.info("Instancing Oracle Reader")
         self._host = host
         self._user = user
@@ -49,9 +53,10 @@ class OracleReader(BaseReader):
         self._port = port
         self._database = database
         self._query = query
+        self._tables = rdb_format_tables(tables)
 
     def list(self):
-        return [self._query]
+        return rdb_query_or_tables(self._query, self._tables)
 
     def connect(self):
         try:
@@ -70,13 +75,14 @@ class OracleReader(BaseReader):
         logging.info("Querying (%s)", query)
         try:
             cursor = self._client.cursor()
-            cursor.execute(self._query)
+            formatted_query = rdb_format_query(query)
+            cursor.execute(formatted_query)
             results = self.format_results(cursor)
             cursor.close()
         except cx_Oracle.Error as err:
             raise err
         logging.info("Processing results")
-        return self._database, results
+        return self._get_query_name(query, results
 
     def format_results(self, cursor):
         """
@@ -103,3 +109,9 @@ class OracleReader(BaseReader):
     def close(self):
         logging.info("Closing Oracle connection")
         self._client.close()
+
+    def _get_query_name(self, query_or_table):
+        if self._tables:
+            return query_or_table
+        else:
+            return rdb_table_name_from_query(query_or_table)

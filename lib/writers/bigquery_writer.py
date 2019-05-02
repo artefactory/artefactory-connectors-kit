@@ -7,10 +7,12 @@ from lib.writers.writer import BaseWriter
 
 class BigQueryWriter(BaseWriter):
 
-    _client = bigquery.Client()
+    _client = None
     _location = "EU"
 
     def __init__(self, dataset, table, schema=None, partition_field=None):
+        self._client = bigquery.Client()
+
         self._schema = schema
         self._dataset = BigQueryDataset(self._client, dataset)
         self._table = BigQueryTable(self._client, self._dataset, table, self._schema)
