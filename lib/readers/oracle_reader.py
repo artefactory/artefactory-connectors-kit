@@ -82,7 +82,7 @@ class OracleReader(BaseReader):
         except cx_Oracle.Error as err:
             raise err
         logging.info("Processing results")
-        return self._get_query_name(query, results
+        return self._get_query_name(query, results)
 
     def format_results(self, cursor):
         """

@@ -5,3 +5,4 @@ mysql.connector
 cx_Oracle
 gspread
 oauth2client
+simplejson

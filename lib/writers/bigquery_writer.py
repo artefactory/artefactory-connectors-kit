@@ -1,4 +1,4 @@
-from config import logging
+from config import config, logging
 
 from google.cloud import bigquery
 
@@ -11,7 +11,7 @@ class BigQueryWriter(BaseWriter):
     _location = "EU"
 
     def __init__(self, dataset, table, schema=None, partition_field=None):
-        self._client = bigquery.Client()
+        self._client = bigquery.Client.from_service_account_json(config.get("GOOGLE_APPLICATION_CREDENTIALS"))
 
         self._schema = schema
         self._dataset = BigQueryDataset(self._client, dataset)

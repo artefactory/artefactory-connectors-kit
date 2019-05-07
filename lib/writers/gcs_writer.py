@@ -1,4 +1,4 @@
-from config import logging
+from config import config, logging
 
 from google.cloud import storage
 
@@ -10,7 +10,7 @@ class GCSWriter(BaseWriter):
     _client = None
 
     def __init__(self, bucket="raw", folder=None):
-        self._client = storage.Client()
+        self._client = storage.Client.from_service_account_json(config.get("GOOGLE_APPLICATION_CREDENTIALS"))
         self._bucket = GCSBucket(self._client, bucket)
         self._folder = folder
 
