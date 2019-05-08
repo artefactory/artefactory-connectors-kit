@@ -1,2 +1,2 @@
 SECRETS_PATH=/var/secrets/
-GOOGLE_APPLICATION_CREDENTIALS=/var/secrets/google_credentials.json
+GOOGLE_APPLICATION_CREDENTIALS=google_credentials.json

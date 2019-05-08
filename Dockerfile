@@ -20,15 +20,17 @@ RUN apt-get update \
   && pip install --upgrade pip 
 
 RUN mkdir /nautilus-connectors-kit
+
+# Install dependencies
+ADD requirements.txt /nautilus-connectors-kit/requirements.txt
+RUN pip install -r /nautilus-connectors-kit/requirements.txt
+
+# Copy code
 ADD . /nautilus-connectors-kit/
 RUN chmod -R 0644 /nautilus-connectors-kit
 ENV PYTHONPATH /nautilus-connectors-kit
-
-# Install dependencies
-RUN pip install -r /nautilus-connectors-kit/requirements.txt
 
 ARG ENV
 ENV ENV=$ENV
 
 ENTRYPOINT ["python", "/nautilus-connectors-kit/bin/app.py"]
-
