@@ -1,7 +1,8 @@
-from config import config, logging
+from config import logging
 
 from google.cloud import bigquery
 
+from lib.writers import google_credentials
 from lib.writers.writer import BaseWriter
 
 
@@ -10,15 +11,20 @@ class BigQueryWriter(BaseWriter):
     _client = None
     _location = "EU"
 
-    def __init__(self, dataset, table, schema=None, partition_field=None):
-        self._client = bigquery.Client.from_service_account_json(config.get("GOOGLE_APPLICATION_CREDENTIALS"))
+    def __init__(self, dataset, table, schema=None, partition_field=None, append=False):
+        self._client = bigquery.Client.from_service_account_json(google_credentials)
 
         self._schema = schema
         self._dataset = BigQueryDataset(self._client, dataset)
         self._table = BigQueryTable(self._client, self._dataset, table, self._schema)
 
-        if dataset not in BigQueryDataset.list(self._client):
+        datasets_list = BigQueryDataset.list(self._client)
+
+        if dataset not in datasets_list:
             self._dataset.create()
+
+        if not append and dataset in datasets_list:
+            self._table.delete()
 
         if table not in BigQueryTable.list(self._client, self._dataset):
             self._table.create(partition_field)
@@ -63,6 +69,11 @@ class BigQueryDataset():
         dataset.location = self._location
         self._bq_client.create_dataset(dataset)
 
+    def remove(self):
+        logging.info("Deleting dataset {}".format(self._name))
+        dataset = bigquery.Dataset(self.ref())
+        self._bq_client.delete_dataset(dataset)
+
     @staticmethod
     def list(bq_client):
         return [dataset.dataset_id for dataset in bq_client.list_datasets()]
@@ -94,6 +105,11 @@ class BigQueryTable():
                 field=partition_field
             )
         self._bq_client.create_table(table)
+
+    def delete(self):
+        dataset = self._dataset.ref()
+        table = dataset.table(self._name)
+        self._bq_client.delete_table(table)
 
     def get(self):
         dataset = self._dataset.ref()
