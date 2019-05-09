@@ -1,11 +1,13 @@
 
 import datetime
+import json
+import os
 import time
-from config import logging
+from config import config, logging
 
 import click
-
 import cx_Oracle
+
 from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
@@ -15,23 +17,19 @@ from lib.utils.rdb_utils import (rdb_format_query, rdb_format_tables,
 
 
 @click.command(name="oracle")
-@click.option("--oracle-host", required=True)
-@click.option("--oracle-port", required=True)
-@click.option("--oracle-user", required=True)
-@click.option("--oracle-password", required=True)
-@click.option("--oracle-database", required=True)
+@click.option("--oracle-credentials", required=True)
 @click.option("--oracle-query")
 @click.option("--oracle-tables")
 @app_default_options
 def oracle(**kwargs):
-    return OracleReader(
-        kwargs.get("oracle_host"),
-        kwargs.get("oracle_port"),
-        kwargs.get("oracle_user"),
-        kwargs.get("oracle_password"),
-        kwargs.get("oracle_database"),
-        kwargs.get("oracle_query")
-    )
+    credentials_path = os.path.join(config.get("SECRETS_PATH"), kwargs.get("oracle_credentials"))
+    with open(credentials_path) as json_file:
+        credentials_dict = json.loads(json_file.read())
+        return OracleReader(
+            credentials_dict,
+            kwargs.get("oracle_query"),
+            kwargs.get("oracle_tables")
+        )
 
 
 class OracleReader(BaseReader):
@@ -45,13 +43,15 @@ class OracleReader(BaseReader):
 
     _client = None
 
-    def __init__(self, host, port, user, password, database, query=None, tables=None):
+    def __init__(self, credentials, query=None, tables=None):
         logging.info("Instancing Oracle Reader")
-        self._host = host
-        self._user = user
-        self._pass = password
-        self._port = port
-        self._database = database
+
+        self._host = credentials.get("host")
+        self._user = credentials.get("user")
+        self._pass = credentials.get("password")
+        self._port = credentials.get("port")
+        self._database = credentials.get("database")
+
         self._query = query
         self._tables = rdb_format_tables(tables)
 

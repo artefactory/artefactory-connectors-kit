@@ -1,8 +1,10 @@
-from config import logging
+import json
+import os
+from config import config, logging
 
 import click
-
 import mysql.connector as mysql_connector
+
 from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
@@ -12,22 +14,19 @@ from lib.utils.rdb_utils import (rdb_format_query, rdb_format_tables,
 
 
 @click.command(name="mysql")
-@click.option("--mysql-host", required=True)
-@click.option("--mysql-user", required=True)
-@click.option("--mysql-password", required=True)
-@click.option("--mysql-database", required=True)
+@click.option("--mysql-credentials", required=True)
 @click.option("--mysql-query")
 @click.option("--mysql-tables")
 @app_default_options
 def mysql(**kwargs):
-    return MySQLReader(
-        kwargs.get("mysql_host"),
-        kwargs.get("mysql_user"),
-        kwargs.get("mysql_password"),
-        kwargs.get("mysql_database"),
-        query=kwargs.get("mysql_query"),
-        tables=kwargs.get("mysql_tables")
-    )
+    credentials_path = os.path.join(config.get("SECRETS_PATH"), kwargs.get("oracle_credentials"))
+    with open(credentials_path) as json_file:
+        credentials_dict = json.loads(json_file.read())
+        return MySQLReader(
+            credentials_dict,
+            query=kwargs.get("mysql_query"),
+            tables=kwargs.get("mysql_tables")
+        )
 
 
 class MySQLReader(BaseReader):
@@ -41,12 +40,14 @@ class MySQLReader(BaseReader):
 
     _client = None
 
-    def __init__(self, host, user, password, database, query=None, tables=None):
+    def __init__(self, credentials, query=None, tables=None):
         logging.info("Instancing MYSQL Reader")
-        self._host = host
-        self._user = user
-        self._pass = password
-        self._database = database
+
+        self._host = credentials.get("host")
+        self._user = credentials.get("user")
+        self._pass = credentials.get("password")
+        self._database = credentials.get("database")
+
         self._query = query
         self._tables = rdb_format_tables(tables)
 
