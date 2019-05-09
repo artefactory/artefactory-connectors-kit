@@ -34,13 +34,13 @@ def oracle(dataset, tables_list):
       - {{ table_name }}
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: oracle.json
-      path: oracle.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+            secretName: ingestion-secrets
+            items:
+            - key: oracle.json
+              path: oracle.json
+            - key: google_credentials.json
+              path: google_credentials.json
     """
 
     for table in tables_list.strip().split(","):
@@ -73,13 +73,13 @@ def mysql(dataset, tables_list):
       - {{ table_name }}
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
     """
 
     for table in tables_list.strip().split(","):

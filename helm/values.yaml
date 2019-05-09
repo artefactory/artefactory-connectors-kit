@@ -20,13 +20,13 @@ jobs:
       - "sheets.json"
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: sheets.json
-        path: sheets.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: sheets.json
+            path: sheets.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-acccus
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -48,13 +48,13 @@ jobs:
       - acccus
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-account
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -76,13 +76,13 @@ jobs:
       - account
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-accpos
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -104,13 +104,13 @@ jobs:
       - accpos
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-accvat
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -132,13 +132,13 @@ jobs:
       - accvat
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-actprj
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -160,13 +160,13 @@ jobs:
       - actprj
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-bank
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -188,13 +188,13 @@ jobs:
       - bank
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-catprj
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -216,13 +216,13 @@ jobs:
       - catprj
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-cdelivery
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -244,13 +244,13 @@ jobs:
       - cdelivery
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-cinplan
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -272,13 +272,13 @@ jobs:
       - cinplan
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-cinvoice
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -300,13 +300,13 @@ jobs:
       - cinvoice
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-comnt
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -328,13 +328,13 @@ jobs:
       - comnt
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-country
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -356,13 +356,13 @@ jobs:
       - country
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-currate
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -384,13 +384,13 @@ jobs:
       - currate
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-currency
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -412,13 +412,13 @@ jobs:
       - currency
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-cusacc
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -440,13 +440,13 @@ jobs:
       - cusacc
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-cuscom
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -468,13 +468,13 @@ jobs:
       - cuscom
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-entity
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -496,13 +496,13 @@ jobs:
       - entity
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-expense
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -524,13 +524,13 @@ jobs:
       - expense
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-grpcom
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -552,13 +552,13 @@ jobs:
       - grpcom
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-language
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -580,13 +580,13 @@ jobs:
       - language
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-levelres
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -608,13 +608,13 @@ jobs:
       - levelres
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-modepay
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -636,13 +636,13 @@ jobs:
       - modepay
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-paramrty
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -664,13 +664,13 @@ jobs:
       - paramrty
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-payment
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -692,13 +692,13 @@ jobs:
       - payment
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-period
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -720,13 +720,13 @@ jobs:
       - period
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-perprod
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -748,13 +748,13 @@ jobs:
       - perprod
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-phaseprj
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -776,13 +776,13 @@ jobs:
       - phaseprj
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-phdays
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -804,13 +804,13 @@ jobs:
       - phdays
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-project
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -832,13 +832,13 @@ jobs:
       - project
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rescnthis
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -860,13 +860,13 @@ jobs:
       - rescnthis
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rescntval
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -888,13 +888,13 @@ jobs:
       - rescntval
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rescount
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -916,13 +916,13 @@ jobs:
       - rescount
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-resevent
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -944,13 +944,13 @@ jobs:
       - resevent
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-resscope
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -972,13 +972,13 @@ jobs:
       - resscope
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-ressenior
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1000,13 +1000,13 @@ jobs:
       - ressenior
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-resspc01
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1028,13 +1028,13 @@ jobs:
       - resspc01
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-resspc02
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1056,13 +1056,13 @@ jobs:
       - resspc02
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-resspc03
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1084,13 +1084,13 @@ jobs:
       - resspc03
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-ressptp
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1112,13 +1112,13 @@ jobs:
       - ressptp
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-ressptt
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1140,13 +1140,13 @@ jobs:
       - ressptt
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-restrans
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1168,13 +1168,13 @@ jobs:
       - restrans
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-restrlink
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1196,13 +1196,13 @@ jobs:
       - restrlink
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-restrrule
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1224,13 +1224,13 @@ jobs:
       - restrrule
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-restrtype
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1252,13 +1252,13 @@ jobs:
       - restrtype
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowcde
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1280,13 +1280,13 @@ jobs:
       - rowcde
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowchg
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1308,13 +1308,13 @@ jobs:
       - rowchg
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowcin
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1336,13 +1336,13 @@ jobs:
       - rowcin
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowcip
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1364,13 +1364,13 @@ jobs:
       - rowcip
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowdci
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1392,13 +1392,13 @@ jobs:
       - rowdci
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowddci
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1420,13 +1420,13 @@ jobs:
       - rowddci
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowexp
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1448,13 +1448,13 @@ jobs:
       - rowexp
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowind
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1476,13 +1476,13 @@ jobs:
       - rowind
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowpay
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1504,13 +1504,13 @@ jobs:
       - rowpay
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowpla
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1532,13 +1532,13 @@ jobs:
       - rowpla
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowprj
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1560,13 +1560,13 @@ jobs:
       - rowprj
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowres
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1588,13 +1588,13 @@ jobs:
       - rowres
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowtin
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1616,13 +1616,13 @@ jobs:
       - rowtin
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowtis
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1644,13 +1644,13 @@ jobs:
       - rowtis
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rowtype
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1672,13 +1672,13 @@ jobs:
       - rowtype
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-rsource
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1700,13 +1700,13 @@ jobs:
       - rsource
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-timesheet
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1728,13 +1728,13 @@ jobs:
       - timesheet
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-typepay
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1756,13 +1756,13 @@ jobs:
       - typepay
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-vacrequest
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1784,13 +1784,13 @@ jobs:
       - vacrequest
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-vat
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1812,13 +1812,13 @@ jobs:
       - vat
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-wedays
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1840,13 +1840,13 @@ jobs:
       - wedays
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-workmode
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1868,13 +1868,13 @@ jobs:
       - workmode
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: oracle-everwin-wtask
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1896,13 +1896,13 @@ jobs:
       - wtask
     volumes:
     - name: ingestion-secrets
-    secret:
-      secretname: ingestion-secrets
-      items:
-      - key: oracle.json
-        path: oracle.json
-      - key: google_credentials.json
-        path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: oracle.json
+            path: oracle.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-data-database
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1913,9 +1913,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - data_database
       - "--mysql-credentials"
@@ -1924,13 +1924,13 @@ jobs:
       - data_database
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-data-database-moving
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1941,9 +1941,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - data_database_moving
       - "--mysql-credentials"
@@ -1952,13 +1952,13 @@ jobs:
       - data_database_moving
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-channels
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1969,9 +1969,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_channels
       - "--mysql-credentials"
@@ -1980,13 +1980,13 @@ jobs:
       - list_channels
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-clients
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -1997,9 +1997,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_clients
       - "--mysql-credentials"
@@ -2008,13 +2008,13 @@ jobs:
       - list_clients
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-clients-global
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -2025,9 +2025,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_clients_global
       - "--mysql-credentials"
@@ -2036,13 +2036,13 @@ jobs:
       - list_clients_global
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-closing-rates
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -2053,9 +2053,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_closing_rates
       - "--mysql-credentials"
@@ -2064,13 +2064,13 @@ jobs:
       - list_closing_rates
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-companies
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -2081,9 +2081,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_companies
       - "--mysql-credentials"
@@ -2092,13 +2092,13 @@ jobs:
       - list_companies
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-periods
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -2109,9 +2109,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_periods
       - "--mysql-credentials"
@@ -2120,13 +2120,13 @@ jobs:
       - list_periods
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-periods-report
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -2137,9 +2137,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_periods_report
       - "--mysql-credentials"
@@ -2148,13 +2148,13 @@ jobs:
       - list_periods_report
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-spot
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -2165,9 +2165,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_spot
       - "--mysql-credentials"
@@ -2176,13 +2176,13 @@ jobs:
       - list_spot
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: mysql-finance-list-years
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
@@ -2193,9 +2193,9 @@ jobs:
       - "--gcs-bucket"
       - "raw"
       - "--gcs-folder"
-      - finance-sql
+      - finance_sql
       - "--bq-dataset"
-      - finance-sql
+      - finance_sql
       - "--bq-table"
       - list_years
       - "--mysql-credentials"
@@ -2204,10 +2204,10 @@ jobs:
       - list_years
     volumes:
     - name: ingestion-secrets
-    secret:
-    secretName: ingestion-secrets
-    items:
-    - key: mysql.json
-      path: mysql.json
-    - key: google_credentials.json
-      path: google_credentials.json
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: mysql.json
+            path: mysql.json
+          - key: google_credentials.json
+            path: google_credentials.json

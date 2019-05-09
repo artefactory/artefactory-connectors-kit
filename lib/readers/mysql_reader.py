@@ -19,7 +19,7 @@ from lib.utils.rdb_utils import (rdb_format_query, rdb_format_tables,
 @click.option("--mysql-tables")
 @app_default_options
 def mysql(**kwargs):
-    credentials_path = os.path.join(config.get("SECRETS_PATH"), kwargs.get("oracle_credentials"))
+    credentials_path = os.path.join(config.get("SECRETS_PATH"), kwargs.get("mysql_credentials"))
     with open(credentials_path) as json_file:
         credentials_dict = json.loads(json_file.read())
         return MySQLReader(

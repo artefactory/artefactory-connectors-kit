@@ -10,9 +10,13 @@ include environments/$(environment)
 init: k8s_setup
 	gcloud --project ${PROJECT_ID} auth configure-docker
 
-.PHONY: deploy_crons
-deploy_crons: delete_crons
-	helm install ./helm
+.PHONY: upgrade_crons
+upgrade_crons:
+	helm upgrade dash-finance ./helm
+
+.PHONY: install_crons
+install_crons: delete_crons
+	helm install -n dash-finance ./helm
 
 .PHONY: delete_crons
 delete_crons:

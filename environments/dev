@@ -1,2 +1,9 @@
 SECRETS_PATH=/var/secrets/
 GOOGLE_APPLICATION_CREDENTIALS=/var/secrets/google_credentials.json
+
+K8S_ZONE=europe-west1
+DOCKER_REGISTRY=eu.gcr.io
+DOCKER_IMAGE=nautilus-connectors-kit
+
+PROJECT_ID=global-finance-dashboard
+K8S_CLUSTER_NAME=ingestion-finance-gke-cluster

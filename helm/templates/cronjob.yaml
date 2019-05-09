@@ -9,6 +9,7 @@ kind: CronJob
 metadata:
   name: {{ $job.name }}-ingestion
 spec:
+  concurrencyPolicy: Forbid
   schedule: {{ $job.schedule | quote }}
   jobTemplate:
     spec:
@@ -27,6 +28,6 @@ spec:
               mountPath: /var/secrets
           {{- with $job.volumes }}
           volumes:
-{{ toYaml . | indent 12 }}
+{{ toYaml . | indent 10 }}
           {{- end }}
 {{- end }}
