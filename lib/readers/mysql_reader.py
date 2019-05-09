@@ -1,10 +1,11 @@
 import json
 import os
+import time
 from config import config, logging
 
 import click
-import mysql.connector as mysql_connector
 
+import pymysql as mysql_connector
 from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
@@ -55,6 +56,7 @@ class MySQLReader(BaseReader):
         return rdb_query_or_tables(self._query, self._tables)
 
     def connect(self):
+        reconnect_retries = 10
         try:
             logging.info(
                 "Connecting to MYSQL DB name {}".format(self._database))
@@ -62,15 +64,22 @@ class MySQLReader(BaseReader):
                 host=self._host,
                 user=self._user,
                 passwd=self._pass,
-                database=self._database
+                database=self._database,
+                cursorclass=mysql_connector.cursors.DictCursor
             )
-        except mysql_connector.Error as err:
-            raise err
+        except Exception as err:
+            logging.info("Timeout. Retrying connection to DB")
+            if reconnect_retries > 0:
+                time.sleep(10)
+                self._connect()
+                reconnect_retries -= 1
+            else:
+                raise err
 
     def read(self, query):
         logging.info("Querying (%s)", query)
         try:
-            cursor = self._client.cursor(dictionary=True)
+            cursor = self._client.cursor()
             formatted_query = rdb_format_query(query)
             cursor.execute(formatted_query)
             results = cursor.fetchall()

@@ -10,7 +10,28 @@ RUN apt-get update && apt-get install -y \
     supervisor \
     cron \
     nano \
-    git
+    git \
+    build-essential \
+    unzip \
+    libaio-dev \
+    && mkdir -p /opt/data/api
+
+# Oracle Dependencies
+ADD ./docker-depedencies /opt/data
+
+WORKDIR /opt/data
+
+ENV ORACLE_HOME=/opt/oracle/instantclient
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME
+
+ENV OCI_HOME=/opt/oracle/instantclient
+ENV OCI_LIB_DIR=/opt/oracle/instantclient
+ENV OCI_INCLUDE_DIR=/opt/oracle/instantclient/sdk/include
+
+# Install Oracle
+RUN mkdir /opt/oracle
+RUN chmod +x /opt/data/install.sh
+RUN /opt/data/install.sh
 
 # Install Python and PIP
 RUN apt-get update \

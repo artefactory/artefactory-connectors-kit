@@ -19,15 +19,16 @@ class BigQueryWriter(BaseWriter):
         self._table = BigQueryTable(self._client, self._dataset, table, self._schema)
 
         datasets_list = BigQueryDataset.list(self._client)
-        tables_list = BigQueryTable.list(self._client, self._dataset)
 
         if dataset not in datasets_list:
             self._dataset.create()
 
-        if not append and table in tables_list:
+        tables_list = BigQueryTable.list(self._client, self._dataset)
+
+        if table in tables_list and not append:
             self._table.delete()
 
-        if table not in BigQueryTable.list(self._client, self._dataset):
+        if table not in tables_list:
             self._table.create(partition_field)
 
     def write(self, stream):

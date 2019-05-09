@@ -11,11 +11,151 @@ jobs:
       - "--gcs-folder"
       - "target"
       - "--bq-dataset"
-      - "sheets"
+      - "target"
       - "--bq-table"
       - "target"
       - "--sheets-file-url"
-      - "https://docs.google.com/spreadsheets/d/181w7lppjq_kdzpuiv58wyn6szupzxu01-onj1bkswxs"
+      - "https://docs.google.com/spreadsheets/d/181W7lppJQ_KdzPuiV58Wyn6szUPZXu01-oNj1BKSwXs"
+      - "--sheets-credentials"
+      - "sheets.json"
+    volumes:
+    - name: ingestion-secrets
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: sheets.json
+            path: sheets.json
+          - key: google_credentials.json
+            path: google_credentials.json
+  - name: sheets-mapping-companies
+    image:
+      repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
+      tag: latest
+    schedule: "*/5 * * * *"
+    args:
+      - "sheets"
+      - "--gcs-bucket"
+      - "raw"
+      - "--gcs-folder"
+      - "mapping"
+      - "--bq-dataset"
+      - "mapping"
+      - "--bq-table"
+      - "companies"
+      - "--sheets-file-url"
+      - "https://docs.google.com/spreadsheets/d/1rJ5_eLq7S57FsAPNJtRadAhuO6lWstKIART0MbdT3gM"
+      - "--sheets-credentials"
+      - "sheets.json"
+    volumes:
+    - name: ingestion-secrets
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: sheets.json
+            path: sheets.json
+          - key: google_credentials.json
+            path: google_credentials.json
+  - name: sheets-mapping-global-clients
+    image:
+      repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
+      tag: latest
+    schedule: "*/5 * * * *"
+    args:
+      - "sheets"
+      - "--gcs-bucket"
+      - "raw"
+      - "--gcs-folder"
+      - "mapping"
+      - "--bq-dataset"
+      - "mapping"
+      - "--bq-table"
+      - "global_clients"
+      - "--sheets-file-url"
+      - "https://docs.google.com/spreadsheets/d/1zvmN0opaVNMNH24yS1HjLqyGjcA6R65Lb8pVCaDwvBo"
+      - "--sheets-credentials"
+      - "sheets.json"
+    volumes:
+    - name: ingestion-secrets
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: sheets.json
+            path: sheets.json
+          - key: google_credentials.json
+            path: google_credentials.json
+  - name: sheets-mapping-clients
+    image:
+      repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
+      tag: latest
+    schedule: "*/5 * * * *"
+    args:
+      - "sheets"
+      - "--gcs-bucket"
+      - "raw"
+      - "--gcs-folder"
+      - "mapping"
+      - "--bq-dataset"
+      - "mapping"
+      - "--bq-table"
+      - "clients"
+      - "--sheets-file-url"
+      - "https://docs.google.com/spreadsheets/d/17oWc5BZh6VNVBWoHOSAzj2RZs7gcfCzwlatm3klkSjk"
+      - "--sheets-credentials"
+      - "sheets.json"
+    volumes:
+    - name: ingestion-secrets
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: sheets.json
+            path: sheets.json
+          - key: google_credentials.json
+            path: google_credentials.json
+  - name: sheets-mapping-employees
+    image:
+      repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
+      tag: latest
+    schedule: "*/5 * * * *"
+    args:
+      - "sheets"
+      - "--gcs-bucket"
+      - "raw"
+      - "--gcs-folder"
+      - "mapping"
+      - "--bq-dataset"
+      - "mapping"
+      - "--bq-table"
+      - "employees"
+      - "--sheets-file-url"
+      - "https://docs.google.com/spreadsheets/d/14FfPGoUfWpjbtSE4D-3CiO9jfWv8_DeuRuMqH6VBp6o"
+      - "--sheets-credentials"
+      - "sheets.json"
+    volumes:
+    - name: ingestion-secrets
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: sheets.json
+            path: sheets.json
+          - key: google_credentials.json
+            path: google_credentials.json
+  - name: sheets-mapping-projects
+    image:
+      repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
+      tag: latest
+    schedule: "*/5 * * * *"
+    args:
+      - "sheets"
+      - "--gcs-bucket"
+      - "raw"
+      - "--gcs-folder"
+      - "mapping"
+      - "--bq-dataset"
+      - "mapping"
+      - "--bq-table"
+      - "projects"
+      - "--sheets-file-url"
+      - "https://docs.google.com/spreadsheets/d/1E-D-37zgTScAy3shH3buQS3AqZz7RpdTZOwANSy5UyA"
       - "--sheets-credentials"
       - "sheets.json"
     volumes:
