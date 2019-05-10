@@ -15,3 +15,7 @@ def rdb_format_query(query_or_table):
         return query_or_table
     else:
         return "SELECT * FROM {}".format(query_or_table)
+
+
+def rdb_format_column_name(column_name):
+    return column_name.strip().replace('-', '_').lower()

@@ -6,13 +6,13 @@ import time
 from config import config, logging
 
 import click
-import cx_Oracle
 
+import cx_Oracle
 from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
-from lib.utils.rdb_utils import (rdb_format_query, rdb_format_tables,
-                                 rdb_query_or_tables,
+from lib.utils.rdb_utils import (rdb_format_column_name, rdb_format_query,
+                                 rdb_format_tables, rdb_query_or_tables,
                                  rdb_table_name_from_query)
 
 
@@ -72,10 +72,10 @@ class OracleReader(BaseReader):
             raise err
 
     def read(self, query):
-        logging.info("Querying (%s)", query)
         try:
             cursor = self._client.cursor()
             formatted_query = rdb_format_query(query)
+            logging.info("Querying (%s)", query)
             cursor.execute(formatted_query)
             results = self.format_results(cursor)
             cursor.close()
@@ -93,7 +93,7 @@ class OracleReader(BaseReader):
                 results (dict): keys are columns name and corresponding values
         """
         logging.info("Formatting results for stream")
-        column_names = [d[0] for d in cursor.description]
+        column_names = [rdb_format_column_name(d[0]) for d in cursor.description]
         rows = list(cursor.fetchall())
         results = [dict(zip(column_names, row)) for row in rows]
         return results

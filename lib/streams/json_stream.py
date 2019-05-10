@@ -1,5 +1,6 @@
-import json
 import datetime
+import json
+from config import logging
 
 from lib.streams.temporaryfile_stream import TemporaryFileStream
 
@@ -17,13 +18,17 @@ class JSONStream(TemporaryFileStream):
     def _format(self, line):
         return {self._normalize_key(key): self._repr_str(line[key]) if line[key] is not None else "" for key in line}
 
+    # TODO: Make this prettier, maybe remake it from scratch <3
     def _repr_str(self, val):
-        if type(val) == int or type(val) == float:
-            return repr(val).encode('utf-8')
-        elif type(val) == datetime.datetime:
-            return str(val)
-        else:
-            return val.encode('utf-8')
+        try:
+            if type(val) == int or type(val) == float:
+                return repr(val).encode('utf-8')
+            elif type(val) == datetime.datetime:
+                return str(val)
+            else:
+                return val.encode('utf-8')
+        except UnicodeDecodeError as err:
+            return val.decode('utf-8')
 
     def _normalize_key(self, key):
         return key.strip().replace(' ', '_')

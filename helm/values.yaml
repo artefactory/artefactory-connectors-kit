@@ -2142,6 +2142,8 @@ jobs:
       - finance_sql
       - "--bq-table"
       - list_clients
+      - "--bq-schema"
+      - "channel_timesheet_attribute:STRING;internal_id:STRING;list_clients_id:INTEGER;client_name:STRING;indirect_client:STRING;year_won_id:STRING;everwin_id:INTEGER;client_name_second:STRING;list_clients_active:INTEGER;fk_spot_id:INTEGER;timesheet_id:INTEGER;fk_global_clients_id:INTEGER;fk_company_id:INTEGER;fk_sector_id:INTEGER"
       - "--mysql-credentials"
       - "mysql.json"
       - "--mysql-tables"

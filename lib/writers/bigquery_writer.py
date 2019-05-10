@@ -120,7 +120,8 @@ class BigQueryTable():
 
     def unroll_schema(self, schema):
         bq_schema_format = []
-        for column in schema:
+        for _column in schema.split(';'):
+            column = _column.split(':')
             bq_schema_format.append(
                 bigquery.SchemaField(column[0], column[1])
             )

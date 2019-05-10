@@ -9,8 +9,8 @@ import pymysql as mysql_connector
 from lib.commands.execute import app_default_options
 from lib.readers.reader import BaseReader
 from lib.streams.json_stream import JSONStream
-from lib.utils.rdb_utils import (rdb_format_query, rdb_format_tables,
-                                 rdb_query_or_tables,
+from lib.utils.rdb_utils import (rdb_format_column_name, rdb_format_query,
+                                 rdb_format_tables, rdb_query_or_tables,
                                  rdb_table_name_from_query)
 
 
@@ -40,6 +40,7 @@ class MySQLReader(BaseReader):
     _database = None
 
     _client = None
+    _reconnect_retries = 10
 
     def __init__(self, credentials, query=None, tables=None):
         logging.info("Instancing MYSQL Reader")
@@ -56,7 +57,6 @@ class MySQLReader(BaseReader):
         return rdb_query_or_tables(self._query, self._tables)
 
     def connect(self):
-        reconnect_retries = 10
         try:
             logging.info(
                 "Connecting to MYSQL DB name {}".format(self._database))
@@ -69,10 +69,10 @@ class MySQLReader(BaseReader):
             )
         except Exception as err:
             logging.info("Timeout. Retrying connection to DB")
-            if reconnect_retries > 0:
+            if self._reconnect_retries > 0:
                 time.sleep(10)
-                self._connect()
-                reconnect_retries -= 1
+                self.connect()
+                self._reconnect_retries -= 1
             else:
                 raise err
 
@@ -87,7 +87,7 @@ class MySQLReader(BaseReader):
         except mysql_connector.Error as err:
             raise err
         logging.info("Processing results")
-        return self._get_query_name(query), results
+        return self._get_query_name(query), self._normalize_column_name(results)
 
     def close(self):
         logging.info("Closing MYSQL connection")
@@ -98,3 +98,9 @@ class MySQLReader(BaseReader):
             return query_or_table
         else:
             return rdb_table_name_from_query(query_or_table)
+
+    def _normalize_column_name(self, results):
+        normalized_results = []
+        for row in results:
+            normalized_results.append({rdb_format_column_name(k): row[k] for k in row})
+        return normalized_results
