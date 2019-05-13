@@ -25,6 +25,8 @@ class JSONStream(TemporaryFileStream):
                 return repr(val).encode('utf-8')
             elif type(val) == datetime.datetime:
                 return str(val)
+            elif type(val) == dict:
+                return self._format(val)
             else:
                 return val.encode('utf-8')
         except UnicodeDecodeError as err:

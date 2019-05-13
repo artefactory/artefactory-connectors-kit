@@ -35,19 +35,19 @@ docker_build:
 	docker build . --tag ${DOCKER_IMAGE} --build-arg ENV=$(environment)
 
 .PHONY: k8s_setup
-k8s_setup: k8s_secrets
+k8s_setup:
 	gcloud container clusters get-credentials ${K8S_CLUSTER_NAME} \
 		--zone ${K8S_ZONE} \
 		--project ${PROJECT_ID}
 
 .PHONY: k8s_secrets
-k8s_secrets: k8s_delete_secrets
+k8s_secrets: k8s_setup
 	kubectl create secret generic ingestion-secrets \
 	--from-file ./data/secrets/sheets.json  \
 	--from-file ./data/secrets/google_credentials.json \
 	--from-file ./data/secrets/mysql.json \
 	--from-file ./data/secrets/oracle.json
 
-.PHONY: k8s_secrets
+.PHONY: k8s_delete_secrets
 k8s_delete_secrets:
 	kubectl delete secret ingestion-secrets
