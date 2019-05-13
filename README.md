@@ -45,8 +45,7 @@ Current writing strategy : Stream objects are written as uncompressed JSON file 
 ## TODO
 
 1. API READER
-    3a. SAP
-    3b. Salesforce
-2. Disable BQ writing
-3. Saver implementation (GCS, PostgreSQL)
+    1a. SAP
+2. Disable BQ writing Option
+3. Saver implementation (GCS, PostgreSQL, Redis, etc.)
 4. SFTP READER

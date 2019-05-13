@@ -1,4 +1,64 @@
 jobs:
+  - name: salesforce-account
+    image:
+      repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
+      tag: latest
+    schedule: "*/5 * * * *"
+    args:
+      - "salesforce"
+      - "--gcs-bucket"
+      - "raw"
+      - "--gcs-folder"
+      - salesforce
+      - "--bq-dataset"
+      - salesforce
+      - "--bq-table"
+      - account
+      - "--salesforce-credentials"
+      - "salesforce.json"
+      - "--salesforce-query"
+      - "SELECT SELECT Account.id, Account.name from account"
+      - "--salesforce-name"
+      - account
+    volumes:
+    - name: ingestion-secrets
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: salesforce.json
+            path: salesforce.json
+          - key: google_credentials.json
+            path: google_credentials.json
+  - name: salesforce-opportunity
+    image:
+      repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
+      tag: latest
+    schedule: "*/5 * * * *"
+    args:
+      - "salesforce"
+      - "--gcs-bucket"
+      - "raw"
+      - "--gcs-folder"
+      - salesforce
+      - "--bq-dataset"
+      - salesforce
+      - "--bq-table"
+      - opportunity
+      - "--salesforce-credentials"
+      - "salesforce.json"
+      - "--salesforce-query"
+      - "SELECT id,name,account.id,account.Entity__c,opportunity.id,opportunity.name,opportunity.Mission_Starting_Date__c,opportunity.Duration__c,opportunity.Unique_Mission_ID__c,account.name,status,CreatedBy.Email,(SELECT LineNumber,Quantity,PricebookEntry.Name,Product2.Exportable_to_PYS__c,Product2.Product_Seniority__c,Product2.Product_Channel__c,id from QuoteLineItems) from quote"
+      - "--salesforce-name"
+      - opportunity
+    volumes:
+    - name: ingestion-secrets
+      secret:
+          secretName: ingestion-secrets
+          items:
+          - key: salesforce.json
+            path: salesforce.json
+          - key: google_credentials.json
+            path: google_credentials.json
   - name: sheets-target
     image:
       repository: eu.gcr.io/global-finance-dashboard/nautilus-connectors-kit
