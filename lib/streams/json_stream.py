@@ -27,6 +27,10 @@ class JSONStream(TemporaryFileStream):
                 return str(val)
             elif type(val) == dict:
                 return self._format(val)
+            elif type(val) == list:
+                return [self._repr_str(v) for v in val]
+            elif type(val) == bool:
+                return val
             else:
                 return val.encode('utf-8')
         except UnicodeDecodeError as err:

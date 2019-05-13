@@ -1,3 +1,4 @@
+import collections
 import json
 import os
 from config import config, logging
@@ -65,7 +66,41 @@ class SalesforceReader(BaseReader):
             if res.status_code != 200:
                 raise Exception(res.json())
 
-        return self._name, records
+        return self._name, self._clean_results(records)
+
+    def _clean_results(self, records):
+        """
+            Salesforces records contains metadata which we don't need in ingestion
+        """
+        results = []
+        for record in records:
+            self._delete_metadata_from_dict(record)
+            results.append(self._flatten(record))
+        return results
+
+    def _delete_metadata_from_dict(self, json_dict):
+        for key in json_dict.keys():
+            if key in ["attributes", "totalSize", "done"]:
+                json_dict.pop(key)
+            elif type(json_dict[key]) == dict:
+                self._delete_metadata_from_dict(json_dict[key])
+            elif type(json_dict[key]) == list:
+                for el in json_dict[key]:
+                    self._delete_metadata_from_dict(el)
+
+    def _flatten(self, json_dict, parent_key="", sep="_"):
+        """
+            Reduce number of dict levels
+            Note: useful to bigquery autodetect schema
+        """
+        items = []
+        for k, v in json_dict.items():
+            new_key = parent_key + sep + k if parent_key else k
+            if isinstance(v, collections.MutableMapping):
+                items.extend(self._flatten(v, new_key, sep=sep).items())
+            else:
+                items.append((new_key, v))
+        return dict(items)
 
     def _request_data(self, endpoint, params=None):
         return requests.get(

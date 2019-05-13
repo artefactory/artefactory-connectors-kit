@@ -46,7 +46,8 @@ k8s_secrets: k8s_setup
 	--from-file ./data/secrets/sheets.json  \
 	--from-file ./data/secrets/google_credentials.json \
 	--from-file ./data/secrets/mysql.json \
-	--from-file ./data/secrets/oracle.json
+	--from-file ./data/secrets/oracle.json \
+	--from-file ./data/secrets/salesforce.json
 
 .PHONY: k8s_delete_secrets
 k8s_delete_secrets:
