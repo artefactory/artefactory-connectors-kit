@@ -7,20 +7,13 @@ import click
 from lib.writers.writer import Writer
 from lib.commands.command import processor
 from lib.utils.args import extract_args
+from lib.utils.retry import retry
 from google.cloud import storage
 
 
-def gcs_options(fn):
-    @click.option('--gcs-bucket', help="GCS Bucket", required=True)
-    @click.option('--gcs-prefix', help="GCS Prefix")
-    def wrapped_in_gcs_options(**kwargs):
-        return fn(**kwargs)
-
-    return wrapped_in_gcs_options
-
-
 @click.command(name="write_gcs")
-@gcs_options
+@click.option('--gcs-bucket', help="GCS Bucket", required=True)
+@click.option('--gcs-prefix', help="GCS Prefix")
 @processor
 def gcs(**kwargs):
     return GCSWriter(**extract_args('gcs_', kwargs))
@@ -35,6 +28,7 @@ class GCSWriter(Writer):
         self._bucket = self._client.bucket(bucket)
         self._prefix = prefix
 
+    @retry
     def write(self, stream):
         """
             Write file into GCS Bucket

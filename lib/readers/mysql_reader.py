@@ -1,8 +1,6 @@
 import logging
-import config
 
 import click
-from tenacity import retry, wait_exponential, before_sleep_log, before_log
 
 import pymysql
 from lib.commands.command import processor
@@ -10,6 +8,7 @@ from lib.readers.reader import Reader
 from lib.streams.normalized_json_stream import NormalizedJSONStream
 from lib.utils.args import extract_args
 from lib.utils.sql import select_all_from_table, Query
+from lib.utils.retry import retry
 
 
 @click.command(name="read_mysql")
@@ -60,10 +59,7 @@ class MySQLReader(Reader):
         _tables = tables or []
         return [select_all_from_table(table) for table in _tables]
 
-    @retry(wait=wait_exponential(multiplier=1, min=4, max=10),
-           reraise=True,
-           before=before_log(config.logger, logging.INFO),
-           before_sleep=before_sleep_log(config.logger, logging.INFO))
+    @retry
     def connect(self):
         logging.info("Connecting to MySQL Database {} on {}:{}".format(self._database, self._host, self._port))
 
@@ -85,10 +81,7 @@ class MySQLReader(Reader):
         finally:
             self.close()
 
-    @retry(wait=wait_exponential(multiplier=1, min=4, max=10),
-           reraise=True,
-           before=before_log(config.logger, logging.INFO),
-           before_sleep=before_sleep_log(config.logger, logging.INFO))
+    @retry
     def _run_query(self, query):
         logging.info("Running MySQL query %s", query)
 

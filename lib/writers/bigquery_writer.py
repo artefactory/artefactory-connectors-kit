@@ -10,7 +10,7 @@ from lib.writers.writer import Writer
 from lib.writers.gcs_writer import GCSWriter
 from lib.commands.command import processor
 from lib.utils.args import extract_args
-from tenacity import retry, wait_exponential, before_sleep_log, before_log
+from lib.utils.retry import retry
 
 
 @click.command(name="write_bq")
@@ -41,10 +41,7 @@ class BigQueryWriter(Writer):
         self._location = location
         self._keep_files = keep_files
 
-    @retry(wait=wait_exponential(multiplier=1, min=4, max=10),
-           reraise=True,
-           before=before_log(config.logger, logging.INFO),
-           before_sleep=before_sleep_log(config.logger, logging.INFO))
+    @retry
     def write(self, stream):
 
         normalized_stream = NormalizedJSONStream.create_from_stream(stream)
