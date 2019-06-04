@@ -1,34 +1,6 @@
 # nautilus-connectors-kit
 
-Nautilus connectors kit is a tool which aim is getting raw data from different sources and store them as-is into GCS bucket as uncompressed JSON files. 
-Finally files can be transfered to BigQuery tables for analysis purposes.
-
-## Getting started
-
-### Pre-requisities
-
-1. Set GOOGLE_APPLICATION_CREDENTIALS env var
-
-### Docker image
-
-1. Build docker image from container registry (TODO Create dedicated project)
-2. Build image and run
-```shell
-docker run [IMAGE] [COMMAND] [GCS WRITER OPTIONS] [BQ WRITER OPTIONS] [READER OPTIONS]
-```
-
-### Standalone
-
-1. Clone repository and install dependencies
-```shell
-git clone git@github.com:artefactory/nautilus-connectors-kit.git
-pip install -r requirements.txt
-```
-
-2. Application is now ready to use
-```shell
-python bin/app.py [COMMAND] [OPTIONS]
-```
+Nautilus connectors kit is a tool which aim is getting raw data from different sources and store them as-is into GCS bucket as uncompressed JSON files.
 
 ## Philosophy
 
@@ -42,10 +14,13 @@ Current writing strategy : Stream objects are written as uncompressed JSON file 
 
 ![NCK Philosophy Schema](./nck-philosophy.png)
 
-## TODO
+## Usage
 
-1. API READER
-    1a. SAP
-2. Disable BQ writing Option
-3. Saver implementation (GCS, PostgreSQL, Redis, etc.)
-4. SFTP READER
+### Docker image
+
+1. Build Docker image using `make build_base_image`
+2. Run image to get help `docker run --rm nautilus-connector-kit:latest --help`
+
+### Configuration
+
+

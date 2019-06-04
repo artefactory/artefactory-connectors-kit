@@ -1,136 +1,95 @@
+import config
+
+import click
+
 from config import logging
 
 from google.cloud import bigquery
+from lib.streams.normalized_json_stream import NormalizedJSONStream
+from lib.writers.writer import Writer
+from lib.writers.gcs_writer import GCSWriter
+from lib.commands.command import processor
+from lib.utils.args import extract_args
+from tenacity import retry, wait_exponential, before_sleep_log, before_log
 
-from lib.writers import google_credentials
-from lib.writers.writer import BaseWriter
+
+@click.command(name="write_bq")
+@click.option('--bq-dataset', help="BQ Dataset", required=True)
+@click.option('--bq-table', help="BQ Table", required=True)
+@click.option('--bq-bucket', help="BQ GCS Bucket", required=True)
+@click.option('--bq-partition-column', help="BQ Partition Column")
+@click.option('--bq-write-disposition', help="BQ Write Disposition", default="truncate", type=click.Choice(['truncate', 'append']))
+@click.option('--bq-location', help="BQ Location", default="EU", type=click.Choice(['EU', 'US']))
+@click.option('--bq-keep-files', help="BQ Keep GCS files", is_flag=True, default=False)
+@processor
+def bq(**kwargs):
+    return BigQueryWriter(**extract_args('bq_', kwargs))
 
 
-class BigQueryWriter(BaseWriter):
+class BigQueryWriter(Writer):
 
     _client = None
-    _location = "EU"
 
-    def __init__(self, dataset, table, schema=None, partition_field=None, append=False):
-        self._client = bigquery.Client.from_service_account_json(google_credentials)
+    def __init__(self, dataset, table, bucket, partition_column, write_disposition, location, keep_files):
 
-        self._schema = schema
-        self._dataset = BigQueryDataset(self._client, dataset)
-        self._table = BigQueryTable(self._client, self._dataset, table, self._schema)
+        self._client = bigquery.Client(project=config.PROJECT_ID)
+        self._dataset = dataset
+        self._table = table
+        self._bucket = bucket
+        self._partition_column = partition_column
+        self._write_disposition = write_disposition
+        self._location = location
+        self._keep_files = keep_files
 
-        datasets_list = BigQueryDataset.list(self._client)
-
-        if dataset not in datasets_list:
-            self._dataset.create()
-
-        tables_list = BigQueryTable.list(self._client, self._dataset)
-
-        if table in tables_list and not append:
-            self._table.delete()
-
-        if table not in tables_list:
-            self._table.create(partition_field)
-
+    @retry(wait=wait_exponential(multiplier=1, min=4, max=10),
+           reraise=True,
+           before=before_log(config.logger, logging.INFO),
+           before_sleep=before_sleep_log(config.logger, logging.INFO))
     def write(self, stream):
-        load_job = self._client.load_table_from_uri(
-            stream.get_gcs_url(),
-            self._table.ref(),
-            job_config=self.job_config()
-        )
-        job_id = load_job.job_id
-        logging.info("Beginning BigQuery job {}".format(job_id))
-        load_job.result()
-        logging.info("Finishing BigQuery job {}".format(job_id))
+
+        normalized_stream = NormalizedJSONStream.create_from_stream(stream)
+
+        gcs_writer = GCSWriter(self._bucket)
+        gcs_uri, blob = gcs_writer.write(normalized_stream)
+
+        table_ref = self._get_table_ref()
+
+        load_job = self._client.load_table_from_uri(gcs_uri, table_ref, job_config=self.job_config())
+
+        logging.info("Loading data into BigQuery %s:%s", self._dataset, self._table)
+        result = load_job.result()
+
+        assert result.state == 'DONE'
+
+        if not self._keep_files:
+            logging.info("Deleting GCS file: %s", gcs_uri)
+            blob.delete()
+
+    def _get_dataset(self):
+        dataset_ref = self._client.dataset(self._dataset)
+        return bigquery.Dataset(dataset_ref)
+
+    def _get_table_ref(self):
+        dataset = self._get_dataset()
+        return dataset.table(self._table)
 
     def job_config(self):
         job_config = bigquery.LoadJobConfig()
-        if self._schema:
-            logging.info("Loading schema from options")
-            job_config.schema = self._table.schema
+        job_config.create_disposition = bigquery.job.CreateDisposition.CREATE_IF_NEEDED
+        job_config.source_format = bigquery.job.SourceFormat.NEWLINE_DELIMITED_JSON
+        job_config.autodetect = True
+
+        if self._write_disposition == 'truncate':
+            job_config.write_disposition = bigquery.job.WriteDisposition.WRITE_TRUNCATE
+        elif self._write_disposition == 'append':
+            job_config.write_disposition = bigquery.job.WriteDisposition.WRITE_APPEND
         else:
-            logging.info("Detecting schema automatically")
-            job_config.autodetect = True
-        job_config.source_format = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON
+            raise Exception("Unknown BigQuery write disposition")
+
+        if self._partition_column:
+            job_config.time_partitioning = bigquery.table.TimePartitioning(
+                bigquery.table.TimePartitioningType.DAY,
+                self._partition_column
+            )
+
         return job_config
-
-
-class BigQueryDataset():
-
-    _location = "EU"
-
-    def __init__(self, bq_client, name):
-        self._name = name
-        self._bq_client = bq_client
-
-    def ref(self):
-        return self._bq_client.dataset(self._name)
-
-    def create(self):
-        logging.info("Creating dataset {}".format(self._name))
-        dataset = bigquery.Dataset(self.ref())
-        dataset.location = self._location
-        self._bq_client.create_dataset(dataset)
-
-    def remove(self):
-        logging.info("Deleting dataset {}".format(self._name))
-        dataset = bigquery.Dataset(self.ref())
-        self._bq_client.delete_dataset(dataset)
-
-    @staticmethod
-    def list(bq_client):
-        return [dataset.dataset_id for dataset in bq_client.list_datasets()]
-
-
-class BigQueryTable():
-
-    _partition_type = "DAY"
-    _schema = None
-
-    def __init__(self, bq_client, dataset, name, schema=None):
-        self._bq_client = bq_client
-        self._dataset = dataset
-        self._name = name
-        if schema:
-            self._schema = self.unroll_schema(schema)
-
-    def ref(self):
-        dataset = self._dataset.ref()
-        return dataset.table(self._name)
-
-    def create(self, partition_field=None):
-        logging.info("Creating table {}".format(self._name))
-        table = bigquery.Table(self.ref(), schema=self._schema)
-        if partition_field:
-            logging.info("Partitioning table with {} column".format(partition_field))
-            table.time_partitioning = bigquery.TimePartitioning(
-                type_=bigquery.TimePartitioningType.DAY,
-                field=partition_field
-            )
-        self._bq_client.create_table(table)
-
-    def delete(self):
-        dataset = self._dataset.ref()
-        table = dataset.table(self._name)
-        self._bq_client.delete_table(table)
-
-    def get(self):
-        dataset = self._dataset.ref()
-        table = dataset.table(self._name)
-        return table.get_table()
-
-    def unroll_schema(self, schema):
-        bq_schema_format = []
-        for _column in schema.split(';'):
-            column = _column.split(':')
-            bq_schema_format.append(
-                bigquery.SchemaField(column[0], column[1])
-            )
-        return bq_schema_format
-
-    @property
-    def schema(self):
-        return self._schema
-
-    @staticmethod
-    def list(bq_client, dataset):
-        return [table.table_id for table in bq_client.list_tables(dataset.ref())]

@@ -1,19 +1,39 @@
-from config import logging
+import config
+import logging
+import os
 
+import click
+
+from lib.writers.writer import Writer
+from lib.commands.command import processor
+from lib.utils.args import extract_args
 from google.cloud import storage
 
-from lib.writers import google_credentials
-from lib.writers.writer import BaseWriter
+
+def gcs_options(fn):
+    @click.option('--gcs-bucket', help="GCS Bucket", required=True)
+    @click.option('--gcs-prefix', help="GCS Prefix")
+    def wrapped_in_gcs_options(**kwargs):
+        return fn(**kwargs)
+
+    return wrapped_in_gcs_options
 
 
-class GCSWriter(BaseWriter):
+@click.command(name="write_gcs")
+@gcs_options
+@processor
+def gcs(**kwargs):
+    return GCSWriter(**extract_args('gcs_', kwargs))
+
+
+class GCSWriter(Writer):
 
     _client = None
 
-    def __init__(self, bucket="raw", folder=None):
-        self._client = storage.Client.from_service_account_json(google_credentials)
-        self._bucket = GCSBucket(self._client, bucket)
-        self._folder = folder
+    def __init__(self, bucket, prefix=None):
+        self._client = storage.Client(project=config.PROJECT_ID)
+        self._bucket = self._client.bucket(bucket)
+        self._prefix = prefix
 
     def write(self, stream):
         """
@@ -21,68 +41,29 @@ class GCSWriter(BaseWriter):
 
             attr:
                 filename (str): Filename to save in GCS
-                content (File handler): File object to be duplicate in GCS
+                content (File handle): File object to be copied to GCS
             return:
-                gcs_path (str): Path to file {bucket}/{folder}/{file_name}
+                gcs_path (str): Path to file {bucket}/{prefix}{file_name}
         """
-        logging.info("Writing file on GCS")
-        blob = self.create_file(stream.name)
-        blob.upload_from_file(stream.as_file(), content_type=stream.type)
+        logging.info("Writing file to GCS")
+        blob = self.create_blob(stream.name)
+        blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
 
-        gcs_url = self.gcs_path(stream.name)
-        stream.set_gcs_url(gcs_url)
-        logging.info("Uploading file at {}".format(gcs_url))
-        return stream
+        uri = self.uri_for_name(stream.name)
 
-    def create_file(self, name):
-        filename = self.location(name)
-        return self._bucket.get_file(filename)
+        logging.info("Uploaded file to {}".format(uri))
 
-    def gcs_path(self, name):
-        file_path = self.location(name)
-        return 'gs://{}'.format(self.format_path(self._bucket.name, file_path))
+        return uri, blob
 
-    def location(self, name):
-        if self._folder is not None:
-            return self.format_path(self._folder, name)
+    def create_blob(self, name):
+        filename = self.path_for_name(name)
+        return self._bucket.blob(filename)
+
+    def uri_for_name(self, name):
+        path = self.path_for_name(name)
+        return 'gs://{bucket}/{path}'.format(bucket=self._bucket.name, path=path)
+
+    def path_for_name(self, name):
+        if self._prefix:
+            return os.path.join(self._prefix, name)
         return name
-
-    def format_path(self, first, second):
-        return '{}/{}'.format(first, second)
-
-
-class GCSBucket():
-
-    def __init__(self, gcs_client, name):
-        self._client = gcs_client
-        self._name = self.prefix_name(name)
-
-    def get_file(self, file_name):
-        return self.get_or_create().blob(file_name)
-
-    def get_or_create(self):
-        if self._name not in GCSBucket.list(self._client):
-            logging.info("Creating bucket {}".format(self._name))
-            self.create()
-        logging.info("Getting bucket {}".format(self._name))
-        return self.get()
-
-    def get(self):
-        return self._client.get_bucket(self._name)
-
-    def create(self):
-        bucket = self._client.bucket(self._name)
-        bucket.location = "EU"
-        bucket.create()
-
-    def prefix_name(self, name):
-        project_name = self._client.project
-        return '{}-{}'.format(project_name, name)
-
-    @property
-    def name(self):
-        return self._name
-
-    @staticmethod
-    def list(gcs_client):
-        return [bucket.name for bucket in gcs_client.list_buckets()]

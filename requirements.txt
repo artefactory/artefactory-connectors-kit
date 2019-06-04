@@ -6,3 +6,4 @@ cx_Oracle
 gspread
 oauth2client
 requests
+tenacity

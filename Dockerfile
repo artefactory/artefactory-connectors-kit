@@ -1,9 +1,4 @@
-FROM ubuntu:18.04
-
-ENV LANGUAGE C.UTF-8
-ENV LC_CTYPE C.UTF-8
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
+FROM python:2.7
 
 # Install Unix packages
 RUN apt-get update && apt-get install -y \
@@ -17,9 +12,9 @@ RUN apt-get update && apt-get install -y \
     && mkdir -p /opt/data/api
 
 # Oracle Dependencies
-ADD ./docker-depedencies /opt/data
+ADD ./vendor /opt/vendor
 
-WORKDIR /opt/data
+WORKDIR /opt/vendor
 
 ENV ORACLE_HOME=/opt/oracle/instantclient
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME
@@ -30,28 +25,19 @@ ENV OCI_INCLUDE_DIR=/opt/oracle/instantclient/sdk/include
 
 # Install Oracle
 RUN mkdir /opt/oracle
-RUN chmod +x /opt/data/install.sh
-RUN /opt/data/install.sh
+RUN chmod +x /opt/vendor/install.sh
+RUN /opt/vendor/install.sh
 
-# Install Python and PIP
-RUN apt-get update \
-  && apt-get install -y python2.7 python-pip python2.7-dev \
-  && cd /usr/local/bin \
-  && ln -s /usr/bin/python3 python \
-  && pip install --upgrade pip 
-
-RUN mkdir /nautilus-connectors-kit
+RUN mkdir /app
 
 # Install dependencies
-ADD requirements.txt /nautilus-connectors-kit/requirements.txt
-RUN pip install -r /nautilus-connectors-kit/requirements.txt
+ADD requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
 # Copy code
-ADD . /nautilus-connectors-kit/
-RUN chmod -R 0644 /nautilus-connectors-kit
-ENV PYTHONPATH /nautilus-connectors-kit
+ADD . /app/
+RUN chmod -R 0644 /app
+WORKDIR /app/
+ENV PYTHONPATH=${PYTHONPATH}:.
 
-ARG ENV
-ENV ENV=$ENV
-
-ENTRYPOINT ["python", "/nautilus-connectors-kit/bin/app.py"]
+ENTRYPOINT ["python", "./bin/app.py"]

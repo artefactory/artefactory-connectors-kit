@@ -1,106 +1,111 @@
-import json
-import os
-import time
-from config import config, logging
+import logging
+import config
 
 import click
+from tenacity import retry, wait_exponential, before_sleep_log, before_log
 
-import pymysql as mysql_connector
-from lib.commands.execute import app_default_options
-from lib.readers.reader import BaseReader
-from lib.streams.json_stream import JSONStream
-from lib.utils.rdb_utils import (rdb_format_column_name, rdb_format_query,
-                                 rdb_format_tables, rdb_query_or_tables,
-                                 rdb_table_name_from_query)
+import pymysql
+from lib.commands.command import processor
+from lib.readers.reader import Reader
+from lib.streams.normalized_json_stream import NormalizedJSONStream
+from lib.utils.args import extract_args
+from lib.utils.sql import select_all_from_table, Query
 
 
-@click.command(name="mysql")
-@click.option("--mysql-credentials", required=True)
+@click.command(name="read_mysql")
+@click.option("--mysql-user", required=True)
+@click.option("--mysql-password", required=True)
+@click.option("--mysql-host", required=True)
+@click.option("--mysql-port", required=False, default=3306)
+@click.option("--mysql-database", required=True)
 @click.option("--mysql-query")
-@click.option("--mysql-tables")
-@app_default_options
+@click.option("--mysql-query-name")
+@click.option("--mysql-table", multiple=True)
+@processor
 def mysql(**kwargs):
-    credentials_path = os.path.join(config.get("SECRETS_PATH"), kwargs.get("mysql_credentials"))
-    with open(credentials_path) as json_file:
-        credentials_dict = json.loads(json_file.read())
-        return MySQLReader(
-            credentials_dict,
-            query=kwargs.get("mysql_query"),
-            tables=kwargs.get("mysql_tables")
-        )
+
+    if 'mysql_query' not in kwargs and 'mysql_table' not in kwargs:
+        raise click.BadParameter("Must specify either a table or a query for MySQL reader")
+
+    if 'mysql_query' in kwargs and kwargs['mysql_query_name'] is None:
+        raise click.BadParameter("Must specify a query name when running a MySQL query")
+
+    return MySQLReader(**extract_args('mysql_', kwargs))
 
 
-class MySQLReader(BaseReader):
-
-    _stream = JSONStream
+class MySQLReader(Reader):
 
     _host = None
+    _port = None
     _user = None
-    _pass = None
+    _password = None
     _database = None
 
     _client = None
-    _reconnect_retries = 10
 
-    def __init__(self, credentials, query=None, tables=None):
-        logging.info("Instancing MYSQL Reader")
+    def __init__(self, user, password, host, port, database, query=None, query_name=None, table=None):
+        self._host = host
+        self._port = port
+        self._user = user
+        self._password = password
+        self._database = database
 
-        self._host = credentials.get("host")
-        self._user = credentials.get("user")
-        self._pass = credentials.get("password")
-        self._database = credentials.get("database")
+        self._queries = self._build_table_queries(table)
 
-        self._query = query
-        self._tables = rdb_format_tables(tables)
+        if query:
+            self._queries.append(Query(name=query_name, query=query))
 
-    def list(self):
-        return rdb_query_or_tables(self._query, self._tables)
+    @staticmethod
+    def _build_table_queries(tables):
+        _tables = tables or []
+        return [select_all_from_table(table) for table in _tables]
 
+    @retry(wait=wait_exponential(multiplier=1, min=4, max=10),
+           reraise=True,
+           before=before_log(config.logger, logging.INFO),
+           before_sleep=before_sleep_log(config.logger, logging.INFO))
     def connect(self):
-        try:
-            logging.info(
-                "Connecting to MYSQL DB name {}".format(self._database))
-            self._client = mysql_connector.connect(
-                host=self._host,
-                user=self._user,
-                passwd=self._pass,
-                database=self._database,
-                cursorclass=mysql_connector.cursors.DictCursor
-            )
-        except Exception as err:
-            logging.info("Timeout. Retrying connection to DB")
-            if self._reconnect_retries > 0:
-                time.sleep(10)
-                self.connect()
-                self._reconnect_retries -= 1
-            else:
-                raise err
+        logging.info("Connecting to MySQL Database {} on {}:{}".format(self._database, self._host, self._port))
 
-    def read(self, query):
-        logging.info("Querying (%s)", query)
+        self._client = pymysql.connect(
+            host=self._host,
+            user=self._user,
+            port=self._port,
+            password=self._password,
+            database=self._database,
+            cursorclass=pymysql.cursors.DictCursor
+        )
+
+    def read(self):
+        self.connect()
+
         try:
-            cursor = self._client.cursor()
-            formatted_query = rdb_format_query(query)
-            cursor.execute(formatted_query)
-            results = cursor.fetchall()
+            for query in self._queries:
+                yield self._run_query(query)
+        finally:
+            self.close()
+
+    @retry(wait=wait_exponential(multiplier=1, min=4, max=10),
+           reraise=True,
+           before=before_log(config.logger, logging.INFO),
+           before_sleep=before_sleep_log(config.logger, logging.INFO))
+    def _run_query(self, query):
+        logging.info("Running MySQL query %s", query)
+
+        cursor = self._client.cursor()
+        rows = cursor.execute(query.query)
+
+        logging.info("MySQL result set contains %d rows", rows)
+
+        def result_generator():
+            row = cursor.fetchone()
+            while row:
+                yield row
+                row = cursor.fetchone()
             cursor.close()
-        except mysql_connector.Error as err:
-            raise err
-        logging.info("Processing results")
-        return self._get_query_name(query), self._normalize_column_name(results)
+
+        return NormalizedJSONStream(query.name, result_generator())
 
     def close(self):
-        logging.info("Closing MYSQL connection")
+        logging.info("Closing MySQL connection")
         self._client.close()
-
-    def _get_query_name(self, query_or_table):
-        if self._tables:
-            return query_or_table
-        else:
-            return rdb_table_name_from_query(query_or_table)
-
-    def _normalize_column_name(self, results):
-        normalized_results = []
-        for row in results:
-            normalized_results.append({rdb_format_column_name(k): row[k] for k in row})
-        return normalized_results

@@ -1,66 +1,77 @@
 from datetime import datetime
 import time
+import tempfile
+import logging
 
 
-class StreamCollection():
-
-    _streams = []
-
-    def list(self):
-        return self._streams
-
-    def add(self, stream):
-        self._streams.append(stream)
-
-
-class StreamBase():
+class Stream(object):
 
     _name = None
-    _content = None
-    _gcs_url = None
-    _extension = ""
-    _mime_type = "application/octet-stream"
+    _source_stream = None
+    _local_cache = None
 
-    def __init__(self, name, content):
-        self._name = self.stream_name(name)
-        self._content = content
+    extension = None
+    mime_type = "application/octet-stream"
 
-    def as_file():
+    def __init__(self, name, source_stream):
         """
-            Transform stream in a IO object.
+            source_stream is a generator yielding dicts
         """
-        raise NotImplementedError
+        self._name = self.create_stream_name(name)
+        self._source_stream = source_stream
 
-    def readline():
+    def data(self):
+        if not self._local_cache:
+            self._local_cache = self._build_local_cache(self._source_stream)
+
+        self._local_cache.seek(0)
+
+        return self._local_cache
+
+    def as_file(self):
+        return self.data()
+
+    def readlines(self):
         """
-            Yield each element of a stream, one by one. 
+            Yield each element of a stream, one by one.
             (ex: line by line for file)
         """
-        for line in self._content:
-            yield line
+        for record in self.data():
+            yield self.decode_record(record)
 
-    def stream_name(self, name):
+    @classmethod
+    def create_from_stream(cls, source_stream):
+        if isinstance(source_stream, cls):
+            return source_stream
+
+        return cls(source_stream.name, source_stream.readlines())
+
+    @classmethod
+    def _build_local_cache(cls, source_stream):
+        temp = tempfile.TemporaryFile()
+
+        logging.debug("Spooling data to %s", temp)
+
+        for record in source_stream:
+            temp.write("{}\n".format(cls.encode_record(record)))
+
+        temp.seek(0)
+        return temp
+
+    @classmethod
+    def encode_record(cls, record):
+        raise NotImplementedError
+
+    @classmethod
+    def decode_record(cls, record):
+        raise NotImplementedError
+
+    @staticmethod
+    def create_stream_name(name):
         ts = time.time()
         ts_as_string = datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
         return '{}_{}'.format(name, ts_as_string)
 
-    def set_gcs_url(self, gcs_url):
-        self._gcs_url = gcs_url
-
-    def get_gcs_url(self):
-        return self._gcs_url
-
     @property
     def name(self):
-        return '{}{}'.format(self._name, self.extension())
-
-    @property
-    def content(self):
-        return self._content
-
-    @property
-    def type(self):
-        return self._mime_type
-
-    def extension(self):
-        return self._extension
+        return '.'.join(filter(None, [self._name, self.extension]))
