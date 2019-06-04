@@ -14,13 +14,13 @@ from lib.utils.retry import retry
 
 
 @click.command(name="write_bq")
-@click.option('--bq-dataset', help="BQ Dataset", required=True)
-@click.option('--bq-table', help="BQ Table", required=True)
-@click.option('--bq-bucket', help="BQ GCS Bucket", required=True)
-@click.option('--bq-partition-column', help="BQ Partition Column")
-@click.option('--bq-write-disposition', help="BQ Write Disposition", default="truncate", type=click.Choice(['truncate', 'append']))
-@click.option('--bq-location', help="BQ Location", default="EU", type=click.Choice(['EU', 'US']))
-@click.option('--bq-keep-files', help="BQ Keep GCS files", is_flag=True, default=False)
+@click.option('--bq-dataset', required=True)
+@click.option('--bq-table', required=True)
+@click.option('--bq-bucket', required=True)
+@click.option('--bq-partition-column')
+@click.option('--bq-write-disposition', default="truncate", type=click.Choice(['truncate', 'append']))
+@click.option('--bq-location', default="EU", type=click.Choice(['EU', 'US']))
+@click.option('--bq-keep-files', is_flag=True, default=False)
 @processor
 def bq(**kwargs):
     return BigQueryWriter(**extract_args('bq_', kwargs))

@@ -1,138 +1,129 @@
-# import collections
-# import json
-# import os
-# from config import config, logging
-#
-# import click
-# import requests
-#
-# from lib.commands.execute import app_default_options
-# from lib.readers.reader import BaseReader
-# from lib.streams.json_stream import JSONStream
-#
-#
-# @click.command(name="salesforce")
-# @click.option("--salesforce-name")
-# @click.option("--salesforce-credentials")
-# @click.option("--salesforce-query")
-# @app_default_options
-# def salesforce(**kwargs):
-#     credentials_path = os.path.join(config.get("SECRETS_PATH"), kwargs.get("salesforce_credentials"))
-#     with open(credentials_path) as json_file:
-#         credentials_dict = json.loads(json_file.read())
-#         return SalesforceReader(
-#             kwargs.get("salesforce_name"),
-#             credentials_dict,
-#             kwargs.get("salesforce_query")
-#         )
-#
-#
-# class SalesforceReader(BaseReader):
-#
-#     _stream = JSONStream
-#
-#     def __init__(self, name, credentials, query):
-#         self._name = name
-#
-#         self._key = credentials['consumer_key']
-#         self._secret = credentials['consumer_secret']
-#         self._user = credentials['login']
-#         self._password = credentials['password']
-#
-#         self._redirect_uri = config["SALESFORCE_LOGIN_SUCCESS"]
-#         self._endpoint = config["SALESFORCE_QUERY_ENDPOINT"]
-#         self._query = query
-#
-#     def list(self):
-#         return [self._endpoint]
-#
-#     def connect(self):
-#         params = self.format_params()
-#         res = requests.post(config["SALESFORCE_LOGIN_ENDPOINT"], params=params)
-#         self._access_token = res.json().get("access_token")
-#         self._instance_url = res.json().get("instance_url")
-#         logging.info("Getting access_token {} and instance_url {}".format(self._access_token, self._instance_url))
-#
-#     def read(self, endpoint):
-#         res = self._request_data(
-#             endpoint,
-#             params=self.format_query(self._query)
-#         )
-#         records = res.json()['records']
-#
-#         while "nextRecordsUrl" in res.json():
-#             res = self._request_data(res.json()['nextRecordsUrl'])
-#             records = records + res.json()['records']
-#             if res.status_code != 200:
-#                 raise Exception(res.json())
-#
-#         return self._name, self._clean_results(records)
-#
-#     def _clean_results(self, records):
-#         """
-#             Salesforces records contains metadata which we don't need in ingestion
-#         """
-#         results = []
-#         for record in records:
-#             self._delete_metadata_from_dict(record)
-#             results.append(self._flatten(record))
-#         return results
-#
-#     def _delete_metadata_from_dict(self, json_dict):
-#         for key in json_dict.keys():
-#             if key in ["attributes", "totalSize", "done"]:
-#                 json_dict.pop(key)
-#             elif type(json_dict[key]) == dict:
-#                 self._delete_metadata_from_dict(json_dict[key])
-#             elif type(json_dict[key]) == list:
-#                 for el in json_dict[key]:
-#                     self._delete_metadata_from_dict(el)
-#
-#     def _flatten(self, json_dict, parent_key="", sep="_"):
-#         """
-#             Reduce number of dict levels
-#             Note: useful to bigquery autodetect schema
-#         """
-#         items = []
-#         for k, v in json_dict.items():
-#             new_key = parent_key + sep + k if parent_key else k
-#             if isinstance(v, collections.MutableMapping):
-#                 items.extend(self._flatten(v, new_key, sep=sep).items())
-#             else:
-#                 items.append((new_key, v))
-#         return dict(items)
-#
-#     def _request_data(self, endpoint, params=None):
-#         return requests.get(
-#             self.format_endpoint(endpoint),
-#             headers=self.format_headers(),
-#             params=params,
-#             timeout=30
-#         )
-#
-#     def format_query(self, query):
-#         return {
-#             'q': query
-#         }
-#
-#     def format_headers(self):
-#         return {
-#             'Content-type': 'application/json',
-#             'Accept-Encoding': 'gzip',
-#             'Authorization': 'Bearer {}'.format(self._access_token)
-#         }
-#
-#     def format_params(self):
-#         return {
-#             "grant_type": "password",
-#             "client_id": self._key,
-#             "client_secret": self._secret,
-#             "username": self._user,
-#             "password": self._password,
-#             "redirect_uri": self._redirect_uri
-#         }
-#
-#     def format_endpoint(self, endpoint):
-#         formated_url = '{}{}'.format(self._instance_url, endpoint)
-#         logging.info("Requesting {}".format(formated_url))
-#         return formated_url
+import collections
+import urlparse
+
+import click
+import requests
+
+from lib.readers.reader import Reader
+from lib.commands.command import processor
+from lib.streams.normalized_json_stream import NormalizedJSONStream
+from lib.utils.args import extract_args
+
+
+SALESFORCE_LOGIN_ENDPOINT = "https://login.salesforce.com/services/oauth2/token"
+SALESFORCE_LOGIN_REDIRECT = "https://login.salesforce.com/services/oauth2/success"
+SALESFORCE_SERVICE_ENDPOINT = "https://eu16.force.com"
+SALESFORCE_QUERY_ENDPOINT = "/services/data/v42.0/query/"
+
+
+@click.command(name="read_salesforce")
+@click.option("--salesforce-name", required=True)
+@click.option("--salesforce-consumer-key", required=True)
+@click.option("--salesforce-consumer-secret", required=True)
+@click.option("--salesforce-user", required=True)
+@click.option("--salesforce-password", required=True)
+@click.option("--salesforce-query", required=True)
+@processor
+def salesforce(**kwargs):
+    return SalesforceReader(**extract_args('salesforce_', kwargs))
+
+
+class SalesforceReader(Reader):
+
+    def __init__(self, name, consumer_key, consumer_secret, user, password, query):
+        self._name = name
+        self._consumer_key = consumer_key
+        self._consumer_secret = consumer_secret
+        self._user = user
+        self._password = password
+        self._query = query
+
+    def read(self):
+        access_token, instance_url = self._get_access_token()
+        headers = self._get_headers(access_token)
+        endpoint = urlparse.urljoin(instance_url, SALESFORCE_QUERY_ENDPOINT)
+
+        def result_generator(endpoint):
+            response = self._request_data(endpoint, headers, {'q': self._query})
+            generating = True
+
+            while generating:
+                for rec in response['records']:
+                    yield self._clean_record(rec)
+
+                if "nextRecordsUrl" in response:
+                    endpoint = urlparse.urljoin(instance_url, response["nextRecordsUrl"])
+                    response = self._request_data(endpoint, headers)
+                else:
+                    generating = False
+
+        yield NormalizedJSONStream(self._name, result_generator(endpoint))
+
+    def _get_login_params(self):
+        return {
+            "grant_type": "password",
+            "client_id": self._consumer_key,
+            "client_secret": self._consumer_secret,
+            "username": self._user,
+            "password": self._password,
+            "redirect_uri": SALESFORCE_LOGIN_REDIRECT
+        }
+
+    def _get_headers(self, access_token):
+        return {
+            'Content-type': 'application/json',
+            'Accept-Encoding': 'gzip',
+            'Authorization': 'Bearer {}'.format(access_token)
+        }
+
+    def _get_access_token(self):
+        res = requests.post(SALESFORCE_LOGIN_ENDPOINT, params=self._get_login_params())
+        access_token = res.json().get("access_token")
+        instance_url = res.json().get("instance_url")
+
+        return access_token, instance_url
+
+    @classmethod
+    def _clean_record(cls, record):
+        """
+            Salesforces records contains metadata which we don't need in ingestion
+        """
+        return cls._flatten(cls._delete_metadata_from_record(record))
+
+    @classmethod
+    def _delete_metadata_from_record(cls, record):
+
+        if isinstance(record, dict):
+            strip_keys = ["attributes", "totalSize", "done"]
+            return {k: cls._delete_metadata_from_record(v) for k, v in record.iteritems() if k not in strip_keys}
+        elif isinstance(record, list):
+            return [cls._delete_metadata_from_record(i) for i in record]
+        else:
+            return record
+
+    @classmethod
+    def _flatten(cls, json_dict, parent_key="", sep="_"):
+        """
+        Reduce number of dict levels
+        Note: useful to bigquery autodetect schema
+        """
+        items = []
+        for k, v in json_dict.items():
+            new_key = parent_key + sep + k if parent_key else k
+            if isinstance(v, collections.MutableMapping):
+                items.extend(cls._flatten(v, new_key, sep=sep).items())
+            else:
+                items.append((new_key, v))
+        return dict(items)
+
+    def _request_data(self, endpoint, headers, params=None):
+        response = requests.get(
+            endpoint,
+            headers=headers,
+            params=params,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        return response.json()
