@@ -1,6 +1,8 @@
 import collections
 import urlparse
 
+import logging
+
 import click
 import requests
 
@@ -8,6 +10,7 @@ from lib.readers.reader import Reader
 from lib.commands.command import processor
 from lib.streams.normalized_json_stream import NormalizedJSONStream
 from lib.utils.args import extract_args
+from lib.utils.retry import retry
 
 
 SALESFORCE_LOGIN_ENDPOINT = "https://login.salesforce.com/services/oauth2/token"
@@ -38,6 +41,7 @@ class SalesforceReader(Reader):
         self._password = password
         self._query = query
 
+    @retry
     def read(self):
         access_token, instance_url = self._get_access_token()
         headers = self._get_headers(access_token)
@@ -52,6 +56,9 @@ class SalesforceReader(Reader):
                     yield self._clean_record(rec)
 
                 if "nextRecordsUrl" in response:
+
+                    logging.info("Fetching next page of Salesforce results")
+
                     endpoint = urlparse.urljoin(instance_url, response["nextRecordsUrl"])
                     response = self._request_data(endpoint, headers)
                 else:
@@ -77,6 +84,9 @@ class SalesforceReader(Reader):
         }
 
     def _get_access_token(self):
+
+        logging.info("Retrieving Salesforce access token")
+
         res = requests.post(SALESFORCE_LOGIN_ENDPOINT, params=self._get_login_params())
         access_token = res.json().get("access_token")
         instance_url = res.json().get("instance_url")
