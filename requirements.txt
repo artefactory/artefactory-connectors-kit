@@ -2,8 +2,11 @@ Click
 google-cloud-bigquery
 google-cloud-storage
 pymysql
+SQLAlchemy
 cx_Oracle
 gspread
 oauth2client
 requests
 tenacity
+redis
+hiredis

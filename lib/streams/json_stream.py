@@ -5,7 +5,7 @@ from lib.streams.stream import Stream
 
 class JSONStream(Stream):
 
-    extension = "json"
+    extension = "njson"
     mime_type = "application/json"
 
     @classmethod

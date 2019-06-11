@@ -1,4 +1,11 @@
+import lib.state_service as state
+
+
 class Reader(object):
+
+    @property
+    def state(self):
+        return state.state()
 
     def read(self):
         """

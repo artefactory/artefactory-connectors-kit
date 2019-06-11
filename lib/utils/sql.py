@@ -1,29 +1,41 @@
-from collections import namedtuple
+import sqlalchemy
+
+_engine_meta = {}
 
 
-Query = namedtuple('Query', ['name', 'query'])
+def get_meta(engine):
+    global _engine_meta
+
+    if engine not in _engine_meta:
+        _engine_meta[engine] = sqlalchemy.MetaData(engine)
+        _engine_meta[engine].reflect()
+
+    return _engine_meta[engine]
 
 
-def select_all_from_table(table):
-    query = "SELECT * FROM {table}".format(table=table)
-    return Query(name=table, query=query)
+def get_table(engine, table):
+    meta = get_meta(engine)
+
+    if table not in meta.tables:
+        raise Exception("Table does not exist")
+
+    return meta.tables[table]
 
 
+def select_all_from_table(table, watermark_column):
+    if watermark_column:
+        return select_all_from_table_with_watermark(table, watermark_column)
+    else:
+        return select_all_from_table_without_watermark(table)
 
-# def rdb_query_or_tables(query, tables):
-#     return [query] if query else tables
-#
-#
-# def rdb_table_name_from_query(query):
-#     return query.split('FROM')[1].strip().split(' ')[0]
-#
-#
-# def rdb_format_query(query_or_table):
-#     if 'select' in query_or_table.lower():
-#         return query_or_table
-#     else:
-#         return "SELECT * FROM {}".format(query_or_table)
-#
-#
-# def rdb_format_column_name(column_name):
-#     return column_name.strip().replace('-', '_').lower()
+
+def select_all_from_table_without_watermark(engine, table):
+    return get_table(engine, table).select()
+
+
+def select_all_from_table_with_watermark(engine, table, watermark_column):
+    t = get_table(engine, table)
+
+    raise NotImplementedError
+
+    return t.select().where(t.columns[watermark_column])

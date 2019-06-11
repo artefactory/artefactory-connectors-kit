@@ -10,7 +10,7 @@ from lib.streams.normalized_json_stream import NormalizedJSONStream
 
 @click.command(name="read_gsheets")
 @click.option("--gsheets-url", required=True)
-@click.option("--gsheets-sheet-name", required=True, multiple=True)
+@click.option("--gsheets-worksheet-name", required=True, multiple=True)
 @processor
 def gsheets(**kwargs):
     return GSheetsReader(**extract_args('gsheets_', kwargs))

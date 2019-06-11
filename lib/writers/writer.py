@@ -1,2 +1,4 @@
 class Writer(object):
-    pass
+
+    def write(self, stream):
+        raise NotImplementedError
