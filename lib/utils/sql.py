@@ -22,20 +22,27 @@ def get_table(engine, table):
     return meta.tables[table]
 
 
-def select_all_from_table(table, watermark_column):
-    if watermark_column:
-        return select_all_from_table_with_watermark(table, watermark_column)
+def build_table_query(engine, table, watermark_column,  watermark_value):
+    if watermark_column and watermark_value:
+        return build_table_query_with_watermark(engine, table, watermark_column, watermark_value)
     else:
-        return select_all_from_table_without_watermark(table)
+        return build_table_query_without_watermark(engine, table)
 
 
-def select_all_from_table_without_watermark(engine, table):
+def build_table_query_without_watermark(engine, table):
     return get_table(engine, table).select()
 
 
-def select_all_from_table_with_watermark(engine, table, watermark_column):
+def build_table_query_with_watermark(engine, table, watermark_column, watermark_value):
     t = get_table(engine, table)
+    return t.select().where(t.columns[watermark_column] > watermark_value)
 
-    raise NotImplementedError
 
-    return t.select().where(t.columns[watermark_column])
+def build_custom_query(engine, query, watermark_column,  watermark_value):
+    statement = sqlalchemy.text(query)
+
+    if watermark_column:
+        params = {watermark_column: watermark_value}
+        statement = statement.bindparams(**params)
+
+    return statement
