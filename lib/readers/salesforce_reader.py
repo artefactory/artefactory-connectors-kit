@@ -8,8 +8,9 @@ import requests
 
 from lib.readers.reader import Reader
 from lib.commands.command import processor
+from lib.state_service import state
 from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.utils.args import extract_args
+from lib.utils.args import extract_args, has_arg, hasnt_arg
 from lib.utils.retry import retry
 
 
@@ -26,20 +27,32 @@ SALESFORCE_QUERY_ENDPOINT = "/services/data/v42.0/query/"
 @click.option("--salesforce-user", required=True)
 @click.option("--salesforce-password", required=True)
 @click.option("--salesforce-query", required=True)
+@click.option("--salesforce-watermark-column")
 @processor
 def salesforce(**kwargs):
+
+    if has_arg('salesforce_watermark_column', kwargs) and not state().enabled:
+        raise click.BadParameter("You must activate state management to use Salesforce watermarks")
+
+    if hasnt_arg('salesforce_watermark_column', kwargs) and state().enabled:
+        raise click.BadParameter("You must specify a Salesforce watermark when using state management")
+
     return SalesforceReader(**extract_args('salesforce_', kwargs))
 
 
 class SalesforceReader(Reader):
 
-    def __init__(self, name, consumer_key, consumer_secret, user, password, query):
+    def __init__(self, name, consumer_key, consumer_secret, user, password, query, watermark_column):
         self._name = name
         self._consumer_key = consumer_key
         self._consumer_secret = consumer_secret
         self._user = user
         self._password = password
         self._query = query
+        self._watermark_column = watermark_column
+
+        if watermark_column:
+            self._watermark_value = self.state.get(name)
 
     @retry
     def read(self):
@@ -48,12 +61,22 @@ class SalesforceReader(Reader):
         endpoint = urlparse.urljoin(instance_url, SALESFORCE_QUERY_ENDPOINT)
 
         def result_generator(endpoint):
-            response = self._request_data(endpoint, headers, {'q': self._query})
+
+            if self._watermark_column:
+                query = self._query.format(**{self._watermark_column: self._watermark_value})
+            else:
+                query = self._query
+
+            response = self._request_data(endpoint, headers, {'q': query})
             generating = True
 
             while generating:
                 for rec in response['records']:
-                    yield self._clean_record(rec)
+                    row = self._clean_record(rec)
+                    yield row
+
+                    if self._watermark_column:
+                        self.state.set(self._name, row[self._watermark_column])
 
                 if "nextRecordsUrl" in response:
 
@@ -96,7 +119,7 @@ class SalesforceReader(Reader):
     @classmethod
     def _clean_record(cls, record):
         """
-            Salesforces records contains metadata which we don't need in ingestion
+            Salesforces records contains metadata which we don't need during ingestion
         """
         return cls._flatten(cls._delete_metadata_from_record(record))
 
