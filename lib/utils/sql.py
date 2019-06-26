@@ -1,5 +1,4 @@
 import sqlalchemy
-import logging
 
 _engine_meta = {}
 
