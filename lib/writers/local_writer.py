@@ -8,7 +8,7 @@ from lib.commands.command import processor
 
 @click.command(name="write_local")
 @click.option("--local-directory", required=True)
-@processor
+@processor()
 def local(**kwargs):
     return LocalWriter(**kwargs)
 

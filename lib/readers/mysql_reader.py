@@ -15,7 +15,7 @@ from lib.utils.args import extract_args
 @click.option("--mysql-query")
 @click.option("--mysql-query-name")
 @click.option("--mysql-table")
-@processor
+@processor("mysql_password")
 def mysql(**kwargs):
     validate_sql_arguments(MySQLReader, 'mysql', kwargs)
     return MySQLReader(**extract_args('mysql_', kwargs))

@@ -14,7 +14,7 @@ from google.cloud import storage
 @click.command(name="write_gcs")
 @click.option('--gcs-bucket', help="GCS Bucket", required=True)
 @click.option('--gcs-prefix', help="GCS Prefix")
-@processor
+@processor()
 def gcs(**kwargs):
     return GCSWriter(**extract_args('gcs_', kwargs))
 

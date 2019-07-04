@@ -21,7 +21,7 @@ from lib.utils.retry import retry
 @click.option('--bq-write-disposition', default="truncate", type=click.Choice(['truncate', 'append']))
 @click.option('--bq-location', default="EU", type=click.Choice(['EU', 'US']))
 @click.option('--bq-keep-files', is_flag=True, default=False)
-@processor
+@processor()
 def bq(**kwargs):
     return BigQueryWriter(**extract_args('bq_', kwargs))
 

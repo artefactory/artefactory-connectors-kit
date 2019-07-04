@@ -1,11 +1,15 @@
 import logging
 import os
-
+import sys
 
 FORMAT = '%(asctime)s - (%(name)s) - %(levelname)s - %(message)s'
 logging.basicConfig(format=FORMAT)
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+
+logger.handlers = [handler]
 
 
 def env():

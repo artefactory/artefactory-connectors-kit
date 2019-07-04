@@ -9,14 +9,14 @@ from lib.utils.args import extract_args
 @click.option("--oracle-user", required=True)
 @click.option("--oracle-password", required=True)
 @click.option("--oracle-host", required=True)
-@click.option("--oracle-port", required=False, default=3306)
+@click.option("--oracle-port", required=False, default=2380)
 @click.option("--oracle-database", required=True)
 @click.option("--oracle-schema", required=True)
 @click.option("--oracle-watermark-column")
 @click.option("--oracle-query")
 @click.option("--oracle-query-name")
 @click.option("--oracle-table")
-@processor
+@processor("oracle_password")
 def oracle(**kwargs):
     validate_sql_arguments(OracleReader, 'oracle', kwargs)
     return OracleReader(**extract_args('oracle_', kwargs))

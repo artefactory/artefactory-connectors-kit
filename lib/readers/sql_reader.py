@@ -81,7 +81,7 @@ class SQLReader(Reader):
 
     @classmethod
     def _create_engine(cls, host, port, user, password, database):
-        logging.info("Connecting to %s Database %s on %s:%s".format(cls.connector_name(), database, host, port))
+        logging.info("Connecting to %s Database %s on %s:%s", cls.connector_name(), database, host, port)
 
         url = sqlalchemy.engine.url.URL(**{
             'drivername': cls.connector_adaptor(),

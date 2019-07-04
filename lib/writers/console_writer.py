@@ -7,7 +7,7 @@ from lib.utils.args import extract_args
 
 
 @click.command(name="write_console")
-@processor
+@processor()
 def console(**kwargs):
     return ConsoleWriter(**extract_args('console_', kwargs))
 

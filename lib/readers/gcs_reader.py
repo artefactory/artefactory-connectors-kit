@@ -20,18 +20,20 @@ GCS_MAX_FILES_STATE_KEY = "gcs_max_files"
 @click.option("--gcs-bucket", required=True)
 @click.option("--gcs-prefix", required=True, multiple=True)
 @click.option("--gcs-format", required=True, type=click.Choice(['csv']))
+@click.option("--gcs-key-filter")
 @click.option("--gcs-csv-delimiter", default=",")
-@processor
+@processor()
 def gcs(**kwargs):
     return GCSReader(**extract_args('gcs_', kwargs))
 
 
 class GCSReader(Reader):
 
-    def __init__(self, bucket, prefix, format, **kwargs):
+    def __init__(self, bucket, prefix, format, key_filter, **kwargs):
         self._client = storage.Client(project=config.PROJECT_ID)
         self._bucket = self._client.bucket(bucket)
         self._prefix = prefix
+        self._key_filter = key_filter
 
         if format == 'csv':
             self._reader = self._make_csv_reader(**kwargs)

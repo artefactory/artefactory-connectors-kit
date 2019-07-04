@@ -27,4 +27,4 @@ class NormalizedJSONStream(JSONStream):
 
     @staticmethod
     def _normalize_key(key):
-        return key.strip().replace(' ', '_')
+        return key.strip().replace(' ', '_').replace('-', '_')

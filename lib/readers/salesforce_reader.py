@@ -28,7 +28,7 @@ SALESFORCE_QUERY_ENDPOINT = "/services/data/v42.0/query/"
 @click.option("--salesforce-password", required=True)
 @click.option("--salesforce-query", required=True)
 @click.option("--salesforce-watermark-column")
-@processor
+@processor("salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_password")
 def salesforce(**kwargs):
 
     if has_arg('salesforce_watermark_column', kwargs) and not state().enabled:
@@ -111,6 +111,9 @@ class SalesforceReader(Reader):
         logging.info("Retrieving Salesforce access token")
 
         res = requests.post(SALESFORCE_LOGIN_ENDPOINT, params=self._get_login_params())
+
+        res.raise_for_status()
+
         access_token = res.json().get("access_token")
         instance_url = res.json().get("instance_url")
 
