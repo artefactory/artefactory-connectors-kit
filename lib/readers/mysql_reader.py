@@ -12,6 +12,7 @@ from lib.utils.args import extract_args
 @click.option("--mysql-port", required=False, default=3306)
 @click.option("--mysql-database", required=True)
 @click.option("--mysql-watermark-column")
+@click.option("--mysql-watermark-init")
 @click.option("--mysql-query")
 @click.option("--mysql-query-name")
 @click.option("--mysql-table")

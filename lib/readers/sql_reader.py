@@ -19,6 +19,7 @@ def validate_sql_arguments(reader, prefix, kwargs):
     query_name_key = "{}_query_name".format(prefix)
     table_key = "{}_table".format(prefix)
     watermark_column_key = "{}_watermark_column".format(prefix)
+    watermark_init_key = "{}_watermark_init".format(prefix)
 
     if hasnt_arg(query_key, kwargs) and hasnt_arg(table_key, kwargs):
         raise click.BadParameter("Must specify either a table or a query for {} reader".format(reader.connector_name()))
@@ -34,6 +35,9 @@ def validate_sql_arguments(reader, prefix, kwargs):
 
     if hasnt_arg(watermark_column_key, kwargs) and state().enabled:
         raise click.BadParameter("You must specify a {} watermark when using state management".format(reader.connector_name()))
+
+    if hasnt_arg(watermark_init_key, kwargs) and state().enabled:
+        raise click.BadParameter("You must specify a {} watermark init value when using state management".format(reader.connector_name()))
 
 
 class SQLReader(Reader):
@@ -56,6 +60,7 @@ class SQLReader(Reader):
 
     def __init__(self, user, password, host, port, database,
                  watermark_column=None,
+                 watermark_init=None,
                  query=None,
                  query_name=None,
                  table=None,
@@ -68,7 +73,7 @@ class SQLReader(Reader):
         self._watermark_column = watermark_column
 
         if watermark_column:
-            self._watermark_value = self.state.get(self._name)
+            self._watermark_value = self.state.get(self._name) or watermark_init
 
         if table:
             self._query = build_table_query(self._engine, schema, table, watermark_column, self._watermark_value)

@@ -13,6 +13,7 @@ from lib.utils.args import extract_args
 @click.option("--oracle-database", required=True)
 @click.option("--oracle-schema", required=True)
 @click.option("--oracle-watermark-column")
+@click.option("--oracle-watermark-init")
 @click.option("--oracle-query")
 @click.option("--oracle-query-name")
 @click.option("--oracle-table")
