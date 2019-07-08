@@ -158,7 +158,7 @@ class SalesforceClient(object):
 class SalesforceReader(Reader):
 
     def __init__(self, consumer_key, consumer_secret, user, password, query, query_name, object_type, watermark_column, watermark_init):
-        self._name = query_name or object
+        self._name = query_name or object_type
         self._client = SalesforceClient(user, password, consumer_key, consumer_secret)
         self._watermark_column = watermark_column
         self._watermark_init = watermark_init
