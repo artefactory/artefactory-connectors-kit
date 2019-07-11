@@ -10,3 +10,4 @@ requests
 tenacity
 redis
 hiredis
+facebook-business
