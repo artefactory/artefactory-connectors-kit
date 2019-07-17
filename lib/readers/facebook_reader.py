@@ -50,7 +50,6 @@ from facebook_business.adobjects.adaccountuser import AdAccountUser as AdUser
     "--facebook-marketing-ad-level", type=click.Choice(LEVELS_POSSIBLE_VALUES)
 )
 @click.option("--facebook-marketing-time-increment", default=1)
-@click.option("--facebook-marketing-ad-account-id")
 @click.option("--facebook-marketing-field", default=[], multiple=True)
 @click.option("--facebook-marketing-recurse-level", default=0)
 @click.option("--facebook-marketing-time-range", nargs=2, type=click.DateTime())
