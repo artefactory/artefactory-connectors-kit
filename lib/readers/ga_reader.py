@@ -24,7 +24,7 @@ DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 @click.option("--ga-refresh-token", required=True)
 @click.option("--ga-client-id", required=True)
 @click.option("--ga-client-secret", required=True)
-@click.option("--ga-view-id", required=True, multiple = True)
+@click.option("--ga-view-id", required=True, multiple=True)
 @click.option("--ga-metric", multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option(
@@ -48,23 +48,28 @@ class GaReader(Reader):
             user_agent=None,
             revoke_uri=GOOGLE_REVOKE_URI,
         )
-       # import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
 
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
-        #self.client_v3 = discovery.build("analytics", "v3", http=http)
-        self.client_v4 = discovery.build("analytics", "v4", http=http, cache_discovery=False, discoveryServiceUrl=DISCOVERY_URI)
-       
+        # self.client_v3 = discovery.build("analytics", "v3", http=http)
+        self.client_v4 = discovery.build(
+            "analytics",
+            "v4",
+            http=http,
+            cache_discovery=False,
+            discoveryServiceUrl=DISCOVERY_URI,
+        )
+
         self.kwargs = kwargs
-        
 
     def get_date_ranges(self):
         date_ranges = self.kwargs.get("date_range")
         if date_ranges:
-            starts = [date_range.split()[0] for date_range in date_ranges]
+            starts = [date_range[0] for date_range in date_ranges]
             idxs = sorted(range(len(starts)), key=lambda k: starts[k])
             date_ranges_sorted = [
-                {"startDate": date_ranges[idx][0], "endDate": date_ranges[idx][1]}
+                {"startDate": date_ranges[idx][0].strftime("%Y-%m-%d"), "endDate": date_ranges[idx][1].strftime("%Y-%m-%d")}
                 for idx in idxs
             ]
             # checking that all start dates < end dates
@@ -81,7 +86,7 @@ class GaReader(Reader):
     def get_report_requests(self):
         view_ids = self.kwargs.get("view_id")
         date_ranges = self.get_date_ranges()
-        
+
         report_requests = [
             {
                 "viewId": view_id,
@@ -124,7 +129,7 @@ class GaReader(Reader):
         return row
 
     def read(self):
-        
+
         results = self._run_query()
 
         def result_generator(idx_view):
