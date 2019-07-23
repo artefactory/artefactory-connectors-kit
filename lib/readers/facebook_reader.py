@@ -14,6 +14,7 @@ from lib.helpers.facebook_marketing_helper import (
     BREAKDOWNS_POSSIBLE_VALUES,
     ACTION_BREAKDOWNS_POSSIBLE_VALUES,
     LEVELS_POSSIBLE_VALUES,
+    CMP_POSSIBLE_VALUES
 )
 
 from facebook_business.api import FacebookAdsApi
@@ -171,20 +172,27 @@ class FacebookMarketingReader(Reader):
         if self.kwargs.get("ad_insights", False):
             object_type = self.ad_object_type
             recurse_level = self.kwargs.get("recurse_level")
-        if object_type == "ad_account_object":
-            data = self.run_query_on_fb_account_obj(
-                params, self.ad_object_id, recurse_level
-            )
-        elif object_type == "ad_campaign_object":
-            data = self.run_query_on_fb_campaign_obj(
-                params, self.ad_object_id, recurse_level
-            )
-        elif object_type == "adset_object":
-            data = self.run_query_on_fb_adset_obj(
-                params, self.ad_object_id, recurse_level
-            )
-        elif object_type == "ad_object":
-            data = self.run_query_on_fb_ad_obj(params, self.ad_object_id)
+            if object_type == "ad_account_object":
+                data = self.run_query_on_fb_account_obj(
+                    params, self.ad_object_id, recurse_level
+                )
+            elif object_type == "ad_campaign_object":
+                data = self.run_query_on_fb_campaign_obj(
+                    params, self.ad_object_id, recurse_level
+                )
+            elif object_type == "adset_object":
+                data = self.run_query_on_fb_adset_obj(
+                    params, self.ad_object_id, recurse_level
+                )
+            elif object_type == "ad_object":
+                data = self.run_query_on_fb_ad_obj(params, self.ad_object_id)
+        else:
+            if object_type == "ad_campaign_object" 
+                cmp = Campaign(self.ad_object_id)
+                cmp.api_get(fields  =  CMP_POSSIBLE_VALUES)
+                data = [cmp.export_value(cmp._data)]
+            else : 
+                raise Exception('Only campaign object type can be requested without isight')
 
         def result_generator():
             for record in data:

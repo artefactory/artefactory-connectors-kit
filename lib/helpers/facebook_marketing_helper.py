@@ -1,4 +1,6 @@
 from facebook_business.adobjects.adsinsights import AdsInsights
+from facebook_business.adobjects.campaign import Campaign
+
 
 BREAKDOWNS_POSSIBLE_VALUES = [
     v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")
@@ -19,3 +21,5 @@ AD_OBJECT_TYPES = [
 ]
 
 LEVELS_POSSIBLE_VALUES = ["ad", "adset", "campaign", "account"]
+
+CMP_POSSIBLE_VALUES = [v for k,v in Campaign.Field.__dict__.items() if not k.startswith("__")][:-4]
