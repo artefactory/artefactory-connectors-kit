@@ -37,8 +37,8 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-refresh-token", required=True)
 @click.option("--dbm-client-id", required=True)
 @click.option("--dbm-client-secret", required=True)
-@click.option("--dbm-metric", multiple=True)
-@click.option("--dbm-dimension", multiple=True)
+@click.option("--dbm-query-metric", multiple=True)
+@click.option("--dbm-query-dimension", multiple=True)
 @click.option("--dbm-request-type", type=click.Choice(POSSIBLE_REQUEST_TYPES))
 @click.option("--dbm-query-id")
 @click.option("--dbm-query-title")
@@ -47,10 +47,7 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-filetype", multiple=True)
 @click.option(
-    "--dbm-date-start", type=click.DateTime(), required=True, default=default_start_date
-)
-@click.option(
-    "--dbm-date-end", type=click.DateTime(), required=True, default=default_end_date
+    "--dbm-date-range",required=True, default='LAST_7_DAYS'
 )
 @processor()
 def dbm(**kwargs):
@@ -80,32 +77,10 @@ class DbmReader(Reader):
         # self.client_v3 = discovery.build("analytics", "v3", http=http)
 
         # API_SCOPES = ['https://www.googleapis.com/auth/doubleclickbidmanager']
-        self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http)
+        self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http,  cache_discovery=False)
 
         self.kwargs = kwargs
 
-    def get_date_ranges(self):
-        date_ranges = self.kwargs.get("date_range")
-        if date_ranges:
-            starts = [date_range[0] for date_range in date_ranges]
-            idxs = sorted(range(len(starts)), key=lambda k: starts[k])
-            date_ranges_sorted = [
-                {
-                    "startDate": date_ranges[idx][0].strftime("%Y-%m-%d"),
-                    "endDate": date_ranges[idx][1].strftime("%Y-%m-%d"),
-                }
-                for idx in idxs
-            ]
-            # checking that all start dates < end dates
-            assert (
-                len(
-                    [el for el in date_ranges_sorted if el["startDate"] > el["endDate"]]
-                )
-                == 0
-            ), "date start should be inferior to date end"
-            return date_ranges_sorted
-        else:
-            return []
 
     def get_query(self, query_id, query_title):
         response = self._client.queries().listqueries().execute()
@@ -126,7 +101,7 @@ class DbmReader(Reader):
         query_title = self.kwargs.get("query_title", None)
         query = self.get_query(query_id, query_id)
         if query:
-            yield query
+            return query
         else:
             raise Exception(
                 "No query found with the id {} or the title {}".format(
@@ -139,33 +114,31 @@ class DbmReader(Reader):
             "metadata": {
                 "format": "CSV",
                 "title": self.kwargs.get("query_title", "NO_TITLE_GIVEN"),
-                "dataRange": "CUSTOM_DATES",
+                "dataRange": self.kwargs.get('date_range','LAST_7_DAYS'),
             },
             "params": {
-                "type": self.kwargs.get("query_param_type"),
+                "type": self.kwargs.get("query_param_type",'TYPE_TRUEVIEW'),
                 "groupBys": self.kwargs.get("query_dimension"),
                 "metrics": self.kwargs.get("query_metric"),
                 "filters": [
-                    {"type": (filt[0]), "value": str(filt[1])}
+                    {"type": filt[0], "value": str(filt[1])}
                     for filt in self.kwargs.get("filter")
                 ],
             },
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
-            "reportDataStartTimeMs": self.kwargs.get("date_start"),
-            "reportDataEndTimeMs": self.kwargs.get("date_end"),
         }
         return body_q
 
     def create_and_get_query(self):
         body_query = self.get_query_body()
         query = self._client.queries().createquery(body=body_query).execute()
-        yield query
+        return query
 
     def get_query_report_url(self, existing_query=True):
         if existing_query:
-            query_infos = list(self.get_existing_query())[0]
+            query_infos = self.get_existing_query()
         else:
-            query_infos = list(self.create_and_get_query())[0]
+            query_infos = self.create_and_get_query()
             query_id = query_infos["queryId"]
             query_title = query_infos["metadata"]["title"]
             while query_infos["metadata"]["running"]:
@@ -173,12 +146,12 @@ class DbmReader(Reader):
                     "waiting for query of id : {} to complete running".format(query_id)
                 )
                 time.sleep(0.5)
-                query_infos = self.get_query(query_id, query_title)
+                query_infos = self.get_query(query_id, None)
 
-        if query_infos.get("googleCloudStoragePathForLatestReport"):
-            url = query_infos.get("googleCloudStoragePathForLatestReport")
+        if query_infos["metadata"]["googleCloudStoragePathForLatestReport"]:
+            url = query_infos["metadata"]["googleCloudStoragePathForLatestReport"]
         else:
-            url = query_infos.get("googleDrivePathForLatestReport")
+            url = query_infos["metadata"]["googleDrivePathForLatestReport"]
 
         return url
 
@@ -193,20 +166,14 @@ class DbmReader(Reader):
                 yield {headers[i]: values[i] for i in range(len(headers))}
 
     def get_query_report(self, existing_query=True):
+
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
         return get_generator_dict_from_str_csv(report.iter_lines())
-        # got_header = False
-        # headers = []
-        # for line in report.iter_lines():
-        #     if got_header:
-        #         headers = line.decode("utf-8").split(',')
-        #     else :
-        #         values = line.decode("utf-8").split(',')
-        #         yield {headers[i]:values[i] for i in range(len(headers))}
+     
 
     def list_query_reports(self):
-        reports_infos = self._client.reports().listreports(queryId=query_id).execute()
+        reports_infos = self._client.reports().listreports(queryId=self.kwargs.get('query_id')).execute()
         for report in reports_infos["reports"]:
             yield report
 
@@ -288,12 +255,11 @@ class DbmReader(Reader):
 
     def read(self):
         # request existing query
-        #
         request_type = self.kwargs.get("request_type")
         if request_type == "existing_query":
-            data = self.get_existing_query()
+            data = [self.get_existing_query()]
         elif request_type == "custom_query":
-            data = self.create_and_get_query()
+            data = [self.create_and_get_query()]
         elif request_type == "existing_query_report":
             data = self.get_query_report(existing_query=True)
         elif request_type == "custom_query_report":
