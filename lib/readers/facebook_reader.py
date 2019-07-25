@@ -169,7 +169,7 @@ class FacebookMarketingReader(Reader):
 
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
         params = self.get_params()
-        if self.kwargs.get("ad_insights", False):
+        if self.kwargs.get("ad_insights", True):
             object_type = self.ad_object_type
             recurse_level = self.kwargs.get("recurse_level")
             if object_type == "ad_account_object":
@@ -187,7 +187,7 @@ class FacebookMarketingReader(Reader):
             elif object_type == "ad_object":
                 data = self.run_query_on_fb_ad_obj(params, self.ad_object_id)
         else:
-            if object_type == "ad_campaign_object" 
+            if object_type == "ad_campaign_object":
                 cmp = Campaign(self.ad_object_id)
                 cmp.api_get(fields  =  CMP_POSSIBLE_VALUES)
                 data = [cmp.export_value(cmp._data)]
