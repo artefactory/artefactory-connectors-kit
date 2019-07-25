@@ -5,6 +5,7 @@ from lib.readers.gcs_reader import gcs
 from lib.readers.oracle_reader import oracle
 from lib.readers.gsheets_reader import gsheets
 from lib.readers.salesforce_reader import salesforce
+from lib.readers.dbm_reader import dbm
 
 
 readers = [
@@ -12,7 +13,8 @@ readers = [
     salesforce,
     gsheets,
     gcs,
-    oracle
+    oracle,
+    dbm
 ]
 
 
