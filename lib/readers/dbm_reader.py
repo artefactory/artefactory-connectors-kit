@@ -140,7 +140,6 @@ class DbmReader(Reader):
         else:
             query_infos = self.create_and_get_query()
             query_id = query_infos["queryId"]
-            query_title = query_infos["metadata"]["title"]
             while query_infos["metadata"]["running"]:
                 logging.info(
                     "waiting for query of id : {} to complete running".format(query_id)
