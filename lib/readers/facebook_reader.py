@@ -114,12 +114,12 @@ class FacebookMarketingReader(Reader):
                 yield el
         else:
             for el in chain(
-                (
+                *[
                     self.run_query_on_fb_adset_obj(
                         params, adset.get("id"), recurse_level - 1
                     )
                     for adset in campaign.get_ad_sets()
-                )
+                ]
             ):
                 yield el
 
@@ -131,10 +131,10 @@ class FacebookMarketingReader(Reader):
                 yield el
         else:
             for el in chain(
-                (
+                *[
                     self.run_query_on_fb_ad_obj(params, ad.get("id"))
                     for ad in adset.get_ads()
-                )
+                ]
             ):
                 yield el
 
