@@ -11,3 +11,4 @@ tenacity
 redis
 hiredis
 google-api-python-client
+boto3
