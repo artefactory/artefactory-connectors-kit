@@ -14,7 +14,8 @@ from lib.helpers.facebook_marketing_helper import (
     BREAKDOWNS_POSSIBLE_VALUES,
     ACTION_BREAKDOWNS_POSSIBLE_VALUES,
     LEVELS_POSSIBLE_VALUES,
-    CMP_POSSIBLE_VALUES
+    CMP_POSSIBLE_VALUES,
+    ADS_POSSIBLE_VALUES
 )
 
 from facebook_business.api import FacebookAdsApi
@@ -143,6 +144,35 @@ class FacebookMarketingReader(Reader):
         ad = Ad(ad_object_id)
         for el in ad.get_insights(params):
             yield el
+    
+
+    @retry
+    def run_query_on_fb_campaign_obj_conf(self, params, ad_object_id, recurse_level):
+        campaign = Campaign(ad_object_id)
+        
+        if recurse_level <= 0:
+            val_cmp = campaign.api_get(fields  =  CMP_POSSIBLE_VALUES, params = params)
+            yield val_cmp.export_value(val_cmp._data)
+        else:
+            for el in chain(
+                *[
+                    self.run_query_on_fb_adset_obj_conf(
+                      params, adset.get("id"), recurse_level - 1
+                    )
+                    for adset in campaign.get_ad_sets()
+                ]
+            ):
+                yield el
+        
+    @retry
+    def run_query_on_fb_adset_obj_conf(self, params, ad_object_id, recurse_level):
+        adset = AdSet(ad_object_id)
+        if recurse_level <= 0:
+            val_adset = adset.api_get(fields= ADS_POSSIBLE_VALUES)
+            yield val_adset.export_value(val_adset._data)
+        else:
+            raise Exception('for now, just campaign object and adset object are able to be requested without insight')
+           
 
     def get_params(self):
 
@@ -169,9 +199,10 @@ class FacebookMarketingReader(Reader):
 
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
         params = self.get_params()
+        object_type = self.ad_object_type
+        recurse_level = self.kwargs.get("recurse_level")
+        
         if self.kwargs.get("ad_insights", True):
-            object_type = self.ad_object_type
-            recurse_level = self.kwargs.get("recurse_level")
             if object_type == "ad_account_object":
                 data = self.run_query_on_fb_account_obj(
                     params, self.ad_object_id, recurse_level
@@ -188,12 +219,12 @@ class FacebookMarketingReader(Reader):
                 data = self.run_query_on_fb_ad_obj(params, self.ad_object_id)
         else:
             if object_type == "ad_campaign_object":
-                cmp = Campaign(self.ad_object_id)
-                cmp.api_get(fields  =  CMP_POSSIBLE_VALUES)
-                data = [cmp.export_value(cmp._data)]
+                data = self.run_query_on_fb_campaign_obj_conf(params, self.ad_object_id, recurse_level)
+            elif object_type == "ad_adset_object":
+                data = self.run_query_on_fb_adset_obj_conf(params, self.ad_object_id, recurse_level)
             else : 
-                raise Exception('Only campaign object type can be requested without isight')
-
+                raise Exception('For now only [campaign, adset] objects type can be requested without insight')
+                
         def result_generator():
             for record in data:
                 yield record.export_data()
