@@ -140,12 +140,15 @@ class DbmReader(Reader):
         else:
             query_infos = self.create_and_get_query()
             query_id = query_infos["queryId"]
-            while query_infos["metadata"]["running"]:
-                logging.info(
-                    "waiting for query of id : {} to complete running".format(query_id)
-                )
-                time.sleep(0.5)
-                query_infos = self.get_query(query_id, None)
+            while True:
+                if not (query_infos["metadata"]["running"]):
+                    break
+                else:
+                    logging.info(
+                        "waiting for query of id : {} to complete running".format(query_id)
+                    )
+                    time.sleep(2)
+                    query_infos = self.get_query(query_id, None)
 
         if query_infos["metadata"]["googleCloudStoragePathForLatestReport"]:
             url = query_infos["metadata"]["googleCloudStoragePathForLatestReport"]
