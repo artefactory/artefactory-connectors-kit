@@ -4,6 +4,8 @@ import os
 import logging
 import httplib2
 
+import datetime
+
 from itertools import chain
 
 from googleapiclient import discovery
@@ -30,6 +32,7 @@ DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 @click.option(
     "--ga-date-range", nargs=2, type=click.DateTime(), multiple=True, default=None
 )
+@click.option("--ga-day-range",   type=click.Choice(['PREVIOUS_DAY','LAST_30_DAYS' ,'LAST_7_DAYS']), default = None)
 @processor()
 def ga(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
@@ -48,7 +51,6 @@ class GaReader(Reader):
             user_agent=None,
             revoke_uri=GOOGLE_REVOKE_URI,
         )
-        # import ipdb; ipdb.set_trace()
 
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
@@ -62,9 +64,22 @@ class GaReader(Reader):
         )
 
         self.kwargs = kwargs
+    
+    def get_days_delta(self):
+        days_range = self.kwargs.get("day_range")
+        if days_range == 'PREVIOUS_DAY':
+            days_delta = 1
+        elif days_range == 'LAST_7_DAYS':
+            days_delta = 7
+        elif days_range == 'LAST_30_DAYS':
+            days_delta = 30
+        else:
+            raise Exception("{} is not handled by the reader".format(days_range))
+        return days_delta
 
     def get_date_ranges(self):
         date_ranges = self.kwargs.get("date_range")
+        days_range = self.kwargs.get("day_range")
         if date_ranges:
             starts = [date_range[0] for date_range in date_ranges]
             idxs = sorted(range(len(starts)), key=lambda k: starts[k])
@@ -72,7 +87,6 @@ class GaReader(Reader):
                 {"startDate": date_ranges[idx][0].strftime("%Y-%m-%d"), "endDate": date_ranges[idx][1].strftime("%Y-%m-%d")}
                 for idx in idxs
             ]
-            # checking that all start dates < end dates
             assert (
                 len(
                     [el for el in date_ranges_sorted if el["startDate"] > el["endDate"]]
@@ -80,6 +94,11 @@ class GaReader(Reader):
                 == 0
             ), "date start should be inferior to date end"
             return date_ranges_sorted
+        elif  days_range:
+            days_delta = self.get_days_delta()
+            d2 = datetime.datetime.now().date()
+            d1 = d2 - datetime.timedelta(days = days_delta)
+            return [{"startDate": d1.strftime("%Y-%m-%d"), "endDate": d2.strftime("%Y-%m-%d")}]
         else:
             return []
 
@@ -136,12 +155,6 @@ class GaReader(Reader):
             for row in results["reports"][idx_view]["data"]["rows"]:
                 yield self._format_record(row, idx_view, results["reports"])
 
-        yield JSONStream(
-            "results",
-            chain(
-                *[
-                    result_generator(idx)
-                    for idx in range(len(self.kwargs.get("view_id")))
-                ]
-            ),
-        )
+        for idx_view in range(len(self.kwargs.get("view_id"))):
+            yield JSONStream('result_view_'+ str(self.kwargs.get("view_id")[idx_view]), result_generator(idx_view))
+        
