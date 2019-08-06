@@ -51,7 +51,6 @@ class GaReader(Reader):
             user_agent=None,
             revoke_uri=GOOGLE_REVOKE_URI,
         )
-        # import ipdb; ipdb.set_trace()
 
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
@@ -98,7 +97,7 @@ class GaReader(Reader):
         elif  days_range:
             days_delta = self.get_days_delta()
             d2 = datetime.datetime.now().date()
-            d1 = d2 - days_delta
+            d1 = d2 - datetime.timedelta(days = days_delta)
             return [{"startDate": d1.strftime("%Y-%m-%d"), "endDate": d2.strftime("%Y-%m-%d")}]
         else:
             return []
