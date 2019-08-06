@@ -11,3 +11,4 @@ tenacity
 redis
 hiredis
 facebook-business
+google-api-python-client

@@ -6,6 +6,9 @@ from lib.readers.oracle_reader import oracle
 from lib.readers.gsheets_reader import gsheets
 from lib.readers.salesforce_reader import salesforce
 from lib.readers.facebook_reader import facebook_marketing
+from lib.readers.dbm_reader import dbm
+from lib.readers.ga_reader import ga
+
 
 
 readers = [
@@ -14,7 +17,9 @@ readers = [
     gsheets,
     gcs,
     facebook_marketing,
-    oracle
+    oracle,
+    dbm,
+    ga
 ]
 
 
