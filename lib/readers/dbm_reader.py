@@ -47,7 +47,7 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-filetype", multiple=True)
 @click.option(
-    "--dbm-date-range",required=True, default='LAST_7_DAYS'
+    "--dbm-date-range",required=True, default='LAST_7_DAYS', type=click.Choice(['PREVIOUS_DAY','LAST_30_DAYS','LAST_90_DAYS','LAST_7_DAYS'])
 )
 @processor()
 def dbm(**kwargs):
@@ -74,7 +74,6 @@ class DbmReader(Reader):
 
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
-        # self.client_v3 = discovery.build("analytics", "v3", http=http)
 
         # API_SCOPES = ['https://www.googleapis.com/auth/doubleclickbidmanager']
         self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http,  cache_discovery=False)
@@ -239,7 +238,6 @@ class DbmReader(Reader):
         body_sdf = self.get_sdf_body()
         file_types = body_sdf["fileTypes"]
         file_type = file_types[0]
-        #        [add_column_value_to_csv_line_iterator()
         response = self._client.sdf().download(body=body_sdf).execute()
 
         return chain(
