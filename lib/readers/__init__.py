@@ -16,7 +16,7 @@ readers = [
     gsheets,
     gcs,
     oracle,
-    dbm
+    dbm,
     ga
 ]
 
