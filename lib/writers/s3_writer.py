@@ -18,6 +18,7 @@ from lib.utils.retry import retry
 @click.option('--s3-bucket-region', required=True)
 @click.option('--s3-access-key-id', required=True)
 @click.option('--s3-access-key-secret', required=True)
+@click.option('--s3-prefix', help="s3 Prefix", default = None)
 @processor()
 def s3(**kwargs):
     return S3Writer(**extract_args('s3_', kwargs))
@@ -35,6 +36,7 @@ class S3Writer(Writer):
         self._bucket_name = bucket_name
         self._bucket_region = bucket_region
         self._s3_resource = boto3.resource('s3', **boto_config)
+        self.kwargs = kwargs
     
     @retry
     def write(self, stream):
@@ -49,8 +51,12 @@ class S3Writer(Writer):
        
         #if the bucket region doesn't match the presigned url generated, will not work
         assert bucket_region == self._bucket_region, "the region you provided ({}) does'nt match the bucket's found region : ({}) ".format(self._bucket_region, bucket_region)
-        
-        bucket.upload_fileobj(stream.as_file(), stream.name)
+        if self.kwargs.get('prefix'):
+            prefix = self.kwargs.get('prefix').replace('s3://','') + '/' 
+        else : 
+            prefix = ''
+
+        bucket.upload_fileobj(stream.as_file(), prefix + stream.name)
         url_file =  self._s3_resource.meta.client.generate_presigned_url('get_object', Params={'Bucket': self._bucket_name,'Key': stream.name}, ExpiresIn=3600)
 
         return url_file, bucket
