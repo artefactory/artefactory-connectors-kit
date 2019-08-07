@@ -22,10 +22,37 @@ AD_OBJECT_TYPES = [
 
 LEVELS_POSSIBLE_VALUES = ["ad", "adset", "campaign", "account"]
 
-CMP_POSSIBLE_VALUES = [
-    v for k, v in Campaign.Field.__dict__.items() if not k.startswith("__")
-][:-4]
-
+CMP_POSSIBLE_VALUES = ['account_id',
+ 'adlabels',
+ 'bid_strategy',
+ 'boosted_object_id',
+ 'brand_lift_studies',
+ 'budget_rebalance_flag',
+ 'budget_remaining',
+ 'buying_type',
+ 'can_create_brand_lift_study',
+ 'can_use_spend_cap',
+ 'configured_status',
+ 'created_time',
+ 'daily_budget',
+ 'effective_status',
+ 'id',
+ 'issues_info',
+ 'last_budget_toggling_time',
+ 'lifetime_budget',
+ 'name',
+ 'objective',
+ 'pacing_type',
+ 'promoted_object',
+ 'recommendations',
+ 'source_campaign',
+ 'source_campaign_id',
+ 'spend_cap',
+ 'start_time',
+ 'status',
+ 'stop_time',
+ 'topline_id',
+ 'updated_time']
 
 # should have done this list comprehension selection but, some of the fields are obsolet and doesn't work, i took the most importants
 # ADS_POSSIBLE_VALUES = [v for k,v in AdSet.Field.__dict__.items() if not k.startswith("__")]

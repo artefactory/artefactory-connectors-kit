@@ -48,7 +48,7 @@ from facebook_business.adobjects.adaccountuser import AdAccountUser as AdUser
     multiple=True,
     type=click.Choice(ACTION_BREAKDOWNS_POSSIBLE_VALUES),
 )
-@click.option("--facebook-marketing-ad-insights", default=True)
+@click.option("--facebook-marketing-ad-insights",type=click.BOOL  ,default=True)
 @click.option(
     "--facebook-marketing-ad-level", type=click.Choice(LEVELS_POSSIBLE_VALUES)
 )
@@ -116,6 +116,7 @@ class FacebookMarketingReader(Reader):
     @retry
     def run_query_on_fb_campaign_obj(self, params, ad_object_id, recurse_level):
         campaign = Campaign(ad_object_id)
+
         if recurse_level <= 0:
             for el in campaign.get_insights(params=params):
                 yield el
@@ -154,10 +155,10 @@ class FacebookMarketingReader(Reader):
     @retry
     def run_query_on_fb_campaign_obj_conf(self, params, ad_object_id, recurse_level):
         campaign = Campaign(ad_object_id)
-
         if recurse_level <= 0:
             val_cmp = campaign.api_get(fields=CMP_POSSIBLE_VALUES, params=params)
-            yield val_cmp.export_value(val_cmp._data)
+            yield val_cmp
+
         else:
             for el in chain(
                 *[
@@ -174,7 +175,7 @@ class FacebookMarketingReader(Reader):
         adset = AdSet(ad_object_id)
         if recurse_level <= 0:
             val_adset = adset.api_get(fields=ADS_POSSIBLE_VALUES)
-            yield val_adset.export_value(val_adset._data)
+            yield val_adset
         else:
             raise Exception(
                 "for now, just campaign object and adset object are able to be requested without insight"
@@ -223,7 +224,6 @@ class FacebookMarketingReader(Reader):
         return params
 
     def read(self):
-
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
         params = self.get_params()
         object_type = self.ad_object_type
@@ -260,7 +260,7 @@ class FacebookMarketingReader(Reader):
 
         def result_generator():
             for record in data:
-                yield record.export_data()
+                yield record.export_all_data()
 
         yield JSONStream(
             "results_" + object_type + "_" + str(self.ad_object_id), result_generator()
