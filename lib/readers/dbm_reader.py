@@ -45,7 +45,7 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-query-frequency", default="ONE_TIME")
 @click.option("--dbm-query-param-type", default="TYPE_TRUEVIEW")
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
-@click.option("--dbm-filetype", multiple=True)
+@click.option("--dbm-file-type", multiple=True)
 @click.option(
     "--dbm-date-range",required=True, default='LAST_7_DAYS', type=click.Choice(['PREVIOUS_DAY','LAST_30_DAYS','LAST_90_DAYS','LAST_7_DAYS'])
 )
@@ -222,7 +222,7 @@ class DbmReader(Reader):
                 ]
             )
             == 1
-        ), "Lineitems accept just one filter type, multiple filter types detected"
+        ), "sdf accept just one filter type, multiple filter types detected"
         filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
         file_types = self.kwargs.get("file_type")
