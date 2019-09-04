@@ -32,7 +32,7 @@ DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 @click.option(
     "--ga-date-range", nargs=2, type=click.DateTime(), multiple=True, default=None
 )
-@click.option("--ga-day-range",   type=click.Choice(['PREVIOUS_DAY','LAST_30_DAYS' ,'LAST_7_DAYS']), default = None)
+@click.option("--ga-day-range",   type=click.Choice(['PREVIOUS_DAY','LAST_30_DAYS' ,'LAST_7_DAYS','LAST_90_DAYS']), default = None)
 @processor()
 def ga(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
@@ -73,6 +73,8 @@ class GaReader(Reader):
             days_delta = 7
         elif days_range == 'LAST_30_DAYS':
             days_delta = 30
+        elif days_range == 'LAST_90_DAYS':
+            days_delta = 90
         else:
             raise Exception("{} is not handled by the reader".format(days_range))
         return days_delta
