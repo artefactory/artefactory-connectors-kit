@@ -9,6 +9,7 @@ import datetime
 from itertools import chain
 
 from googleapiclient import discovery
+from googleanalytics import account
 from oauth2client import client, GOOGLE_REVOKE_URI
 
 from lib.commands.command import processor
@@ -16,6 +17,7 @@ from lib.readers.reader import Reader
 from lib.utils.args import extract_args
 from lib.utils.retry import retry
 from lib.streams.json_stream import JSONStream
+
 
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
@@ -26,7 +28,8 @@ DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 @click.option("--ga-refresh-token", required=True)
 @click.option("--ga-client-id", required=True)
 @click.option("--ga-client-secret", required=True)
-@click.option("--ga-view-id", required=True, multiple=True)
+@click.option("--ga-view-id", default= [], multiple=True)
+@click.option("--ga-account-id", default=None)
 @click.option("--ga-metric", multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option(
@@ -62,8 +65,50 @@ class GaReader(Reader):
             cache_discovery=False,
             discoveryServiceUrl=DISCOVERY_URI,
         )
-
+        self.client_v3 = discovery.build('analytics', 'v3', http=http)
         self.kwargs = kwargs
+        # get cred-related accounts (not in a function to preserve homogenity with other connectors)
+        accounts_infos = self.client_v3.management().accounts().list().execute()['items']
+        account_id = self.kwargs.get("account_id")
+        if (account_id):
+            accounts_infos = [acc_inf for acc_inf in accounts_infos if acc_inf['id'] == account_id]
+        if (accounts_infos == []):
+           raise Exception('account_id {} not found'.format(account_id))
+        
+        self.accounts = [account.Account(raw, self.client_v3, credentials) for raw in  accounts_infos] 
+   
+
+    def get_accounts(self):
+        accounts_infos = self.client_v3.management().accounts().list().execute()['items']
+        account_id = self.kwargs.get("account_id")
+        if (account_id):
+            accounts_infos = [acc_inf for acc_inf in accounts_infos if acc_inf['id'] == str(account_id)]
+        if (accounts_infos == []):
+           raise Exception('account_id {} not found'.format(account_id))
+        accounts = [account.Account(raw, self.client_v3, self.credentials) for raw in   accounts_infos] 
+        return accounts
+
+    def get_acc_propeties_ids(self, account):
+        return [p.id for p in account.webproperties]
+
+    
+    def get_acc_view_ids(self, account):
+        properties_ids = self.get_acc_propeties_ids(account)
+        flatten = lambda l: [item for sublist in l for item in sublist]
+        all_profiles = flatten([
+            self.client_v3.management().profiles().list(accountId=account.id,webPropertyId= pid).execute()
+            for pid in properties_ids
+            ])
+        return [p.id for p in all_profiles]
+
+    def get_view_ids(self):
+        view_ids = self.kwargs.get("view_id") 
+        if (view_ids == []):
+            flatten = lambda l: [item for sublist in l for item in sublist]
+            return flatten([self.get_acc_view_ids(account) for account in self.accounts])
+        else:
+            return view_ids
+
     
     def get_days_delta(self):
         days_range = self.kwargs.get("day_range")
@@ -105,7 +150,7 @@ class GaReader(Reader):
             return []
 
     def get_report_requests(self):
-        view_ids = self.kwargs.get("view_id")
+        view_ids = self.get_view_ids()
         date_ranges = self.get_date_ranges()
 
         report_requests = [
@@ -146,7 +191,7 @@ class GaReader(Reader):
             "metricHeaderEntries"
         ]
         row["metrics_infos"] = metrics_infos
-        row["view_id"] = self.kwargs.get("view_id")[idx_view]
+        row["view_id"] =self.get_view_ids()[idx_view]
         return row
 
     def read(self):
@@ -156,7 +201,7 @@ class GaReader(Reader):
         def result_generator(idx_view):
             for row in results["reports"][idx_view]["data"]["rows"]:
                 yield self._format_record(row, idx_view, results["reports"])
-
-        for idx_view in range(len(self.kwargs.get("view_id"))):
-            yield JSONStream('result_view_'+ str(self.kwargs.get("view_id")[idx_view]), result_generator(idx_view))
+        view_ids = self.get_view_ids()
+        for idx_view in range(len(view_ids)):
+            yield JSONStream('result_view_'+ str(view_ids[idx_view]), result_generator(idx_view))
         
