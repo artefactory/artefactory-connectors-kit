@@ -1,5 +1,5 @@
 import collections
-import urllib
+import urlparse
 
 import logging
 
@@ -119,7 +119,7 @@ class SalesforceClient(object):
 
     def _request_data(self, path, params=None):
 
-        endpoint = urllib.parse.urljoin(self.instance_url, path)
+        endpoint = urlparse.urljoin(self.instance_url, path)
         response = requests.get(
             endpoint,
             headers=self.headers,
@@ -216,7 +216,7 @@ class SalesforceReader(Reader):
 
         if isinstance(record, dict):
             strip_keys = ["attributes", "totalSize", "done"]
-            return {k: cls._delete_metadata_from_record(v) for k, v in record.items() if k not in strip_keys}
+            return {k: cls._delete_metadata_from_record(v) for k, v in record.iteritems() if k not in strip_keys}
         elif isinstance(record, list):
             return [cls._delete_metadata_from_record(i) for i in record]
         else:

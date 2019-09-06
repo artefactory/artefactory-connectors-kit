@@ -18,7 +18,7 @@ def get_generator_dict_from_str_csv(line_iterator):
     got_header = False
     headers = []
     for line in line_iterator:
-        if line == b'' or line == '':
+        if line == '':
             break
         if not got_header:
             headers = line.decode("utf-8").split(',')
