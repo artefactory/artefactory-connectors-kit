@@ -53,8 +53,7 @@ class Stream(object):
         logging.debug("Spooling data to %s", temp)
 
         for record in source_stream:
-            s = "{}\n".format(cls.encode_record(record))
-            temp.write(s.encode())
+            temp.write("{}\n".format(cls.encode_record(record)))
 
         temp.seek(0)
         return temp

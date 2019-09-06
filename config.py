@@ -28,5 +28,5 @@ def is_production():
     return env() == 'production'
 
 
-for key, var in os.environ.items():
+for key, var in os.environ.iteritems():
     locals()[key] = var
