@@ -146,7 +146,7 @@ class DbmReader(Reader):
                     logging.info(
                         "waiting for query of id : {} to complete running".format(query_id)
                     )
-                    time.sleep(2)
+                    time.sleep(5)
                     query_infos = self.get_query(query_id, None)
 
         if query_infos["metadata"]["googleCloudStoragePathForLatestReport"]:
@@ -156,18 +156,7 @@ class DbmReader(Reader):
 
         return url
 
-    def get_generator_dict_from_str_csv(self, line_iterator):
-        got_header = False
-        headers = []
-        for line in line_iterator:
-            if got_header:
-                headers = line.decode("utf-8").split(",")
-            else:
-                values = line.decode("utf-8").split(",")
-                yield {headers[i]: values[i] for i in range(len(headers))}
-
     def get_query_report(self, existing_query=True):
-
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
         return get_generator_dict_from_str_csv(report.iter_lines())

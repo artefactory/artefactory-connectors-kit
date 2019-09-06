@@ -12,7 +12,7 @@ def processor(*sensitive_fields):
 
             _kwargs = {}
 
-            for key, value in kwargs.iteritems():
+            for key, value in kwargs.items():
                 if key in sensitive_fields:
                     _kwargs[key] = '*****'
                 else:
