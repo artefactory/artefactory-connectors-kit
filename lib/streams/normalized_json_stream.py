@@ -17,7 +17,7 @@ class NormalizedJSONStream(JSONStream):
     @classmethod
     def _normalize_keys(cls, o):
         if isinstance(o, dict):
-            return {cls._normalize_key(k): cls._normalize_keys(v) for k, v in o.iteritems()}
+            return {cls._normalize_key(k): cls._normalize_keys(v) for k, v in o.items()}
         elif isinstance(o, list):
             return [cls._normalize_keys(v) for v in o]
         elif o is None:
