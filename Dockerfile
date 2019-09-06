@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3.7
 
 # Install Unix packages
 RUN apt-get update && apt-get install -y \
@@ -40,4 +40,4 @@ RUN chmod -R 0644 /app
 WORKDIR /app/
 ENV PYTHONPATH=${PYTHONPATH}:.
 
-ENTRYPOINT ["python", "./bin/run.py"]
+ENTRYPOINT ["python3", "./bin/run.py"]
