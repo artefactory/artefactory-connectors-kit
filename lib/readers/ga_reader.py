@@ -216,7 +216,7 @@ class GaReader(Reader):
                 for row in report["data"]["rows"]:
                     yield self._format_record(row, idx_view, report)
             else:
-                return []
+                yield
         view_ids = self.get_view_ids()
         for idx_view, report in enumerate(reports):
             yield JSONStream('result_view_'+ str(view_ids[idx_view]), result_generator(idx_view, report))
