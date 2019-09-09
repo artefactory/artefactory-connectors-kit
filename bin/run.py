@@ -22,8 +22,8 @@ def run(processors, state_service_name, state_service_host, state_service_port):
 
     processor_instances = [p() for p in processors]
 
-    _readers = filter(lambda o: isinstance(o, Reader), processor_instances)
-    _writers = filter(lambda o: isinstance(o, Writer), processor_instances)
+    _readers = list(filter(lambda o: isinstance(o, Reader), processor_instances))
+    _writers = list(filter(lambda o: isinstance(o, Writer), processor_instances))
 
     if len(_readers) < 1:
         raise click.BadParameter("You must specify a reader")

@@ -23,4 +23,4 @@ class ConsoleWriter(Writer):
         """
 
         for line in stream.as_file():
-            sys.stdout.write(line)
+            sys.stdout.write(line.decode(sys.stdout.encoding))
