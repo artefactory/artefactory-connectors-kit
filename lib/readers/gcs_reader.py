@@ -1,9 +1,4 @@
 import click
-import config
-import os
-import tempfile
-import csv
-import codecs
 import logging
 
 from google.cloud import storage
@@ -15,9 +10,10 @@ from lib.utils.args import extract_args
 @click.command(name="read_gcs")
 @click.option("--gcs-bucket", required=True)
 @click.option("--gcs-prefix", required=True, multiple=True)
-@click.option("--gcs-format", required=True, type=click.Choice(['csv']))
-@click.option("--gcs-key-filter")
+@click.option("--gcs-format", required=True, type=click.Choice(['csv', 'gz']))
+# @click.option("--gcs-key-filter")
 @click.option("--gcs-csv-delimiter", default=",")
+@click.option("--gcs-csv-fieldnames", default=None)
 @processor()
 def gcs(**kwargs):
     return GCSReader(**extract_args('gcs_', kwargs))

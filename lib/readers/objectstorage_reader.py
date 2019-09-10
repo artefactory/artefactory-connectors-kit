@@ -2,10 +2,10 @@ import config
 import os
 import tempfile
 import logging
-import csv, codecs
 
 from lib.readers.reader import Reader
 from lib.streams.normalized_json_stream import NormalizedJSONStream
+import lib.utils.file_reader as file_reader
 
 
 class ObjectStorageReader(Reader):
@@ -18,8 +18,14 @@ class ObjectStorageReader(Reader):
 
         self._format = file_format
 
-        if self._format == 'csv':
-            self._reader = self._make_csv_reader(**kwargs)
+        if self._format in file_reader.FileReader.__members__:
+            for r in [file_reader.CSVReader, file_reader.GZIPReader]:
+                if self._format == r.TAG.value:
+                    self._reader = r(**kwargs).get_csv_reader()
+                    break
+        else:
+            raise NotImplementedError(
+                "The file format %s has not been implemented for reading yet." % str(self._format))
 
         self.MAX_TIMESTAMP_STATE_KEY = "{}_max_timestamp".format(self._platform).lower()
         self.MAX_FILES_STATE_KEY = "{}_max_files".format(self._platform).lower()
@@ -131,12 +137,3 @@ class ObjectStorageReader(Reader):
     @staticmethod
     def download_object_to_file(o, temp):
         raise NotImplementedError
-
-    @staticmethod
-    def _make_csv_reader(csv_delimiter, **kwargs):
-
-        def read_csv(fd):
-            fd.seek(0)
-            return csv.DictReader(codecs.iterdecode(fd, encoding='utf-8'), delimiter=str(csv_delimiter))
-
-        return read_csv

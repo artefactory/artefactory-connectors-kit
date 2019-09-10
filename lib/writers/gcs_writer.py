@@ -28,7 +28,7 @@ class GCSWriter(Writer):
         self._bucket = self._client.bucket(bucket)
         self._prefix = prefix
 
-    @retry
+    # @retry
     def write(self, stream):
         """
             Write file into GCS Bucket
