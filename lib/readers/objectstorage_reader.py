@@ -10,7 +10,7 @@ import lib.utils.file_reader as file_reader
 
 class ObjectStorageReader(Reader):
 
-    def __init__(self, bucket, prefix, file_format, platform=None, **kwargs):
+    def __init__(self, bucket, prefix, file_format, dest_key_split=-1, platform=None, **kwargs):
         self._client = self.create_client(config)
         self._bucket = self.create_bucket(self._client, bucket)
         self._prefix = prefix
@@ -26,6 +26,8 @@ class ObjectStorageReader(Reader):
         else:
             raise NotImplementedError(
                 "The file format %s has not been implemented for reading yet." % str(self._format))
+
+        self._dest_key_split = dest_key_split
 
         self.MAX_TIMESTAMP_STATE_KEY = "{}_max_timestamp".format(self._platform).lower()
         self.MAX_FILES_STATE_KEY = "{}_max_files".format(self._platform).lower()
@@ -60,7 +62,7 @@ class ObjectStorageReader(Reader):
 
                     self.checkpoint_object(o)
 
-                name = os.path.basename(self.get_key(o))
+                name = self.get_key(o).split('/', self._dest_key_split)[-1]
 
                 yield NormalizedJSONStream(name, result_generator())
 
@@ -76,9 +78,6 @@ class ObjectStorageReader(Reader):
         # We haven't seen any files before
         if not max_timestamp:
             return False
-
-        logging.warning(str(max_timestamp))
-        logging.warning(str(self.get_timestamp(o)))
 
         # The most recent file is more recent than this one
         if max_timestamp > self.get_timestamp(o):

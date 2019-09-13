@@ -6,12 +6,14 @@ from lib.commands.command import processor
 from lib.readers.objectstorage_reader import ObjectStorageReader
 from lib.utils.args import extract_args
 
+import urllib
+
 
 @click.command(name="read_gcs")
 @click.option("--gcs-bucket", required=True)
 @click.option("--gcs-prefix", required=True, multiple=True)
 @click.option("--gcs-format", required=True, type=click.Choice(['csv', 'gz']))
-# @click.option("--gcs-key-filter")
+@click.option("--gcs-dest-key-split", default=-1, type=int)
 @click.option("--gcs-csv-delimiter", default=",")
 @click.option("--gcs-csv-fieldnames", default=None)
 @processor()
@@ -21,8 +23,8 @@ def gcs(**kwargs):
 
 class GCSReader(ObjectStorageReader):
 
-    def __init__(self, bucket, prefix, format, **kwargs):
-        super(GCSReader, self).__init__(bucket, prefix, format, platform="GCS", **kwargs)
+    def __init__(self, bucket, prefix, format, dest_key_split, **kwargs):
+        super(GCSReader, self).__init__(bucket, prefix, format, dest_key_split, platform="GCS", **kwargs)
 
     def create_client(self, config):
         return storage.Client(project=config.PROJECT_ID)
@@ -39,7 +41,7 @@ class GCSReader(ObjectStorageReader):
 
     @staticmethod
     def get_key(o):
-        return o.path
+        return urllib.parse.unquote(o.path).split('o/', 1)[-1]
 
     @staticmethod
     def to_object(o):

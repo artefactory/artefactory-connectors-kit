@@ -11,6 +11,7 @@ from lib.utils.args import extract_args
 @click.option("--s3-bucket", required=True)
 @click.option("--s3-prefix", required=True, multiple=True)
 @click.option("--s3-format", required=True, type=click.Choice(['csv', 'gz']))
+@click.option("--s3-dest-key-split", default=-1, type=int)
 @click.option("--s3-csv-delimiter", default=",")
 @click.option("--s3-csv-fieldnames", default=None)
 @processor()
@@ -20,8 +21,8 @@ def s3(**kwargs):
 
 class S3Reader(ObjectStorageReader):
 
-    def __init__(self, bucket, prefix, format, **kwargs):
-        super(S3Reader, self).__init__(bucket, prefix, format, platform="S3", **kwargs)
+    def __init__(self, bucket, prefix, format, dest_key_split, **kwargs):
+        super(S3Reader, self).__init__(bucket, prefix, format, dest_key_split, platform="S3", **kwargs)
 
     def create_client(self, config):
         boto_config = {'region_name': config.REGION_NAME,
