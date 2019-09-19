@@ -52,7 +52,7 @@ from facebook_business.adobjects.adaccountuser import AdAccountUser as AdUser
 @click.option(
     "--facebook-marketing-ad-level", type=click.Choice(LEVELS_POSSIBLE_VALUES)
 )
-@click.option("--facebook-marketing-time-increment", default=1)
+@click.option("--facebook-marketing-time-increment")
 @click.option("--facebook-marketing-field", default=[], multiple=True)
 @click.option("--facebook-marketing-recurse-level", default=0)
 @click.option("--facebook-marketing-time-range", nargs=2, type=click.DateTime())
@@ -202,9 +202,11 @@ class FacebookMarketingReader(Reader):
         params = {
             "action_breakdowns": self.kwargs.get("action_breakdown", []),
             "fields": self.kwargs.get("field", []),
-            "breakdowns": self.kwargs.get("breakdown", []),
-            "time_increment": self.kwargs.get("time_increment", 1),
+            "breakdowns": self.kwargs.get("breakdown", [])
         }
+        
+        if  "time_increment" in self.kwargs:
+            params["time_increment"] =  self.kwargs["time_increment"]
 
         if "ad_level" in self.kwargs:
             params["level"] = self.kwargs["ad_level"]
