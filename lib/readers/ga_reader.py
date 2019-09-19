@@ -30,7 +30,7 @@ LIMIT_NVIEWS_PER_REQ = 5
 @click.option("--ga-client-id", required=True)
 @click.option("--ga-client-secret", required=True)
 @click.option("--ga-view-id", default=[], multiple=True)
-@click.option("--ga-account-id", default=None)
+@click.option("--ga-account-id", default = [], multiple = True)
 @click.option("--ga-metric", multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option(
@@ -73,29 +73,37 @@ class GaReader(Reader):
         self.client_v3 = discovery.build("analytics", "v3", http=http)
         self.kwargs = kwargs
         self.kwargs["credentials"] = credentials
+        self.views_metadata = {}
         self.view_ids = self.get_view_ids()
 
     def get_accounts(self):
         accounts_infos = (
             self.client_v3.management().accounts().list().execute()["items"]
         )
-        account_id = self.kwargs.get("account_id")
-        if account_id:
-            accounts_infos = [
-                acc_inf for acc_inf in accounts_infos if acc_inf["id"] == account_id
-            ]
         if accounts_infos == []:
             raise Exception("account_id {} not found".format(account_id))
-        return [
-            account.Account(raw, self.client_v3, self.kwargs["credentials"])
-            for raw in accounts_infos
-        ]
+
+        accounts_id = self.kwargs.get("account_id")
+        if (accounts_id is not None) and (accounts_id != []):
+            for account_id in accounts_id:
+                accounts_infos.append([
+                    acc_inf for acc_inf in accounts_infos if acc_inf["id"] == account_id
+                ])
+        accounts = []
+        flatten = lambda l: [item for sublist in l for item in sublist]
+        for raw in flatten(accounts_infos):
+            try :
+                acc = account.Account(raw, self.client_v3, self.kwargs["credentials"])
+                accounts.append(acc)
+            except:
+                continue
+        return accounts
 
     def get_acc_propeties_ids(self, account):
         return [p.id for p in account.webproperties]
 
     def get_acc_view_ids(self, account):
-        properties_ids = self.get_acc_propeties_ids(account)
+        properties_ids = [p.id for p in account.webproperties]
         flatten = lambda l: [item for sublist in l for item in sublist]
 
         properties = [
@@ -106,8 +114,17 @@ class GaReader(Reader):
             for pid in properties_ids
         ]
         properties_views_ids = []
-        for p in properties:
-            property_views_ids = [el["id"] for el in p["items"]]
+        for idx, p in enumerate(properties):
+            property_views_ids = []
+            for el in p["items"]:
+                property_views_ids.append(el["id"])
+                self.views_metadata[el['id']] = {
+                    "view_name" : el['name'],
+                    "account_id" : account.id,
+                    "account_name": account.name,
+                    "property_id": el["webPropertyId"],
+                    "property_name" : account.webproperties[idx].name
+                }
             properties_views_ids.append(property_views_ids)
         return flatten(properties_views_ids)
 
@@ -221,6 +238,9 @@ class GaReader(Reader):
         metrics_infos = report["columnHeader"]["metricHeader"]["metricHeaderEntries"]
         row["metrics_infos"] = metrics_infos
         row["view_id"] = self.get_view_ids()[idx_view]
+        if row["view_id"] in self.views_metadata:
+            for k, v in self.views_metadata[row["view_id"]].items():
+                row[k] = v
         return row
 
     def read(self):
