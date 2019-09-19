@@ -58,7 +58,7 @@ from facebook_business.adobjects.adaccountuser import AdAccountUser as AdUser
 @click.option("--facebook-marketing-time-range", nargs=2, type=click.DateTime())
 @click.option(
     "--facebook-marketing-day-range",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
+    type=click.Choice(["PREVIOUS_DAY", "LAST_2_DAYS", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
     default=None,
 )
 @processor()
@@ -185,6 +185,8 @@ class FacebookMarketingReader(Reader):
         days_range = self.kwargs.get("day_range")
         if days_range == "PREVIOUS_DAY":
             days_delta = 1
+        elif days_range == "LAST_2_DAYS":
+            days_delta = 2
         elif days_range == "LAST_7_DAYS":
             days_delta = 7
         elif days_range == "LAST_30_DAYS":
