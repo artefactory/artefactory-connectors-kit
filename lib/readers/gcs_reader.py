@@ -1,5 +1,4 @@
 import click
-import logging
 
 from google.cloud import storage
 from lib.commands.command import processor
@@ -11,7 +10,7 @@ import urllib
 
 @click.command(name="read_gcs")
 @click.option("--gcs-bucket", required=True)
-@click.option("--gcs-prefix", required=True, multiple=True)
+@click.option("--gcs-prefix-list", required=True, multiple=True)
 @click.option("--gcs-format", required=True, type=click.Choice(['csv', 'gz']))
 @click.option("--gcs-dest-key-split", default=-1, type=int)
 @click.option("--gcs-csv-delimiter", default=",")
@@ -23,8 +22,8 @@ def gcs(**kwargs):
 
 class GCSReader(ObjectStorageReader):
 
-    def __init__(self, bucket, prefix, format, dest_key_split, **kwargs):
-        super(GCSReader, self).__init__(bucket, prefix, format, dest_key_split, platform="GCS", **kwargs)
+    def __init__(self, bucket, prefix_list, format, dest_key_split=-1, **kwargs):
+        super().__init__(bucket, prefix_list, format, dest_key_split, platform="GCS", **kwargs)
 
     def create_client(self, config):
         return storage.Client(project=config.PROJECT_ID)
@@ -36,17 +35,17 @@ class GCSReader(ObjectStorageReader):
         return bucket.list_blobs(prefix=prefix)
 
     @staticmethod
-    def get_timestamp(o):
-        return o.updated
+    def get_timestamp(_object):
+        return _object.updated
 
     @staticmethod
-    def get_key(o):
-        return urllib.parse.unquote(o.path).split('o/', 1)[-1]
+    def get_key(_object):
+        return urllib.parse.unquote(_object.path).split('o/', 1)[-1]
 
     @staticmethod
-    def to_object(o):
-        return o
+    def to_object(_object):
+        return _object
 
     @staticmethod
-    def download_object_to_file(o, temp):
-        o.download_to_file(temp)
+    def download_object_to_file(_object, temp):
+        _object.download_to_file(temp)

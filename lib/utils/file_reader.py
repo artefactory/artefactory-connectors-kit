@@ -2,29 +2,35 @@ from enum import Enum
 import csv
 import codecs
 import gzip
+import json
 
 
-class FileReader(Enum):
-    csv = 'csv'
-    gz = 'gz'
+def format_csv_delimiter(csv_delimiter):
+    _csv_delimiter = csv_delimiter.encode().decode('unicode_escape')
+    if csv_delimiter == 'newline':
+        _csv_delimiter = '\n'
+    if csv_delimiter == 'tab':
+        _csv_delimiter = '\t'
+    return _csv_delimiter
+
+
+def format_csv_fieldnames(csv_fieldnames):
+    if csv_fieldnames is None:
+        _csv_fieldnames = csv_fieldnames
+    elif isinstance(csv_fieldnames, list):
+        _csv_fieldnames = csv_fieldnames
+    elif isinstance(csv_fieldnames, (str, bytes)):
+        _csv_fieldnames = json.loads(csv_fieldnames)
+    else:
+        raise TypeError(f'The CSV fieldnames is of the following type: {type(csv_fieldnames)}.')
+    assert isinstance(_csv_fieldnames, list)
+    return _csv_fieldnames
 
 
 class CSVReader(object):
-    TAG = FileReader('csv')
-
     def __init__(self, csv_delimiter, csv_fieldnames, **kwargs):
-        self.csv_delimiter = csv_delimiter.encode().decode('unicode_escape')
-        if csv_delimiter == 'newline':
-            self.csv_delimiter = '\n'
-
-        if csv_fieldnames is None:
-            self.csv_fieldnames = csv_fieldnames
-        elif isinstance(csv_fieldnames, list):
-            self.csv_fieldnames = csv_fieldnames
-        elif isinstance(csv_fieldnames, str) or isinstance(csv_fieldnames, bytes):
-            self.csv_fieldnames = eval(csv_fieldnames)
-        else:
-            raise TypeError("The CSV fieldnames is of the following type: %s." % type(csv_fieldnames))
+        self.csv_delimiter = format_csv_delimiter(csv_delimiter)
+        self.csv_fieldnames = format_csv_fieldnames(csv_fieldnames)
 
         self.csv_reader = lambda fd: self.read_csv(fd, **kwargs)
 
@@ -41,12 +47,12 @@ class CSVReader(object):
         return self.csv_reader
 
 
-class GZIPReader(CSVReader):
-    TAG = FileReader('gz')
-
-    def __init__(self, csv_delimiter, csv_fieldnames, **kwargs):
-        super(GZIPReader, self).__init__(csv_delimiter, csv_fieldnames, **kwargs)
-
+class GZReader(CSVReader):
     def decompress(self, fd):
         gzf = gzip.GzipFile(mode='rb', fileobj=fd)
         return gzf
+
+
+class FileEnum(Enum):
+    CSV = CSVReader
+    GZ = GZReader

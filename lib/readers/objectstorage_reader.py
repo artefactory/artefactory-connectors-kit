@@ -1,116 +1,137 @@
 import config
-import os
 import tempfile
 import logging
 
+
 from lib.readers.reader import Reader
 from lib.streams.normalized_json_stream import NormalizedJSONStream
-import lib.utils.file_reader as file_reader
+from lib.utils.file_reader import FileEnum
+
+
+def find_reader(_format, kwargs):
+    _format = _format.upper()
+    if _format in FileEnum.__members__:
+        r = getattr(FileEnum, _format).value
+        _reader = r(**kwargs).get_csv_reader()
+    else:
+        raise NotImplementedError(
+            f'The file format {str(_format)} has not been implemented for reading yet.')
+    return _reader
+
+def no_files_seen_before(max_timestamp):
+    return not max_timestamp
+
+
+def _object_older_than_most_recently_ingested_file(max_timestamp, _object_timestamp):
+    return max_timestamp > _object_timestamp
+
+
+def _object_newer_than_most_recently_ingested_file(max_timestamp, _object_timestamp):
+    return max_timestamp < _object_timestamp
+
+
+def _object_as_old_as_most_recently_ingested_file(max_timestamp, _object_timestamp):
+    return max_timestamp == _object_timestamp
 
 
 class ObjectStorageReader(Reader):
 
-    def __init__(self, bucket, prefix, file_format, dest_key_split=-1, platform=None, **kwargs):
+    def __init__(self, bucket, prefix_list, file_format, dest_key_split, platform=None, **kwargs):
         self._client = self.create_client(config)
         self._bucket = self.create_bucket(self._client, bucket)
-        self._prefix = prefix
+        self._prefix_list = prefix_list
         self._platform = platform
 
         self._format = file_format
-
-        if self._format in file_reader.FileReader.__members__:
-            for r in [file_reader.CSVReader, file_reader.GZIPReader]:
-                if self._format == r.TAG.value:
-                    self._reader = r(**kwargs).get_csv_reader()
-                    break
-        else:
-            raise NotImplementedError(
-                "The file format %s has not been implemented for reading yet." % str(self._format))
-
+        self._reader = find_reader(self._format, kwargs)
         self._dest_key_split = dest_key_split
 
-        self.MAX_TIMESTAMP_STATE_KEY = "{}_max_timestamp".format(self._platform).lower()
-        self.MAX_FILES_STATE_KEY = "{}_max_files".format(self._platform).lower()
+        self.MAX_TIMESTAMP_STATE_KEY = f'{self._platform}_max_timestamp'.lower()
+        self.MAX_FILES_STATE_KEY = f'{self._platform}_max_files'.lower()
 
     def read(self):
 
-        for prefix in self._prefix:
+        for prefix in self._prefix_list:
 
             objects_sorted_by_time = sorted(self.list_objects(bucket=self._bucket, prefix=prefix),
                                             key=lambda o: self.get_timestamp(o))
 
-            for o in objects_sorted_by_time:
+            for _object in objects_sorted_by_time:
 
-                o = self.to_object(o)
+                _object = self.to_object(_object)
 
-                logging.info("Found %s file %s" % (self._platform, self.get_key(o)))
+                logging.info(f'Found {self._platform} file {self.get_key(_object)}')
 
-                if not self.compatible_object(o):
-                    logging.info("Wrong extension: Skipping file %s", self.get_key(o))
+                if not self.is_compatible_object(_object):
+                    logging.info(f'Wrong extension: Skipping file {self.get_key(_object)}')
                     continue
 
-                if self.has_already_processed_object(o):
-                    logging.info("Skipping already processed file %s", self.get_key(o))
+                if self.has_already_processed_object(_object):
+                    logging.info(f'Skipping already processed file {self.get_key(_object)}')
                     continue
 
                 def result_generator():
                     temp = tempfile.TemporaryFile()
-                    self.download_object_to_file(o, temp)
+                    self.download_object_to_file(_object, temp)
 
                     for record in self._reader(temp):
                         yield record
 
-                    self.checkpoint_object(o)
+                    self.checkpoint_object(_object)
 
-                name = self.get_key(o).split('/', self._dest_key_split)[-1]
+                name = self.get_key(_object).split('/', self._dest_key_split)[-1]
 
                 yield NormalizedJSONStream(name, result_generator())
 
-    def compatible_object(self, o):
-        return self.get_key(o).endswith('.' + self._format)
+    def is_compatible_object(self, _object):
+        return self.get_key(_object).endswith('.' + self._format)
 
-    def has_already_processed_object(self, o):
+    def has_already_processed_object(self, _object):
 
-        assert self.get_timestamp(o) is not None
+        assert self.get_timestamp(_object) is not None, 'Object has no timestamp!'
 
         max_timestamp = self.state.get(self.MAX_TIMESTAMP_STATE_KEY)
 
-        # We haven't seen any files before
-        if not max_timestamp:
+        if no_files_seen_before(max_timestamp):
             return False
 
-        # The most recent file is more recent than this one
-        if max_timestamp > self.get_timestamp(o):
+        _object_timestamp = self.get_timestamp(_object)
+
+        if _object_older_than_most_recently_ingested_file(max_timestamp, _object_timestamp):
             return True
 
-        # The most recent file is less recent than this one
-        if max_timestamp < self.get_timestamp(o):
+        if _object_newer_than_most_recently_ingested_file(max_timestamp, _object_timestamp):
             return False
 
-        # If the timestamp is the same, then check if we kept it
-        if max_timestamp == self.get_timestamp(o):
+        if _object_as_old_as_most_recently_ingested_file(max_timestamp, _object_timestamp):
             max_files = self.state.get(self.MAX_FILES_STATE_KEY)
-            return self.get_key(o) in max_files
+            return self.get_key(_object) in max_files
 
-    def checkpoint_object(self, o):
+    def checkpoint_object(self, _object):
 
-        assert self.get_timestamp(o) is not None
+        assert self.get_timestamp(_object) is not None, 'Object has no timestamp!'
 
         max_timestamp = self.state.get(self.MAX_TIMESTAMP_STATE_KEY)
+        _object_timestamp = self.get_timestamp(_object)
 
-        if max_timestamp:
-            assert self.get_timestamp(o) >= max_timestamp
+        if max_timestamp and _object_older_than_most_recently_ingested_file(max_timestamp, _object_timestamp):
+            raise RuntimeError('Object is older than max timestamp at checkpoint time')
 
-        if not max_timestamp or max_timestamp < self.get_timestamp(o):
-            self.state.set(self.MAX_TIMESTAMP_STATE_KEY, self.get_timestamp(o))
-            self.state.set(self.MAX_FILES_STATE_KEY, [self.get_key(o)])
-            return
+        elif not max_timestamp or _object_newer_than_most_recently_ingested_file(max_timestamp, _object_timestamp):
+            self.update_max_timestamp(_object_timestamp, _object)
 
-        if max_timestamp == self.get_timestamp(o):
-            max_files = self.state.get(self.MAX_FILES_STATE_KEY)
-            max_files.append(self.get_timestamp(o))
-            self.state.set(self.MAX_FILES_STATE_KEY, max_files)
-            return
+        else:
+            assert _object_as_old_as_most_recently_ingested_file(max_timestamp, _object_timestamp)
+            self.update_max_files(_object)
+
+    def update_max_timestamp(self, _object_timestamp, _object):
+        self.state.set(self.MAX_TIMESTAMP_STATE_KEY, _object_timestamp)
+        self.state.set(self.MAX_FILES_STATE_KEY, [self.get_key(_object)])
+
+    def update_max_files(self, _object):
+        max_files = self.state.get(self.MAX_FILES_STATE_KEY)
+        max_files.append(self.get_key(_object))
+        self.state.set(self.MAX_FILES_STATE_KEY, max_files)
 
     def create_client(self, config):
         raise NotImplementedError
@@ -122,17 +143,17 @@ class ObjectStorageReader(Reader):
         raise NotImplementedError
 
     @staticmethod
-    def get_timestamp(o):
+    def get_timestamp(_object):
         raise NotImplementedError
 
     @staticmethod
-    def get_key(o):
+    def get_key(_object):
         raise NotImplementedError
 
     @staticmethod
-    def to_object(o):
+    def to_object(_object):
         raise NotImplementedError
 
     @staticmethod
-    def download_object_to_file(o, temp):
+    def download_object_to_file(_object, temp):
         raise NotImplementedError
