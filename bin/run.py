@@ -10,14 +10,12 @@ import lib.state_service as state
 @click.option("--state-service-host", help="Redis server IP address")
 @click.option("--state-service-port", help="Redis server port", default=6379)
 def app(state_service_name, state_service_host, state_service_port):
-
     if (state_service_name or state_service_host) and not (state_service_name and state_service_host):
         raise click.BadParameter("You must specify both a name and a host for the state service")
 
 
 @app.resultcallback()
 def run(processors, state_service_name, state_service_host, state_service_port):
-
     state.configure(state_service_name, state_service_host, state_service_port)
 
     processor_instances = [p() for p in processors]
