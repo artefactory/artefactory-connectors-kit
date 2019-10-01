@@ -36,10 +36,10 @@ def _object_as_old_as_most_recently_ingested_file(max_timestamp, _object_timesta
 
 class ObjectStorageReader(Reader):
 
-    def __init__(self, bucket, prefix_list, file_format, dest_key_split, platform=None, **kwargs):
+    def __init__(self, bucket, prefix, file_format, dest_key_split, platform=None, **kwargs):
         self._client = self.create_client(config)
         self._bucket = self.create_bucket(self._client, bucket)
-        self._prefix_list = prefix_list
+        self._prefix_list = prefix
         self._platform = platform
 
         self._format = file_format
