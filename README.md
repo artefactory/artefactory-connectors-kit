@@ -1,6 +1,26 @@
-# nautilus-connectors-kit
+# Nautilus Connectors Kit
 
 Nautilus connectors kit is a tool which aim is getting raw data from different sources and store them as-is into different destinations (GCS, BQ, local files, etc.).
+
+## List of connectors
+
+### Readers
+
+- Google DoubleClick Manager (DV360)
+- Google Analytics
+- Google Sheets
+- Google Cloud Storage
+- Facebook Business Manager
+- Amazon S3
+- Oracle
+- SalesForce
+- MySQL
+
+### Writers
+
+- Google BigQuery
+- Google Cloud Storage
+- Amazon S3
 
 ## Philosophy
 
