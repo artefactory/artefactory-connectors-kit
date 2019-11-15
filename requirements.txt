@@ -1,0 +1,17 @@
+Click
+google-cloud-bigquery
+google-cloud-storage
+pymysql
+SQLAlchemy
+cx_Oracle
+gspread
+oauth2client
+requests
+tenacity
+redis
+hiredis
+google-api-python-client
+boto3
+facebook-business
+google-api-python-client
+googleanalytics
