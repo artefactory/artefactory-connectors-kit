@@ -1,0 +1,44 @@
+# This workflow will build a docker container and publish it to Google Container Registry.
+#
+# To configure this workflow:
+#
+# 1. Set up secrets in your workspace: GCP_PROJECT with the name of the project, GCP_EMAIL with the service account
+# email, GCP_KEY with the service account key.
+#
+# 2. The deployments info are by now in the .env, dont forget to change the version when updating the master.
+
+name: Build and Deploy image to GCP
+
+on:
+  push:
+    branches:
+    - master
+
+# Environment variables available to all jobs and steps in this workflow
+env:
+  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+  GCP_EMAIL: ${{ secrets.GCP_EMAIL }}
+
+jobs:
+  setup-build-publish:
+    name: Setup, Build, Publish
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    # Setup gcloud CLI
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GCP_EMAIL }}
+        service_account_key: ${{ secrets.GCP_KEY }}
+
+    # Build the Docker image
+    - name: Build And Publish
+      run: |
+         make publish_base_image
+
+
+
