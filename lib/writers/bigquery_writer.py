@@ -11,6 +11,7 @@ from lib.writers.gcs_writer import GCSWriter
 from lib.commands.command import processor
 from lib.utils.args import extract_args
 from lib.utils.retry import retry
+from lib.helpers.google_base import Google_Base_Class
 
 
 @click.command(name="write_bq")
@@ -18,7 +19,8 @@ from lib.utils.retry import retry
 @click.option('--bq-table', required=True)
 @click.option('--bq-bucket', required=True)
 @click.option('--bq-partition-column')
-@click.option('--bq-write-disposition', default="truncate", type=click.Choice(['truncate', 'append']))
+@click.option('--bq-write-disposition', default="truncate",
+              type=click.Choice(['truncate', 'append']))
 @click.option('--bq-location', default="EU", type=click.Choice(['EU', 'US']))
 @click.option('--bq-keep-files', is_flag=True, default=False)
 @processor()
@@ -26,13 +28,14 @@ def bq(**kwargs):
     return BigQueryWriter(**extract_args('bq_', kwargs))
 
 
-class BigQueryWriter(Writer):
-
+class BigQueryWriter(Writer, Google_Base_Class):
     _client = None
 
-    def __init__(self, dataset, table, bucket, partition_column, write_disposition, location, keep_files):
+    def __init__(self, dataset, table, bucket, partition_column, write_disposition,
+                 location, keep_files):
 
-        self._client = bigquery.Client(project=config.PROJECT_ID)
+        self._client = bigquery.Client(credentials=self._get_credentials(),
+                                       project=config.PROJECT_ID)
         self._dataset = dataset
         self._table = table
         self._bucket = bucket
@@ -51,7 +54,8 @@ class BigQueryWriter(Writer):
 
         table_ref = self._get_table_ref()
 
-        load_job = self._client.load_table_from_uri(gcs_uri, table_ref, job_config=self.job_config())
+        load_job = self._client.load_table_from_uri(gcs_uri, table_ref,
+                                                    job_config=self.job_config())
 
         logging.info("Loading data into BigQuery %s:%s", self._dataset, self._table)
         result = load_job.result()

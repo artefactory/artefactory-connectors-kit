@@ -1,7 +1,7 @@
 import config
 import logging
 import os
-
+from lib.helpers.google_base import Google_Base_Class
 import click
 
 from lib.writers.writer import Writer
@@ -14,17 +14,19 @@ from google.cloud import storage
 @click.command(name="write_gcs")
 @click.option('--gcs-bucket', help="GCS Bucket", required=True)
 @click.option('--gcs-prefix', help="GCS Prefix")
+@click.option('--gcs-project-id', help="GCS Prefix")
 @processor()
 def gcs(**kwargs):
     return GCSWriter(**extract_args('gcs_', kwargs))
 
 
-class GCSWriter(Writer):
-
+class GCSWriter(Writer, Google_Base_Class):
     _client = None
 
-    def __init__(self, bucket, prefix=None):
-        self._client = storage.Client(project=config.PROJECT_ID)
+    def __init__(self, bucket, project_id, prefix=None):
+        project_id = self.get_project_id(project_id)
+        self._client = storage.Client(credentials=self._get_credentials(),
+                                      project=project_id)
         self._bucket = self._client.bucket(bucket)
         self._prefix = prefix
 
@@ -61,3 +63,14 @@ class GCSWriter(Writer):
         if self._prefix:
             return os.path.join(self._prefix, name)
         return name
+
+    @staticmethod
+    def get_project_id(project_id):
+        if project_id is None:
+            try:
+                return config.PROJECT_ID
+            except Exception:
+                raise click.exceptions.MissingParameter(
+                    'Please provide a project id in ENV var or params.',
+                    param_type='--gcs-project-id')
+        return project_id
