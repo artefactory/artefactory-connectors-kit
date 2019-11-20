@@ -18,7 +18,6 @@ from lib.utils.args import extract_args
 from lib.utils.retry import retry
 from lib.streams.json_stream import JSONStream
 
-
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 
 LIMIT_NVIEWS_PER_REQ = 5
@@ -30,7 +29,7 @@ LIMIT_NVIEWS_PER_REQ = 5
 @click.option("--ga-client-id", required=True)
 @click.option("--ga-client-secret", required=True)
 @click.option("--ga-view-id", default=[], multiple=True)
-@click.option("--ga-account-id", default = [], multiple = True)
+@click.option("--ga-account-id", default=[], multiple=True)
 @click.option("--ga-metric", multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option(
@@ -81,7 +80,7 @@ class GaReader(Reader):
             self.client_v3.management().accounts().list().execute()["items"]
         )
         if accounts_infos == []:
-            raise Exception("account_id {} not found".format(account_id))
+            raise Exception("account_id not found")
 
         accounts_id = self.kwargs.get("account_id")
         if (accounts_id is not None) and (accounts_id != []):
@@ -92,7 +91,7 @@ class GaReader(Reader):
         accounts = []
         flatten = lambda l: [item for sublist in l for item in sublist]
         for raw in flatten(accounts_infos):
-            try :
+            try:
                 acc = account.Account(raw, self.client_v3, self.kwargs["credentials"])
                 accounts.append(acc)
             except:
@@ -108,9 +107,9 @@ class GaReader(Reader):
 
         properties = [
             self.client_v3.management()
-            .profiles()
-            .list(accountId=account.id, webPropertyId=pid)
-            .execute()
+                .profiles()
+                .list(accountId=account.id, webPropertyId=pid)
+                .execute()
             for pid in properties_ids
         ]
         properties_views_ids = []
@@ -119,11 +118,11 @@ class GaReader(Reader):
             for el in p["items"]:
                 property_views_ids.append(el["id"])
                 self.views_metadata[el['id']] = {
-                    "view_name" : el['name'],
-                    "account_id" : account.id,
+                    "view_name": el['name'],
+                    "account_id": account.id,
                     "account_name": account.name,
                     "property_id": el["webPropertyId"],
-                    "property_name" : account.webproperties[idx].name
+                    "property_name": account.webproperties[idx].name
                 }
             properties_views_ids.append(property_views_ids)
         return flatten(properties_views_ids)
@@ -168,10 +167,11 @@ class GaReader(Reader):
                 for idx in idxs
             ]
             assert (
-                len(
-                    [el for el in date_ranges_sorted if el["startDate"] > el["endDate"]]
-                )
-                == 0
+                    len(
+                        [el for el in date_ranges_sorted if
+                         el["startDate"] > el["endDate"]]
+                    )
+                    == 0
             ), "date start should be inferior to date end"
             return date_ranges_sorted
         elif days_range:
@@ -225,10 +225,10 @@ class GaReader(Reader):
             bodies.append(body)
 
         for el in chain(
-            *[
-                self.client_v4.reports().batchGet(body=body).execute()["reports"]
-                for body in bodies
-            ]
+                *[
+                    self.client_v4.reports().batchGet(body=body).execute()["reports"]
+                    for body in bodies
+                ]
         ):
             yield el
 
