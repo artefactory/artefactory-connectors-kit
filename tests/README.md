@@ -6,7 +6,7 @@ To run the tests, install the dev dependencies:
 pip install -r requirements-dev.txt
 ```
 
-Ant then run:
+And then run:
 
 ```bash
 nosetests

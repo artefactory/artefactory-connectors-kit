@@ -1,7 +1,7 @@
 import config
 import logging
 import os
-from lib.helpers.google_base import Google_Base_Class
+from lib.helpers.google_base import GoogleBaseClass
 import click
 
 from lib.writers.writer import Writer
@@ -20,7 +20,7 @@ def gcs(**kwargs):
     return GCSWriter(**extract_args('gcs_', kwargs))
 
 
-class GCSWriter(Writer, Google_Base_Class):
+class GCSWriter(Writer, GoogleBaseClass):
     _client = None
 
     def __init__(self, bucket, project_id, prefix=None):

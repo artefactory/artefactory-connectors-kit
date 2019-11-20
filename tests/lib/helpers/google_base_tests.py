@@ -9,7 +9,7 @@ MODULE_NAME = 'lib.helpers.google_base'
 
 class TestGoogleCloudBaseClass(unittest.TestCase):
     def setUp(self):
-        self.instance = lib.helpers.google_base.Google_Base_Class()
+        self.instance = lib.helpers.google_base.GoogleBaseClass()
 
     @mock.patch(MODULE_NAME + '.google.auth.default',
                 return_value=("CREDENTIALS", "PROJECT_ID"))
@@ -18,7 +18,7 @@ class TestGoogleCloudBaseClass(unittest.TestCase):
         mock_auth_default.assert_called_once_with(scopes=self.instance.scopes)
         self.assertEqual(('CREDENTIALS', 'PROJECT_ID'), result)
 
-    @mock.patch(  
+    @mock.patch(
         MODULE_NAME + '.google.oauth2.service_account.Credentials'
                       '.from_service_account_file',
         **{'return_value.project_id': "PROJECT_ID"}
@@ -54,7 +54,7 @@ class TestGoogleCloudBaseClass(unittest.TestCase):
         with self.assertRaises(Exception):
             self.instance._get_credentials_and_project_id()
 
-    @mock.patch(  
+    @mock.patch(
         MODULE_NAME + '.google.oauth2.service_account.Credentials'
                       '.from_service_account_info',
         **{'return_value.project_id': "PROJECT_ID"}

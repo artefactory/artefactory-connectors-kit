@@ -30,7 +30,7 @@ _DEFAULT_SCOPES = (
     'https://www.googleapis.com/auth/cloud-platform',)  # type: Sequence[str]
 
 
-class Google_Base_Class():
+class GoogleBaseClass():
     scopes = _DEFAULT_SCOPES
     log = logging.getLogger('Google_Base_Hook')
 

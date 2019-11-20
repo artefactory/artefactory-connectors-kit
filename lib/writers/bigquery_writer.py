@@ -11,7 +11,7 @@ from lib.writers.gcs_writer import GCSWriter
 from lib.commands.command import processor
 from lib.utils.args import extract_args
 from lib.utils.retry import retry
-from lib.helpers.google_base import Google_Base_Class
+from lib.helpers.google_base import GoogleBaseClass
 
 
 @click.command(name="write_bq")
@@ -28,7 +28,7 @@ def bq(**kwargs):
     return BigQueryWriter(**extract_args('bq_', kwargs))
 
 
-class BigQueryWriter(Writer, Google_Base_Class):
+class BigQueryWriter(Writer, GoogleBaseClass):
     _client = None
 
     def __init__(self, dataset, table, bucket, partition_column, write_disposition,
