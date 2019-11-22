@@ -1,4 +1,5 @@
-from typing import Union, Generator, Dict
+import logging
+from typing import Dict, Generator, Union
 
 
 def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
@@ -21,7 +22,15 @@ def get_generator_dict_from_str_csv(
     headers = next(line_iterator).decode("utf-8").split(",")
     for line in line_iterator:
         if isinstance(line, bytes):
-            line = line.decode("utf-8", errors="ignore")
+            try:
+                line = line.decode("utf-8")
+            except UnicodeDecodeError as err:
+                logging.warning(
+                    "An error has occured while parsing the file. "
+                    f"The line could not be decoded in {err.encoding}."
+                    "Invalid input that the codec failed on: "
+                    f"{err.object[err.start:err.end]}")
+                line = line.decode("utf-8", errors="ignore")
         if line == '':
             break
         else:
