@@ -58,31 +58,27 @@ class SearchConsoleReader(Reader):
 
         self._service = None
         self.is_api_ready = False
+        self.start_row = 0
 
     def initialize_analyticsreporting(self):
         if not self.is_api_ready:
-            try:
-                credentials = GoogleCredentials(
-                    access_token=self.access_token,
-                    client_id=self.client_id,
-                    client_secret=self.client_secret,
-                    refresh_token=self.refresh_token,
-                    token_expiry=None,
-                    token_uri="https://accounts.google.com/o/oauth2/token",
-                    user_agent=None,
-                    revoke_uri=GOOGLE_REVOKE_URI)
+            credentials = GoogleCredentials(
+                access_token=self.access_token,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                refresh_token=self.refresh_token,
+                token_expiry=None,
+                token_uri="https://accounts.google.com/o/oauth2/token",
+                user_agent=None,
+                revoke_uri=GOOGLE_REVOKE_URI,
+            )
 
-                http = credentials.authorize(httplib2.Http())
-                credentials.refresh(http)
+            http = credentials.authorize(httplib2.Http())
+            credentials.refresh(http)
 
-                self._service = build(serviceName='webmasters',
-                                      version='v3',
-                                      credentials=credentials,
-                                      cache_discovery=False)
-
-            except Exception as e:
-                print(e)
-                raise ValueError("Failed while initialization")
+            self._service = build(
+                serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False
+            )
 
     def get_end_date(self, end_date):
         end_date = datetime.strftime(end_date, self.DATEFORMAT)
@@ -97,41 +93,39 @@ class SearchConsoleReader(Reader):
             "startRow": self.start_row,
             "rowLimit": self.ROWS_LIMIT,
             "searchType": "web",
-            "responseAggregationType": "auto"
+            "responseAggregationType": "byPage",
         }
 
         return query
 
     @retry
-    def _run_query(self, next_page=True):
+    def _run_query(self):
         self.initialize_analyticsreporting()
 
+        response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
+        full_report = response
+
         # Pagination
-        self.start_row = 0
-        response = self._service.searchanalytics().query(
-            siteUrl=self.site_url, body=self.build_query()).execute()
-        while next_page:
-            if len(response.get("rows")) < self.ROWS_LIMIT:
-                next_page = False
-            else:
-                logging.info("{} lines successfully processed...".format(self.ROWS_LIMIT + self.start_row))
-                self.start_row += self.ROWS_LIMIT
-                next_page_response = self._service.searchanalytics().query(
-                    siteUrl=self.site_url, body=self.build_query()).execute()
-                response.update(next_page_response)
-        return response
+        while len(response.get("rows", [])) != 0:
+            logging.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
+            self.start_row += self.ROWS_LIMIT
+            response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
+            full_report["rows"] += response.get("rows", [])
+
+        return full_report
 
     def read(self):
         data = self._run_query()
 
         if data:
+
             def result_generator(data):
                 data_keys = [*data["rows"][0]]
                 metric_names = data_keys[1:]
 
                 for report in data.get('rows', []):
                     record = {}
-                    keys = report.get('keys', [])
+                    keys = report.get("keys", [])
 
                     for dimension, key in zip(self.dimensions, keys):
                         record[dimension] = key
@@ -141,4 +135,4 @@ class SearchConsoleReader(Reader):
 
                     yield record
 
-            yield NormalizedJSONStream("results", result_generator(data))
+            yield NormalizedJSONStream("search_console_results", result_generator(data))
