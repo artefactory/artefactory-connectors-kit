@@ -29,11 +29,12 @@ def search_console(**params):
     return SearchConsoleReader(**extract_args("search_", params))
 
 
-class SearchConsoleReader(Reader):
+DATEFORMAT = "%Y-%m-%d"
+# most recent data available is 3days ago.
+DEFAULT_END_DATE = datetime.now() - timedelta(days=3)
 
-    DATEFORMAT = "%Y-%m-%d"
-    # most recent data available is 3days ago.
-    DEFAULT_END_DATE = datetime.strftime(datetime.now() - timedelta(days=3), DATEFORMAT)
+
+class SearchConsoleReader(Reader):
 
     # max returned rows per query.
     ROWS_LIMIT = 25000
@@ -56,8 +57,8 @@ class SearchConsoleReader(Reader):
         self.refresh_token = refresh_token
         self.dimensions = list(dimensions)
         self.site_url = site_url
-        self.start_date = datetime.strftime(start_date, self.DATEFORMAT)
-        self.end_date = self.get_end_date(end_date)
+        self.start_date = datetime.strftime(start_date, DATEFORMAT)
+        self.end_date = datetime.strftime(self.get_end_date(end_date), DATEFORMAT)
         self.with_date_column = date_column and (self.start_date == self.end_date)
 
         self._service = None
@@ -84,9 +85,9 @@ class SearchConsoleReader(Reader):
                 serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False
             )
 
-    def get_end_date(self, end_date):
-        end_date = datetime.strftime(end_date, self.DATEFORMAT)
-        return min(self.DEFAULT_END_DATE, end_date)
+    @staticmethod
+    def get_end_date(end_date):
+        return min(DEFAULT_END_DATE, end_date)
 
     def build_query(self):
 
@@ -107,38 +108,36 @@ class SearchConsoleReader(Reader):
         self.initialize_analyticsreporting()
 
         response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
-        full_report = response
+        yield response
 
         # Pagination
         while len(response.get("rows", [])) != 0:
             logging.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
             self.start_row += self.ROWS_LIMIT
             response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
-            full_report["rows"] += response.get("rows", [])
-
-        return full_report
+            yield response
 
     def read(self):
-        data = self._run_query()
+        for data in self._run_query():
 
-        if data:
+            if len(data.get("rows", [])):
 
-            def result_generator(data):
-                data_keys = [*data["rows"][0]]
-                metric_names = data_keys[1:]
+                def result_generator(data):
+                    data_keys = [*data["rows"][0]]
+                    metric_names = data_keys[1:]
 
-                for report in data.get("rows", []):
-                    record = {}
-                    keys = report.get("keys", [])
+                    for report in data.get("rows", []):
+                        record = {}
+                        keys = report.get("keys", [])
 
-                    for dimension, key in zip(self.dimensions, keys):
-                        if self.with_date_column:
-                            record["date"] = self.start_date
-                        record[dimension] = key
+                        for dimension, key in zip(self.dimensions, keys):
+                            if self.with_date_column:
+                                record["date"] = self.start_date
+                            record[dimension] = key
 
-                    for metric in metric_names:
-                        record[metric] = report.get(metric, "")
+                        for metric in metric_names:
+                            record[metric] = report.get(metric, "")
 
-                    yield record
+                        yield record
 
-            yield NormalizedJSONStream("search_console_results", result_generator(data))
+                yield NormalizedJSONStream("search_console_results", result_generator(data))
