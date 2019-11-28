@@ -36,7 +36,6 @@ DEFAULT_END_DATE = datetime.now() - timedelta(days=3)
 
 class SearchConsoleReader(Reader):
 
-    # max returned rows per query.
     ROWS_LIMIT = 25000
 
     def __init__(
