@@ -23,6 +23,7 @@ from lib.utils.retry import retry
 @click.option("--search-site-url", required=True)
 @click.option("--search-start-date", type=click.DateTime(), default=None)
 @click.option("--search-end-date", type=click.DateTime(), default=None)
+@click.option("--search-date-column", "-d", type=click.BOOL, default=False)
 @processor()
 def search_console(**params):
     return SearchConsoleReader(**extract_args("search_", params))
@@ -37,16 +38,18 @@ class SearchConsoleReader(Reader):
     # max returned rows per query.
     ROWS_LIMIT = 25000
 
-    def __init__(self,
-                 client_id,
-                 client_secret,
-                 access_token,
-                 refresh_token,
-                 dimensions,
-                 site_url,
-                 start_date,
-                 end_date
-                 ):
+    def __init__(
+        self,
+        client_id,
+        client_secret,
+        access_token,
+        refresh_token,
+        dimensions,
+        site_url,
+        start_date,
+        end_date,
+        date_column,
+    ):
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = access_token
@@ -55,6 +58,7 @@ class SearchConsoleReader(Reader):
         self.site_url = site_url
         self.start_date = datetime.strftime(start_date, self.DATEFORMAT)
         self.end_date = self.get_end_date(end_date)
+        self.with_date_column = date_column and (self.start_date == self.end_date)
 
         self._service = None
         self.is_api_ready = False
@@ -123,11 +127,13 @@ class SearchConsoleReader(Reader):
                 data_keys = [*data["rows"][0]]
                 metric_names = data_keys[1:]
 
-                for report in data.get('rows', []):
+                for report in data.get("rows", []):
                     record = {}
                     keys = report.get("keys", [])
 
                     for dimension, key in zip(self.dimensions, keys):
+                        if self.with_date_column:
+                            record["date"] = self.start_date
                         record[dimension] = key
 
                     for metric in metric_names:
