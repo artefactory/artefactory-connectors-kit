@@ -19,7 +19,11 @@ def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
 def get_generator_dict_from_str_csv(
     line_iterator: Generator[Union[bytes, str], None, None]
 ) -> Generator[Dict[str, str], None, None]:
-    headers = next(line_iterator).decode("utf-8").split(",")
+    first_line = next(line_iterator)
+    headers = (
+        first_line.decode("utf-8").split(",") if isinstance(first_line, bytes)
+        else first_line.split(",")
+    )
     for line in line_iterator:
         if isinstance(line, bytes):
             try:
