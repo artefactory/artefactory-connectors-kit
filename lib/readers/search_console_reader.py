@@ -17,7 +17,7 @@ from lib.utils.retry import retry
 @click.command(name="read_search_console")
 @click.option("--search-client-id", required=True)
 @click.option("--search-client-secret", required=True)
-@click.option("--search-access-token", required=True)
+@click.option("--search-access-token", default="")
 @click.option("--search-refresh-token", required=True)
 @click.option("--search-dimensions", required=True, multiple=True)
 @click.option("--search-site-url", required=True)
