@@ -32,7 +32,7 @@ def search_console(**params):
 
 DATEFORMAT = "%Y-%m-%d"
 # most recent data available is 3days ago.
-DEFAULT_END_DATE = datetime.now() - timedelta(days=3)
+MAX_END_DATE = datetime.now() - timedelta(days=3)
 
 
 class SearchConsoleReader(Reader):
@@ -57,7 +57,7 @@ class SearchConsoleReader(Reader):
         self.site_url = site_url
         self.start_date = datetime.strftime(start_date, DATEFORMAT)
         self.end_date = datetime.strftime(self.get_end_date(end_date), DATEFORMAT)
-        self.with_date_column = date_column and (self.start_date == self.end_date)
+        self.with_date_column = date_column
         self.row_limit = row_limit
 
         self._service = None
@@ -86,7 +86,7 @@ class SearchConsoleReader(Reader):
 
     @staticmethod
     def get_end_date(end_date):
-        return min(DEFAULT_END_DATE, end_date)
+        return min(MAX_END_DATE, end_date)
 
     def build_query(self):
 
