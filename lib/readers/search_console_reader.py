@@ -24,6 +24,7 @@ from lib.utils.retry import retry
 @click.option("--search-start-date", type=click.DateTime(), default=None)
 @click.option("--search-end-date", type=click.DateTime(), default=None)
 @click.option("--search-date-column", "-d", type=click.BOOL, default=False)
+@click.option("--search-row-limit", type=click.INT, default=25000)
 @processor()
 def search_console(**params):
     return SearchConsoleReader(**extract_args("search_", params))
@@ -35,9 +36,6 @@ DEFAULT_END_DATE = datetime.now() - timedelta(days=3)
 
 
 class SearchConsoleReader(Reader):
-
-    ROWS_LIMIT = 25000
-
     def __init__(
         self,
         client_id,
@@ -49,6 +47,7 @@ class SearchConsoleReader(Reader):
         start_date,
         end_date,
         date_column,
+        row_limit,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -59,6 +58,7 @@ class SearchConsoleReader(Reader):
         self.start_date = datetime.strftime(start_date, DATEFORMAT)
         self.end_date = datetime.strftime(self.get_end_date(end_date), DATEFORMAT)
         self.with_date_column = date_column and (self.start_date == self.end_date)
+        self.row_limit = row_limit
 
         self._service = None
         self.is_api_ready = False
@@ -95,7 +95,7 @@ class SearchConsoleReader(Reader):
             "endDate": self.end_date,
             "dimensions": self.dimensions,
             "startRow": self.start_row,
-            "rowLimit": self.ROWS_LIMIT,
+            "rowLimit": self.row_limit,
             "searchType": "web",
             "responseAggregationType": "byPage",
         }
@@ -112,7 +112,7 @@ class SearchConsoleReader(Reader):
         # Pagination
         while len(response.get("rows", [])) != 0:
             logging.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
-            self.start_row += self.ROWS_LIMIT
+            self.start_row += self.row_limit
             response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
             yield response
 
