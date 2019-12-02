@@ -12,23 +12,24 @@ from google.cloud import storage
 
 
 @click.command(name="write_gcs")
-@click.option('--gcs-bucket', help="GCS Bucket", required=True)
-@click.option('--gcs-prefix', help="GCS Prefix")
-@click.option('--gcs-project-id', help="GCS Prefix")
+@click.option("--gcs-bucket", help="GCS Bucket", required=True)
+@click.option("--gcs-prefix", help="GCS path to write the file.")
+@click.option("--gcs-project-id", help="GCS Project Id")
+@click.option("--gcs-file-name", help="Override the default name of the file (don't add the extension)")
 @processor()
 def gcs(**kwargs):
-    return GCSWriter(**extract_args('gcs_', kwargs))
+    return GCSWriter(**extract_args("gcs_", kwargs))
 
 
 class GCSWriter(Writer, GoogleBaseClass):
     _client = None
 
-    def __init__(self, bucket, project_id, prefix=None):
+    def __init__(self, bucket, project_id, prefix=None, file_name=None):
         project_id = self.get_project_id(project_id)
-        self._client = storage.Client(credentials=self._get_credentials(),
-                                      project=project_id)
+        self._client = storage.Client(credentials=self._get_credentials(), project=project_id)
         self._bucket = self._client.bucket(bucket)
         self._prefix = prefix
+        self._file_name = file_name
 
     @retry
     def write(self, stream):
@@ -36,16 +37,19 @@ class GCSWriter(Writer, GoogleBaseClass):
             Write file into GCS Bucket
 
             attr:
-                filename (str): Filename to save in GCS
-                content (File handle): File object to be copied to GCS
+                stream (Generator): Stream with the file content.
             return:
                 gcs_path (str): Path to file {bucket}/{prefix}{file_name}
         """
         logging.info("Writing file to GCS")
-        blob = self.create_blob(stream.name)
+        _, extension = self._extract_extension(stream.name)
+        file_name = (
+            self._extract_extension(self._file_name)[0] + extension if self._file_name is not None else stream.name
+        )
+        blob = self.create_blob(file_name)
         blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
 
-        uri = self.uri_for_name(stream.name)
+        uri = self.uri_for_name(file_name)
 
         logging.info("Uploaded file to {}".format(uri))
 
@@ -57,12 +61,17 @@ class GCSWriter(Writer, GoogleBaseClass):
 
     def uri_for_name(self, name):
         path = self.path_for_name(name)
-        return 'gs://{bucket}/{path}'.format(bucket=self._bucket.name, path=path)
+        return "gs://{bucket}/{path}".format(bucket=self._bucket.name, path=path)
 
     def path_for_name(self, name):
         if self._prefix:
             return os.path.join(self._prefix, name)
         return name
+
+    @staticmethod
+    def _extract_extension(full_file_name: str):
+        """Returns a tuple: file_name, extension"""
+        return os.path.splitext(full_file_name)
 
     @staticmethod
     def get_project_id(project_id):
@@ -71,6 +80,6 @@ class GCSWriter(Writer, GoogleBaseClass):
                 return config.PROJECT_ID
             except Exception:
                 raise click.exceptions.MissingParameter(
-                    'Please provide a project id in ENV var or params.',
-                    param_type='--gcs-project-id')
+                    "Please provide a project id in ENV var or params.", param_type="--gcs-project-id"
+                )
         return project_id
