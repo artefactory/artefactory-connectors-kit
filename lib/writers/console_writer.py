@@ -21,6 +21,9 @@ class ConsoleWriter(Writer):
         """
             Write file to console, mainly used for debugging
         """
-
-        for line in stream.as_file():
-            sys.stdout.write(line.decode(sys.stdout.encoding))
+        ## this is how to read from a file as stream
+        file = stream.as_file()
+        buffer = 'buf'
+        while len(buffer) > 0:
+            buffer = file.read(1024)
+            sys.stdout.buffer.write(buffer)

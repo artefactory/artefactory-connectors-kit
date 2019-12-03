@@ -33,7 +33,7 @@ class SearchConsoleReaderTest(TestCase):
 
         def test_read_empty_data(mock_query):
             mock_query.return_value = [{"responseAgregationType": "byPage"}]
-            if len(list(reader.read())):
+            if len(list(reader.read())) > 1:
                 assert False, "Data is not empty"
 
         def test_format_data(mock_query):

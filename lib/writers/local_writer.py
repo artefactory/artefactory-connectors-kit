@@ -26,7 +26,11 @@ class LocalWriter(Writer):
         path = os.path.join(self._local_directory, stream.name)
 
         logging.info("Writing stream %s to %s", stream.name, path)
-
-        with open(path, 'w') as h:
-            for line in stream.as_file():
-                h.write(line)
+        file = stream.as_file()
+        with open(path, 'wb') as h:
+            while True:
+                buffer = file.read(1024)
+                if len(buffer) > 0:
+                    h.write(buffer)
+                else:
+                    break
