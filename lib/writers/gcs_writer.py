@@ -7,7 +7,6 @@ import click
 from lib.writers.writer import Writer
 from lib.commands.command import processor
 from lib.utils.args import extract_args
-from lib.utils.retry import retry
 from google.cloud import storage
 
 
@@ -15,8 +14,7 @@ from google.cloud import storage
 @click.option("--gcs-bucket", help="GCS Bucket", required=True)
 @click.option("--gcs-prefix", help="GCS path to write the file.")
 @click.option("--gcs-project-id", help="GCS Project Id")
-@click.option("--gcs-file-name",
-              help="Override the default name of the file (don't add the extension)")
+@click.option("--gcs-file-name", help="Override the default name of the file (don't add the extension)")
 @processor()
 def gcs(**kwargs):
     return GCSWriter(**extract_args("gcs_", kwargs))
@@ -27,8 +25,7 @@ class GCSWriter(Writer, GoogleBaseClass):
 
     def __init__(self, bucket, project_id, prefix=None, file_name=None):
         project_id = self.get_project_id(project_id)
-        self._client = storage.Client(credentials=self._get_credentials(),
-                                      project=project_id)
+        self._client = storage.Client(credentials=self._get_credentials(), project=project_id)
         self._bucket = self._client.bucket(bucket)
         self._prefix = prefix
         self._file_name = file_name
@@ -45,8 +42,7 @@ class GCSWriter(Writer, GoogleBaseClass):
         logging.info("Writing file to GCS")
         _, extension = self._extract_extension(stream.name)
         file_name = (
-            self._extract_extension(self._file_name)[
-                0] + extension if self._file_name is not None else stream.name
+            self._extract_extension(self._file_name)[0] + extension if self._file_name is not None else stream.name
         )
         blob = self.create_blob(file_name)
         blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
@@ -81,7 +77,6 @@ class GCSWriter(Writer, GoogleBaseClass):
                 return config.PROJECT_ID
             except Exception:
                 raise click.exceptions.MissingParameter(
-                    "Please provide a project id in ENV var or params.",
-                    param_type="--gcs-project-id"
+                    "Please provide a project id in ENV var or params.", param_type="--gcs-project-id"
                 )
         return project_id

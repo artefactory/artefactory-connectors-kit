@@ -15,39 +15,39 @@ from lib.utils.retry import retry
 
 
 @click.command(name="read_search_console")
-@click.option("--search-client-id", required=True)
-@click.option("--search-client-secret", required=True)
-@click.option("--search-access-token", default="")
-@click.option("--search-refresh-token", required=True)
-@click.option("--search-dimensions", required=True, multiple=True)
-@click.option("--search-site-url", required=True)
-@click.option("--search-start-date", type=click.DateTime(), default=None)
-@click.option("--search-end-date", type=click.DateTime(), default=None)
-@click.option("--search-date-column", "-d", type=click.BOOL, default=False)
-@click.option("--search-row-limit", type=click.INT, default=25000)
+@click.option("--search-console-client-id", required=True)
+@click.option("--search-console-client-secret", required=True)
+@click.option("--search-console-access-token", default="")
+@click.option("--search-console-refresh-token", required=True)
+@click.option("--search-console-dimensions", required=True, multiple=True)
+@click.option("--search-console-site-url", required=True)
+@click.option("--search-console-start-date", type=click.DateTime(), default=None)
+@click.option("--search-console-end-date", type=click.DateTime(), default=None)
+@click.option("--search-console-date-column", "-d", type=click.BOOL, default=False)
+@click.option("--search-console-row-limit", type=click.INT, default=25000)
 @processor()
 def search_console(**params):
-    return SearchConsoleReader(**extract_args("search_", params))
+    return SearchConsoleReader(**extract_args("search_console_", params))
 
 
 DATEFORMAT = "%Y-%m-%d"
-# most recent data available is 3days ago.
-MAX_END_DATE = datetime.now() - timedelta(days=3)
+# most recent data available is often 2 days ago.
+MAX_END_DATE = datetime.today() - timedelta(days=2)
 
 
 class SearchConsoleReader(Reader):
     def __init__(
-            self,
-            client_id,
-            client_secret,
-            access_token,
-            refresh_token,
-            dimensions,
-            site_url,
-            start_date,
-            end_date,
-            date_column,
-            row_limit,
+        self,
+        client_id,
+        client_secret,
+        access_token,
+        refresh_token,
+        dimensions,
+        site_url,
+        start_date,
+        end_date,
+        date_column,
+        row_limit,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -56,7 +56,7 @@ class SearchConsoleReader(Reader):
         self.dimensions = list(dimensions)
         self.site_url = site_url
         self.start_date = datetime.strftime(start_date, DATEFORMAT)
-        self.end_date = datetime.strftime(self.get_end_date(end_date), DATEFORMAT)
+        self.end_date = datetime.strftime(self.check_end_date(end_date), DATEFORMAT)
         self.with_date_column = date_column
         self.row_limit = row_limit
 
@@ -81,13 +81,16 @@ class SearchConsoleReader(Reader):
             credentials.refresh(http)
 
             self._service = build(
-                serviceName="webmasters", version="v3", credentials=credentials,
-                cache_discovery=False
+                serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False
             )
 
     @staticmethod
-    def get_end_date(end_date):
-        return min(MAX_END_DATE, end_date)
+    def check_end_date(end_date):
+        if end_date > MAX_END_DATE:
+            logging.warning(
+                f"⚠️ The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)} ⚠️"
+            )
+        return end_date
 
     def build_query(self):
 
@@ -107,17 +110,14 @@ class SearchConsoleReader(Reader):
     def _run_query(self):
         self.initialize_analyticsreporting()
 
-        response = self._service.searchanalytics().query(siteUrl=self.site_url,
-                                                         body=self.build_query()).execute()
+        response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
         yield response
 
         # Pagination
         while len(response.get("rows", [])) != 0:
-            logging.info("{} lines successfully processed...".format(
-                len(response.get("rows")) + self.start_row))
+            logging.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
             self.start_row += self.row_limit
-            response = self._service.searchanalytics().query(siteUrl=self.site_url,
-                                                             body=self.build_query()).execute()
+            response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
             yield response
 
     def format_and_yield(self, data):
