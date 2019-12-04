@@ -34,7 +34,10 @@ class TestsWithImplementedMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         # let's build a generator
-        cls.generator = (x ** 2 for x in range(11))
+        cls.generator = ()
+
+    def setUp(self) -> None:
+        self.generator = (x ** 2 for x in range(11))
 
     class miniStream(Stream):
         extension = "polopop"
@@ -62,17 +65,16 @@ class TestsWithImplementedMethods(unittest.TestCase):
         assert res == 10 ** 2
 
     def test_can_read_as_a_file(self):
-        # generator should be recreated as it has already been consumed by other tests
         testStream = self.miniStream("test_file", self.generator)
         file = testStream.as_file()
         assert file.tell() == 0
         bytes_array = file.read()
         assert file.tell() > 0
-        string_arrray = bytes_array.decode("utf-8")
-        res = string_arrray.split("\n")
+        string_array = bytes_array.decode("utf-8")
+        res = string_array.split("\n")
         assert int(res[10]) == 10 ** 2
 
-    def test_can_read_as_a_file_chuncked(self):
+    def test_can_read_as_a_file_chunked(self):
         testStream = self.miniStream("test_file_2", self.generator)
         file = testStream.as_file()
         bytes_array = b""
