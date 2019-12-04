@@ -7,7 +7,6 @@ import click
 from lib.writers.writer import Writer
 from lib.commands.command import processor
 from lib.utils.args import extract_args
-from lib.utils.retry import retry
 from google.cloud import storage
 
 
@@ -31,13 +30,12 @@ class GCSWriter(Writer, GoogleBaseClass):
         self._prefix = prefix
         self._file_name = file_name
 
-    @retry
     def write(self, stream):
         """
             Write file into GCS Bucket
 
             attr:
-                stream (Generator): Stream with the file content.
+                stream: Stream with the file content.
             return:
                 gcs_path (str): Path to file {bucket}/{prefix}{file_name}
         """
@@ -48,7 +46,6 @@ class GCSWriter(Writer, GoogleBaseClass):
         )
         blob = self.create_blob(file_name)
         blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
-
         uri = self.uri_for_name(file_name)
 
         logging.info("Uploaded file to {}".format(uri))

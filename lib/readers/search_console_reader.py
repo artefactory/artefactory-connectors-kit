@@ -15,24 +15,24 @@ from lib.utils.retry import retry
 
 
 @click.command(name="read_search_console")
-@click.option("--search-client-id", required=True)
-@click.option("--search-client-secret", required=True)
-@click.option("--search-access-token", default="")
-@click.option("--search-refresh-token", required=True)
-@click.option("--search-dimensions", required=True, multiple=True)
-@click.option("--search-site-url", required=True)
-@click.option("--search-start-date", type=click.DateTime(), default=None)
-@click.option("--search-end-date", type=click.DateTime(), default=None)
-@click.option("--search-date-column", "-d", type=click.BOOL, default=False)
-@click.option("--search-row-limit", type=click.INT, default=25000)
+@click.option("--search-console-client-id", required=True)
+@click.option("--search-console-client-secret", required=True)
+@click.option("--search-console-access-token", default="")
+@click.option("--search-console-refresh-token", required=True)
+@click.option("--search-console-dimensions", required=True, multiple=True)
+@click.option("--search-console-site-url", required=True)
+@click.option("--search-console-start-date", type=click.DateTime(), default=None)
+@click.option("--search-console-end-date", type=click.DateTime(), default=None)
+@click.option("--search-console-date-column", "-d", type=click.BOOL, default=False)
+@click.option("--search-console-row-limit", type=click.INT, default=25000)
 @processor()
 def search_console(**params):
-    return SearchConsoleReader(**extract_args("search_", params))
+    return SearchConsoleReader(**extract_args("search_console_", params))
 
 
 DATEFORMAT = "%Y-%m-%d"
-# most recent data available is 3days ago.
-MAX_END_DATE = datetime.now() - timedelta(days=3)
+# most recent data available is often 2 days ago.
+MAX_END_DATE = datetime.today() - timedelta(days=2)
 
 
 class SearchConsoleReader(Reader):
@@ -56,7 +56,7 @@ class SearchConsoleReader(Reader):
         self.dimensions = list(dimensions)
         self.site_url = site_url
         self.start_date = datetime.strftime(start_date, DATEFORMAT)
-        self.end_date = datetime.strftime(self.get_end_date(end_date), DATEFORMAT)
+        self.end_date = datetime.strftime(self.check_end_date(end_date), DATEFORMAT)
         self.with_date_column = date_column
         self.row_limit = row_limit
 
@@ -85,8 +85,12 @@ class SearchConsoleReader(Reader):
             )
 
     @staticmethod
-    def get_end_date(end_date):
-        return min(MAX_END_DATE, end_date)
+    def check_end_date(end_date):
+        if end_date > MAX_END_DATE:
+            logging.warning(
+                f"⚠️ The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)} ⚠️"
+            )
+        return end_date
 
     def build_query(self):
 
@@ -116,27 +120,29 @@ class SearchConsoleReader(Reader):
             response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
             yield response
 
-    def read(self):
+    def format_and_yield(self, data):
+        data_keys = [*data["rows"][0]]
+        metric_names = data_keys[1:]
+        for report in data.get("rows", []):
+            record = {}
+            keys = report.get("keys", [])
+
+            for dimension, key in zip(self.dimensions, keys):
+                if self.with_date_column:
+                    record["date"] = self.start_date
+                record[dimension] = key
+
+            for metric in metric_names:
+                record[metric] = report.get(metric, "")
+
+            yield record
+
+    def result_generator(self):
         for data in self._run_query():
-
             if len(data.get("rows", [])):
+                yield from self.format_and_yield(data)
+            else:
+                return None
 
-                def result_generator(data):
-                    data_keys = [*data["rows"][0]]
-                    metric_names = data_keys[1:]
-
-                    for report in data.get("rows", []):
-                        record = {}
-                        keys = report.get("keys", [])
-
-                        for dimension, key in zip(self.dimensions, keys):
-                            if self.with_date_column:
-                                record["date"] = self.start_date
-                            record[dimension] = key
-
-                        for metric in metric_names:
-                            record[metric] = report.get(metric, "")
-
-                        yield record
-
-                yield NormalizedJSONStream("search_console_results", result_generator(data))
+    def read(self):
+        yield NormalizedJSONStream("search_console_results", self.result_generator())

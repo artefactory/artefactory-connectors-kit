@@ -34,6 +34,7 @@ def run(processors, state_service_name, state_service_host, state_service_port):
 
     reader = _readers[0]
 
+    # A stream should represent a full file!
     for stream in reader.read():
         for writer in _writers:
             writer.write(stream)
@@ -47,6 +48,6 @@ def build_commands():
         app.add_command(reader)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     build_commands()
     app()
