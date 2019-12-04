@@ -4,7 +4,6 @@ from lib.streams.stream import Stream
 
 
 class JSONStream(Stream):
-
     extension = "njson"
     mime_type = "application/json"
 
@@ -13,5 +12,5 @@ class JSONStream(Stream):
         return json.loads(record, encoding='utf-8')
 
     @classmethod
-    def encode_record(cls, record) -> bytes:
-        return (json.dumps(record, default=str)+'\n').encode('utf-8')
+    def encode_record(cls, record) -> str:
+        return json.dumps(record, default=str)

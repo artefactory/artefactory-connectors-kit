@@ -9,6 +9,7 @@ class Reader(object):
 
     def read(self):
         """
-        The read method takes no arguments, and returns a generator of dicts
+        The read method takes no arguments, and should return a generator of stream objects.
+        Each stream instance yielded should represent a file to write and have it's own name.
         """
         raise NotImplementedError

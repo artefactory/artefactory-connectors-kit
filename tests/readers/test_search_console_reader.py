@@ -1,5 +1,4 @@
 import lib
-import json
 from datetime import datetime
 from lib.readers.search_console_reader import SearchConsoleReader
 from unittest import TestCase, mock
@@ -50,7 +49,7 @@ class SearchConsoleReaderTest(TestCase):
 
             for data in reader.read():
                 for record, output in zip(data.readlines(), output_gen):
-                    assert json.loads(record) == output
+                    assert record == output
 
         def test_format_data_with_date_column(mock_query):
             kwargs["date_column"] = True
@@ -68,7 +67,7 @@ class SearchConsoleReaderTest(TestCase):
 
             for data in reader.read():
                 for record, output in zip(data.readlines(), output_gen):
-                    assert json.loads(record) == output
+                    assert record == output
 
         test_read_empty_data(mock_query)
         test_format_data(mock_query)

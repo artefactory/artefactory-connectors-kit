@@ -6,7 +6,6 @@ import io
 class Stream(object):
     _name = None
     _source_generator = None
-    _local_cache = None
 
     extension = None
     mime_type = "application/octet-stream"
@@ -18,24 +17,27 @@ class Stream(object):
         self._name = self.create_stream_name(name)
         self._source_generator = source_generator
         self._iterator = iter(source_generator)
-        self.leftover = ''
 
     def __len__(self):
         return self._source_generator.__len__()
 
     def __iter__(self):
+        """
+            The raw stream object can also be iterated.
+            You'll get the raw elements yielded by the generator.
+        """
         return self._iterator
 
     def as_file(self) -> io.BufferedReader:
-        return self._iterable_to_stream(self._iterator, self.encode_record)
+        return self._iterable_to_stream(self._iterator, self.encode_record_as_bytes)
 
     def readlines(self):
         """
             Yield each element of a the generator, one by one.
             (ex: line by line for file)
         """
-        for record in self._iterator:
-            yield record
+        for record in self:
+            yield self.decode_record(self.encode_record(record))
 
     @classmethod
     def create_from_stream(cls, source_stream):
@@ -45,7 +47,11 @@ class Stream(object):
         return cls(source_stream.name, source_stream.readlines())
 
     @classmethod
-    def encode_record(cls, record) -> bytes:
+    def encode_record_as_bytes(cls, record) -> bytes:
+        return (cls.encode_record(record) + '\n').encode('utf-8')
+
+    @classmethod
+    def encode_record(cls, record) -> str:
         raise NotImplementedError
 
     @classmethod
@@ -65,6 +71,9 @@ class Stream(object):
     @staticmethod
     def _iterable_to_stream(iterable, encode, buffer_size=io.DEFAULT_BUFFER_SIZE):
         """
+        Credit goes to 'Mechanical snail'
+            at https://stackoverflow.com/questions/6657820/python-convert-an-iterable-to-a-stream
+
         Lets you use an iterable (e.g. a generator) that yields bytestrings as a
         read-only
         input stream.
