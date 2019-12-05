@@ -9,8 +9,7 @@ from lib.readers.salesforce_reader import salesforce
 from lib.readers.facebook_reader import facebook_marketing
 from lib.readers.dbm_reader import dbm
 from lib.readers.ga_reader import ga
-
-
+from lib.readers.search_console_reader import search_console
 
 readers = [
     mysql,
@@ -22,6 +21,7 @@ readers = [
     oracle,
     dbm,
     ga,
+    search_console,
 ]
 
 
