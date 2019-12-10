@@ -16,8 +16,10 @@ from lib.utils.args import extract_args
 from lib.utils.retry import retry
 from lib.streams.json_stream import JSONStream
 import requests
-from lib.helpers.adobe_helper import build_headers
+from lib.helpers.adobe_helper import build_headers, ReportNotReadyError, parse
 
+## Credit goes to Mr Martin Winkel for the base code provided :
+## github : https://github.com/SaturnFromTitan/adobe_analytics
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 
@@ -25,13 +27,15 @@ LIMIT_NVIEWS_PER_REQ = 5
 
 ADOBE_API_ENDPOINT = "https://api.omniture.com/admin/1.4/rest/"
 
+
 @click.command(name="read_adobe")
 @click.option("--adobe-password", required=True)
 @click.option("--adobe-username", required=True)
-@click.option("--adobe-list-report-suite")
+@click.option("--adobe-list-report-suite", type=click.BOOL, default=False)
 @click.option("--adobe-report-suite-id")
-@click.option("--adobe-report-element-id", multiple = True)
-@click.option("--adobe-report-dimension-id", multiple = True)
+@click.option("--adobe-report-element-id", multiple=True)
+@click.option("--adobe-report-metric-id", multiple=True)
+@click.option("--adobe-date-granularity", default=None)
 @click.option(
     "--adobe-day-range",
     type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
@@ -45,23 +49,111 @@ def adobe(**kwargs):
 
 
 class AdobeReader(Reader):
-    def __init__(self,password, username, **kwargs):
-      self.password = password
-      self.username = username
-    
-    @staticmethod
-    def request(api, method, data=None):
+    def __init__(self, password, username, **kwargs):
+        self.password = password
+        self.username = username
+        self.kwargs = kwargs
+
+    def request(self, api, method, data=None):
         """ Compare with https://marketing.adobe.com/developer/api-explorer """
-        api_method = '{0}.{1}'.format(api, method)
+        api_method = "{0}.{1}".format(api, method)
         data = data or dict()
         # logger.info("{}.{} {}".format(api, method, data))
         response = requests.post(
             ADOBE_API_ENDPOINT,
-            params={'method': api_method},
+            params={"method": api_method},
             data=json.dumps(data),
-            headers= build_headers(self.password, self.username)
+            headers=build_headers(self.password, self.username),
         )
         json_response = response.json()
-        #logger.debug("Response: {}".format(json_response))
+        # logger.debug("Response: {}".format(json_response))
         return json_response
+
+    def build_report_description(self):
+        report_description = {
+            "reportDescription": {
+                "reportSuiteID": self.kwargs.get("report_suite_id"),
+                "elements": [
+                    {"id": el} for el in self.kwargs.get("report_elment_id", [])
+                ],
+                "metrics": [
+                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
+                ],
+            }
+        }
+        self.set_date_gran_report_desc(report_description)
+        self.set_date_range_report_desc(report_description)
+        return report_description
+
+    def get_days_delta(self):
+        days_range = self.kwargs.get("day_range")
+        if days_range == "PREVIOUS_DAY":
+            days_delta = 1
+        elif days_range == "LAST_7_DAYS":
+            days_delta = 7
+        elif days_range == "LAST_30_DAYS":
+            days_delta = 30
+        elif days_range == "LAST_90_DAYS":
+            days_delta = 90
+        else:
+            raise Exception("{} is not handled by the reader".format(days_range))
+        return days_delta
+
+    def set_date_range_report_desc(self, report_description):
+        if self.kwargs.get("date_range") != ():
+            date_start, date_stop = self.kwargs.get("date_range")
+        else:
+            date_stop = datetime.datetime.now().date()
+            date_start = date_stop - datetime.timedelta(days=self.get_days_delta())
+        report_description["reportDescription"]["dateFrom"] = date_start.strftime(
+            "%Y-%m-%d"
+        )
+        report_description["reportDescription"]["dateTo"] = date_start.strftime(
+            "%Y-%m-%d"
+        )
+
+    def set_date_gran_report_desc(self, report_description):
+        if self.kwargs.get("date_granularity", None) is not None:
+            report_description["reportDescription"][
+                "dateGranularity"
+            ] = self.kwargs.get("date_granularity")
+    @retry
+    def query_report(self):
+        query_report = self.request(
+            api="Report", method="Queue", data=self.build_report_description()
+        )
+        return query_report
+        
+    @retry
+    def get_report(self, report_id, page_number=1):
+        response = self.request(
+            api="Report",
+            method="Get",
+            data={"reportID": report_id, "page": page_number},
+        )
+        if response.get('error') == 'report_not_ready':
+            raise ReportNotReadyError("Report not ready yet")
+        return response
     
+    def download_report(self, rep_id):
+        raw_response = self.get_report(rep_id, page_number=1)
+        all_responses = [parse(raw_response)]
+        if "totalPages" in raw_response["report"]:
+            all_responses = all_responses + [parse(self.get_report(rep_id, page_number = np)) for np in range(2, raw_response["report"]["totalPages"] + 1)]
+        return chain(* all_responses)
+
+    def read(self):
+        idf = 'list_rps'
+        if self.kwargs.get("list_report_suite", True):
+            r = self.request("Company", "GetReportSuites")
+            data = r["report_suites"]
+        else: 
+            query_rep = self.query_report()
+            rep_id = query_rep['reportID']  
+            data = self.download_report(rep_id)  
+            idf = 'report_' + rep_id 
+
+        def result_generator():
+            for record in data:
+                yield record
+        yield JSONStream("results_" + idf, result_generator())
