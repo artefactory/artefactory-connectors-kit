@@ -8,7 +8,7 @@ import binascii
 import uuid
 import hashlib
 import json
-
+from time import sleep
 from itertools import chain
 from lib.commands.command import processor
 from lib.readers.reader import Reader
@@ -27,6 +27,7 @@ LIMIT_NVIEWS_PER_REQ = 5
 
 ADOBE_API_ENDPOINT = "https://api.omniture.com/admin/1.4/rest/"
 
+MAX_WAIT_REPORT_DELAY = 1024
 
 @click.command(name="read_adobe")
 @click.option("--adobe-password", required=True)
@@ -74,7 +75,7 @@ class AdobeReader(Reader):
             "reportDescription": {
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
                 "elements": [
-                    {"id": el} for el in self.kwargs.get("report_elment_id", [])
+                    {"id": el} for el in self.kwargs.get("report_element_id", [])
                 ],
                 "metrics": [
                     {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
@@ -83,6 +84,7 @@ class AdobeReader(Reader):
         }
         self.set_date_gran_report_desc(report_description)
         self.set_date_range_report_desc(report_description)
+        logging.info(f'report_decription content {report_description}')
         return report_description
 
     def get_days_delta(self):
@@ -108,7 +110,7 @@ class AdobeReader(Reader):
         report_description["reportDescription"]["dateFrom"] = date_start.strftime(
             "%Y-%m-%d"
         )
-        report_description["reportDescription"]["dateTo"] = date_start.strftime(
+        report_description["reportDescription"]["dateTo"] = date_stop.strftime(
             "%Y-%m-%d"
         )
 
@@ -117,6 +119,7 @@ class AdobeReader(Reader):
             report_description["reportDescription"][
                 "dateGranularity"
             ] = self.kwargs.get("date_granularity")
+
     @retry
     def query_report(self):
         query_report = self.request(
@@ -131,8 +134,14 @@ class AdobeReader(Reader):
             method="Get",
             data={"reportID": report_id, "page": page_number},
         )
-        if response.get('error') == 'report_not_ready':
-            raise ReportNotReadyError("Report not ready yet")
+        idx = 0
+        while response.get('error') == 'report_not_ready':
+            logging.info(f'waiting for report to be ready {idx + 1} s')
+            sleep(idx + 1)
+            if idx + 1 > MAX_WAIT_REPORT_DELAY :
+                logging.error(f'waited too long for report to be ready')
+                break
+            idx = idx * 2 
         return response
     
     def download_report(self, rep_id):
@@ -143,10 +152,11 @@ class AdobeReader(Reader):
         return chain(* all_responses)
 
     def read(self):
-        idf = 'list_rps'
+        
         if self.kwargs.get("list_report_suite", True):
             r = self.request("Company", "GetReportSuites")
             data = r["report_suites"]
+            idf = 'list_rps'
         else: 
             query_rep = self.query_report()
             rep_id = query_rep['reportID']  
