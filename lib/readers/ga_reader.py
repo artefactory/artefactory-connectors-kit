@@ -1,26 +1,21 @@
 import click
-import config
-import os
-import logging
 import httplib2
+import logging
+import re
 
-import datetime
-
-from itertools import chain
-
+from datetime import datetime, timedelta
+from click import ClickException
 from googleapiclient import discovery
-from googleanalytics import account
 from oauth2client import client, GOOGLE_REVOKE_URI
 
 from lib.commands.command import processor
 from lib.readers.reader import Reader
 from lib.utils.args import extract_args
 from lib.utils.retry import retry
-from lib.streams.json_stream import JSONStream
+from lib.streams.normalized_json_stream import NormalizedJSONStream
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
-
-LIMIT_NVIEWS_PER_REQ = 5
+DATEFORMAT = "%Y-%m-%d"
 
 
 @click.command(name="read_ga")
@@ -28,18 +23,17 @@ LIMIT_NVIEWS_PER_REQ = 5
 @click.option("--ga-refresh-token", required=True)
 @click.option("--ga-client-id", required=True)
 @click.option("--ga-client-secret", required=True)
-@click.option("--ga-view-id", default=[], multiple=True)
+@click.option("--ga-view-id", type=click.STRING, default="")
 @click.option("--ga-account-id", default=[], multiple=True)
-@click.option("--ga-metric", multiple=True)
 @click.option("--ga-dimension", multiple=True)
+@click.option("--ga-metric", multiple=True)
+@click.option("--ga-start-date", type=click.DateTime(), default=None)
+@click.option("--ga-end-date", type=click.DateTime(), default=None)
+@click.option("--ga-date-range", nargs=2, type=click.DateTime(), default=None)
 @click.option(
-    "--ga-date-range", nargs=2, type=click.DateTime(), multiple=True, default=None
+    "--ga-day-range", type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]), default=None
 )
-@click.option(
-    "--ga-day-range",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
-    default=None,
-)
+@click.option("--ga-sampling-level", type=click.Choice(["SMALL", "DEFAULT", "LARGE"]), default="LARGE")
 @processor()
 def ga(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
@@ -47,9 +41,9 @@ def ga(**kwargs):
 
 
 class GaReader(Reader):
-    def __init__(self, access_token, refresh_token, client_secret, client_id, **kwargs):
+    def __init__(self, access_token, refresh_token, client_id, client_secret, **kwargs):
         credentials = client.GoogleCredentials(
-            access_token,
+            access_token=access_token,
             client_id=client_id,
             client_secret=client_secret,
             refresh_token=refresh_token,
@@ -61,201 +55,144 @@ class GaReader(Reader):
 
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
-        # self.client_v3 = discovery.build("analytics", "v3", http=http)
         self.client_v4 = discovery.build(
-            "analytics",
-            "v4",
-            http=http,
-            cache_discovery=False,
-            discoveryServiceUrl=DISCOVERY_URI,
+            "analytics", "v4", http=http, cache_discovery=False, discoveryServiceUrl=DISCOVERY_URI
         )
         self.client_v3 = discovery.build("analytics", "v3", http=http)
         self.kwargs = kwargs
         self.kwargs["credentials"] = credentials
         self.views_metadata = {}
-        self.view_ids = self.get_view_ids()
+        self.view_id = self.kwargs.get("view_id")
+        self.date_range = self.get_date_range_for_ga_request()
+        self.sampling_level = self.kwargs.get("sampling_level")
 
-    def get_accounts(self):
-        accounts_infos = (
-            self.client_v3.management().accounts().list().execute()["items"]
-        )
-        if accounts_infos == []:
-            raise Exception("account_id not found")
+    def get_date_range_for_ga_request(self):
+        start_date = self.kwargs.get("start_date")
+        end_date = self.kwargs.get("end_date")
+        date_range = self.kwargs.get("date_range")
+        day_range = self.kwargs.get("day_range")
 
-        accounts_id = self.kwargs.get("account_id")
-        if (accounts_id is not None) and (accounts_id != []):
-            for account_id in accounts_id:
-                accounts_infos.append([
-                    acc_inf for acc_inf in accounts_infos if acc_inf["id"] == account_id
-                ])
-        accounts = []
-        flatten = lambda l: [item for sublist in l for item in sublist]
-        for raw in flatten(accounts_infos):
-            try:
-                acc = account.Account(raw, self.client_v3, self.kwargs["credentials"])
-                accounts.append(acc)
-            except:
-                continue
-        return accounts
-
-    def get_acc_propeties_ids(self, account):
-        return [p.id for p in account.webproperties]
-
-    def get_acc_view_ids(self, account):
-        properties_ids = [p.id for p in account.webproperties]
-        flatten = lambda l: [item for sublist in l for item in sublist]
-
-        properties = [
-            self.client_v3.management()
-                .profiles()
-                .list(accountId=account.id, webPropertyId=pid)
-                .execute()
-            for pid in properties_ids
-        ]
-        properties_views_ids = []
-        for idx, p in enumerate(properties):
-            property_views_ids = []
-            for el in p["items"]:
-                property_views_ids.append(el["id"])
-                self.views_metadata[el['id']] = {
-                    "view_name": el['name'],
-                    "account_id": account.id,
-                    "account_name": account.name,
-                    "property_id": el["webPropertyId"],
-                    "property_name": account.webproperties[idx].name
-                }
-            properties_views_ids.append(property_views_ids)
-        return flatten(properties_views_ids)
-
-    def get_view_ids(self):
-        if not hasattr(self, "view_ids") or self.view_ids is None:
-            view_ids = self.kwargs.get("view_id", [])
-            if view_ids == []:
-                flatten = lambda l: [item for sublist in l for item in sublist]
-                accounts = self.get_accounts()
-                return flatten([self.get_acc_view_ids(account) for account in accounts])
-            else:
-                return view_ids
+        if start_date and end_date:
+            logging.info("ℹ️ Date format used for request : startDate and EndDate")
+            return self.create_date_range(start_date, end_date)
+        elif date_range:
+            logging.info("ℹ️ Date format used for request : DateRange")
+            return self.create_date_range(date_range[0], date_range[1])
+        elif day_range:
+            logging.info("ℹ️ Date format used for request : Day_range")
+            return self.generate_date_range_with_day_range(day_range)
         else:
-            return self.view_ids
-
-    def get_days_delta(self):
-        days_range = self.kwargs.get("day_range")
-        if days_range == "PREVIOUS_DAY":
-            days_delta = 1
-        elif days_range == "LAST_7_DAYS":
-            days_delta = 7
-        elif days_range == "LAST_30_DAYS":
-            days_delta = 30
-        elif days_range == "LAST_90_DAYS":
-            days_delta = 90
-        else:
-            raise Exception("{} is not handled by the reader".format(days_range))
-        return days_delta
-
-    def get_date_ranges(self):
-        date_ranges = self.kwargs.get("date_range")
-        days_range = self.kwargs.get("day_range")
-        if date_ranges:
-            starts = [date_range[0] for date_range in date_ranges]
-            idxs = sorted(range(len(starts)), key=lambda k: starts[k])
-            date_ranges_sorted = [
-                {
-                    "startDate": date_ranges[idx][0].strftime("%Y-%m-%d"),
-                    "endDate": date_ranges[idx][1].strftime("%Y-%m-%d"),
-                }
-                for idx in idxs
-            ]
-            assert (
-                    len(
-                        [el for el in date_ranges_sorted if
-                         el["startDate"] > el["endDate"]]
-                    )
-                    == 0
-            ), "date start should be inferior to date end"
-            return date_ranges_sorted
-        elif days_range:
-            days_delta = self.get_days_delta()
-            d2 = datetime.datetime.now().date()
-            d1 = d2 - datetime.timedelta(days=days_delta)
-            return [
-                {
-                    "startDate": d1.strftime("%Y-%m-%d"),
-                    "endDate": d2.strftime("%Y-%m-%d"),
-                }
-            ]
-        else:
+            logging.warning(f"⚠️ No date range provided - Last 7 days by default ⚠️")
             return []
 
-    def get_report_requests(self, offset=0):
-        view_id = self.get_view_ids()[offset]
-        date_ranges = self.get_date_ranges()
+    def generate_date_range_with_day_range(self, day_range):
+        days_delta = self.get_days_delta(day_range)
+        current_day = datetime.now().date()
+        d2 = current_day - timedelta(days=1)
+        d1 = current_day - timedelta(days=days_delta)
+        return self.create_date_range(d1, d2)
 
-        report_requests = [
-            {
-                "viewId": view_id,
-                "metrics": [
-                    {"expression": val} for val in self.kwargs.get("metric", [])
-                ],
-                "dimensions": [
-                    {"name": val} for val in self.kwargs.get("dimension", [])
-                ],
-            }
-            if (len(date_ranges) == 0)
-            else {
-                "dateRanges": date_ranges,
-                "viewId": view_id,
-                "metrics": [
-                    {"expression": val} for val in self.kwargs.get("metric", [])
-                ],
-                "dimensions": [
-                    {"name": val} for val in self.kwargs.get("dimension", [])
-                ],
-            }
-        ]
-        return report_requests
+    @staticmethod
+    def create_date_range(start_date, end_date):
+        return {"startDate": start_date.strftime(DATEFORMAT), "endDate": end_date.strftime(DATEFORMAT)}
+
+    @staticmethod
+    def get_days_delta(day_range):
+        delta_mapping = {"PREVIOUS_DAY": 1, "LAST_7_DAYS": 7, "LAST_30_DAYS": 30, "LAST_90_DAYS": 90}
+        try:
+            days_delta = delta_mapping[day_range]
+        except KeyError:
+            raise ClickException("{} is not handled by the reader".format(day_range))
+        return days_delta
+
+    def get_report_requests(self, view_ids):
+        return [self.get_view_id_report_request(view_id) for view_id in view_ids]
+
+    def get_view_id_report_request(self, view_id):
+        metrics = self.kwargs.get("metric", [])
+        dimensions = self.kwargs.get("dimension", [])
+        report_request = {
+            "viewId": view_id,
+            "metrics": [{"expression": metric} for metric in metrics],
+            "dimensions": [{"name": dimension} for dimension in dimensions],
+            "pageSize": 50000,
+            "samplingLevel": self.sampling_level,
+        }
+        if len(self.date_range) > 0:
+            report_request["dateRanges"] = [self.date_range]
+        return report_request
+
+    @staticmethod
+    def log_sampling(report):
+        """ Log sampling data if a report has been sampled."""
+        data = report.get("data", {})
+
+        if data.get("samplesReadCounts") is not None:
+            logging.warning("☝️Report has been sampled.")
+            sample_reads = data["samplesReadCounts"][0]
+            sample_space = data["samplingSpaceSizes"][0]
+            logging.warning(f"sample reads : {sample_reads}")
+            logging.warning(f"sample space :{sample_space}")
+
+            logging.warning(f"sample percent :{100 * int(sample_reads) / int(sample_space)}%")
+        else:
+            logging.info("Report is not sampled.")
+
+    @staticmethod
+    def format_date(dateYYYYMMDD):
+        return datetime.strptime(dateYYYYMMDD, "%Y%m%d").strftime(DATEFORMAT)
 
     @retry
     def _run_query(self):
-        bodies = []
-        offset = 0
-        while offset < len(self.get_view_ids()):
-            body = {"reportRequests": self.get_report_requests(offset)}
-            offset = offset + 1
-            bodies.append(body)
+        body = {"reportRequests": self.get_report_requests([self.view_id])}
 
-        for el in chain(
-                *[
-                    self.client_v4.reports().batchGet(body=body).execute()["reports"]
-                    for body in bodies
-                ]
-        ):
-            yield el
+        try:
+            report_page = self.client_v4.reports().batchGet(body=body).execute()
+            self.log_sampling(report_page["reports"][0])
+            yield report_page["reports"][0]
 
-    def _format_record(self, row, idx_view, report):
-        dimensions_names = report["columnHeader"]["dimensions"]
-        row["dimensions_names"] = dimensions_names
-        metrics_infos = report["columnHeader"]["metricHeader"]["metricHeaderEntries"]
-        row["metrics_infos"] = metrics_infos
-        row["view_id"] = self.get_view_ids()[idx_view]
-        if row["view_id"] in self.views_metadata:
-            for k, v in self.views_metadata[row["view_id"]].items():
-                row[k] = v
-        return row
+            while "nextPageToken" in report_page["reports"][0]:
+                page_token = report_page["reports"][0]["nextPageToken"]
+                body["reportRequests"][0]["pageToken"] = page_token
+                report_page = self.client_v4.reports().batchGet(body=body).execute()
+                yield report_page["reports"][0]
+        except Exception as e:
+            raise ClickException("failed while requesting pages of the report: {}".format(e))
+
+    @staticmethod
+    def format_and_yield(report):
+        dimension_names = report["columnHeader"]["dimensions"]
+        metric_names = [m["name"] for m in report["columnHeader"]["metricHeader"]["metricHeaderEntries"]]
+        for row in report["data"].get("rows", []):
+            row_dimension_values = row["dimensions"]
+            row_metric_values = row["metrics"][0]["values"]
+            formatted_response = {}
+
+            for dim, value in zip(dimension_names, row_dimension_values):
+                formatted_response[dim] = value
+
+            for metric, metric_value in zip(metric_names, row_metric_values):
+                formatted_response[metric] = metric_value
+
+            if "ga:date" in formatted_response:
+                formatted_response["ga:date"] = GaReader.format_date(formatted_response["ga:date"])
+
+            yield formatted_response
+
+    def result_generator(self):
+        for report in self._run_query():
+            if "data" in report:
+                yield from self.format_and_yield(report)
+            else:
+                return None
 
     def read(self):
-        reports = self._run_query()
+        yield GaStream("result_view_" + self.view_id, self.result_generator())
 
-        def result_generator(idx_view, report):
-            if "rows" in report["data"]:
-                for row in report["data"]["rows"]:
-                    yield self._format_record(row, idx_view, report)
-            else:
-                yield
 
-        view_ids = self.get_view_ids()
-        for idx_view, report in enumerate(reports):
-            yield JSONStream(
-                "result_view_" + str(view_ids[idx_view]),
-                result_generator(idx_view, report),
-            )
+class GaStream(NormalizedJSONStream):
+    GA_PREFIX = "^ga:"
+
+    @staticmethod
+    def _normalize_key(key):
+        return re.split(GaStream.GA_PREFIX, key)[-1].replace(" ", "_").replace("-", "_")
