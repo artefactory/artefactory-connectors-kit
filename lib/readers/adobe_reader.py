@@ -157,7 +157,7 @@ class AdobeReader(Reader):
         return chain(*all_responses)
 
     def read(self):
-        if self.kwargs.get("list_report_suite", True):
+        if self.kwargs.get("list_report_suite", False):
             r = self.request("Company", "GetReportSuites")
             data = r["report_suites"]
             idf = "list_rps"

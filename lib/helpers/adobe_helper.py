@@ -5,8 +5,7 @@ import hashlib
 import more_itertools
 import logging
 import json
-import numpy as np
-import pandas as pd
+
 
 
 ## Credit goes to Mr Martin Winkel for the base code provided :
@@ -90,7 +89,7 @@ def _parse_most_granular(data, metric_count):
     logging.debug("Parsing most granular level of data.")
     rows = list()
     for chunk in data:
-        part_rows = [(val if val != "" else np.nan) for val in chunk["counts"]]
+        part_rows = [(val if val != "" else None) for val in chunk["counts"]]
         # data alignment is a bit different if adding granularity breakdowns
         if len(chunk["counts"]) > metric_count:
             part_rows = more_itertools.chunked(iterable=part_rows, n=metric_count + 1)
@@ -104,7 +103,7 @@ def _parse_most_granular(data, metric_count):
 
 def _dimension_value(chunk):
     if _dimension_value_is_nan(chunk):
-        return np.nan
+        return None
     elif "year" in chunk:
         return _to_datetime(chunk)
     else:

@@ -10,6 +10,8 @@ from lib.readers.facebook_reader import facebook_marketing
 from lib.readers.dbm_reader import dbm
 from lib.readers.ga_reader import ga
 from lib.readers.search_console_reader import search_console
+from lib.readers.adobe_reader import adobe
+
 
 readers = [
     mysql,
@@ -22,6 +24,7 @@ readers = [
     dbm,
     ga,
     search_console,
+    adobe
 ]
 
 
