@@ -43,8 +43,8 @@ MAX_WAIT_REPORT_DELAY = 1024
     type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
     default=None,
 )
-@click.option("--adobe-date-start", type=click.DateTime())
-@click.option("--adobe-date-stop", default=None, type=click.DateTime())
+@click.option("--adobe-start-date", type=click.DateTime())
+@click.option("--adobe-end-date", default=None, type=click.DateTime())
 @processor("password", "username")
 def adobe(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
@@ -105,15 +105,15 @@ class AdobeReader(Reader):
 
     def set_date_range_report_desc(self, report_description):
         if self.kwargs.get("date_range") != ():
-            date_start = self.kwargs.get("date_start")
-            date_stop = self.kwargs.get("date_stop", datetime.datetime.now())
+            start_date = self.kwargs.get("start_date")
+            end_date = self.kwargs.get("end_date", datetime.datetime.now())
         else:
-            date_stop = datetime.datetime.now().date()
-            date_start = date_stop - datetime.timedelta(days=self.get_days_delta())
-        report_description["reportDescription"]["dateFrom"] = date_start.strftime(
+            end_date = datetime.datetime.now().date()
+            start_date = end_date - datetime.timedelta(days=self.get_days_delta())
+        report_description["reportDescription"]["dateFrom"] = start_date.strftime(
             "%Y-%m-%d"
         )
-        report_description["reportDescription"]["dateTo"] = date_stop.strftime(
+        report_description["reportDescription"]["dateTo"] = end_date.strftime(
             "%Y-%m-%d"
         )
 
