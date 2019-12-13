@@ -43,8 +43,8 @@ MAX_WAIT_REPORT_DELAY = 1024
     type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
     default=None,
 )
-@click.option("--adobe-date-start",  type=click.DateTime())
-@click.option("--adobe-date-stop", default = None ,type=click.DateTime())
+@click.option("--adobe-date-start", type=click.DateTime())
+@click.option("--adobe-date-stop", default=None, type=click.DateTime())
 @processor("password", "username")
 def adobe(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API

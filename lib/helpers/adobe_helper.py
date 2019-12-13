@@ -56,6 +56,7 @@ def _fix_header(dimensions, metrics, data):
         return ["Datetime"] + header
     return header
 
+
 def _parse_data(data, metric_count):
     """
     Recursive parsing of the "data" part of the Adobe response.
