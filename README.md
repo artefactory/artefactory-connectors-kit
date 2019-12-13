@@ -15,6 +15,7 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 - Oracle
 - SalesForce
 - MySQL
+- Adobe Analytics 1.4 
 
 ### Writers
 

@@ -43,7 +43,8 @@ MAX_WAIT_REPORT_DELAY = 1024
     type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
     default=None,
 )
-@click.option("--adobe-date-range", nargs=2, type=click.DateTime())
+@click.option("--adobe-date-start",  type=click.DateTime())
+@click.option("--adobe-date-stop", default = None ,type=click.DateTime())
 @processor("password", "username")
 def adobe(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
@@ -104,7 +105,8 @@ class AdobeReader(Reader):
 
     def set_date_range_report_desc(self, report_description):
         if self.kwargs.get("date_range") != ():
-            date_start, date_stop = self.kwargs.get("date_range")
+            date_start = self.kwargs.get("date_start")
+            date_stop = self.kwargs.get("date_stop", datetime.datetime.now())
         else:
             date_stop = datetime.datetime.now().date()
             date_start = date_stop - datetime.timedelta(days=self.get_days_delta())
@@ -135,9 +137,9 @@ class AdobeReader(Reader):
             method="Get",
             data={"reportID": report_id, "page": page_number},
         )
-        idx = 0
+        idx = 1
         while response.get("error") == "report_not_ready":
-            logging.info(f"waiting for report to be ready {idx + 1} s")
+            logging.info(f"waiting {idx} s for report to be ready")
             sleep(idx + 1)
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
                 raise ReportNotReadyError(f"waited too long for report to be ready")
