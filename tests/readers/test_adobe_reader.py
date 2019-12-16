@@ -41,5 +41,4 @@ class AdobeReaderTest(TestCase):
             if len(list(reader.read())) > 1:
                 assert False, "Data is not empty"
 
-        print("running tests")
         test_read_empty_data(mock_download_report, mock_query_report)
