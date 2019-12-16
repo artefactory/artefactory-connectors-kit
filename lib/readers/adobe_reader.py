@@ -27,7 +27,7 @@ LIMIT_NVIEWS_PER_REQ = 5
 
 ADOBE_API_ENDPOINT = "https://api.omniture.com/admin/1.4/rest/"
 
-MAX_WAIT_REPORT_DELAY = 1024
+MAX_WAIT_REPORT_DELAY = 4096
 
 
 @click.command(name="read_adobe")
