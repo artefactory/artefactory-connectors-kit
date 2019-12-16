@@ -38,7 +38,7 @@ def get_generator_dict_from_str_csv(
 
 
 def reformat_naming_for_bq(text, char="_"):
-    text = re.sub(r"\([^()]*\)", "", text)
+    text = re.sub(r"\([^()]*\)", "", text).strip()
     text = re.sub(r"[\s\W]+", char, text)
     text = re.sub(r"["+char+"]+", char, text.strip())   
     return text.lower()
