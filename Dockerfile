@@ -40,4 +40,4 @@ RUN chmod -R 0644 /app
 WORKDIR /app/
 ENV PYTHONPATH=${PYTHONPATH}:.
 
-CMD ["python3", "./bin/run.py"]
+ENTRYPOINT ["python3", "./bin/run.py"]
