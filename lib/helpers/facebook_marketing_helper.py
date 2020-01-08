@@ -1,24 +1,12 @@
 from facebook_business.adobjects.adsinsights import AdsInsights
-from facebook_business.adobjects.campaign import Campaign
 
-
-BREAKDOWNS_POSSIBLE_VALUES = [
-    v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")
-]
+BREAKDOWNS_POSSIBLE_VALUES = [v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")]
 
 ACTION_BREAKDOWNS_POSSIBLE_VALUES = [
-    v
-    for k, v in AdsInsights.ActionBreakdowns.__dict__.items()
-    if not k.startswith("__")
+    v for k, v in AdsInsights.ActionBreakdowns.__dict__.items() if not k.startswith("__")
 ]
 
-AD_OBJECT_TYPES = [
-    "ad_account_object",
-    "ad_campaign_object",
-    "adset_object",
-    "ad_object",
-    "ad_user",
-]
+AD_OBJECT_TYPES = ["adaccount", "campaign", "adset", "ad", "user"]
 
 LEVELS_POSSIBLE_VALUES = ["ad", "adset", "campaign", "account"]
 
@@ -56,9 +44,9 @@ CMP_POSSIBLE_VALUES = [
     "updated_time",
 ]
 
-# should have done this list comprehension selection but, some of the fields are obsolet and doesn't work, i took the most importants
+# should have done this list comprehension selection but
+# some of the fields are obsolet and doesn't work, i took the most important
 # ADS_POSSIBLE_VALUES = [v for k,v in AdSet.Field.__dict__.items() if not k.startswith("__")]
-
 ADS_POSSIBLE_VALUES = [
     "account_id",
     "adlabels",
@@ -82,3 +70,5 @@ ADS_POSSIBLE_VALUES = [
     "start_time",
     "status",
 ]
+
+DATE_PRESETS = [v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")]
