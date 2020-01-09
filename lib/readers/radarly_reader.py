@@ -29,18 +29,18 @@ class DateRangeSplit(NamedTuple):
 
 
 @click.command(name="read_radarly")
-@click.option("--radarly-pid", required=True)
-@click.option("--radarly-focus-id", required=True, multiple=True, type=int)
+@click.option("--radarly-pid", required=True, type=click.INT)
+@click.option("--radarly-focus-id", required=True, multiple=True, type=click.INT)
 @click.option("--radarly-start-date", required=True,
               type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]))
 @click.option("--radarly-end-date", required=True,
               type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]))
-@click.option("--radarly-api-request-limit", default=250, type=int)
-@click.option("--radarly-api-date-period-limit", default=int(1e4), type=int)
-@click.option("--radarly-api-quarterly-posts-limit", default=int(45e3), type=int)
-@click.option("--radarly-api-time-sleep", default=300, type=int)
-@click.option("--radarly-throttle", default=True, type=bool)
-@click.option("--radarly-throttling-threshold-coefficient", default=0.95, type=float)
+@click.option("--radarly-api-request-limit", default=250, type=click.INT)
+@click.option("--radarly-api-date-period-limit", default=int(1e4), type=click.INT)
+@click.option("--radarly-api-quarterly-posts-limit", default=int(45e3), type=click.INT)
+@click.option("--radarly-api-time-sleep", default=300, type=click.INT)
+@click.option("--radarly-throttle", default=True, type=click.BOOL)
+@click.option("--radarly-throttling-threshold-coefficient", default=0.95, type=click.FLOAT)
 @processor()
 def radarly(**kwargs):
     return RadarlyReader(**extract_args('radarly_', kwargs))
@@ -50,7 +50,7 @@ class RadarlyReader(Reader):
 
     def __init__(self,
                  pid: int,
-                 focus_id: Tuple[int],
+                 focus_id: Tuple[int, ...],
                  start_date: datetime,
                  end_date: datetime,
                  api_request_limit: int,
@@ -69,8 +69,7 @@ class RadarlyReader(Reader):
 
         self.pid = pid
         self.project = self.get_project(pid=self.pid)
-        self.focus_ids = list(focus_id)
-        logging.debug(f'Focus ids {self.focus_ids}')
+        self.focus_ids: List[int] = list(focus_id)
 
         self.start_date = start_date
         self.end_date = end_date
@@ -97,7 +96,10 @@ class RadarlyReader(Reader):
                 posts_ingested_over_window = sum(
                     np.array(ingestion_tracker) > current_time - self.api_time_sleep) * self.api_date_period_limit
                 if posts_ingested_over_window > self.throttling_threshold_coefficient * self.api_quarterly_posts_limit:
-                    time.sleep(self.api_time_sleep * (self.api_date_period_limit / self.api_quarterly_posts_limit))
+                    sleep_duration = self.api_time_sleep * (self.api_date_period_limit / self.api_quarterly_posts_limit)
+                    logging.info(f'Throttling activated: waiting for {sleep_duration} seconds...')
+                    time.sleep(sleep_duration)
+
 
             all_publications = self.get_publications_iterator(date_range)
             name = f'''radarly_{date_range[0].strftime("%Y-%m-%d-%H-%M-%S")}_{date_range[1].strftime(
@@ -117,7 +119,7 @@ class RadarlyReader(Reader):
     def get_publications_iterator(self, date_range: Tuple[datetime, datetime]):
         param = self.get_payload(date_range[0], date_range[1])
         all_publications = self.project.get_all_publications(param)
-        logging.info(f'Storing posts from {date_range[0]} to {date_range[1]}')
+        logging.info(f'Getting posts from {date_range[0]} to {date_range[1]}')
         return all_publications
 
     @staticmethod
