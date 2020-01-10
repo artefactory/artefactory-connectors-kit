@@ -9,14 +9,15 @@ from lib.utils.args import extract_args
 from lib.commands.command import processor
 from lib.utils.retry import retry
 from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.helpers.facebook_marketing_helper import (
+from lib.helpers.facebook_helper import (
     AD_OBJECT_TYPES,
     BREAKDOWNS_POSSIBLE_VALUES,
-    ACTION_BREAKDOWNS_POSSIBLE_VALUES,
     LEVELS_POSSIBLE_VALUES,
     CMP_POSSIBLE_VALUES,
     ADS_POSSIBLE_VALUES,
     DATE_PRESETS,
+    DESIRED_FIELDS,
+    get_field_value,
 )
 
 from facebook_business.api import FacebookAdsApi
@@ -41,10 +42,12 @@ DATEFORMAT = "%Y-%m-%d"
     type=click.Choice(BREAKDOWNS_POSSIBLE_VALUES),
     help="https://developers.facebook.com/docs/marketing-api/insights/breakdowns/",
 )
+# At this time, the Facebook connector only handle the action-breakdown "action_type"
 @click.option(
     "--facebook-action-breakdown",
     multiple=True,
-    type=click.Choice(ACTION_BREAKDOWNS_POSSIBLE_VALUES),
+    type=click.Choice("action_type"),
+    default=["action_type"],
     help="https://developers.facebook.com/docs/marketing-api/insights/breakdowns#actionsbreakdown",
 )
 @click.option(
@@ -60,7 +63,14 @@ DATEFORMAT = "%Y-%m-%d"
     help="Granularity of insights",
 )
 @click.option("--facebook-time-increment")
-@click.option("--facebook-field", multiple=True)
+@click.option("--facebook-field", multiple=True, help="Facebook API fields for the request")
+@click.option(
+    "--facebook-desired-field",
+    multiple=True,
+    type=click.Choice(list(DESIRED_FIELDS.keys())),
+    help="Desired fields to get in the output report."
+    "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
+)
 @click.option("--facebook-start-date", type=click.DateTime())
 @click.option("--facebook-end-date", type=click.DateTime())
 @click.option("--facebook-date-preset", type=click.Choice(DATE_PRESETS))
@@ -88,6 +98,7 @@ class FacebookMarketingReader(Reader):
         ad_level,
         time_increment,
         field,
+        desired_field,
         start_date,
         end_date,
         date_preset,
@@ -104,6 +115,7 @@ class FacebookMarketingReader(Reader):
         self.ad_level = ad_level
         self.time_increment = time_increment or False
         self.fields = list(field)
+        self.desired_fields = list(desired_field)
         self.start_date = start_date
         self.end_date = end_date
         self.date_preset = date_preset
@@ -173,6 +185,13 @@ class FacebookMarketingReader(Reader):
     def create_time_range(start_date, end_date):
         return {"since": start_date.strftime(DATEFORMAT), "until": end_date.strftime(DATEFORMAT)}
 
+    def format_and_yield(self, record):
+        yield {field: get_field_value(record, field) for field in self.desired_fields}
+
+    def result_generator(self, data):
+        for record in data:
+            yield from self.format_and_yield(record.export_all_data())
+
     def read(self):
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
         params = self.get_params()
@@ -192,8 +211,6 @@ class FacebookMarketingReader(Reader):
         except KeyError:
             raise ClickException("`{}` is not a valid adObject type".format(self.ad_object_type))
 
-        def result_generator():
-            for record in data:
-                yield record.export_all_data()
-
-        yield NormalizedJSONStream("results_" + self.ad_object_type + "_" + str(self.ad_object_id), result_generator())
+        yield NormalizedJSONStream(
+            "results_" + self.ad_object_type + "_" + str(self.ad_object_id), self.result_generator(data)
+        )

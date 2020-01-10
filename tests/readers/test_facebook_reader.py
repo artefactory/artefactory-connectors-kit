@@ -21,6 +21,7 @@ class FacebookReaderTest(TestCase):
         "ad_object_id": "",
         "recurse_level": 0,
         "ad_object_type": "adaccount",
+        "desired_fields": ["date_start", "impressions"],
     }
 
     @mock.patch("lib.readers.facebook_reader.FacebookMarketingReader.run_query_on_fb_account_obj")
@@ -40,12 +41,33 @@ class FacebookReaderTest(TestCase):
     def test_read_data(self, mock_query):
         reader = FacebookMarketingReader(**self.kwargs)
         row1, row2 = AdsInsights(), AdsInsights()
-        row1.set_data({"date_start": "2019-01-01", "clicks": "1"})
+        row1.set_data({"date_start": "2019-01-01", "impressions": "1"})
         row2.set_data({"date_start": "2019-01-01", "impressions": "2"})
         mock_query.return_value = [row1, row2]
 
-        expected = [{"date_start": "2019-01-01", "clicks": "1"}, {"date_start": "2019-01-01", "impressions": "2"}]
+        expected = [{"date_start": "2019-01-01", "impressions": "1"}, {"date_start": "2019-01-01", "impressions": "2"}]
 
         for data in reader.read():
             for record, output in zip(data.readlines(), iter(expected)):
                 assert record == output
+
+    @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
+    def test_format_standard_field(self):
+        kwargs = {"desired_fields": ["clicks", "gender", "impressions"]}
+        record = {"clicks": "0", "date_start": "2020-01-01", "gender": "unknown", "impressions": "300"}
+        expected = {"clicks": "0", "gender": "unknown", "impressions": "300"}
+        assert next(FacebookMarketingReader(**kwargs).format_and_yield(record)) == expected
+
+    @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
+    def test_format_nested_field(self):
+        kwargs = {"desired_fields": ["outbound_clicks"]}
+        record = {"outbound_clicks": [{"action_type": "outbound_click", "value": "1"}]}
+        expected = {"outbound_clicks": "1"}
+        assert next(FacebookMarketingReader(**kwargs).format_and_yield(record)) == expected
+
+    @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
+    def test_format_field_not_in_report(self):
+        kwargs = {"desired_fields": ["age", "outbound_clicks"]}
+        record = {"gender": "unknown"}
+        expected = {"age": None, "outbound_clicks": None}
+        assert next(FacebookMarketingReader(**kwargs).format_and_yield(record)) == expected
