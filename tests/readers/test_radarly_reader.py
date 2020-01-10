@@ -1,12 +1,11 @@
-from datetime import datetime
 from lib.readers.radarly_reader import RadarlyReader
 import unittest
 from unittest import TestCase, mock
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock
 
 import logging
 from datetime import datetime, timedelta
-from typing import *
+from typing import Tuple
 import numpy as np
 import json
 
@@ -37,10 +36,9 @@ class RadarlyReaderTest(TestCase):
             'Mock RadarlyApi successfully initiated')
         mock_get_payload.side_effect = create_mock_payload
         mock_project_object = MagicMock()
-        mock_project_object.get_all_publications.side_effect = create_mock_publications_iterator
+        mock_project_object.get_all_publications = create_mock_publications_iterator
         mock_Project.find.return_value = mock_project_object
 
-        # mock_Project.find.side_effect = lambda pid: logging.info('Radarly project successfully found')
         reader = RadarlyReader(pid=1, focus_id=(1, 2, 3), start_date=datetime(2020, 1, 1),
                                end_date=datetime(2020, 1, 1, 3),
                                api_request_limit=250, api_date_period_limit=10000, api_quarterly_posts_limit=45000,
@@ -52,7 +50,7 @@ class RadarlyReaderTest(TestCase):
             print(line)
             assert 'date' in line.keys()
             assert 'text' in line.keys()
-        
+
 
 if __name__ == '__main__':
     unittest.main()
