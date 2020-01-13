@@ -18,8 +18,10 @@ def create_mock_publications_iterator(param: Tuple[datetime, datetime, int]) -> 
     start_date, end_date, total = param
     delta = (end_date - start_date).total_seconds()
     mock_publications_iterator = MagicMock()
-    mock_publications_iterator.__iter__.return_value = [{'date': start_date + timedelta(x), 'text': 'random text'} for x
-                                                        in np.linspace(start=0, stop=delta, num=total)]
+    mocked_publications = iter([{'date': start_date + timedelta(x), 'text': 'random text'} for x
+                                in np.linspace(start=0, stop=delta, num=total)])
+    mock_publications_iterator.__iter__.return_value = mocked_publications
+    mock_publications_iterator.__next__ = lambda x: next(mocked_publications)
     mock_publications_iterator.total = total
 
     return mock_publications_iterator
@@ -39,18 +41,13 @@ class RadarlyReaderTest(TestCase):
         mock_project_object.get_all_publications = create_mock_publications_iterator
         mock_Project.find.return_value = mock_project_object
 
-        reader = RadarlyReader(pid=1, focus_id=(1, 2, 3), start_date=datetime(2020, 1, 1),
-                               end_date=datetime(2020, 1, 1, 3),
+        reader = RadarlyReader(pid=1, client_id='xxx', client_secret='xxx', focus_id=(1, 2, 3),
+                               start_date=datetime(2020, 1, 1), end_date=datetime(2020, 1, 1, 3),
                                api_request_limit=250, api_date_period_limit=10000, api_quarterly_posts_limit=45000,
-                               api_time_sleep=300, throttle=True, throttling_threshold_coefficient=0.95)
+                               api_window=300, throttle=True, throttling_threshold_coefficient=0.95)
 
         for stream in reader.read():
             line = stream.as_file().readline()
             line = json.loads(line)
-            print(line)
             assert 'date' in line.keys()
             assert 'text' in line.keys()
-
-
-if __name__ == '__main__':
-    unittest.main()

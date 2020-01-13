@@ -29,17 +29,25 @@ class DateRangeSplit(NamedTuple):
 
 
 @click.command(name="read_radarly")
-@click.option("--radarly-pid", required=True, type=click.INT)
-@click.option("--radarly-focus-id", required=True, multiple=True, type=click.INT)
+@click.option("--radarly-pid", required=True, type=click.INT, help='Radarly Project ID')
+@click.option("--radarly-client-id", required=True, type=click.STRING)
+@click.option("--radarly-client-secret", required=True, type=click.STRING)
+@click.option("--radarly-focus-id", required=True, multiple=True, type=click.INT,
+              help='Focus IDs (from Radarly queries)')
 @click.option("--radarly-start-date", required=True,
               type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]))
 @click.option("--radarly-end-date", required=True,
               type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]))
-@click.option("--radarly-api-request-limit", default=250, type=click.INT)
-@click.option("--radarly-api-date-period-limit", default=int(1e4), type=click.INT)
-@click.option("--radarly-api-quarterly-posts-limit", default=int(45e3), type=click.INT)
-@click.option("--radarly-api-time-sleep", default=300, type=click.INT)
-@click.option("--radarly-throttle", default=True, type=click.BOOL)
+@click.option("--radarly-api-request-limit", default=250, type=click.INT, help='Max number of posts per API request')
+@click.option("--radarly-api-date-period-limit", default=int(1e4), type=click.INT,
+              help='Max number of posts in a single API search query')
+@click.option("--radarly-api-quarterly-posts-limit", default=int(45e3), type=click.INT,
+              help='Max number of posts requested in the window (usually 15 min) (see Radarly documentation)')
+@click.option("--radarly-api-window", default=300, type=click.INT,
+              help='Duration of the window (usually 300 seconds)')
+@click.option("--radarly-throttle", default=True, type=click.BOOL,
+              help='''If set to True, forces the connector to abide by official Radarly API limitations 
+              (using the api-quarterly-posts-limit parameter)''')
 @click.option("--radarly-throttling-threshold-coefficient", default=0.95, type=click.FLOAT)
 @processor()
 def radarly(**kwargs):
@@ -50,22 +58,24 @@ class RadarlyReader(Reader):
 
     def __init__(self,
                  pid: int,
+                 client_id: str,
+                 client_secret: str,
                  focus_id: Tuple[int, ...],
                  start_date: datetime,
                  end_date: datetime,
                  api_request_limit: int,
                  api_date_period_limit: int,
                  api_quarterly_posts_limit: int,
-                 api_time_sleep: int,
+                 api_window: int,
                  throttle: bool,
                  throttling_threshold_coefficient: float):
 
         self.api_request_limit = api_request_limit
         self.api_date_period_limit = api_date_period_limit
         self.api_quarterly_posts_limit = api_quarterly_posts_limit
-        self.api_time_sleep = api_time_sleep
+        self.api_window = api_window
 
-        RadarlyApi.init(client_id=config.CLIENT_ID, client_secret=config.CLIENT_SECRET)
+        RadarlyApi.init(client_id=client_id, client_secret=client_secret)
 
         self.pid = pid
         self.project = self.get_project(pid=self.pid)
@@ -81,9 +91,9 @@ class RadarlyReader(Reader):
         """
         :return: stream that returns Radarly posts one by one
         """
-        api_compliant_date_ranges: Dict = self.split_date_range()
-        logging.info(f'API Compliant Date Ranges: {api_compliant_date_ranges}')
-        api_compliant_date_ranges = list(api_compliant_date_ranges.keys())
+        date_ranges_and_posts_volumes: Dict = self.split_date_range()
+        logging.info(f'API Compliant Date Ranges and Posts Volumes: {date_ranges_and_posts_volumes}')
+        api_compliant_date_ranges = list(date_ranges_and_posts_volumes.keys())
 
         t0 = time.time()
         ingestion_tracker = []
@@ -94,22 +104,24 @@ class RadarlyReader(Reader):
                 current_time = time.time() - t0
                 ingestion_tracker.append(current_time)
                 posts_ingested_over_window = sum(
-                    np.array(ingestion_tracker) > current_time - self.api_time_sleep) * self.api_date_period_limit
+                    np.array(ingestion_tracker) > current_time - self.api_window) * self.api_date_period_limit
                 if posts_ingested_over_window > self.throttling_threshold_coefficient * self.api_quarterly_posts_limit:
-                    sleep_duration = self.api_time_sleep * (self.api_date_period_limit / self.api_quarterly_posts_limit)
+                    sleep_duration = self.api_window * (self.api_date_period_limit / self.api_quarterly_posts_limit)
                     logging.info(f'Throttling activated: waiting for {sleep_duration} seconds...')
                     time.sleep(sleep_duration)
-
 
             all_publications = self.get_publications_iterator(date_range)
             name = f'''radarly_{date_range[0].strftime("%Y-%m-%d-%H-%M-%S")}_{date_range[1].strftime(
                 "%Y-%m-%d-%H-%M-%S")}'''
 
             def result_generator():
-                for pub in all_publications:
+                while True:
                     try:
+                        pub = next(all_publications)
                         yield dict(pub)
-                    except Exception as e:
+                    except StopIteration:
+                        break
+                    except Exception:
                         ex_type, ex, tb = sys.exc_info()
                         logging.warning(f'Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}')
 
@@ -193,7 +205,7 @@ class RadarlyReader(Reader):
         date_ranges_guess = self._generate_date_ranges(date_range_start, date_range_end, split_range_guess,
                                                        split_count_guess)
         date_ranges_and_posts_volumes = self.get_posts_volumes_from_list(date_ranges_guess)
-        is_compliant = all(np.fromiter(date_ranges_and_posts_volumes.values(), dtype=int) <= 10000)
+        is_compliant = all(np.fromiter(date_ranges_and_posts_volumes.values(), dtype=int) <= self.api_date_period_limit)
 
         return DateRangeSplit(date_ranges_and_posts_volumes, is_compliant)
 
