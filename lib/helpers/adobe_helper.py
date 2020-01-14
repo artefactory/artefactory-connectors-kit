@@ -5,7 +5,7 @@ import hashlib
 import more_itertools
 import logging
 import json
-
+from lib.utils.text import reformat_naming_for_bq
 
 
 ## Credit goes to Mr Martin Winkel for the base code provided :
@@ -134,6 +134,7 @@ def parse(raw_response):
     dimensions, metrics = _parse_header(report)
     data = _parse_data(raw_data, metric_count=len(metrics))
     headers = _fix_header(dimensions, metrics, data)
+    headers = [reformat_naming_for_bq(header) for header in headers]
     for row in data:
         yield {headers[i]: row[i] for i in range(len(headers))}
 
