@@ -73,16 +73,16 @@ class GaReader(Reader):
         day_range = self.kwargs.get("day_range")
 
         if start_date and end_date:
-            logging.info("ℹ️ Date format used for request : startDate and EndDate")
+            logging.info("ℹ️ Date format used for request : startDate and endDate")
             return self.create_date_range(start_date, end_date)
         elif date_range:
-            logging.info("ℹ️ Date format used for request : DateRange")
+            logging.info("ℹ️ Date format used for request : dateRange")
             return self.create_date_range(date_range[0], date_range[1])
         elif day_range:
-            logging.info("ℹ️ Date format used for request : Day_range")
+            logging.info("ℹ️ Date format used for request : dayRange")
             return self.generate_date_range_with_day_range(day_range)
         else:
-            logging.warning(f"⚠️ No date range provided - Last 7 days by default ⚠️")
+            logging.warning("⚠️ No date range provided - Last 7 days by default ⚠️")
             return []
 
     def generate_date_range_with_day_range(self, day_range):
