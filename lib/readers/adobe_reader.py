@@ -165,7 +165,7 @@ class AdobeReader(Reader):
             query_rep = self.query_report()
             rep_id = query_rep["reportID"]
             data = self.download_report(rep_id)
-            idf = "report_" + rep_id
+            idf = "report_" + str(rep_id)
 
         def result_generator():
             for record in data:
