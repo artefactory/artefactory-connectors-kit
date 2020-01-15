@@ -45,7 +45,7 @@ MAX_WAIT_REPORT_DELAY = 4096
 )
 @click.option("--adobe-start-date", type=click.DateTime())
 @click.option("--adobe-end-date", default=None, type=click.DateTime())
-@processor("password", "username")
+@processor("adobe_password", "adobe_username")
 def adobe(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
     return AdobeReader(**extract_args("adobe_", kwargs))

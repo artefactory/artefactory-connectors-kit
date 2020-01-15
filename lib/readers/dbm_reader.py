@@ -47,16 +47,16 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
 @click.option(
-    "--dbm-day-range",required=True, default='LAST_7_DAYS', type=click.Choice(['PREVIOUS_DAY','LAST_30_DAYS','LAST_90_DAYS','LAST_7_DAYS'])
+    "--dbm-day-range", required=True, default='LAST_7_DAYS',
+    type=click.Choice(['PREVIOUS_DAY', 'LAST_30_DAYS', 'LAST_90_DAYS', 'LAST_7_DAYS'])
 )
-@processor()
+@processor("dbm_access_token", "dbm_refresh_token", "dbm_client_secret")
 def dbm(**kwargs):
     # Should add validation argument in function of request_type
     return DbmReader(**extract_args("dbm_", kwargs))
 
 
 class DbmReader(Reader):
-
     API_NAME = "doubleclickbidmanager"
     API_VERSION = "v1"
 
@@ -76,10 +76,9 @@ class DbmReader(Reader):
         credentials.refresh(http)
 
         # API_SCOPES = ['https://www.googleapis.com/auth/doubleclickbidmanager']
-        self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http,  cache_discovery=False)
+        self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
         self.kwargs = kwargs
-
 
     def get_query(self, query_id, query_title):
         response = self._client.queries().listqueries().execute()
@@ -113,10 +112,10 @@ class DbmReader(Reader):
             "metadata": {
                 "format": "CSV",
                 "title": self.kwargs.get("query_title", "NO_TITLE_GIVEN"),
-                "dataRange": self.kwargs.get('day_range','LAST_7_DAYS'),
+                "dataRange": self.kwargs.get('day_range', 'LAST_7_DAYS'),
             },
             "params": {
-                "type": self.kwargs.get("query_param_type",'TYPE_TRUEVIEW'),
+                "type": self.kwargs.get("query_param_type", 'TYPE_TRUEVIEW'),
                 "groupBys": self.kwargs.get("query_dimension"),
                 "metrics": self.kwargs.get("query_metric"),
                 "filters": [
@@ -171,7 +170,6 @@ class DbmReader(Reader):
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
         return get_generator_dict_from_str_csv(report.iter_lines())
-     
 
     def list_query_reports(self):
         reports_infos = self._client.reports().listreports(queryId=self.kwargs.get('query_id')).execute()
@@ -182,14 +180,14 @@ class DbmReader(Reader):
         if len(self.kwargs.get("filter")) > 0:
             filter_types = [filt[0] for filt in self.kwargs.get("filter")]
             assert (
-                len(
-                    [
-                        filter_types[0] == filt
-                        for filt in filter_types
-                        if filter_types[0] == filt
-                    ]
-                )
-                == 1
+                    len(
+                        [
+                            filter_types[0] == filt
+                            for filt in filter_types
+                            if filter_types[0] == filt
+                        ]
+                    )
+                    == 1
             ), "Lineitems accept just one filter type, multiple filter types detected"
             filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
@@ -214,14 +212,14 @@ class DbmReader(Reader):
     def get_sdf_body(self):
         filter_types = [filt[0] for filt in self.kwargs.get("filter")]
         assert (
-            len(
-                [
-                    filter_types[0] == filt
-                    for filt in filter_types
-                    if filter_types[0] == filt
-                ]
-            )
-            == 1
+                len(
+                    [
+                        filter_types[0] == filt
+                        for filt in filter_types
+                        if filter_types[0] == filt
+                    ]
+                )
+                == 1
         ), "sdf accept just one filter type, multiple filter types detected"
         filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
@@ -271,8 +269,8 @@ class DbmReader(Reader):
         elif request_type == "sdf_objects":
             data = self.get_sdf_objects()
         else:
-            raise Exception ('Unknown request type')
-            
+            raise Exception('Unknown request type')
+
         def result_generator():
             for record in data:
                 yield record
