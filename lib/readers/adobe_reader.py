@@ -1,12 +1,6 @@
 import click
-import config
-import os
 import logging
-import httplib2
 import datetime
-import binascii
-import uuid
-import hashlib
 import json
 from time import sleep
 from itertools import chain
@@ -18,8 +12,8 @@ from lib.streams.json_stream import JSONStream
 import requests
 from lib.helpers.adobe_helper import build_headers, ReportNotReadyError, parse
 
-## Credit goes to Mr Martin Winkel for the base code provided :
-## github : https://github.com/SaturnFromTitan/adobe_analytics
+# Credit goes to Mr Martin Winkel for the base code provided :
+# github : https://github.com/SaturnFromTitan/adobe_analytics
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 

@@ -1,6 +1,4 @@
 import click
-import config
-import os
 import logging
 import httplib2
 
@@ -16,7 +14,6 @@ from oauth2client import client, GOOGLE_REVOKE_URI
 from lib.commands.command import processor
 from lib.readers.reader import Reader
 from lib.utils.args import extract_args
-from lib.utils.retry import retry
 from lib.streams.json_stream import JSONStream
 
 from lib.utils.text import (
@@ -235,7 +232,6 @@ class DbmReader(Reader):
     def get_sdf_objects(self):
         body_sdf = self.get_sdf_body()
         file_types = body_sdf["fileTypes"]
-        file_type = file_types[0]
         response = self._client.sdf().download(body=body_sdf).execute()
 
         return chain(

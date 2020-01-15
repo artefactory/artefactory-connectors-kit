@@ -80,8 +80,8 @@ class DateRangeSplit(NamedTuple):
     "--radarly-throttle",
     default=True,
     type=click.BOOL,
-    help="""If set to True, forces the connector to abide by official Radarly API limitations 
-              (using the api-quarterly-posts-limit parameter)""",
+    help="""If set to True, forces the connector to abide by official Radarly API limitations
+         (using the api-quarterly-posts-limit parameter)""",
 )
 @click.option(
     "--radarly-throttling-threshold-coefficient", default=0.95, type=click.FLOAT
@@ -194,9 +194,9 @@ class RadarlyReader(Reader):
     def get_payload(self, start_date: datetime, end_date: datetime):
         param = (
             Payload()
-                .creation_date(created_after=start_date, created_before=end_date)
-                .focuses(self.focus_ids)
-                .pagination(start=0, limit=self.api_request_limit)
+            .creation_date(created_after=start_date, created_before=end_date)
+            .focuses(self.focus_ids)
+            .pagination(start=0, limit=self.api_request_limit)
         )
         return param
 
