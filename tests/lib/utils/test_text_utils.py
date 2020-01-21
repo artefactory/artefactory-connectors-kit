@@ -180,3 +180,53 @@ class TestTextUtilsMethod(unittest.TestCase):
              "The line could not be decoded in utf-8."
              "Invalid input that the codec failed on: b'\\x91'"]
         )
+    
+
+    def test_response_not_binary(self):
+        lines = [
+            ("Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
+             " ID,Advertiser Status,Advertiser Integration Code,Insertion"
+             " Order,Insertion Order ID,Insertion Order Status,Insertion"
+             " Order Integration Code,Line Item,Line Item ID,Line Item"
+             " Status,Line Item Integration Code,Targeted Data Providers,"
+             "Cookie Reach: Average Impression Frequency,Cookie Reach: "
+             "Impression Reach"),
+            ('BR,Sanofi Aventis Brasil,3945535,Active,Allegra,3992233,'
+             '0,,YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360'
+             '_Cross-Device_BR,8674464,Active,,YR_Sanofi_Allegra_Hardsell'
+             '_Display_Datalogix-Health-Beauty-Buyers-Allergy_Desktop_BR'
+             ',26143278,0,,"",0.00,41')
+        ]
+        expected_dict = {
+            "Country": "BR",
+            "Partner": "Sanofi Aventis Brasil",
+            "Partner ID": "3945535",
+            "Partner Status": "Active",
+            "Advertiser": "Allegra",
+            "Advertiser ID": "3992233",
+            "Advertiser Status": "0",
+            "Advertiser Integration Code": "",
+            "Insertion Order": (
+                "YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360"
+                "_Cross-Device_BR"
+            ),
+            "Insertion Order ID": "8674464",
+            "Insertion Order Status": "Active",
+            "Insertion Order Integration Code": "",
+            "Line Item": (
+                "YR_Sanofi_Allegra_Hardsell_Display_Datalogix-Health"
+                "-Beauty-Buyers-Allergy_Desktop_BR"
+            ),
+            "Line Item ID": "26143278",
+            "Line Item Status": "0",
+            "Line Item Integration Code": "",
+            "Targeted Data Providers": '""',
+            "Cookie Reach: Average Impression Frequency": "0.00",
+            "Cookie Reach: Impression Reach": "41",
+        }
+        line_iterator_with_blank_line = (line for line in lines)
+        for dic in get_generator_dict_from_str_csv(
+            line_iterator_with_blank_line
+        ):
+            self.assertEqual(dic, expected_dict)
+
