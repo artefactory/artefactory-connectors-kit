@@ -180,7 +180,6 @@ class TestTextUtilsMethod(unittest.TestCase):
              "The line could not be decoded in utf-8."
              "Invalid input that the codec failed on: b'\\x91'"]
         )
-    
 
     def test_response_not_binary(self):
         lines = [
@@ -229,4 +228,3 @@ class TestTextUtilsMethod(unittest.TestCase):
             line_iterator_with_blank_line
         ):
             self.assertEqual(dic, expected_dict)
-
