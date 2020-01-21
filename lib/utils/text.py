@@ -31,9 +31,11 @@ def get_generator_dict_from_str_csv(
             except UnicodeDecodeError as err:
                 logging.warning(
                     "An error has occured while parsing the file. "
-                    f"The line could not be decoded in {err.encoding}."
-                    "Invalid input that the codec failed on: "
-                    f"{err.object[err.start:err.end]}")
+                    "The line could not be decoded in %s."
+                    "Invalid input that the codec failed on: %s",
+                    err.encoding,
+                    err.object[err.start:err.end]
+                )
                 line = line.decode("utf-8", errors="ignore")
         if line == '':
             break
