@@ -13,5 +13,7 @@ hiredis
 google-api-python-client
 boto3
 facebook-business
-google-api-python-client
 googleanalytics
+more_itertools
+radarly-py==1.0.10
+numpy==1.17.3

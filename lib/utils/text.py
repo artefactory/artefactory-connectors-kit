@@ -1,6 +1,6 @@
 import logging
 from typing import Dict, Generator, Union
-
+import re
 
 def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
     first_line = True
@@ -41,3 +41,10 @@ def get_generator_dict_from_str_csv(
             break
         else:
             yield dict(zip(headers, line.split(',')))
+
+
+def reformat_naming_for_bq(text, char="_"):
+    text = re.sub(r"\([^()]*\)", "", text).strip()
+    text = re.sub(r"[\s\W]+", char, text)
+    text = re.sub(r"["+char+"]+", char, text.strip())   
+    return text.lower()

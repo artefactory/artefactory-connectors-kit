@@ -1,43 +1,43 @@
 from datetime import datetime
 import time
-import tempfile
-import logging
+import io
 
 
 class Stream(object):
-
     _name = None
-    _source_stream = None
-    _local_cache = None
+    _source_generator = None
 
     extension = None
     mime_type = "application/octet-stream"
 
-    def __init__(self, name, source_stream):
+    def __init__(self, name, source_generator):
         """
-            source_stream is a generator yielding dicts
+            _source_generator is a generator yielding dicts
         """
         self._name = self.create_stream_name(name)
-        self._source_stream = source_stream
+        self._source_generator = source_generator
+        self._iterator = iter(source_generator)
 
-    def data(self):
-        if not self._local_cache:
-            self._local_cache = self._build_local_cache(self._source_stream)
+    def __len__(self):
+        return self._source_generator.__len__()
 
-        self._local_cache.seek(0)
+    def __iter__(self):
+        """
+            The raw stream object can also be iterated.
+            You'll get the raw elements yielded by the generator.
+        """
+        return self._iterator
 
-        return self._local_cache
-
-    def as_file(self):
-        return self.data()
+    def as_file(self) -> io.BufferedReader:
+        return self._iterable_to_stream(self._iterator, self.encode_record_as_bytes)
 
     def readlines(self):
         """
-            Yield each element of a stream, one by one.
+            Yield each element of a the generator, one by one.
             (ex: line by line for file)
         """
-        for record in self.data():
-            yield self.decode_record(record)
+        for record in self:
+            yield self.decode_record(self.encode_record(record))
 
     @classmethod
     def create_from_stream(cls, source_stream):
@@ -47,19 +47,11 @@ class Stream(object):
         return cls(source_stream.name, source_stream.readlines())
 
     @classmethod
-    def _build_local_cache(cls, source_stream):
-        temp = tempfile.TemporaryFile()
-
-        logging.debug("Spooling data to %s", temp)
-
-        for record in source_stream:
-            s = "{}\n".format(cls.encode_record(record))
-            temp.write(s.encode())
-        temp.seek(0)
-        return temp
+    def encode_record_as_bytes(cls, record) -> bytes:
+        return (cls.encode_record(record) + '\n').encode('utf-8')
 
     @classmethod
-    def encode_record(cls, record):
+    def encode_record(cls, record) -> str:
         raise NotImplementedError
 
     @classmethod
@@ -75,3 +67,43 @@ class Stream(object):
     @property
     def name(self):
         return '.'.join(filter(None, [self._name, self.extension]))
+
+    @staticmethod
+    def _iterable_to_stream(iterable, encode, buffer_size=io.DEFAULT_BUFFER_SIZE):
+        """
+        Credit goes to 'Mechanical snail'
+            at https://stackoverflow.com/questions/6657820/python-convert-an-iterable-to-a-stream
+
+        Lets you use an iterable (e.g. a generator) that yields bytestrings as a
+        read-only
+        input stream.
+
+        The stream implements Python 3's newer I/O API (available in Python 2's io
+        module).
+        For efficiency, the stream is buffered.
+        """
+
+        class IterStream(io.RawIOBase):
+            def __init__(self):
+                self.leftover = None
+                self.count = 0
+
+            def readable(self):
+                return True
+
+            def readinto(self, b):
+                try:
+                    l = len(b)  # We're supposed to return at most this much
+                    chunk = self.leftover or encode(next(iterable))
+                    output, self.leftover = chunk[:l], chunk[l:]
+                    b[:len(output)] = output
+                    self.count += len(output)
+                    return len(output)
+                except StopIteration:
+                    return 0  # indicate EOF
+
+            # tell should be implemented for GCS
+            def tell(self):
+                return self.count
+
+        return io.BufferedReader(IterStream(), buffer_size=buffer_size)

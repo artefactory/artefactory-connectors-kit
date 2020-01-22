@@ -1,15 +1,7 @@
-import json
-
 from lib.streams.json_stream import JSONStream
 
 
 class NormalizedJSONStream(JSONStream):
-
-    def readlines(self):
-        for line in self.as_file():
-            deserialized = json.loads(line)
-            yield json.dumps(self._format(deserialized), default=str)
-
     @classmethod
     def encode_record(cls, record):
         return super(NormalizedJSONStream, cls).encode_record(cls._normalize_keys(record))
@@ -27,4 +19,4 @@ class NormalizedJSONStream(JSONStream):
 
     @staticmethod
     def _normalize_key(key):
-        return key.strip().replace(' ', '_').replace('-', '_')
+        return key.strip().replace(" ", "_").replace("-", "_")
