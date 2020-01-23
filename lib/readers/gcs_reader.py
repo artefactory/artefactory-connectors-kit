@@ -4,7 +4,7 @@ from google.cloud import storage
 from lib.commands.command import processor
 from lib.readers.objectstorage_reader import ObjectStorageReader
 from lib.utils.args import extract_args
-
+from lib.helpers.google_base import GoogleBaseClass
 import urllib
 
 
@@ -20,13 +20,15 @@ def gcs(**kwargs):
     return GCSReader(**extract_args('gcs_', kwargs))
 
 
-class GCSReader(ObjectStorageReader):
+class GCSReader(ObjectStorageReader, GoogleBaseClass):
 
     def __init__(self, bucket, prefix, format, dest_key_split=-1, **kwargs):
-        super().__init__(bucket, prefix, format, dest_key_split, platform="GCS", **kwargs)
+        super().__init__(bucket, prefix, format, dest_key_split, platform="GCS",
+                         **kwargs)
 
     def create_client(self, config):
-        return storage.Client(project=config.PROJECT_ID)
+        return storage.Client(credentials=self._get_credentials(),
+                              project=config.project_id)
 
     def create_bucket(self, client, bucket):
         return client.bucket(bucket)

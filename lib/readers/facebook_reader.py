@@ -1,155 +1,132 @@
+import logging
 import click
-import datetime
 
 from itertools import chain
+from click import ClickException
 
 from lib.readers.reader import Reader
 from lib.utils.args import extract_args
-from lib.streams.normalized_json_stream import NormalizedJSONStream
 from lib.commands.command import processor
 from lib.utils.retry import retry
-from lib.streams.json_stream import JSONStream
-
-from lib.helpers.facebook_marketing_helper import (
+from lib.streams.normalized_json_stream import NormalizedJSONStream
+from lib.helpers.facebook_helper import (
     AD_OBJECT_TYPES,
     BREAKDOWNS_POSSIBLE_VALUES,
-    ACTION_BREAKDOWNS_POSSIBLE_VALUES,
     LEVELS_POSSIBLE_VALUES,
     CMP_POSSIBLE_VALUES,
     ADS_POSSIBLE_VALUES,
+    DATE_PRESETS,
+    DESIRED_FIELDS,
+    get_field_value,
 )
 
 from facebook_business.api import FacebookAdsApi
 from facebook_business.adobjects.adaccount import AdAccount
 from facebook_business.adobjects.adset import AdSet
 from facebook_business.adobjects.campaign import Campaign
-from facebook_business.adobjects.ad import Ad
-from facebook_business.adobjects.adaccountuser import AdAccountUser as AdUser
+
+DATEFORMAT = "%Y-%m-%d"
 
 
-@click.command(name="read_facebook_marketing")
-@click.option("--facebook-marketing-app-id", required=True)
-@click.option("--facebook-marketing-app-secret", required=True)
-@click.option("--facebook-marketing-access-token", required=True)
-@click.option("--facebook-marketing-ad-object-id", required=True)
+@click.command(name="read_facebook")
+@click.option("--facebook-app-id", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
 @click.option(
-    "--facebook-marketing-ad-object-type",
-    default="ad_account_object",
-    type=click.Choice(AD_OBJECT_TYPES),
+    "--facebook-app-secret", default="", help="Not mandatory for AdsInsights reporting if access-token provided"
 )
+@click.option("--facebook-access-token", required=True)
+@click.option("--facebook-ad-object-id", required=True)
+@click.option("--facebook-ad-object-type", type=click.Choice(AD_OBJECT_TYPES), default=AD_OBJECT_TYPES[0])
 @click.option(
-    "--facebook-marketing-breakdown",
-    default=[],
+    "--facebook-breakdown",
     multiple=True,
     type=click.Choice(BREAKDOWNS_POSSIBLE_VALUES),
+    help="https://developers.facebook.com/docs/marketing-api/insights/breakdowns/",
 )
+# At this time, the Facebook connector only handle the action-breakdown "action_type"
 @click.option(
-    "--facebook-marketing-action-breakdown",
+    "--facebook-action-breakdown",
     multiple=True,
-    type=click.Choice(ACTION_BREAKDOWNS_POSSIBLE_VALUES),
+    type=click.Choice("action_type"),
+    default=["action_type"],
+    help="https://developers.facebook.com/docs/marketing-api/insights/breakdowns#actionsbreakdown",
 )
-@click.option("--facebook-marketing-ad-insights",type=click.BOOL  ,default=True)
 @click.option(
-    "--facebook-marketing-ad-level", type=click.Choice(LEVELS_POSSIBLE_VALUES)
+    "--facebook-ad-insights",
+    type=click.BOOL,
+    default=True,
+    help="https://developers.facebook.com/docs/marketing-api/insights",
 )
-@click.option("--facebook-marketing-time-increment")
-@click.option("--facebook-marketing-field", default=[], multiple=True)
-@click.option("--facebook-marketing-recurse-level", default=0)
-@click.option("--facebook-marketing-time-range", nargs=2, type=click.DateTime())
 @click.option(
-    "--facebook-marketing-day-range",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_2_DAYS", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
-    default=None,
+    "--facebook-ad-level",
+    type=click.Choice(LEVELS_POSSIBLE_VALUES),
+    default=LEVELS_POSSIBLE_VALUES[0],
+    help="Granularity of insights",
 )
-@processor()
+@click.option("--facebook-time-increment")
+@click.option("--facebook-field", multiple=True, help="Facebook API fields for the request")
+@click.option(
+    "--facebook-desired-field",
+    multiple=True,
+    type=click.Choice(list(DESIRED_FIELDS.keys())),
+    help="Desired fields to get in the output report."
+         "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
+)
+@click.option("--facebook-start-date", type=click.DateTime())
+@click.option("--facebook-end-date", type=click.DateTime())
+@click.option("--facebook-date-preset", type=click.Choice(DATE_PRESETS))
+@click.option("--facebook-recurse-level", default=0)
+@processor("facebook_app_secret", "facebook_access_token")
 def facebook_marketing(**kwargs):
     # Should add later all the check restrictions on fields/parameters/breakdowns of the API following the value of
     # object type, see more on :
     # ---https://developers.facebook.com/docs/marketing-api/insights/breakdowns
     # ---https://developers.facebook.com/docs/marketing-api/insights
-    return FacebookMarketingReader(**extract_args("facebook_marketing_", kwargs))
+    return FacebookMarketingReader(**extract_args("facebook_", kwargs))
 
 
 class FacebookMarketingReader(Reader):
     def __init__(
-        self, app_id, app_secret, access_token, ad_object_id, ad_object_type, **kwargs
+            self,
+            app_id,
+            app_secret,
+            access_token,
+            ad_object_id,
+            ad_object_type,
+            breakdown,
+            action_breakdown,
+            ad_insights,
+            ad_level,
+            time_increment,
+            field,
+            desired_field,
+            start_date,
+            end_date,
+            date_preset,
+            recurse_level,
     ):
         self.app_id = app_id
         self.app_secret = app_secret
         self.access_token = access_token
         self.ad_object_id = ad_object_id
         self.ad_object_type = ad_object_type
-        self.kwargs = kwargs
+        self.breakdowns = list(breakdown)
+        self.action_breakdowns = list(action_breakdown)
+        self.ad_insights = ad_insights
+        self.ad_level = ad_level
+        self.time_increment = time_increment or False
+        self.fields = list(field)
+        self.desired_fields = list(desired_field)
+        self.start_date = start_date
+        self.end_date = end_date
+        self.date_preset = date_preset
+        self.recurse_level = recurse_level
 
     @retry
-    def run_query_on_fb_user_obj(self, params, ad_object_id, recurse_level):
-        user = AdUser(fbid=ad_object_id)
-        accounts = user.get_ad_accounts()
-        for el in chain(
-            *[
-                self.run_query_on_fb_account_obj(
-                    params, account.get("id"), recurse_level - 1
-                )
-                for account in accounts
-            ]
-        ):
-            yield el
-
-    @retry
-    def run_query_on_fb_account_obj(self, params, ad_object_id, recurse_level):
+    def run_query_on_fb_account_obj(self, params, ad_object_id):
+        if ad_object_id.startswith("act_"):
+            raise ClickException("Wrong format. Account ID should only contains digits")
         account = AdAccount("act_" + ad_object_id)
-        campaigns = account.get_campaigns()
-        if recurse_level <= 0:
-            for el in account.get_insights(params=params):
-                yield el
-        else:
-            for el in chain(
-                *[
-                    self.run_query_on_fb_campaign_obj(
-                        params, campaign.get("id"), recurse_level - 1
-                    )
-                    for campaign in campaigns
-                ]
-            ):
-                yield el
-
-    @retry
-    def run_query_on_fb_campaign_obj(self, params, ad_object_id, recurse_level):
-        campaign = Campaign(ad_object_id)
-
-        if recurse_level <= 0:
-            for el in campaign.get_insights(params=params):
-                yield el
-        else:
-            for el in chain(
-                *[
-                    self.run_query_on_fb_adset_obj(
-                        params, adset.get("id"), recurse_level - 1
-                    )
-                    for adset in campaign.get_ad_sets()
-                ]
-            ):
-                yield el
-
-    @retry
-    def run_query_on_fb_adset_obj(self, params, ad_object_id, recurse_level):
-        adset = AdSet(ad_object_id)
-        if recurse_level <= 0:
-            for el in adset.get_insights(params=params):
-                yield el
-        else:
-            for el in chain(
-                *[
-                    self.run_query_on_fb_ad_obj(params, ad.get("id"))
-                    for ad in adset.get_ads()
-                ]
-            ):
-                yield el
-
-    @retry
-    def run_query_on_fb_ad_obj(self, params, ad_object_id):
-        ad = Ad(ad_object_id)
-        for el in ad.get_insights(params):
+        for el in account.get_insights(params=params):
             yield el
 
     @retry
@@ -161,12 +138,10 @@ class FacebookMarketingReader(Reader):
 
         else:
             for el in chain(
-                *[
-                    self.run_query_on_fb_adset_obj_conf(
-                        params, adset.get("id"), recurse_level - 1
-                    )
-                    for adset in campaign.get_ad_sets()
-                ]
+                    *[
+                        self.run_query_on_fb_adset_obj_conf(params, adset.get("id"), recurse_level - 1)
+                        for adset in campaign.get_ad_sets()
+                    ]
             ):
                 yield el
 
@@ -174,98 +149,68 @@ class FacebookMarketingReader(Reader):
     def run_query_on_fb_adset_obj_conf(self, params, ad_object_id, recurse_level):
         adset = AdSet(ad_object_id)
         if recurse_level <= 0:
-            val_adset = adset.api_get(fields=ADS_POSSIBLE_VALUES)
+            val_adset = adset.api_get(fields=ADS_POSSIBLE_VALUES, params=params)
             yield val_adset
         else:
-            raise Exception(
-                "for now, just campaign object and adset object are able to be requested without insight"
+            raise ClickException(
+                "for now, just campaign object and adset object are able to be requested without insights"
             )
 
-    def get_days_delta(self):
-        days_range = self.kwargs.get("day_range")
-        if days_range == "PREVIOUS_DAY":
-            days_delta = 1
-        elif days_range == "LAST_2_DAYS":
-            days_delta = 2
-        elif days_range == "LAST_7_DAYS":
-            days_delta = 7
-        elif days_range == "LAST_30_DAYS":
-            days_delta = 30
-        elif days_range == "LAST_90_DAYS":
-            days_delta = 90
-        else:
-            raise Exception("{} is not handled by the reader".format(days_range))
-        return days_delta
-
     def get_params(self):
-
         params = {
-            "action_breakdowns": self.kwargs.get("action_breakdown", []),
-            "fields": self.kwargs.get("field", []),
-            "breakdowns": self.kwargs.get("breakdown", [])
+            "action_breakdowns": self.action_breakdowns,
+            "fields": self.fields,
+            "breakdowns": self.breakdowns,
+            "level": self.ad_level,
         }
-        
-        if  "time_increment" in self.kwargs:
-            params["time_increment"] =  self.kwargs["time_increment"]
-
-        if "ad_level" in self.kwargs:
-            params["level"] = self.kwargs["ad_level"]
-
-        if self.kwargs.get("time_range"):
-            date_start, date_stop = self.kwargs.get("time_range")
-            params["time_range"] = {
-                "since": date_start.strftime("%Y-%m-%d"),
-                "until": date_stop.strftime("%Y-%m-%d"),
-            }
-        elif self.kwargs.get("day_range"):
-            date_stop = datetime.datetime.now().date()
-            days_delta = self.get_days_delta()
-            date_start = date_stop - datetime.timedelta(days=days_delta)
-            params["time_range"] = {
-                "since": date_start.strftime("%Y-%m-%d"),
-                "until": date_stop.strftime("%Y-%m-%d"),
-            }
+        self.add_period_to_parameters(params)
         return params
+
+    def add_period_to_parameters(self, params):
+        if self.time_increment:
+            params["time_increment"] = self.time_increment
+        if self.start_date and self.end_date:
+            logging.info("ℹ️ Date format used for request : start_date and end_date")
+            params["time_range"] = self.create_time_range(self.start_date, self.end_date)
+        elif self.date_preset:
+            logging.info("ℹ️ Date format used for request : date_preset")
+            params["date_preset"] = self.date_preset
+        else:
+            logging.warning("⚠️ No date range provided - Last 30 days by default ⚠️")
+            logging.warning(
+                "https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters"
+            )
+
+    @staticmethod
+    def create_time_range(start_date, end_date):
+        return {"since": start_date.strftime(DATEFORMAT), "until": end_date.strftime(DATEFORMAT)}
+
+    def format_and_yield(self, record):
+        yield {field: get_field_value(record, field) for field in self.desired_fields}
+
+    def result_generator(self, data):
+        for record in data:
+            yield from self.format_and_yield(record.export_all_data())
 
     def read(self):
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
         params = self.get_params()
-        object_type = self.ad_object_type
-        recurse_level = self.kwargs.get("recurse_level")
 
-        if self.kwargs.get("ad_insights", True):
-            if object_type == "ad_account_object":
-                data = self.run_query_on_fb_account_obj(
-                    params, self.ad_object_id, recurse_level
-                )
-            elif object_type == "ad_campaign_object":
-                data = self.run_query_on_fb_campaign_obj(
-                    params, self.ad_object_id, recurse_level
-                )
-            elif object_type == "adset_object":
-                data = self.run_query_on_fb_adset_obj(
-                    params, self.ad_object_id, recurse_level
-                )
-            elif object_type == "ad_object":
-                data = self.run_query_on_fb_ad_obj(params, self.ad_object_id)
+        if self.ad_insights:
+            query_mapping = {AD_OBJECT_TYPES[0]: self.run_query_on_fb_account_obj}
+            args = [params, self.ad_object_id]
         else:
-            if object_type == "ad_campaign_object":
-                data = self.run_query_on_fb_campaign_obj_conf(
-                    params, self.ad_object_id, recurse_level
-                )
-            elif object_type == "ad_adset_object":
-                data = self.run_query_on_fb_adset_obj_conf(
-                    params, self.ad_object_id, recurse_level
-                )
-            else:
-                raise Exception(
-                    "For now only [campaign, adset] objects type can be requested without insight"
-                )
+            query_mapping = {
+                AD_OBJECT_TYPES[1]: self.run_query_on_fb_campaign_obj_conf,
+                AD_OBJECT_TYPES[2]: self.run_query_on_fb_adset_obj_conf,
+            }
+            args = [params, self.ad_object_id, self.recurse_level]
+        try:
+            query = query_mapping[self.ad_object_type]
+            data = query(*args)
+        except KeyError:
+            raise ClickException("`{}` is not a valid adObject type".format(self.ad_object_type))
 
-        def result_generator():
-            for record in data:
-                yield record.export_all_data()
-
-        yield JSONStream(
-            "results_" + object_type + "_" + str(self.ad_object_id), result_generator()
+        yield NormalizedJSONStream(
+            "results_" + self.ad_object_type + "_" + str(self.ad_object_id), self.result_generator(data)
         )

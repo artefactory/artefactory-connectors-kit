@@ -107,4 +107,4 @@ venv.bak/
 tmp/
 
 .idea/
-credentials/
+credentials/*

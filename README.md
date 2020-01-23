@@ -8,6 +8,7 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 
 - Google DoubleClick Manager (DV360)
 - Google Analytics
+- Google Search Console
 - Google Sheets
 - Google Cloud Storage
 - Facebook Business Manager
@@ -15,12 +16,15 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 - Oracle
 - SalesForce
 - MySQL
+- Adobe Analytics 1.4 
 
 ### Writers
 
 - Google BigQuery
 - Google Cloud Storage
 - Amazon S3
+- Local File
+- Console (Debug)
 
 ## Philosophy
 
