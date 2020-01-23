@@ -11,6 +11,7 @@ from lib.readers.dbm_reader import dbm
 from lib.readers.ga_reader import ga
 from lib.readers.search_console_reader import search_console
 from lib.readers.adobe_reader import adobe
+from lib.readers.radarly_reader import radarly
 
 
 readers = [
@@ -24,7 +25,8 @@ readers = [
     dbm,
     ga,
     search_console,
-    adobe
+    adobe,
+    radarly
 ]
 
 

@@ -2,7 +2,6 @@ import logging
 import sqlalchemy
 import click
 
-
 from lib.readers.reader import Reader
 from lib.utils.sql import build_table_query, build_custom_query
 
@@ -14,7 +13,6 @@ from lib.utils.args import has_arg, hasnt_arg
 
 
 def validate_sql_arguments(reader, prefix, kwargs):
-
     query_key = "{}_query".format(prefix)
     query_name_key = "{}_query_name".format(prefix)
     table_key = "{}_table".format(prefix)
@@ -31,17 +29,19 @@ def validate_sql_arguments(reader, prefix, kwargs):
         raise click.BadParameter("Must specify a query name when running a {} query".format(reader.connector_name()))
 
     if has_arg(watermark_column_key, kwargs) and not state().enabled:
-        raise click.BadParameter("You must activate state management to use {} watermarks".format(reader.connector_name()))
+        raise click.BadParameter(
+            "You must activate state management to use {} watermarks".format(reader.connector_name()))
 
     if hasnt_arg(watermark_column_key, kwargs) and state().enabled:
-        raise click.BadParameter("You must specify a {} watermark when using state management".format(reader.connector_name()))
+        raise click.BadParameter(
+            "You must specify a {} watermark when using state management".format(reader.connector_name()))
 
     if hasnt_arg(watermark_init_key, kwargs) and state().enabled:
-        raise click.BadParameter("You must specify a {} watermark init value when using state management".format(reader.connector_name()))
+        raise click.BadParameter(
+            "You must specify a {} watermark init value when using state management".format(reader.connector_name()))
 
 
 class SQLReader(Reader):
-
     _host = None
     _port = None
     _user = None

@@ -4,12 +4,11 @@ import uuid
 import hashlib
 import more_itertools
 import logging
-import json
 from lib.utils.text import reformat_naming_for_bq
 
 
-## Credit goes to Mr Martin Winkel for the base code provided :
-## github : https://github.com/SaturnFromTitan/adobe_analytics
+# Credit goes to Mr Martin Winkel for the base code provided :
+# github : https://github.com/SaturnFromTitan/adobe_analytics
 
 
 def _serialize_header(properties):
@@ -112,9 +111,9 @@ def _dimension_value(chunk):
 
 def _dimension_value_is_nan(chunk):
     return (
-        ("name" not in chunk)
-        or (chunk["name"] == "")
-        or (chunk["name"] == "::unspecified::")
+            ("name" not in chunk)
+            or (chunk["name"] == "")
+            or (chunk["name"] == "::unspecified::")
     )
 
 
