@@ -2,7 +2,6 @@ import config
 import tempfile
 import logging
 
-
 from lib.readers.reader import Reader
 from lib.streams.normalized_json_stream import NormalizedJSONStream
 from lib.utils.file_reader import FileEnum
@@ -17,6 +16,7 @@ def find_reader(_format, kwargs):
         raise NotImplementedError(
             f'The file format {str(_format)} has not been implemented for reading yet.')
     return _reader
+
 
 def no_files_seen_before(max_timestamp):
     return not max_timestamp

@@ -1,12 +1,6 @@
-import config
 import logging
-import os
-
 import click
 import boto3
-
-from botocore.exceptions import ClientError
-
 from lib.writers.writer import Writer
 from lib.commands.command import processor
 from lib.utils.args import extract_args
@@ -26,7 +20,7 @@ def s3(**kwargs):
 
 class S3Writer(Writer):
     def __init__(
-        self, bucket_name, access_key_id, access_key_secret, bucket_region, **kwargs
+            self, bucket_name, access_key_id, access_key_secret, bucket_region, **kwargs
     ):
         boto_config = {
             "region_name": bucket_region,
@@ -44,7 +38,7 @@ class S3Writer(Writer):
         logging.info("Writing file to S3")
         bucket = self._s3_resource.Bucket(self._bucket_name)
 
-        if not bucket in self._s3_resource.buckets.all():
+        if bucket not in self._s3_resource.buckets.all():
             self._s3_resource.create_bucket(
                 Bucket=self._bucket_name,
                 CreateBucketConfiguration={"LocationConstraint": self._bucket_region},
@@ -56,7 +50,7 @@ class S3Writer(Writer):
 
         # if the bucket region doesn't match the presigned url generated, will not work
         assert (
-            bucket_region == self._bucket_region
+                bucket_region == self._bucket_region
         ), "the region you provided ({}) does'nt match the bucket's found region : ({}) ".format(
             self._bucket_region, bucket_region
         )
