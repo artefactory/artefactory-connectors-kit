@@ -13,6 +13,10 @@ from lib.utils.retry import retry
 @click.option("--s3-access-key-id", required=True)
 @click.option("--s3-access-key-secret", required=True)
 @click.option("--s3-prefix", help="s3 Prefix", default=None)
+@click.option(
+    "--s3-filename",
+    help="Filename (without prefix). Be sure to add file extension."
+)
 @processor()
 def s3(**kwargs):
     return S3Writer(**extract_args("s3_", kwargs))
@@ -59,7 +63,14 @@ class S3Writer(Writer):
         else:
             prefix = ""
 
-        bucket.upload_fileobj(stream.as_file(), prefix + stream.name)
+        filename = \
+            f"""{prefix}
+            {
+                self.kwargs['filename']
+                if self.kwargs['filename'] is not None
+                else stream.name
+            }"""
+        bucket.upload_fileobj(stream.as_file(), filename)
         url_file = self._s3_resource.meta.client.generate_presigned_url(
             "get_object",
             Params={"Bucket": self._bucket_name, "Key": stream.name},
