@@ -132,7 +132,7 @@ class AdobeReader(Reader):
 
     @retry
     def get_report(self, report_id, page_number=1):
-        request_f = lambda : self.request(
+        request_f = lambda: self.request(
             api="Report",
             method="Get",
             data={"reportID": report_id, "page": page_number},
