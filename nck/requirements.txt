@@ -15,5 +15,3 @@ boto3
 facebook-business
 googleanalytics
 more_itertools
-radarly-py==1.0.10
-numpy==1.17.3
