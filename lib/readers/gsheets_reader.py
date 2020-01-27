@@ -13,13 +13,15 @@ from lib.streams.normalized_json_stream import NormalizedJSONStream
 @click.option("--gsheets-worksheet-name", required=True, multiple=True)
 @processor()
 def gsheets(**kwargs):
-    return GSheetsReader(**extract_args('gsheets_', kwargs))
+    return GSheetsReader(**extract_args("gsheets_", kwargs))
 
 
 class GSheetsReader(Reader):
 
-    _scopes = ['https://spreadsheets.google.com/feeds',
-               'https://www.googleapis.com/auth/drive']
+    _scopes = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/drive",
+    ]
 
     def __init__(self, url, sheet_name):
         credentials = GoogleCredentials.get_application_default()

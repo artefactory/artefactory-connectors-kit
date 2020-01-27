@@ -26,8 +26,8 @@ readers = [
     ga,
     search_console,
     adobe,
-    radarly
+    radarly,
 ]
 
 
-__all__ = ['readers', 'Reader']
+__all__ = ["readers", "Reader"]

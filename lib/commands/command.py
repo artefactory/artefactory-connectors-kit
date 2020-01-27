@@ -14,7 +14,7 @@ def processor(*sensitive_fields):
 
             for key, value in kwargs.items():
                 if key in sensitive_fields:
-                    _kwargs[key] = '*****'
+                    _kwargs[key] = "*****"
                 else:
                     _kwargs[key] = value
 
@@ -24,6 +24,7 @@ def processor(*sensitive_fields):
                 return f(*args, **kwargs)
 
             return update_wrapper(processor, f)
+
         return update_wrapper(new_func, f)
 
     return wrapper

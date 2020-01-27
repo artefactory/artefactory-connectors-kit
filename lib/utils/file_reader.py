@@ -6,11 +6,11 @@ import json
 
 
 def format_csv_delimiter(csv_delimiter):
-    _csv_delimiter = csv_delimiter.encode().decode('unicode_escape')
-    if csv_delimiter == 'newline':
-        _csv_delimiter = '\n'
-    if csv_delimiter == 'tab':
-        _csv_delimiter = '\t'
+    _csv_delimiter = csv_delimiter.encode().decode("unicode_escape")
+    if csv_delimiter == "newline":
+        _csv_delimiter = "\n"
+    if csv_delimiter == "tab":
+        _csv_delimiter = "\t"
     return _csv_delimiter
 
 
@@ -22,7 +22,9 @@ def format_csv_fieldnames(csv_fieldnames):
     elif isinstance(csv_fieldnames, (str, bytes)):
         _csv_fieldnames = json.loads(csv_fieldnames)
     else:
-        raise TypeError(f'The CSV fieldnames is of the following type: {type(csv_fieldnames)}.')
+        raise TypeError(
+            f"The CSV fieldnames is of the following type: {type(csv_fieldnames)}."
+        )
     assert isinstance(_csv_fieldnames, list)
     return _csv_fieldnames
 
@@ -37,8 +39,12 @@ class CSVReader(object):
     def read_csv(self, fd, **kwargs):
         fd.seek(0)
         fd = self.decompress(fd)
-        return csv.DictReader(codecs.iterdecode(fd, encoding='utf-8'), delimiter=str(self.csv_delimiter),
-                              fieldnames=self.csv_fieldnames, **kwargs)
+        return csv.DictReader(
+            codecs.iterdecode(fd, encoding="utf-8"),
+            delimiter=str(self.csv_delimiter),
+            fieldnames=self.csv_fieldnames,
+            **kwargs,
+        )
 
     def decompress(self, fd):
         return fd
@@ -49,7 +55,7 @@ class CSVReader(object):
 
 class GZReader(CSVReader):
     def decompress(self, fd):
-        gzf = gzip.GzipFile(mode='rb', fileobj=fd)
+        gzf = gzip.GzipFile(mode="rb", fileobj=fd)
         return gzf
 
 

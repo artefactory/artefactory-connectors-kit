@@ -18,4 +18,4 @@ writers = [
     # "salesforce": salesforce
 ]
 
-__all__ = ['writers', 'Writer']
+__all__ = ["writers", "Writer"]

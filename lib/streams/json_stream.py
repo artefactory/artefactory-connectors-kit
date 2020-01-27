@@ -9,7 +9,7 @@ class JSONStream(Stream):
 
     @classmethod
     def decode_record(cls, record):
-        return json.loads(record, encoding='utf-8')
+        return json.loads(record, encoding="utf-8")
 
     @classmethod
     def encode_record(cls, record) -> str:

@@ -81,7 +81,10 @@ class SearchConsoleReader(Reader):
             credentials.refresh(http)
 
             self._service = build(
-                serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False
+                serviceName="webmasters",
+                version="v3",
+                credentials=credentials,
+                cache_discovery=False,
             )
 
     @staticmethod
@@ -110,14 +113,26 @@ class SearchConsoleReader(Reader):
     def _run_query(self):
         self.initialize_analyticsreporting()
 
-        response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
+        response = (
+            self._service.searchanalytics()
+            .query(siteUrl=self.site_url, body=self.build_query())
+            .execute()
+        )
         yield response
 
         # Pagination
         while len(response.get("rows", [])) != 0:
-            logging.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
+            logging.info(
+                "{} lines successfully processed...".format(
+                    len(response.get("rows")) + self.start_row
+                )
+            )
             self.start_row += self.row_limit
-            response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
+            response = (
+                self._service.searchanalytics()
+                .query(siteUrl=self.site_url, body=self.build_query())
+                .execute()
+            )
             yield response
 
     def format_and_yield(self, data):

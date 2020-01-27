@@ -19,7 +19,11 @@ from lib.helpers.google_base import GoogleBaseClass
 @click.option("--bq-table", required=True)
 @click.option("--bq-bucket", required=True)
 @click.option("--bq-partition-column")
-@click.option("--bq-write-disposition", default="truncate", type=click.Choice(["truncate", "append"]))
+@click.option(
+    "--bq-write-disposition",
+    default="truncate",
+    type=click.Choice(["truncate", "append"]),
+)
 @click.option("--bq-location", default="EU", type=click.Choice(["EU", "US"]))
 @click.option("--bq-keep-files", is_flag=True, default=False)
 @processor()
@@ -30,10 +34,21 @@ def bq(**kwargs):
 class BigQueryWriter(Writer, GoogleBaseClass):
     _client = None
 
-    def __init__(self, dataset, table, bucket, partition_column, write_disposition, location, keep_files):
+    def __init__(
+        self,
+        dataset,
+        table,
+        bucket,
+        partition_column,
+        write_disposition,
+        location,
+        keep_files,
+    ):
 
         self._project_id = config.PROJECT_ID
-        self._client = bigquery.Client(credentials=self._get_credentials(), project=self._project_id)
+        self._client = bigquery.Client(
+            credentials=self._get_credentials(), project=self._project_id
+        )
         self._dataset = dataset
         self._table = table
         self._bucket = bucket
@@ -52,7 +67,9 @@ class BigQueryWriter(Writer, GoogleBaseClass):
 
         table_ref = self._get_table_ref()
 
-        load_job = self._client.load_table_from_uri(gcs_uri, table_ref, job_config=self.job_config())
+        load_job = self._client.load_table_from_uri(
+            gcs_uri, table_ref, job_config=self.job_config()
+        )
 
         logging.info("Loading data into BigQuery %s:%s", self._dataset, self._table)
         result = load_job.result()

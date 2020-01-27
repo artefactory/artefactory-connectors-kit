@@ -111,9 +111,9 @@ def _dimension_value(chunk):
 
 def _dimension_value_is_nan(chunk):
     return (
-            ("name" not in chunk)
-            or (chunk["name"] == "")
-            or (chunk["name"] == "::unspecified::")
+        ("name" not in chunk)
+        or (chunk["name"] == "")
+        or (chunk["name"] == "::unspecified::")
     )
 
 

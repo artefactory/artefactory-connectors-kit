@@ -48,7 +48,7 @@ class Stream(object):
 
     @classmethod
     def encode_record_as_bytes(cls, record) -> bytes:
-        return (cls.encode_record(record) + '\n').encode('utf-8')
+        return (cls.encode_record(record) + "\n").encode("utf-8")
 
     @classmethod
     def encode_record(cls, record) -> str:
@@ -61,12 +61,12 @@ class Stream(object):
     @staticmethod
     def create_stream_name(name):
         ts = time.time()
-        ts_as_string = datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-        return '{}_{}'.format(name, ts_as_string)
+        ts_as_string = datetime.fromtimestamp(ts).strftime("%Y-%m-%d-%H-%M-%S")
+        return "{}_{}".format(name, ts_as_string)
 
     @property
     def name(self):
-        return '.'.join(filter(None, [self._name, self.extension]))
+        return ".".join(filter(None, [self._name, self.extension]))
 
     @staticmethod
     def _iterable_to_stream(iterable, encode, buffer_size=io.DEFAULT_BUFFER_SIZE):
@@ -96,7 +96,7 @@ class Stream(object):
                     chunck_length = len(b)  # We're supposed to return at most this much
                     chunk = self.leftover or encode(next(iterable))
                     output, self.leftover = chunk[:chunck_length], chunk[chunck_length:]
-                    b[:len(output)] = output
+                    b[: len(output)] = output
                     self.count += len(output)
                     return len(output)
                 except StopIteration:
