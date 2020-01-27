@@ -36,7 +36,7 @@ def get_generator_dict_from_str_csv(
                     "The line could not be decoded in %s."
                     "Invalid input that the codec failed on: %s",
                     err.encoding,
-                    err.object[err.start : err.end],
+                    err.object[err.start:err.end],
                 )
                 line = line.decode("utf-8", errors="ignore")
         if line == "":
