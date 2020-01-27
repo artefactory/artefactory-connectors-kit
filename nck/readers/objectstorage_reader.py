@@ -1,7 +1,6 @@
-from nck import config
+import config
 import tempfile
 import logging
-
 
 from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
@@ -17,6 +16,7 @@ def find_reader(_format, kwargs):
         raise NotImplementedError(
             f'The file format {str(_format)} has not been implemented for reading yet.')
     return _reader
+
 
 def no_files_seen_before(max_timestamp):
     return not max_timestamp

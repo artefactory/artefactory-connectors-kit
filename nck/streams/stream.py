@@ -93,9 +93,9 @@ class Stream(object):
 
             def readinto(self, b):
                 try:
-                    l = len(b)  # We're supposed to return at most this much
+                    chunck_length = len(b)  # We're supposed to return at most this much
                     chunk = self.leftover or encode(next(iterable))
-                    output, self.leftover = chunk[:l], chunk[l:]
+                    output, self.leftover = chunk[:chunck_length], chunk[chunck_length:]
                     b[:len(output)] = output
                     self.count += len(output)
                     return len(output)

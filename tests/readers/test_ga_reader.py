@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest import TestCase, mock
 from click import ClickException
 
-from lib.readers.ga_reader import GaReader, GaStream
+from nck.readers.ga_reader import GaReader, GaStream
 
 
 class GaReaderTest(TestCase):
@@ -33,7 +33,7 @@ class GaReaderTest(TestCase):
         fail = "PVRIOUES_DAY"
         self.assertRaises(ClickException, GaReader.get_days_delta, fail)
 
-    @mock.patch("lib.readers.ga_reader.GaReader._run_query")
+    @mock.patch("nck.readers.ga_reader.GaReader._run_query")
     @mock.patch.object(GaReader, "__init__", mock_ga_reader)
     def test_read(self, mock_query):
 

@@ -34,7 +34,7 @@ DATEFORMAT = "%Y-%m-%d"
     "--ga-day-range", type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]), default=None
 )
 @click.option("--ga-sampling-level", type=click.Choice(["SMALL", "DEFAULT", "LARGE"]), default="LARGE")
-@processor()
+@processor("ga_access_token", "ga_refresh_token", "ga_client_secret")
 def ga(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
     return GaReader(**extract_args("ga_", kwargs))

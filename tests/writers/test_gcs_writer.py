@@ -1,5 +1,5 @@
 import unittest
-from lib.writers.gcs_writer import GCSWriter
+from nck.writers.gcs_writer import GCSWriter
 
 
 class TestGCSWriter(unittest.TestCase):

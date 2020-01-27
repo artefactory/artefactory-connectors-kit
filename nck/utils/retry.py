@@ -1,5 +1,5 @@
 from tenacity import retry as _retry, wait_exponential, before_sleep_log, before_log, stop_after_attempt
-from nck import config
+import config
 import logging
 
 

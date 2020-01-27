@@ -8,36 +8,12 @@ from setuptools import setup, find_packages
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-# requierements = []
-# with open('requirements.txt') as requirements_file:
-#     requirements = [el.strip() for el in requirements_file.readlines()]
+with open('requirements.txt') as requirements_file:
+    requirements = [el.strip() for el in requirements_file.readlines()]
 
+setup_requirements = []
 
-
-requirements = ['Click',
- 'google-cloud-bigquery',
- 'google-cloud-storage',
- 'pymysql',
- 'SQLAlchemy',
- 'cx_Oracle',
- 'gspread',
- 'oauth2client==1.5.2',
- 'requests',
- 'tenacity',
- 'redis',
- 'hiredis',
- 'google-api-python-client==1.4.2',
- 'boto3',
- 'facebook-business',
- 'googleanalytics',
- 'more_itertools'
- ]
-
-setup_requirements = [ ]
-
-#test_requirements = [ ]
-
-setup( 
+setup(
     author="Artefact",
     author_email='',
     classifiers=[
@@ -57,9 +33,9 @@ setup(
         ],
     },
     install_requires=requirements,
-  #  long_description=readme + '\n\n' + history,
+    #  long_description=readme + '\n\n' + history,
     include_package_data=True,
-   # keywords='nautilus_connectors',
+    # keywords='nautilus_connectors',
     name='nck',
     packages=find_packages(),
     setup_requires=setup_requirements,

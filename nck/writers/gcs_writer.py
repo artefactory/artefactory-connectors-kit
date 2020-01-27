@@ -1,4 +1,4 @@
-from nck import config
+import config
 import logging
 import os
 from nck.helpers.google_base import GoogleBaseClass

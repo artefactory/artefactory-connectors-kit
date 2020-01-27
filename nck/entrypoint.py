@@ -39,6 +39,7 @@ def run(processors, state_service_name, state_service_host, state_service_port):
         for writer in _writers:
             writer.write(stream)
 
+
 def cli_entrypoint():
     build_commands()
     app()

@@ -69,13 +69,13 @@ DATEFORMAT = "%Y-%m-%d"
     multiple=True,
     type=click.Choice(list(DESIRED_FIELDS.keys())),
     help="Desired fields to get in the output report."
-    "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
+         "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
 )
 @click.option("--facebook-start-date", type=click.DateTime())
 @click.option("--facebook-end-date", type=click.DateTime())
 @click.option("--facebook-date-preset", type=click.Choice(DATE_PRESETS))
 @click.option("--facebook-recurse-level", default=0)
-@processor()
+@processor("facebook_app_secret", "facebook_access_token")
 def facebook_marketing(**kwargs):
     # Should add later all the check restrictions on fields/parameters/breakdowns of the API following the value of
     # object type, see more on :
@@ -86,23 +86,23 @@ def facebook_marketing(**kwargs):
 
 class FacebookMarketingReader(Reader):
     def __init__(
-        self,
-        app_id,
-        app_secret,
-        access_token,
-        ad_object_id,
-        ad_object_type,
-        breakdown,
-        action_breakdown,
-        ad_insights,
-        ad_level,
-        time_increment,
-        field,
-        desired_field,
-        start_date,
-        end_date,
-        date_preset,
-        recurse_level,
+            self,
+            app_id,
+            app_secret,
+            access_token,
+            ad_object_id,
+            ad_object_type,
+            breakdown,
+            action_breakdown,
+            ad_insights,
+            ad_level,
+            time_increment,
+            field,
+            desired_field,
+            start_date,
+            end_date,
+            date_preset,
+            recurse_level,
     ):
         self.app_id = app_id
         self.app_secret = app_secret
@@ -138,10 +138,10 @@ class FacebookMarketingReader(Reader):
 
         else:
             for el in chain(
-                *[
-                    self.run_query_on_fb_adset_obj_conf(params, adset.get("id"), recurse_level - 1)
-                    for adset in campaign.get_ad_sets()
-                ]
+                    *[
+                        self.run_query_on_fb_adset_obj_conf(params, adset.get("id"), recurse_level - 1)
+                        for adset in campaign.get_ad_sets()
+                    ]
             ):
                 yield el
 

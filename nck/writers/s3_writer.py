@@ -1,12 +1,6 @@
-from nck import config
 import logging
-import os
-
 import click
 import boto3
-
-from botocore.exceptions import ClientError
-
 from nck.writers.writer import Writer
 from nck.commands.command import processor
 from nck.utils.args import extract_args
@@ -19,6 +13,10 @@ from nck.utils.retry import retry
 @click.option("--s3-access-key-id", required=True)
 @click.option("--s3-access-key-secret", required=True)
 @click.option("--s3-prefix", help="s3 Prefix", default=None)
+@click.option(
+    "--s3-filename",
+    help="Filename (without prefix). Be sure to add file extension."
+)
 @processor()
 def s3(**kwargs):
     return S3Writer(**extract_args("s3_", kwargs))
@@ -26,7 +24,7 @@ def s3(**kwargs):
 
 class S3Writer(Writer):
     def __init__(
-        self, bucket_name, access_key_id, access_key_secret, bucket_region, **kwargs
+            self, bucket_name, access_key_id, access_key_secret, bucket_region, **kwargs
     ):
         boto_config = {
             "region_name": bucket_region,
@@ -44,7 +42,7 @@ class S3Writer(Writer):
         logging.info("Writing file to S3")
         bucket = self._s3_resource.Bucket(self._bucket_name)
 
-        if not bucket in self._s3_resource.buckets.all():
+        if bucket not in self._s3_resource.buckets.all():
             self._s3_resource.create_bucket(
                 Bucket=self._bucket_name,
                 CreateBucketConfiguration={"LocationConstraint": self._bucket_region},
@@ -56,7 +54,7 @@ class S3Writer(Writer):
 
         # if the bucket region doesn't match the presigned url generated, will not work
         assert (
-            bucket_region == self._bucket_region
+                bucket_region == self._bucket_region
         ), "the region you provided ({}) does'nt match the bucket's found region : ({}) ".format(
             self._bucket_region, bucket_region
         )
@@ -65,7 +63,14 @@ class S3Writer(Writer):
         else:
             prefix = ""
 
-        bucket.upload_fileobj(stream.as_file(), prefix + stream.name)
+        filename = \
+            f"""{prefix}
+            {
+                self.kwargs['filename']
+                if self.kwargs['filename'] is not None
+                else stream.name
+            }"""
+        bucket.upload_fileobj(stream.as_file(), filename)
         url_file = self._s3_resource.meta.client.generate_presigned_url(
             "get_object",
             Params={"Bucket": self._bucket_name, "Key": stream.name},

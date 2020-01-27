@@ -11,6 +11,7 @@ from nck.readers.dbm_reader import dbm
 from nck.readers.ga_reader import ga
 from nck.readers.search_console_reader import search_console
 from nck.readers.adobe_reader import adobe
+from nck.readers.radarly_reader import radarly
 
 
 readers = [
@@ -24,7 +25,8 @@ readers = [
     dbm,
     ga,
     search_console,
-    adobe
+    adobe,
+    radarly
 ]
 
 

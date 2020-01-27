@@ -1,8 +1,8 @@
-from nck import config
+import config
 
 import click
 
-from nck.config import logging
+from config import logging
 
 from google.cloud import bigquery
 from nck.streams.normalized_json_stream import NormalizedJSONStream

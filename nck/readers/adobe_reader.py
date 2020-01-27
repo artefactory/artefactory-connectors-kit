@@ -1,12 +1,6 @@
 import click
-from nck import config
-import os
 import logging
-import httplib2
 import datetime
-import binascii
-import uuid
-import hashlib
 import json
 from time import sleep
 from itertools import chain
@@ -18,8 +12,8 @@ from nck.streams.json_stream import JSONStream
 import requests
 from nck.helpers.adobe_helper import build_headers, ReportNotReadyError, parse
 
-## Credit goes to Mr Martin Winkel for the base code provided :
-## github : https://github.com/SaturnFromTitan/adobe_analytics
+# Credit goes to Mr Martin Winkel for the base code provided :
+# github : https://github.com/SaturnFromTitan/adobe_analytics
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 
@@ -45,7 +39,7 @@ MAX_WAIT_REPORT_DELAY = 4096
 )
 @click.option("--adobe-start-date", type=click.DateTime())
 @click.option("--adobe-end-date", default=None, type=click.DateTime())
-@processor("password", "username")
+@processor("adobe_password", "adobe_username")
 def adobe(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
     return AdobeReader(**extract_args("adobe_", kwargs))

@@ -13,7 +13,6 @@ from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args, has_arg, hasnt_arg
 from nck.utils.retry import retry
 
-
 SALESFORCE_LOGIN_ENDPOINT = "https://login.salesforce.com/services/oauth2/token"
 SALESFORCE_LOGIN_REDIRECT = "https://login.salesforce.com/services/oauth2/success"
 SALESFORCE_SERVICE_ENDPOINT = "https://eu16.force.com"
@@ -33,7 +32,6 @@ SALESFORCE_DESCRIBE_ENDPOINT = "/services/data/v42.0/sobjects/{obj}/describe"
 @click.option("--salesforce-watermark-init")
 @processor("salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_password")
 def salesforce(**kwargs):
-
     query_key = 'salesforce_query'
     query_name_key = 'salesforce_query_name'
     object_type_key = 'salesforce_object_type'
@@ -157,7 +155,8 @@ class SalesforceClient(object):
 
 class SalesforceReader(Reader):
 
-    def __init__(self, consumer_key, consumer_secret, user, password, query, query_name, object_type, watermark_column, watermark_init):
+    def __init__(self, consumer_key, consumer_secret, user, password, query, query_name, object_type, watermark_column,
+                 watermark_init):
         self._name = query_name or object_type
         self._client = SalesforceClient(user, password, consumer_key, consumer_secret)
         self._watermark_column = watermark_column
@@ -173,7 +172,8 @@ class SalesforceReader(Reader):
         query = "SELECT {fields} FROM {object_type}".format(fields=field_projection, object_type=object_type)
 
         if watermark_column:
-            query = "{base} WHERE {watermark_column} > {{{watermark_column}}}".format(base=query, watermark_column=watermark_column)
+            query = "{base} WHERE {watermark_column} > {{{watermark_column}}}".format(base=query,
+                                                                                      watermark_column=watermark_column)
 
         return query
 
