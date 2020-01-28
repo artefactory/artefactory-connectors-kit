@@ -119,6 +119,17 @@ DESIRED_FIELDS = {
     "age": "age",
     "gender": "gender",
     "account_currency": "account_currency",
+    "frequency": "frequency",
+    "buying_type": "buying_type",
+    "video_p100_watched_actions": "video_p100_watched_actions",
+    "video_p75_watched_actions": "video_p75_watched_actions",
+    "video_p25_watched_actions": "video_p25_watched_actions",
+    "video_p50_watched_actions": "video_p50_watched_actions",
+    "video_thruplay_watched_actions": "video_thruplay_watched_actions",
+    "conversions": "conversions",
+    "status": "status",
+    "lifetime_budget": "lifetime_budget",
+    "budget_remaining": "budget_remaining"
 }
 
 
