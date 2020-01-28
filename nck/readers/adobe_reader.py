@@ -142,7 +142,6 @@ class AdobeReader(Reader):
             response = request_f() # noqa : E731
         return response
 
-
     def download_report(self, rep_id):
         raw_response = self.get_report(rep_id, page_number=1)
         all_responses = [parse(raw_response)]
