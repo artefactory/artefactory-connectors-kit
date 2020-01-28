@@ -1,5 +1,5 @@
 def deprefix(prefix, d):
-    return {k.replace(prefix, '', 1): v for k, v in d.items()}
+    return {k.replace(prefix, "", 1): v for k, v in d.items()}
 
 
 def extract_args(prefix, d, remove_prefix=True):

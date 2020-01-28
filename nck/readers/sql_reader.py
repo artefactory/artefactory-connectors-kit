@@ -20,25 +20,42 @@ def validate_sql_arguments(reader, prefix, kwargs):
     watermark_init_key = "{}_watermark_init".format(prefix)
 
     if hasnt_arg(query_key, kwargs) and hasnt_arg(table_key, kwargs):
-        raise click.BadParameter("Must specify either a table or a query for {} reader".format(reader.connector_name()))
+        raise click.BadParameter(
+            "Must specify either a table or a query for {} reader".format(
+                reader.connector_name()
+            )
+        )
 
     if has_arg(query_key, kwargs) and has_arg(table_key, kwargs):
         raise click.BadParameter("Cannot specify both a query and a table")
 
     if has_arg(query_key, kwargs) and hasnt_arg(query_name_key, kwargs):
-        raise click.BadParameter("Must specify a query name when running a {} query".format(reader.connector_name()))
+        raise click.BadParameter(
+            "Must specify a query name when running a {} query".format(
+                reader.connector_name()
+            )
+        )
 
     if has_arg(watermark_column_key, kwargs) and not state().enabled:
         raise click.BadParameter(
-            "You must activate state management to use {} watermarks".format(reader.connector_name()))
+            "You must activate state management to use {} watermarks".format(
+                reader.connector_name()
+            )
+        )
 
     if hasnt_arg(watermark_column_key, kwargs) and state().enabled:
         raise click.BadParameter(
-            "You must specify a {} watermark when using state management".format(reader.connector_name()))
+            "You must specify a {} watermark when using state management".format(
+                reader.connector_name()
+            )
+        )
 
     if hasnt_arg(watermark_init_key, kwargs) and state().enabled:
         raise click.BadParameter(
-            "You must specify a {} watermark init value when using state management".format(reader.connector_name()))
+            "You must specify a {} watermark init value when using state management".format(
+                reader.connector_name()
+            )
+        )
 
 
 class SQLReader(Reader):
@@ -58,13 +75,20 @@ class SQLReader(Reader):
     def connector_name(cls):
         return cls.__name__
 
-    def __init__(self, user, password, host, port, database,
-                 watermark_column=None,
-                 watermark_init=None,
-                 query=None,
-                 query_name=None,
-                 table=None,
-                 schema=None):
+    def __init__(
+        self,
+        user,
+        password,
+        host,
+        port,
+        database,
+        watermark_column=None,
+        watermark_init=None,
+        query=None,
+        query_name=None,
+        table=None,
+        schema=None,
+    ):
 
         self._engine = self._create_engine(host, port, user, password, database)
         self._name = table if table else query_name
@@ -76,9 +100,13 @@ class SQLReader(Reader):
             self._watermark_value = self.state.get(self._name) or watermark_init
 
         if table:
-            self._query = build_table_query(self._engine, schema, table, watermark_column, self._watermark_value)
+            self._query = build_table_query(
+                self._engine, schema, table, watermark_column, self._watermark_value
+            )
         else:
-            self._query = build_custom_query(self._engine, schema, query, watermark_column, self._watermark_value)
+            self._query = build_custom_query(
+                self._engine, schema, query, watermark_column, self._watermark_value
+            )
 
     @staticmethod
     def connector_adaptor():
@@ -86,16 +114,24 @@ class SQLReader(Reader):
 
     @classmethod
     def _create_engine(cls, host, port, user, password, database):
-        logging.info("Connecting to %s Database %s on %s:%s", cls.connector_name(), database, host, port)
+        logging.info(
+            "Connecting to %s Database %s on %s:%s",
+            cls.connector_name(),
+            database,
+            host,
+            port,
+        )
 
-        url = sqlalchemy.engine.url.URL(**{
-            'drivername': cls.connector_adaptor(),
-            'username': user,
-            'password': password,
-            'database': database,
-            'port': port,
-            'host': host
-        })
+        url = sqlalchemy.engine.url.URL(
+            **{
+                "drivername": cls.connector_adaptor(),
+                "username": user,
+                "password": password,
+                "database": database,
+                "port": port,
+                "host": host,
+            }
+        )
 
         return sqlalchemy.create_engine(url)
 
@@ -111,7 +147,9 @@ class SQLReader(Reader):
 
         rows = self._engine.execute(self._query)
 
-        logging.info("%s result set contains %d rows", self.connector_name(), rows.rowcount)
+        logging.info(
+            "%s result set contains %d rows", self.connector_name(), rows.rowcount
+        )
 
         def result_generator():
             row = rows.fetchone()

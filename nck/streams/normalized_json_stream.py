@@ -4,7 +4,9 @@ from nck.streams.json_stream import JSONStream
 class NormalizedJSONStream(JSONStream):
     @classmethod
     def encode_record(cls, record):
-        return super(NormalizedJSONStream, cls).encode_record(cls._normalize_keys(record))
+        return super(NormalizedJSONStream, cls).encode_record(
+            cls._normalize_keys(record)
+        )
 
     @classmethod
     def _normalize_keys(cls, o):

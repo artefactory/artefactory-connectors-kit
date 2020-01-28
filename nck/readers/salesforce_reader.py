@@ -30,37 +30,50 @@ SALESFORCE_DESCRIBE_ENDPOINT = "/services/data/v42.0/sobjects/{obj}/describe"
 @click.option("--salesforce-query-name")
 @click.option("--salesforce-watermark-column")
 @click.option("--salesforce-watermark-init")
-@processor("salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_password")
+@processor(
+    "salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_password"
+)
 def salesforce(**kwargs):
-    query_key = 'salesforce_query'
-    query_name_key = 'salesforce_query_name'
-    object_type_key = 'salesforce_object_type'
-    watermark_column_key = 'salesforce_watermark_column'
-    watermark_init_key = 'salesforce_watermark_init'
+    query_key = "salesforce_query"
+    query_name_key = "salesforce_query_name"
+    object_type_key = "salesforce_object_type"
+    watermark_column_key = "salesforce_watermark_column"
+    watermark_init_key = "salesforce_watermark_init"
 
     if hasnt_arg(query_key, kwargs) and hasnt_arg(object_type_key, kwargs):
-        raise click.BadParameter("Must specify either an object type or a query for Salesforce")
+        raise click.BadParameter(
+            "Must specify either an object type or a query for Salesforce"
+        )
 
     if has_arg(query_key, kwargs) and has_arg(object_type_key, kwargs):
-        raise click.BadParameter("Cannot specify both a query and an object type for Salesforce")
+        raise click.BadParameter(
+            "Cannot specify both a query and an object type for Salesforce"
+        )
 
     if has_arg(query_key, kwargs) and hasnt_arg(query_name_key, kwargs):
-        raise click.BadParameter("Must specify a query name when running a Salesforce query")
+        raise click.BadParameter(
+            "Must specify a query name when running a Salesforce query"
+        )
 
     if has_arg(watermark_column_key, kwargs) and not state().enabled:
-        raise click.BadParameter("You must activate state management to use Salesforce watermarks")
+        raise click.BadParameter(
+            "You must activate state management to use Salesforce watermarks"
+        )
 
     if hasnt_arg(watermark_column_key, kwargs) and state().enabled:
-        raise click.BadParameter("You must specify a Salesforce watermark when using state management")
+        raise click.BadParameter(
+            "You must specify a Salesforce watermark when using state management"
+        )
 
     if hasnt_arg(watermark_init_key, kwargs) and state().enabled:
-        raise click.BadParameter("You must specify an initial Salesforce watermark value when using state management")
+        raise click.BadParameter(
+            "You must specify an initial Salesforce watermark value when using state management"
+        )
 
-    return SalesforceReader(**extract_args('salesforce_', kwargs))
+    return SalesforceReader(**extract_args("salesforce_", kwargs))
 
 
 class SalesforceClient(object):
-
     def __init__(self, user, password, consumer_key, consumer_secret):
         self._user = user
         self._password = password
@@ -74,9 +87,9 @@ class SalesforceClient(object):
     @property
     def headers(self):
         return {
-            'Content-type': 'application/json',
-            'Accept-Encoding': 'gzip',
-            'Authorization': 'Bearer {}'.format(self.access_token)
+            "Content-type": "application/json",
+            "Accept-Encoding": "gzip",
+            "Authorization": "Bearer {}".format(self.access_token),
         }
 
     @property
@@ -112,17 +125,14 @@ class SalesforceClient(object):
             "client_secret": self._consumer_secret,
             "username": self._user,
             "password": self._password,
-            "redirect_uri": SALESFORCE_LOGIN_REDIRECT
+            "redirect_uri": SALESFORCE_LOGIN_REDIRECT,
         }
 
     def _request_data(self, path, params=None):
 
         endpoint = urllib.parse.urljoin(self.instance_url, path)
         response = requests.get(
-            endpoint,
-            headers=self.headers,
-            params=params,
-            timeout=30
+            endpoint, headers=self.headers, params=params, timeout=30
         )
 
         response.raise_for_status()
@@ -137,13 +147,13 @@ class SalesforceClient(object):
 
         logging.info("Running Salesforce query: %s", query)
 
-        response = self._request_data(SALESFORCE_QUERY_ENDPOINT, {'q': query})
+        response = self._request_data(SALESFORCE_QUERY_ENDPOINT, {"q": query})
 
         generating = True
 
         while generating:
 
-            for rec in response['records']:
+            for rec in response["records"]:
                 yield rec
 
             if "nextRecordsUrl" in response:
@@ -154,9 +164,18 @@ class SalesforceClient(object):
 
 
 class SalesforceReader(Reader):
-
-    def __init__(self, consumer_key, consumer_secret, user, password, query, query_name, object_type, watermark_column,
-                 watermark_init):
+    def __init__(
+        self,
+        consumer_key,
+        consumer_secret,
+        user,
+        password,
+        query,
+        query_name,
+        object_type,
+        watermark_column,
+        watermark_init,
+    ):
         self._name = query_name or object_type
         self._client = SalesforceClient(user, password, consumer_key, consumer_secret)
         self._watermark_column = watermark_column
@@ -166,20 +185,22 @@ class SalesforceReader(Reader):
 
     def build_object_type_query(self, object_type, watermark_column):
         description = self._client.describe(object_type)
-        fields = [f['name'] for f in description['fields']]
+        fields = [f["name"] for f in description["fields"]]
 
         field_projection = ", ".join(fields)
-        query = "SELECT {fields} FROM {object_type}".format(fields=field_projection, object_type=object_type)
+        query = "SELECT {fields} FROM {object_type}".format(
+            fields=field_projection, object_type=object_type
+        )
 
         if watermark_column:
-            query = "{base} WHERE {watermark_column} > {{{watermark_column}}}".format(base=query,
-                                                                                      watermark_column=watermark_column)
+            query = "{base} WHERE {watermark_column} > {{{watermark_column}}}".format(
+                base=query, watermark_column=watermark_column
+            )
 
         return query
 
     @retry
     def read(self):
-
         def result_generator():
 
             watermark_value = None
@@ -188,10 +209,14 @@ class SalesforceReader(Reader):
                 watermark_value = self.state.get(self._name) or self._watermark_init
 
             if self._object_type:
-                self._query = self.build_object_type_query(self._object_type, self._watermark_column)
+                self._query = self.build_object_type_query(
+                    self._object_type, self._watermark_column
+                )
 
             if self._watermark_column:
-                self._query = self._query.format(**{self._watermark_column: watermark_value})
+                self._query = self._query.format(
+                    **{self._watermark_column: watermark_value}
+                )
 
             records = self._client.query(self._query)
 
@@ -216,7 +241,11 @@ class SalesforceReader(Reader):
 
         if isinstance(record, dict):
             strip_keys = ["attributes", "totalSize", "done"]
-            return {k: cls._delete_metadata_from_record(v) for k, v in record.items() if k not in strip_keys}
+            return {
+                k: cls._delete_metadata_from_record(v)
+                for k, v in record.items()
+                if k not in strip_keys
+            }
         elif isinstance(record, list):
             return [cls._delete_metadata_from_record(i) for i in record]
         else:

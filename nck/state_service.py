@@ -22,7 +22,6 @@ def configure(name, host, port):
 
 
 class StateService(object):
-
     def __init__(self, name, host, port=6379):
 
         if host:

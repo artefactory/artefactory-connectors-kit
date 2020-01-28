@@ -14,7 +14,6 @@ def local(**kwargs):
 
 
 class LocalWriter(Writer):
-
     def __init__(self, local_directory):
         self._local_directory = local_directory
 
@@ -27,7 +26,7 @@ class LocalWriter(Writer):
 
         logging.info("Writing stream %s to %s", stream.name, path)
         file = stream.as_file()
-        with open(path, 'wb') as h:
+        with open(path, "wb") as h:
             while True:
                 buffer = file.read(1024)
                 if len(buffer) > 0:

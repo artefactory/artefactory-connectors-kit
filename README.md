@@ -48,7 +48,7 @@ Run `python nck/entrypoint.py`.
 
 ### Package 
 
-#### generate distribs :
+#### Generate distribs :
 
 * Exec cmd `make dist` (it generates a source distrib and a wheel in the created directory dist/)
 

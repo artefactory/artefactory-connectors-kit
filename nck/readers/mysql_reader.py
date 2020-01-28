@@ -18,12 +18,11 @@ from nck.utils.args import extract_args
 @click.option("--mysql-table")
 @processor("mysql_password")
 def mysql(**kwargs):
-    validate_sql_arguments(MySQLReader, 'mysql', kwargs)
-    return MySQLReader(**extract_args('mysql_', kwargs))
+    validate_sql_arguments(MySQLReader, "mysql", kwargs)
+    return MySQLReader(**extract_args("mysql_", kwargs))
 
 
 class MySQLReader(SQLReader):
-
     @staticmethod
     def connector_adaptor():
         return "mysql+pymysql"

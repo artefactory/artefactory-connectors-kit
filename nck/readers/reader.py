@@ -2,7 +2,6 @@ import nck.state_service as state
 
 
 class Reader(object):
-
     @property
     def state(self):
         return state.state()

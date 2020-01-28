@@ -126,11 +126,12 @@ class AdobeReader(Reader):
 
     @retry
     def get_report(self, report_id, page_number=1):
-        response = self.request(
-            api="Report",
-            method="Get",
-            data={"reportID": report_id, "page": page_number},
-        )
+        request_f = lambda: self.request( # noqa : E731
+            api="Report", # noqa : E731
+            method="Get", # noqa : E731
+            data={"reportID": report_id, "page": page_number},# noqa : E731
+        ) # noqa : E731
+        response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":
             logging.info(f"waiting {idx} s for report to be ready")
@@ -138,6 +139,7 @@ class AdobeReader(Reader):
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
                 raise ReportNotReadyError(f"waited too long for report to be ready")
             idx = idx * 2
+            response = request_f() # noqa : E731
         return response
 
     def download_report(self, rep_id):

@@ -29,13 +29,23 @@ DATEFORMAT = "%Y-%m-%d"
 
 
 @click.command(name="read_facebook")
-@click.option("--facebook-app-id", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
 @click.option(
-    "--facebook-app-secret", default="", help="Not mandatory for AdsInsights reporting if access-token provided"
+    "--facebook-app-id",
+    default="",
+    help="Not mandatory for AdsInsights reporting if access-token provided",
+)
+@click.option(
+    "--facebook-app-secret",
+    default="",
+    help="Not mandatory for AdsInsights reporting if access-token provided",
 )
 @click.option("--facebook-access-token", required=True)
 @click.option("--facebook-ad-object-id", required=True)
-@click.option("--facebook-ad-object-type", type=click.Choice(AD_OBJECT_TYPES), default=AD_OBJECT_TYPES[0])
+@click.option(
+    "--facebook-ad-object-type",
+    type=click.Choice(AD_OBJECT_TYPES),
+    default=AD_OBJECT_TYPES[0],
+)
 @click.option(
     "--facebook-breakdown",
     multiple=True,
@@ -63,13 +73,15 @@ DATEFORMAT = "%Y-%m-%d"
     help="Granularity of insights",
 )
 @click.option("--facebook-time-increment")
-@click.option("--facebook-field", multiple=True, help="Facebook API fields for the request")
+@click.option(
+    "--facebook-field", multiple=True, help="Facebook API fields for the request"
+)
 @click.option(
     "--facebook-desired-field",
     multiple=True,
     type=click.Choice(list(DESIRED_FIELDS.keys())),
     help="Desired fields to get in the output report."
-         "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
+    "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
 )
 @click.option("--facebook-start-date", type=click.DateTime())
 @click.option("--facebook-end-date", type=click.DateTime())
@@ -86,23 +98,23 @@ def facebook_marketing(**kwargs):
 
 class FacebookMarketingReader(Reader):
     def __init__(
-            self,
-            app_id,
-            app_secret,
-            access_token,
-            ad_object_id,
-            ad_object_type,
-            breakdown,
-            action_breakdown,
-            ad_insights,
-            ad_level,
-            time_increment,
-            field,
-            desired_field,
-            start_date,
-            end_date,
-            date_preset,
-            recurse_level,
+        self,
+        app_id,
+        app_secret,
+        access_token,
+        ad_object_id,
+        ad_object_type,
+        breakdown,
+        action_breakdown,
+        ad_insights,
+        ad_level,
+        time_increment,
+        field,
+        desired_field,
+        start_date,
+        end_date,
+        date_preset,
+        recurse_level,
     ):
         self.app_id = app_id
         self.app_secret = app_secret
@@ -138,10 +150,12 @@ class FacebookMarketingReader(Reader):
 
         else:
             for el in chain(
-                    *[
-                        self.run_query_on_fb_adset_obj_conf(params, adset.get("id"), recurse_level - 1)
-                        for adset in campaign.get_ad_sets()
-                    ]
+                *[
+                    self.run_query_on_fb_adset_obj_conf(
+                        params, adset.get("id"), recurse_level - 1
+                    )
+                    for adset in campaign.get_ad_sets()
+                ]
             ):
                 yield el
 
@@ -171,7 +185,9 @@ class FacebookMarketingReader(Reader):
             params["time_increment"] = self.time_increment
         if self.start_date and self.end_date:
             logging.info("ℹ️ Date format used for request : start_date and end_date")
-            params["time_range"] = self.create_time_range(self.start_date, self.end_date)
+            params["time_range"] = self.create_time_range(
+                self.start_date, self.end_date
+            )
         elif self.date_preset:
             logging.info("ℹ️ Date format used for request : date_preset")
             params["date_preset"] = self.date_preset
@@ -183,7 +199,10 @@ class FacebookMarketingReader(Reader):
 
     @staticmethod
     def create_time_range(start_date, end_date):
-        return {"since": start_date.strftime(DATEFORMAT), "until": end_date.strftime(DATEFORMAT)}
+        return {
+            "since": start_date.strftime(DATEFORMAT),
+            "until": end_date.strftime(DATEFORMAT),
+        }
 
     def format_and_yield(self, record):
         yield {field: get_field_value(record, field) for field in self.desired_fields}
@@ -209,8 +228,11 @@ class FacebookMarketingReader(Reader):
             query = query_mapping[self.ad_object_type]
             data = query(*args)
         except KeyError:
-            raise ClickException("`{}` is not a valid adObject type".format(self.ad_object_type))
+            raise ClickException(
+                "`{}` is not a valid adObject type".format(self.ad_object_type)
+            )
 
         yield NormalizedJSONStream(
-            "results_" + self.ad_object_type + "_" + str(self.ad_object_id), self.result_generator(data)
+            "results_" + self.ad_object_type + "_" + str(self.ad_object_id),
+            self.result_generator(data),
         )

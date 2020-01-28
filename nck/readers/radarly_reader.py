@@ -93,19 +93,19 @@ def radarly(**kwargs):
 
 class RadarlyReader(Reader):
     def __init__(
-            self,
-            pid: int,
-            client_id: str,
-            client_secret: str,
-            focus_id: Tuple[int, ...],
-            start_date: datetime,
-            end_date: datetime,
-            api_request_limit: int,
-            api_date_period_limit: int,
-            api_quarterly_posts_limit: int,
-            api_window: int,
-            throttle: bool,
-            throttling_threshold_coefficient: float,
+        self,
+        pid: int,
+        client_id: str,
+        client_secret: str,
+        focus_id: Tuple[int, ...],
+        start_date: datetime,
+        end_date: datetime,
+        api_request_limit: int,
+        api_date_period_limit: int,
+        api_quarterly_posts_limit: int,
+        api_window: int,
+        throttle: bool,
+        throttling_threshold_coefficient: float,
     ):
 
         self.api_request_limit = api_request_limit
@@ -144,16 +144,16 @@ class RadarlyReader(Reader):
                 current_time = time.time() - t0
                 ingestion_tracker.append(current_time)
                 posts_ingested_over_window = (
-                        sum(np.array(ingestion_tracker) > current_time - self.api_window)
-                        * self.api_date_period_limit
+                    sum(np.array(ingestion_tracker) > current_time - self.api_window)
+                    * self.api_date_period_limit
                 )
                 if (
-                        posts_ingested_over_window
-                        > self.throttling_threshold_coefficient
-                        * self.api_quarterly_posts_limit
+                    posts_ingested_over_window
+                    > self.throttling_threshold_coefficient
+                    * self.api_quarterly_posts_limit
                 ):
                     sleep_duration = self.api_window * (
-                            self.api_date_period_limit / self.api_quarterly_posts_limit
+                        self.api_date_period_limit / self.api_quarterly_posts_limit
                     )
                     logging.info(
                         f"Throttling activated: waiting for {sleep_duration} seconds..."
@@ -212,7 +212,7 @@ class RadarlyReader(Reader):
         )
 
     def get_posts_volumes_from_list(
-            self, date_ranges: List[Tuple[datetime, datetime]]
+        self, date_ranges: List[Tuple[datetime, datetime]]
     ) -> Dict[Tuple[datetime, datetime], int]:
         posts_volumes = OrderedDict()
         for date_range in date_ranges:
@@ -231,7 +231,7 @@ class RadarlyReader(Reader):
         )
 
     def _split_date_range_auxiliary(
-            self, first_date: datetime, second_date: datetime, posts_count: int
+        self, first_date: datetime, second_date: datetime, posts_count: int
     ) -> Dict[Tuple[datetime, datetime], int]:
         if posts_count < self.api_date_period_limit:
             logging.debug(f"Direct Return: {[first_date, second_date]}")
@@ -266,16 +266,16 @@ class RadarlyReader(Reader):
             return res
 
     def generate_DateRangeSplit_object(
-            self,
-            date_range_start: datetime,
-            date_range_end: datetime,
-            posts_count: int,
-            extra_margin=1,
+        self,
+        date_range_start: datetime,
+        date_range_end: datetime,
+        posts_count: int,
+        extra_margin=1,
     ) -> DateRangeSplit:
 
         delta = date_range_end - date_range_start
         split_count_guess = (
-                posts_count // self.api_date_period_limit + delta.days + extra_margin
+            posts_count // self.api_date_period_limit + delta.days + extra_margin
         )
         split_range_guess = delta.total_seconds() // split_count_guess
 
@@ -294,7 +294,7 @@ class RadarlyReader(Reader):
 
     @staticmethod
     def _generate_date_ranges(
-            start_date: datetime, end_date: datetime, split_range: float, split_count: int
+        start_date: datetime, end_date: datetime, split_range: float, split_count: int
     ) -> List[Tuple[datetime, datetime]]:
         res = [
             (

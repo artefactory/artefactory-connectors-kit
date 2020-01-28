@@ -19,12 +19,11 @@ from nck.utils.args import extract_args
 @click.option("--oracle-table")
 @processor("oracle_password")
 def oracle(**kwargs):
-    validate_sql_arguments(OracleReader, 'oracle', kwargs)
-    return OracleReader(**extract_args('oracle_', kwargs))
+    validate_sql_arguments(OracleReader, "oracle", kwargs)
+    return OracleReader(**extract_args("oracle_", kwargs))
 
 
 class OracleReader(SQLReader):
-
     @staticmethod
     def connector_adaptor():
         return "oracle+cx_oracle"
