@@ -12,6 +12,12 @@ requirements:
 	pip install -r requirements.txt
 	pip install -r requirements-dev.txt
 
+.PHONY: dist
+dist: clean ## builds source and wheel package
+	python3 setup.py sdist
+	python3 setup.py bdist_wheel
+	ls -l dist
+
 define build_docker_image
 	docker image build --rm -t $(1):$(2) -f $(3) .
 	docker tag $(1):$(2) $(1):latest
@@ -34,3 +40,4 @@ build_base_image: clean
 publish_base_image: build_base_image configure_docker_auth
 	$(call publish_docker_image,${DOCKER_IMAGE},${DOCKER_TAG})
 	$(call publish_docker_image,${DOCKER_IMAGE},latest)
+

@@ -1,13 +1,13 @@
 import datetime
-from lib.readers.adobe_reader import AdobeReader
+from nck.readers.adobe_reader import AdobeReader
 from unittest import TestCase, mock
 
 
 class AdobeReaderTest(TestCase):
     DATEFORMAT = "%Y-%m-%d"
 
-    @mock.patch("lib.readers.adobe_reader.AdobeReader.query_report")
-    @mock.patch("lib.readers.adobe_reader.AdobeReader.download_report")
+    @mock.patch("nck.readers.adobe_reader.AdobeReader.query_report")
+    @mock.patch("nck.readers.adobe_reader.AdobeReader.download_report")
     def test_read(self, mock_download_report, mock_query_report):
         elt_ids = ["category", "geocountry"]
         mets_ids = [

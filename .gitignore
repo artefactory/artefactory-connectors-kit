@@ -108,3 +108,6 @@ tmp/
 
 .idea/
 credentials/*
+
+.nck.egg-info
+.DS_Store
