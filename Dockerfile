@@ -30,14 +30,12 @@ RUN /opt/vendor/install.sh
 
 RUN mkdir /app
 
-# Install dependencies
-ADD requirements.txt /app/requirements.txt
-RUN pip install -r /app/requirements.txt
-
 # Copy code
 ADD . /app/
 RUN chmod -R 0644 /app
 WORKDIR /app/
 ENV PYTHONPATH=${PYTHONPATH}:.
 
-ENTRYPOINT ["python3", "./bin/run.py"]
+RUN python setup.py install
+
+ENTRYPOINT ["nckrun"]

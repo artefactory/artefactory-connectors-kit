@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
 
-from lib.readers.facebook_reader import FacebookMarketingReader
+from nck.readers.facebook_reader import FacebookMarketingReader
 
 from facebook_business.api import FacebookAdsApi
 from facebook_business.adobjects.adsinsights import AdsInsights
@@ -24,7 +24,7 @@ class FacebookReaderTest(TestCase):
         "desired_fields": ["date_start", "impressions"],
     }
 
-    @mock.patch("lib.readers.facebook_reader.FacebookMarketingReader.run_query_on_fb_account_obj")
+    @mock.patch("nck.readers.facebook_reader.FacebookMarketingReader.run_query_on_fb_account_obj")
     @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
     @mock.patch.object(FacebookMarketingReader, "get_params", lambda *args: None)
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
@@ -34,7 +34,7 @@ class FacebookReaderTest(TestCase):
         if len(list(reader.read())) > 1:
             assert False, "Data is not empty"
 
-    @mock.patch("lib.readers.facebook_reader.FacebookMarketingReader.run_query_on_fb_account_obj")
+    @mock.patch("nck.readers.facebook_reader.FacebookMarketingReader.run_query_on_fb_account_obj")
     @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
     @mock.patch.object(FacebookMarketingReader, "get_params", lambda *args: None)
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)

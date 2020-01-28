@@ -1,4 +1,4 @@
-from lib.readers.radarly_reader import RadarlyReader
+from nck.readers.radarly_reader import RadarlyReader
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
@@ -35,9 +35,9 @@ def create_mock_publications_iterator(
 
 
 class RadarlyReaderTest(TestCase):
-    @mock.patch("lib.readers.radarly_reader.RadarlyApi")
-    @mock.patch("lib.readers.radarly_reader.Project")
-    @mock.patch("lib.readers.radarly_reader.RadarlyReader.get_payload")
+    @mock.patch("nck.readers.radarly_reader.RadarlyApi")
+    @mock.patch("nck.readers.radarly_reader.Project")
+    @mock.patch("nck.readers.radarly_reader.RadarlyReader.get_payload")
     def test_read(self, mock_get_payload, mock_Project, mock_RadarlyApi):
         mock_RadarlyApi.init.side_effect = lambda client_id, client_secret: logging.info(
             "Mock RadarlyApi successfully initiated"

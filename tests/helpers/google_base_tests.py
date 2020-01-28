@@ -1,15 +1,15 @@
 import unittest
-import lib.helpers.google_base
+import nck.helpers.google_base
 from unittest import mock
 import json
 import os
 
-MODULE_NAME = 'lib.helpers.google_base'
+MODULE_NAME = 'nck.helpers.google_base'
 
 
 class TestGoogleCloudBaseClass(unittest.TestCase):
     def setUp(self):
-        self.instance = lib.helpers.google_base.GoogleBaseClass()
+        self.instance = nck.helpers.google_base.GoogleBaseClass()
 
     @mock.patch(MODULE_NAME + '.google.auth.default',
                 return_value=("CREDENTIALS", "PROJECT_ID"))

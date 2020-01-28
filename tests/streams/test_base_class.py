@@ -1,5 +1,5 @@
 import unittest
-from lib.streams.stream import Stream
+from nck.streams.stream import Stream
 
 
 class TestStreamBaseClassMethods(unittest.TestCase):
