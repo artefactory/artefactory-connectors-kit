@@ -1,12 +1,12 @@
 from datetime import datetime
-from lib.readers.search_console_reader import SearchConsoleReader
+from nck.readers.search_console_reader import SearchConsoleReader
 from unittest import TestCase, mock
 
 
 class SearchConsoleReaderTest(TestCase):
     DATEFORMAT = "%Y-%m-%d"
 
-    @mock.patch("lib.readers.search_console_reader.SearchConsoleReader._run_query")
+    @mock.patch("nck.readers.search_console_reader.SearchConsoleReader._run_query")
     def test_read(self, mock_query):
         kwargs = {
             "client_id": "",

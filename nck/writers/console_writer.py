@@ -1,9 +1,9 @@
 import click
 import sys
 
-from lib.writers.writer import Writer
-from lib.commands.command import processor
-from lib.utils.args import extract_args
+from nck.writers.writer import Writer
+from nck.commands.command import processor
+from nck.utils.args import extract_args
 
 
 @click.command(name="write_console")

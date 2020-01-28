@@ -2,14 +2,14 @@ import logging
 import sqlalchemy
 import click
 
-from lib.readers.reader import Reader
-from lib.utils.sql import build_table_query, build_custom_query
+from nck.readers.reader import Reader
+from nck.utils.sql import build_table_query, build_custom_query
 
-from lib.utils.retry import retry
+from nck.utils.retry import retry
 
-from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.state_service import state
-from lib.utils.args import has_arg, hasnt_arg
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.state_service import state
+from nck.utils.args import has_arg, hasnt_arg
 
 
 def validate_sql_arguments(reader, prefix, kwargs):

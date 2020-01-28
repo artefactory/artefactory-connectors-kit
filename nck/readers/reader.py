@@ -1,4 +1,4 @@
-import lib.state_service as state
+import nck.state_service as state
 
 
 class Reader(object):

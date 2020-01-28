@@ -4,12 +4,12 @@ import click
 from itertools import chain
 from click import ClickException
 
-from lib.readers.reader import Reader
-from lib.utils.args import extract_args
-from lib.commands.command import processor
-from lib.utils.retry import retry
-from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.helpers.facebook_helper import (
+from nck.readers.reader import Reader
+from nck.utils.args import extract_args
+from nck.commands.command import processor
+from nck.utils.retry import retry
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.helpers.facebook_helper import (
     AD_OBJECT_TYPES,
     BREAKDOWNS_POSSIBLE_VALUES,
     LEVELS_POSSIBLE_VALUES,

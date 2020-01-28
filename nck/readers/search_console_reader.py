@@ -7,11 +7,11 @@ from datetime import datetime, timedelta
 import click
 import logging
 
-from lib.commands.command import processor
-from lib.readers.reader import Reader
-from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.utils.args import extract_args
-from lib.utils.retry import retry
+from nck.commands.command import processor
+from nck.readers.reader import Reader
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.utils.args import extract_args
+from nck.utils.retry import retry
 
 
 @click.command(name="read_search_console")

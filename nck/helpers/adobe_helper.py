@@ -4,7 +4,7 @@ import uuid
 import hashlib
 import more_itertools
 import logging
-from lib.utils.text import reformat_naming_for_bq
+from nck.utils.text import reformat_naming_for_bq
 
 
 # Credit goes to Mr Martin Winkel for the base code provided :

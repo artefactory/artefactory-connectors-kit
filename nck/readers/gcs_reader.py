@@ -1,10 +1,10 @@
 import click
 
 from google.cloud import storage
-from lib.commands.command import processor
-from lib.readers.objectstorage_reader import ObjectStorageReader
-from lib.utils.args import extract_args
-from lib.helpers.google_base import GoogleBaseClass
+from nck.commands.command import processor
+from nck.readers.objectstorage_reader import ObjectStorageReader
+from nck.utils.args import extract_args
+from nck.helpers.google_base import GoogleBaseClass
 import urllib
 
 

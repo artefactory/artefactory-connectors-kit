@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-from lib.utils.text import get_generator_dict_from_str_csv
+from nck.utils.text import get_generator_dict_from_str_csv
 
 
 class TestTextUtilsMethod(unittest.TestCase):

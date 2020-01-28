@@ -1,12 +1,12 @@
 import config
 import logging
 import os
-from lib.helpers.google_base import GoogleBaseClass
+from nck.helpers.google_base import GoogleBaseClass
 import click
 
-from lib.writers.writer import Writer
-from lib.commands.command import processor
-from lib.utils.args import extract_args
+from nck.writers.writer import Writer
+from nck.commands.command import processor
+from nck.utils.args import extract_args
 from google.cloud import storage
 
 

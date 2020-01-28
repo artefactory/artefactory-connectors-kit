@@ -5,13 +5,13 @@ import click
 from config import logging
 
 from google.cloud import bigquery
-from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.writers.writer import Writer
-from lib.writers.gcs_writer import GCSWriter
-from lib.commands.command import processor
-from lib.utils.args import extract_args
-from lib.utils.retry import retry
-from lib.helpers.google_base import GoogleBaseClass
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.writers.writer import Writer
+from nck.writers.gcs_writer import GCSWriter
+from nck.commands.command import processor
+from nck.utils.args import extract_args
+from nck.utils.retry import retry
+from nck.helpers.google_base import GoogleBaseClass
 
 
 @click.command(name="write_bq")

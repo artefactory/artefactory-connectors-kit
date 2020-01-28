@@ -1,9 +1,9 @@
 import click
 
 import boto3
-from lib.commands.command import processor
-from lib.readers.objectstorage_reader import ObjectStorageReader
-from lib.utils.args import extract_args
+from nck.commands.command import processor
+from nck.readers.objectstorage_reader import ObjectStorageReader
+from nck.utils.args import extract_args
 
 
 @click.command(name="read_s3")

@@ -2,8 +2,8 @@ import click
 import logging
 import os
 
-from lib.writers.writer import Writer
-from lib.commands.command import processor
+from nck.writers.writer import Writer
+from nck.commands.command import processor
 
 
 @click.command(name="write_local")

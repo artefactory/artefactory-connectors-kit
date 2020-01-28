@@ -4,13 +4,13 @@ import datetime
 import json
 from time import sleep
 from itertools import chain
-from lib.commands.command import processor
-from lib.readers.reader import Reader
-from lib.utils.args import extract_args
-from lib.utils.retry import retry
-from lib.streams.json_stream import JSONStream
+from nck.commands.command import processor
+from nck.readers.reader import Reader
+from nck.utils.args import extract_args
+from nck.utils.retry import retry
+from nck.streams.json_stream import JSONStream
 import requests
-from lib.helpers.adobe_helper import build_headers, ReportNotReadyError, parse
+from nck.helpers.adobe_helper import build_headers, ReportNotReadyError, parse
 
 # Credit goes to Mr Martin Winkel for the base code provided :
 # github : https://github.com/SaturnFromTitan/adobe_analytics
@@ -141,6 +141,7 @@ class AdobeReader(Reader):
             idx = idx * 2
             response = request_f() # noqa : E731
         return response
+
 
     def download_report(self, rep_id):
         raw_response = self.get_report(rep_id, page_number=1)

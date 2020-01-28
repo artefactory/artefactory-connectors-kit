@@ -2,10 +2,10 @@ import click
 import gspread
 from oauth2client.client import GoogleCredentials
 
-from lib.commands.command import processor
-from lib.readers.reader import Reader
-from lib.utils.args import extract_args
-from lib.streams.normalized_json_stream import NormalizedJSONStream
+from nck.commands.command import processor
+from nck.readers.reader import Reader
+from nck.utils.args import extract_args
+from nck.streams.normalized_json_stream import NormalizedJSONStream
 
 
 @click.command(name="read_gsheets")

@@ -11,17 +11,17 @@ from itertools import chain
 from googleapiclient import discovery
 from oauth2client import client, GOOGLE_REVOKE_URI
 
-from lib.commands.command import processor
-from lib.readers.reader import Reader
-from lib.utils.args import extract_args
-from lib.streams.json_stream import JSONStream
+from nck.commands.command import processor
+from nck.readers.reader import Reader
+from nck.utils.args import extract_args
+from nck.streams.json_stream import JSONStream
 
-from lib.utils.text import (
+from nck.utils.text import (
     get_generator_dict_from_str_csv,
     add_column_value_to_csv_line_iterator,
 )
 
-from lib.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES, FILE_TYPES_DICT
+from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES, FILE_TYPES_DICT
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 

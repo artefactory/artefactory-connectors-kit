@@ -11,11 +11,11 @@ from typing import List, Dict, Tuple
 from typing import NamedTuple
 from collections import OrderedDict
 
-from lib.readers import Reader
-from lib.commands.command import processor
-from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.utils.retry import retry
-from lib.utils.args import extract_args
+from nck.readers import Reader
+from nck.commands.command import processor
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.utils.retry import retry
+from nck.utils.args import extract_args
 
 from radarly import RadarlyApi
 from radarly.project import Project

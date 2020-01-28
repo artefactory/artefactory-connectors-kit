@@ -1,6 +1,6 @@
 import json
 
-from lib.streams.stream import Stream
+from nck.streams.stream import Stream
 
 
 class JSONStream(Stream):

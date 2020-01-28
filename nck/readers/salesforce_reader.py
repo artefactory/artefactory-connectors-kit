@@ -6,12 +6,12 @@ import logging
 import click
 import requests
 
-from lib.readers.reader import Reader
-from lib.commands.command import processor
-from lib.state_service import state
-from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.utils.args import extract_args, has_arg, hasnt_arg
-from lib.utils.retry import retry
+from nck.readers.reader import Reader
+from nck.commands.command import processor
+from nck.state_service import state
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.utils.args import extract_args, has_arg, hasnt_arg
+from nck.utils.retry import retry
 
 SALESFORCE_LOGIN_ENDPOINT = "https://login.salesforce.com/services/oauth2/token"
 SALESFORCE_LOGIN_REDIRECT = "https://login.salesforce.com/services/oauth2/success"

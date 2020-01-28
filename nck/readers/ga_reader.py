@@ -8,11 +8,11 @@ from click import ClickException
 from googleapiclient import discovery
 from oauth2client import client, GOOGLE_REVOKE_URI
 
-from lib.commands.command import processor
-from lib.readers.reader import Reader
-from lib.utils.args import extract_args
-from lib.utils.retry import retry
-from lib.streams.normalized_json_stream import NormalizedJSONStream
+from nck.commands.command import processor
+from nck.readers.reader import Reader
+from nck.utils.args import extract_args
+from nck.utils.retry import retry
+from nck.streams.normalized_json_stream import NormalizedJSONStream
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 DATEFORMAT = "%Y-%m-%d"

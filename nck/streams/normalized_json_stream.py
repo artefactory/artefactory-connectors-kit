@@ -1,4 +1,4 @@
-from lib.streams.json_stream import JSONStream
+from nck.streams.json_stream import JSONStream
 
 
 class NormalizedJSONStream(JSONStream):

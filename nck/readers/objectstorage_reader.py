@@ -2,9 +2,9 @@ import config
 import tempfile
 import logging
 
-from lib.readers.reader import Reader
-from lib.streams.normalized_json_stream import NormalizedJSONStream
-from lib.utils.file_reader import FileEnum
+from nck.readers.reader import Reader
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.utils.file_reader import FileEnum
 
 
 def find_reader(_format, kwargs):

@@ -1,8 +1,8 @@
 import click
 
-from lib.commands.command import processor
-from lib.readers.sql_reader import SQLReader, validate_sql_arguments
-from lib.utils.args import extract_args
+from nck.commands.command import processor
+from nck.readers.sql_reader import SQLReader, validate_sql_arguments
+from nck.utils.args import extract_args
 
 
 @click.command(name="read_oracle")
