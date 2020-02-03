@@ -132,10 +132,13 @@ def parse(raw_response):
     raw_data = report["data"]
     dimensions, metrics = _parse_header(report)
     data = _parse_data(raw_data, metric_count=len(metrics))
-    headers = _fix_header(dimensions, metrics, data)
-    headers = [reformat_naming_for_bq(header) for header in headers]
-    for row in data:
-        yield {headers[i]: row[i] for i in range(len(headers))}
+    if data == []:
+        yield []
+    else:
+        headers = _fix_header(dimensions, metrics, data)
+        headers = [reformat_naming_for_bq(header) for header in headers]
+        for row in data:
+            yield {headers[i]: row[i] for i in range(len(headers))}
 
 
 class ReportNotReadyError(Exception):
