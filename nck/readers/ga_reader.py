@@ -168,8 +168,6 @@ class GaReader(Reader):
     @retry
     def _run_query(self):
         body = {"reportRequests": self.get_report_requests([self.view_id])}
-        print('body of request:')
-        print(body)
 
         try:
             report_page = self.client_v4.reports().batchGet(body=body).execute()
