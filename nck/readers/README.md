@@ -52,8 +52,18 @@ See the documents below for a better understanding of the parameters:
 - [Available Fields for Nautilus](../helpers/facebook_helper.py)
 
 
+### Google Ads Reader
 
+#### How to obtain Credentials
 
+https://developers.google.com/adwords/api/docs/guides/signup
+https://developers.google.com/adwords/api/docs/guides/first-api-call
+
+#### Which Reports and Metrics are available in the API
+
+https://developers.google.com/adwords/api/docs/appendix/reports#available-reports
+
+#### Simple API call example
 
 
 
