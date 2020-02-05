@@ -27,6 +27,7 @@ DATEFORMAT = "%Y-%m-%d"
 @click.option("--ga-account-id", default=[], multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option("--ga-metric", multiple=True)
+@click.option("--ga-segment-id", multiple=True)
 @click.option("--ga-start-date", type=click.DateTime(), default=None)
 @click.option("--ga-end-date", type=click.DateTime(), default=None)
 @click.option("--ga-date-range", nargs=2, type=click.DateTime(), default=None)
@@ -126,10 +127,12 @@ class GaReader(Reader):
     def get_view_id_report_request(self, view_id):
         metrics = self.kwargs.get("metric", [])
         dimensions = self.kwargs.get("dimension", [])
+        segment_ids = self.kwargs.get("segment_id", [])
         report_request = {
             "viewId": view_id,
             "metrics": [{"expression": metric} for metric in metrics],
             "dimensions": [{"name": dimension} for dimension in dimensions],
+            "segments": [{"segmentId": segment_id} for segment_id in segment_ids],
             "pageSize": 50000,
             "samplingLevel": self.sampling_level,
         }
