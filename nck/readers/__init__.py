@@ -4,6 +4,7 @@ from nck.readers.mysql_reader import mysql
 from nck.readers.gcs_reader import gcs
 from nck.readers.s3_reader import s3
 from nck.readers.oracle_reader import oracle
+from nck.readers.googleads_reader import googleads
 from nck.readers.gsheets_reader import gsheets
 from nck.readers.salesforce_reader import salesforce
 from nck.readers.facebook_reader import facebook_marketing
@@ -17,6 +18,7 @@ from nck.readers.radarly_reader import radarly
 readers = [
     mysql,
     salesforce,
+    googleads,
     gsheets,
     gcs,
     s3,
