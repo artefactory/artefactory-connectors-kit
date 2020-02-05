@@ -27,7 +27,7 @@ DATEFORMAT = "%Y-%m-%d"
 @click.option("--ga-account-id", default=[], multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option("--ga-metric", multiple=True)
-@click.option("--ga-segment_id", multiple=True)
+@click.option("--ga-segment-id", multiple=True)
 @click.option("--ga-start-date", type=click.DateTime(), default=None)
 @click.option("--ga-end-date", type=click.DateTime(), default=None)
 @click.option("--ga-date-range", nargs=2, type=click.DateTime(), default=None)
