@@ -1,21 +1,23 @@
 import logging
 import click
 import re
+import csv
 
-from itertools import chain
+from io import StringIO
+from googleads import adwords
+from googleads.oauth2 import GoogleRefreshTokenClient
+
 from click import ClickException
 
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
+from nck.utils.retry import retry
 from nck.commands.command import processor
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.helpers.googleads_helper import (
     REPORT_TYPE_POSSIBLE_VALUES,
     DATE_RANGE_TYPE_POSSIBLE_VALUES,
 )
-
-import googleads.adwords
-
 
 DATEFORMAT = "%Y%m%d"
 
@@ -50,29 +52,28 @@ DATEFORMAT = "%Y%m%d"
     "https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges",
 )
 @click.option(
-    "--googleads-start-date", 
-    type=click.DateTime(),
+    "--googleads-start-date",
+    type=click.DateTime([DATEFORMAT]),
     default="",
 )
 @click.option(
-    "--googleads-end-date", 
-    type=click.DateTime(),
+    "--googleads-end-date",
+    type=click.DateTime([DATEFORMAT]),
     default="",
 )
 @click.option(
-    "--googleads-field", 
-    multiple=True, 
+    "--googleads-field",
+    multiple=True,
     help="Google Ads API fields for the request\n"
     "https://developers.google.com/adwords/api/docs/appendix/reports#available-reports"
 )
 @click.option(
-    "--googleads-report-filter", 
-    default=None, 
+    "--googleads-report-filter",
+    default=None,
     help="A filter can be applied on a chosen field, in the form of a Dictionary {'field','operator','values'}\n"
     "https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition"
 )
 @processor("googleads_developer_token", "googleads_app_secret", "googleads_refresh_token")
-
 def google_ads(**kwargs):
     return GoogleAdsReader(**extract_args("googleads_", kwargs))
 
@@ -94,9 +95,8 @@ class GoogleAdsReader(Reader):
         report_filter,
     ):
         self.developer_token = developer_token
-        self.app_id = client_id
-        self.app_secret = client_secret
-        self.access_token = access_token
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.refresh_token = refresh_token
         self.client_customer_ids = list(client_customer_id)
         self.report_name = report_name
@@ -108,9 +108,13 @@ class GoogleAdsReader(Reader):
         self.report_filter = report_filter
         self.download_format = "CSV"
 
+        oauth2_client = GoogleRefreshTokenClient(self.client_id, self.client_secret, self.refresh_token)
+        self.adwords_client = adwords.AdWordsClient(self.developer_token, oauth2_client)
+
     @retry
     def fetch_report_from_gads_client_customer_obj(self, report_definition, client_customer_id):
-        if re.match(r"\d{3}-\d{3}-\d{4}",client_customer_id):
+        if re.match(r"\d{3}-\d{3}-\d{4}", client_customer_id):
+            report_downloader = self.adwords_client.GetReportDownloader()
             customer_report = report_downloader.DownloadReportAsStream(
                 report_definition,
                 client_customer_id=client_customer_id,
@@ -119,42 +123,10 @@ class GoogleAdsReader(Reader):
                 skip_report_summary=True,
             )
         else:
-            raise ClickException("Wrong format. Client Account ID should be a 'ddd-ddd-dddd' pattern, with digits separated by dashes")
-        account = AdAccount("act_" + ad_object_id)
-        
+            raise ClickException("Wrong format: " + client_customer_id + ". Client Account ID should be a 'ddd-ddd-dddd' pattern, with digits separated by dashes")
         return customer_report
 
-    @retry
-    def run_query_on_fb_campaign_obj_conf(self, params, ad_object_id, recurse_level):
-        campaign = Campaign(ad_object_id)
-        if recurse_level <= 0:
-            val_cmp = campaign.api_get(fields=CMP_POSSIBLE_VALUES, params=params)
-            yield val_cmp
-
-        else:
-            for el in chain(
-                *[
-                    self.run_query_on_fb_adset_obj_conf(
-                        params, adset.get("id"), recurse_level - 1
-                    )
-                    for adset in campaign.get_ad_sets()
-                ]
-            ):
-                yield el
-
-    @retry
-    def run_query_on_fb_adset_obj_conf(self, params, ad_object_id, recurse_level):
-        adset = AdSet(ad_object_id)
-        if recurse_level <= 0:
-            val_adset = adset.api_get(fields=ADS_POSSIBLE_VALUES, params=params)
-            yield val_adset
-        else:
-            raise ClickException(
-                "for now, just campaign object and adset object are able to be requested without insights"
-            )
-
-
-    def get_customer_ids(self, client):
+    def get_customer_ids(self):
         """Retrieves all CustomerIds in the account hierarchy.
         Note that your configuration file must specify a client_customer_id belonging
         to an AdWords manager account.
@@ -167,11 +139,10 @@ class GoogleAdsReader(Reader):
         """
         # For this example, we will use ManagedCustomerService to get all IDs in
         # hierarchy that do not belong to MCC accounts.
-        managed_customer_service = client.GetService('ManagedCustomerService',
-                                                   version='v201809')
+        managed_customer_service = self.adwords_client.GetService('ManagedCustomerService', version='v201809')
 
         offset = 0
-
+        PAGE_SIZE = 500
         # Get the account hierarchy for this account.
         selector = {
           'fields': ['CustomerId'],
@@ -191,19 +162,18 @@ class GoogleAdsReader(Reader):
         more_pages = True
 
         while more_pages:
-        page = managed_customer_service.get(selector)
+            page = managed_customer_service.get(selector)
 
-        if page and 'entries' in page and page['entries']:
-          for entry in page['entries']:
-            client_customer_ids.append(entry['customerId'])
-        else:
-          raise Exception('Can\'t retrieve any customer ID.')
-        offset += PAGE_SIZE
-        selector['paging']['startIndex'] = str(offset)
-        more_pages = offset < int(page['totalNumEntries'])
+            if page and 'entries' in page and page['entries']:
+              for entry in page['entries']:
+                client_customer_ids.append(entry['customerId'])
+            else:
+              raise Exception('Can\'t retrieve any customer ID.')
+            offset += PAGE_SIZE
+            selector['paging']['startIndex'] = str(offset)
+            more_pages = offset < int(page['totalNumEntries'])
 
-        self.client_customer_ids = client_customer_ids
-
+        return client_customer_ids
 
     def get_report_definition(self):
         """Get required parameters for report fetching"""
@@ -220,7 +190,6 @@ class GoogleAdsReader(Reader):
         self.add_report_filter(report_definition)
         return report_definition
 
-
     def add_period_to_report_definition(self, report_definition):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
         if (self.date_range_type=="CUSTOM_DATE") & (not self.start_date or not self.end_date):
@@ -233,7 +202,6 @@ class GoogleAdsReader(Reader):
             report_definition["selector"]["dateRange"] = self.create_date_range(
                 self.start_date, self.end_date
             )
-
 
     def add_report_filter(self, report_definition):
         """Check if a filter was provided and contains the necessary information"""
@@ -255,49 +223,22 @@ class GoogleAdsReader(Reader):
             "max": end_date.strftime(DATEFORMAT),
         }
 
-
-    def format_and_yield(self, record):
-        yield {field: get_field_value(record, field) for field in self.desired_fields}
-
-
     def result_generator(self, data):
-        for record in data:
-            yield from self.format_and_yield(record.export_all_data())
-
+        for row in data:
+            decoded_row = row.decode("utf-8")
+            reader = csv.DictReader(StringIO(decoded_row), self.fields)
+            yield next(reader)
 
     def read(self):
-        client = googleads_adwords.AdWordsClient.__init__(self.app_id, self.app_secret, self.access_token) ########### MODIFY
-
         report_definition = self.get_report_definition()
-        report_downloader = client.GetReportDownloader()
 
         if not self.client_customer_ids:
-            self.get_customer_ids(client) 
+            self. client_customer_ids = self.get_customer_ids()
 
         for googleads_account_id in self.client_customer_ids:
-            #### what format ?????
             customer_report = self.fetch_report_from_gads_client_customer_obj(report_definition, googleads_account_id)
 
-        ################################# MAP whether report or metadata
-        if self.ad_insights:
-            query_mapping = {AD_OBJECT_TYPES[0]: self.run_query_on_fb_account_obj}
-            args = [params, self.ad_object_id]
-        else:
-            query_mapping = {
-                AD_OBJECT_TYPES[1]: self.run_query_on_fb_campaign_obj_conf,
-                AD_OBJECT_TYPES[2]: self.run_query_on_fb_adset_obj_conf,
-            }
-            args = [params, self.ad_object_id, self.recurse_level]
-        try:
-            query = query_mapping[self.ad_object_type]
-            data = query(*args)
-        except KeyError:
-            raise ClickException(
-                "`{}` is not a valid adObject type".format(self.ad_object_type)
+            yield NormalizedJSONStream(
+                "results_" + self.report_name + "_" + str(googleads_account_id),
+                self.result_generator(customer_report),
             )
-        #################################
-
-        yield NormalizedJSONStream(
-            "results_" + self.report_name + "_" + str(self.ad_object_id),
-            self.result_generator(data),
-        )

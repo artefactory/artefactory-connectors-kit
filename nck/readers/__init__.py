@@ -2,6 +2,7 @@ from nck.readers.reader import Reader
 
 from nck.readers.mysql_reader import mysql
 from nck.readers.gcs_reader import gcs
+from nck.readers.googleads_reader import google_ads
 from nck.readers.s3_reader import s3
 from nck.readers.oracle_reader import oracle
 from nck.readers.gsheets_reader import gsheets
@@ -19,6 +20,7 @@ readers = [
     salesforce,
     gsheets,
     gcs,
+    google_ads,
     s3,
     facebook_marketing,
     oracle,
@@ -26,8 +28,8 @@ readers = [
     ga,
     search_console,
     adobe,
-    radarly
+    radarly,
 ]
 
 
-__all__ = ['readers', 'Reader']
+__all__ = ["readers", "Reader"]
