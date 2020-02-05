@@ -41,7 +41,7 @@ class GaReaderTest(TestCase):
             "dimensions": ("date",),
             "metric": (),
             "start_date": datetime(2019, 1, 1),
-            "view_id": "0",
+            "view_ids": ("0", "1"),
             "end_date": datetime(2019, 1, 1),
         }
         reader = GaReader(**kwargs)
