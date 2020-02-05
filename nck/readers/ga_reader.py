@@ -23,7 +23,7 @@ DATEFORMAT = "%Y-%m-%d"
 @click.option("--ga-refresh-token", required=True)
 @click.option("--ga-client-id", required=True)
 @click.option("--ga-client-secret", required=True)
-@click.option("--ga-view-id", type=click.STRING, default="")
+@click.option("--ga-view-id", default="", multiple=True)
 @click.option("--ga-account-id", default=[], multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option("--ga-metric", multiple=True)
@@ -72,7 +72,7 @@ class GaReader(Reader):
         self.kwargs = kwargs
         self.kwargs["credentials"] = credentials
         self.views_metadata = {}
-        self.view_id = self.kwargs.get("view_id")
+        self.view_ids = self.kwargs.get("view_id")
         self.date_range = self.get_date_range_for_ga_request()
         self.sampling_level = self.kwargs.get("sampling_level")
 
@@ -123,9 +123,6 @@ class GaReader(Reader):
             raise ClickException("{} is not handled by the reader".format(day_range))
         return days_delta
 
-    def get_report_requests(self, view_ids):
-        return [self.get_view_id_report_request(view_id) for view_id in view_ids]
-
     def get_view_id_report_request(self, view_id):
         metrics = self.kwargs.get("metric", [])
         dimensions = self.kwargs.get("dimension", [])
@@ -163,8 +160,8 @@ class GaReader(Reader):
         return datetime.strptime(dateYYYYMMDD, "%Y%m%d").strftime(DATEFORMAT)
 
     @retry
-    def _run_query(self):
-        body = {"reportRequests": self.get_report_requests([self.view_id])}
+    def _run_query(self, view_id):
+        body = {"reportRequests": self.get_view_id_report_request(view_id)}
 
         try:
             report_page = self.client_v4.reports().batchGet(body=body).execute()
@@ -207,14 +204,13 @@ class GaReader(Reader):
             yield formatted_response
 
     def result_generator(self):
-        for report in self._run_query():
-            if "data" in report:
-                yield from self.format_and_yield(report)
-            else:
-                return None
+        for view_id in self.view_ids:
+            for report in self._run_query(view_id):
+                if "data" in report:
+                    yield from self.format_and_yield(report)
 
     def read(self):
-        yield GaStream("result_view_" + self.view_id, self.result_generator())
+        yield GaStream("result_view_" + "_".join(self.view_ids), self.result_generator())
 
 
 class GaStream(NormalizedJSONStream):
