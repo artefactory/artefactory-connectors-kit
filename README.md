@@ -44,7 +44,16 @@ NCK is divided in three main components : Readers, Streams, and Writers.
 
 ### Develop with python
 
-Run `python nck/entrypoint.py`.
+First install dependencies with:
+
+```bash
+pip install -r requirements.txt
+```
+Then run:
+ 
+```
+python nck/entrypoint.py
+```
 
 ### Package 
 

@@ -10,9 +10,8 @@ Each reader role is to read data from external source and transform it into a St
 4. Reference click command into [commands list](./__init__.py)
 5. Update current README.md
 
-## Readers
 
-### Facebook Reader
+## Facebook Reader
 
 - Example
 
@@ -51,6 +50,16 @@ See the documents below for a better understanding of the parameters:
 - [API Reference for Ad Insights](https://developers.facebook.com/docs/marketing-api/reference/adgroup/insights/)
 - [Available Fields for Nautilus](../helpers/facebook_helper.py)
 
+
+## Google Readers
+
+### Authentication
+
+You can authenticate to most of the readers of the google 
+suite following the same schema. You'll need to generate a **refresh token** to connect
+via the oAuth flow. A full script to do this can be found here:
+
+[Refresh token generator](https://github.com/artefactory/Refresh-token-generator-for-google-oauth)
 
 
 
