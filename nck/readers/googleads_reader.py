@@ -1,6 +1,8 @@
 import logging
 import click
 import re
+import yaml
+import codecs
 
 from itertools import chain
 from click import ClickException
@@ -27,8 +29,8 @@ DATEFORMAT = "%Y%m%d"
 @click.option(
     "--googleads-client-customer-id",
     multiple=True,
-    default=None,
-    help="Google Ads Client Account to be called, thanks to their IDs",
+    required=True,
+    help="Google Ads Client Account(s) to be called, thanks to their IDs",
 )
 @click.option(
     "--googleads-report-name",
@@ -94,10 +96,15 @@ class GoogleAdsReader(Reader):
         report_filter,
     ):
         self.developer_token = developer_token
-        self.app_id = client_id
-        self.app_secret = client_secret
-        self.access_token = access_token
-        self.refresh_token = refresh_token
+        self.credentials_dict = {
+            'adwords':{
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'refresh_token': self.refresh_token,
+                'developer_token': self.developer_token,
+                'client_customer_id': self.client_customer_ids[0],
+            }
+        }
         self.client_customer_ids = list(client_customer_id)
         self.report_name = report_name
         self.report_type = report_type
@@ -118,9 +125,10 @@ class GoogleAdsReader(Reader):
                 skip_column_header=True,
                 skip_report_summary=True,
             )
+            stream_reader = codecs.getreader(encoding)
+            customer_report = stream_reader(customer_report)
         else:
             raise ClickException("Wrong format. Client Account ID should be a 'ddd-ddd-dddd' pattern, with digits separated by dashes")
-        account = AdAccount("act_" + ad_object_id)
         
         return customer_report
 
@@ -266,17 +274,16 @@ class GoogleAdsReader(Reader):
 
 
     def read(self):
-        client = googleads_adwords.AdWordsClient.__init__(self.app_id, self.app_secret, self.access_token) ########### MODIFY
+        client = googleads.adwords.AdWordsClient.LoadFromString(yaml.dump(self.credentials_dict))
 
         report_definition = self.get_report_definition()
         report_downloader = client.GetReportDownloader()
 
-        if not self.client_customer_ids:
-            self.get_customer_ids(client) 
-
         for googleads_account_id in self.client_customer_ids:
-            #### what format ?????
+
             customer_report = self.fetch_report_from_gads_client_customer_obj(report_definition, googleads_account_id)
+
+            
 
         ################################# MAP whether report or metadata
         if self.ad_insights:
@@ -301,3 +308,8 @@ class GoogleAdsReader(Reader):
             "results_" + self.report_name + "_" + str(self.ad_object_id),
             self.result_generator(data),
         )
+
+if __name__ == '__main__':
+
+    client = googleads.adwords.AdWordsClient.LoadFromStorage()
+
