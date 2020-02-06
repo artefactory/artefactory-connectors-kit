@@ -67,3 +67,6 @@ DATE_RANGE_TYPE_POSSIBLE_VALUES = [
     "CUSTOM_DATE",
 ]
 # If "CUSTOM_DATE" is chosen, a min and max date in YYYYMMDD format are required
+
+# Encoding for Stream Reader
+ENCODING="utf-8"
