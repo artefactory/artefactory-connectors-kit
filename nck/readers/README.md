@@ -52,9 +52,10 @@ See the documents below for a better understanding of the parameters:
 - [Available Fields for Nautilus](../helpers/facebook_helper.py)
 
 
+
 ### Google Ads Reader
 
-#### How to obtain Credentials
+#### - How to obtain Credentials
 
 
 Using the Google Ads API require four things:
@@ -73,12 +74,12 @@ See the [documentation here](https://developers.google.com/adwords/api/docs/guid
 to set-up your OAuth2 credentials and refresh token specifically for your Google Ads Accounts.
 
 
-#### Which Reports and Metrics are available in the API
+#### - Which Reports and Metrics are available in the API
 
 
 The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/adwords/api/docs/appendix/reports#available-reports "Report Types")
 
-#### Simple API call example
+#### - Simple API call example
 
 
 The following command retrieves some insights of every Ads in the Google Ads Account <CLIENT_CUSTOMER_ID> thanks to
