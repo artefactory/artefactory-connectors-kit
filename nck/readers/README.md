@@ -80,7 +80,7 @@ to set-up your OAuth2 credentials and refresh token specifically for your Google
 The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/adwords/api/docs/appendix/reports#available-reports "Report Types")
 
 #### Simple API call example
-\s\s
+
 
 - Call Example
 
