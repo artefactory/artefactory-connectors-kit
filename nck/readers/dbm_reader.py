@@ -41,6 +41,8 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-query-title")
 @click.option("--dbm-query-frequency", default="ONE_TIME")
 @click.option("--dbm-query-param-type", default="TYPE_TRUEVIEW")
+@click.option("--dbm-start-date", type=click.DateTime())
+@click.option("--dbm-end-date", type=click.DateTime())
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
 @click.option(
@@ -126,6 +128,21 @@ class DbmReader(Reader):
             },
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
         }
+        if self.kwargs.get("start_date") is not None \
+           and self.kwargs.get("end_date") is not None:
+            body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
+            body_q["reportDataStartTimeMs"] = \
+                1000 * int(
+                    (
+                        self.kwargs.get("start_date")
+                        + datetime.timedelta(days=1)
+                    ).timestamp())
+            body_q["reportDataEndTimeMs"] = \
+                1000 * int(
+                    (
+                        self.kwargs.get("end_date")
+                        + datetime.timedelta(days=1)
+                    ).timestamp())
         return body_q
 
     def create_and_get_query(self):
