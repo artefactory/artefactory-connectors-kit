@@ -49,8 +49,12 @@ class TestDbmReader(unittest.TestCase):
         reader = DbmReader(**kwargs)
         reader.kwargs = {
             'filter': [('FILTER_ADVERTISER', 1)],
-            'start_date': datetime.datetime(2020, 1, 15),
-            'end_date': datetime.datetime(2020, 1, 18)
+            'start_date': datetime.datetime(
+                2020, 1, 15, tzinfo=datetime.timezone.utc
+            ),
+            'end_date': datetime.datetime(
+                2020, 1, 18, tzinfo=datetime.timezone.utc
+            )
         }
 
         expected_query_body = {
@@ -73,7 +77,7 @@ class TestDbmReader(unittest.TestCase):
             'schedule': {
                 'frequency': 'ONE_TIME'
             },
-            'reportDataStartTimeMs': 1579129200000,
-            'reportDataEndTimeMs': 1579388400000
+            'reportDataStartTimeMs': 1579132800000,
+            'reportDataEndTimeMs': 1579392000000
         }
         self.assertDictEqual(reader.get_query_body(), expected_query_body)
