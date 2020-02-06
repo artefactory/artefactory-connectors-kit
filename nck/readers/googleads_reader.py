@@ -1,19 +1,20 @@
+import codecs
 import logging
 import click
 import re
-import yaml
 import csv
 
 from io import StringIO
-from googleads import adwords
 from click import ClickException
+from googleads import adwords
+from googleads.oauth2 import GoogleRefreshTokenClient
 
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
+from nck.utils.retry import retry
 from nck.commands.command import processor
 from nck.streams.normalized_json_stream import NormalizedJSONStream
-from nck.helpers.googleads_helper import REPORT_TYPE_POSSIBLE_VALUES, DATE_RANGE_TYPE_POSSIBLE_VALUES
-
+from nck.helpers.googleads_helper import REPORT_TYPE_POSSIBLE_VALUES, DATE_RANGE_TYPE_POSSIBLE_VALUES, ENCODING
 
 DATEFORMAT = "%Y%m%d"
 
@@ -59,7 +60,7 @@ DATEFORMAT = "%Y%m%d"
     "https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition",
 )
 @processor("googleads_developer_token", "googleads_app_secret", "googleads_refresh_token")
-def googleads(**kwargs):
+def google_ads(**kwargs):
     return GoogleAdsReader(**extract_args("googleads_", kwargs))
 
 
@@ -80,16 +81,10 @@ class GoogleAdsReader(Reader):
         report_filter,
     ):
         self.developer_token = developer_token
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.refresh_token = refresh_token
         self.client_customer_ids = list(client_customer_id)
-        self.credentials_dict = {
-            "adwords": {
-                "client_id": self.client_id,
-                "client_secret": self.client_secret,
-                "refresh_token": self.refresh_token,
-                "developer_token": self.developer_token,
-                "client_customer_id": self.client_customer_ids[0],
-            }
-        }
         self.report_name = report_name
         self.report_type = report_type
         self.date_range_type = date_range_type
@@ -99,11 +94,13 @@ class GoogleAdsReader(Reader):
         self.report_filter = report_filter
         self.download_format = "CSV"
 
-        self.adwords_client = adwords.AdWordsClient.LoadFromString(yaml.dump(self.credentials_dict))
+        oauth2_client = GoogleRefreshTokenClient(self.client_id, self.client_secret, self.refresh_token)
+        self.adwords_client = adwords.AdWordsClient(self.developer_token, oauth2_client)
 
     @retry
     def fetch_report_from_gads_client_customer_obj(self, report_definition, client_customer_id):
         if re.match(r"\d{3}-\d{3}-\d{4}", client_customer_id):
+            report_downloader = self.adwords_client.GetReportDownloader()
             customer_report = report_downloader.DownloadReportAsStream(
                 report_definition,
                 client_customer_id=client_customer_id,
@@ -111,58 +108,13 @@ class GoogleAdsReader(Reader):
                 skip_column_header=True,
                 skip_report_summary=True,
             )
-            stream_reader = codecs.getreader(encoding)
-            customer_report = stream_reader(customer_report)
         else:
             raise ClickException(
-                "Wrong format"
+                "Wrong format: "
                 + client_customer_id
                 + ". Client Account ID should be a 'ddd-ddd-dddd' pattern, with digits separated by dashes"
             )
-
         return customer_report
-
-    def get_customer_ids(self):
-        """Retrieves all CustomerIds in the account hierarchy.
-        Note that your configuration file must specify a client_customer_id belonging
-        to an AdWords manager account.
-        Args:
-        client: an AdWordsClient instance.
-        Raises:
-        Exception: if no CustomerIds could be found.
-        Returns:
-        A Queue instance containing all CustomerIds in the account hierarchy.
-        """
-        # For this example, we will use ManagedCustomerService to get all IDs in
-        # hierarchy that do not belong to MCC accounts.
-        managed_customer_service = self.adwords_client.GetService("ManagedCustomerService", version="v201809")
-
-        offset = 0
-        PAGE_SIZE = 500
-        # Get the account hierarchy for this account.
-        selector = {
-            "fields": ["CustomerId"],
-            "predicates": [{"field": "CanManageClients", "operator": "EQUALS", "values": [False]}],
-            "paging": {"startIndex": str(offset), "numberResults": str(PAGE_SIZE)},
-        }
-
-        # Using Queue to balance load between processes.
-        client_customer_ids = []
-        more_pages = True
-
-        while more_pages:
-            page = managed_customer_service.get(selector)
-
-            if page and "entries" in page and page["entries"]:
-                for entry in page["entries"]:
-                    client_customer_ids.append(entry["customerId"])
-            else:
-                raise Exception("Can't retrieve any customer ID.")
-            offset += PAGE_SIZE
-            selector["paging"]["startIndex"] = str(offset)
-            more_pages = offset < int(page["totalNumEntries"])
-
-        return client_customer_ids
 
     def get_report_definition(self):
         """Get required parameters for report fetching"""
@@ -181,7 +133,8 @@ class GoogleAdsReader(Reader):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
         if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
             logging.warning(
-                "⚠️ Custom Date Range selected but No date range provided - Select another DateRangeType or provide start and end dates ⚠️"
+                "⚠️ Custom Date Range selected but no date range provided",
+                "Select another DateRangeType or provide start and end dates ⚠️",
             )
             logging.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
         elif self.date_range_type == "CUSTOM_DATE":
@@ -200,26 +153,27 @@ class GoogleAdsReader(Reader):
             }
         else:
             logging.warning(
-                "⚠️ A Report filter was provided but is missing necessary information - Dictionary {'field','operator','values'} ⚠️"
+                "⚠️ A Report filter was provided but is missing necessary information",
+                "Dictionary {'field','operator','values'} ⚠️",
             )
 
     @staticmethod
     def create_date_range(start_date, end_date):
         return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
 
-    def result_generator(self, data):
-        for row in data:
-            decoded_row = row.decode("utf-8")
-            reader = csv.DictReader(StringIO(decoded_row), self.fields)
+    def format_and_yield(self, customer_report):
+        stream_reader = codecs.getreader(ENCODING)
+        customer_report = stream_reader(customer_report)
+        for row in customer_report:
+            reader = csv.DictReader(StringIO(row), self.fields)
             yield next(reader)
 
     def read(self):
         report_definition = self.get_report_definition()
-        report_downloader = client.GetReportDownloader()
 
         for googleads_account_id in self.client_customer_ids:
             customer_report = self.fetch_report_from_gads_client_customer_obj(report_definition, googleads_account_id)
 
             yield NormalizedJSONStream(
-                "results_" + self.report_name + "_" + str(googleads_account_id), self.result_generator(customer_report)
+                "results_" + self.report_name + "_" + str(googleads_account_id), self.format_and_yield(customer_report)
             )
