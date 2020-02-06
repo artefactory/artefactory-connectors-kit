@@ -56,6 +56,7 @@ See the documents below for a better understanding of the parameters:
 ### Google Ads Reader
 
 #### How to obtain Credentials  
+  
 
 
 Using the Google Ads API require four things:
@@ -75,11 +76,13 @@ to set-up your OAuth2 credentials and refresh token specifically for your Google
 
 
 #### Which Reports and Metrics are available in the API  
+  
 
 
 The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/adwords/api/docs/appendix/reports#available-reports "Report Types")
 
 #### Simple API call example  
+  
 
 
 - Call Example  
@@ -91,10 +94,12 @@ your company <DEVELOPER_TOKEN>, and your <CLIENT_ID>, <CLIENT_SECRET> and <REFRE
 ```
 python nck/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions  
 ```
+  
 
 
 - Parameters of the GoogleAds Readers  
-
+  
+  
 
 | --googleads-developer-token | --googleads-client-id | --googleads-client-secret | --googleads-refresh-token | --googleads-client-customer-id | --googleads-report-name | --googleads-report-type | --googleads-date-range-type | --googleads-start-date | --googleads-end-date | --googleads-field | --googleads-report-filter |
 |:-----------------:|:---------------------:|:-----------------------:|:-----------------------:|:-------------------------:|:--------------------:|:---------------------------:|:----------------------:|:-------------------:|:-------------------------:|:----------------:|:------------------------:|
