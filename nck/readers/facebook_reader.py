@@ -40,7 +40,7 @@ DATEFORMAT = "%Y-%m-%d"
     help="Not mandatory for AdsInsights reporting if access-token provided",
 )
 @click.option("--facebook-access-token", required=True)
-@click.option("--facebook-ad-object-id", required=True)
+@click.option("--facebook-ad-object-id", required=True, multiple=True)
 @click.option(
     "--facebook-ad-object-type",
     type=click.Choice(AD_OBJECT_TYPES),
@@ -81,7 +81,7 @@ DATEFORMAT = "%Y-%m-%d"
     multiple=True,
     type=click.Choice(list(DESIRED_FIELDS.keys())),
     help="Desired fields to get in the output report."
-    "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
+         "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
 )
 @click.option("--facebook-start-date", type=click.DateTime())
 @click.option("--facebook-end-date", type=click.DateTime())
@@ -98,28 +98,28 @@ def facebook_marketing(**kwargs):
 
 class FacebookMarketingReader(Reader):
     def __init__(
-        self,
-        app_id,
-        app_secret,
-        access_token,
-        ad_object_id,
-        ad_object_type,
-        breakdown,
-        action_breakdown,
-        ad_insights,
-        ad_level,
-        time_increment,
-        field,
-        desired_field,
-        start_date,
-        end_date,
-        date_preset,
-        recurse_level,
+            self,
+            app_id,
+            app_secret,
+            access_token,
+            ad_object_id,
+            ad_object_type,
+            breakdown,
+            action_breakdown,
+            ad_insights,
+            ad_level,
+            time_increment,
+            field,
+            desired_field,
+            start_date,
+            end_date,
+            date_preset,
+            recurse_level,
     ):
         self.app_id = app_id
         self.app_secret = app_secret
         self.access_token = access_token
-        self.ad_object_id = ad_object_id
+        self.ad_object_ids = ad_object_id
         self.ad_object_type = ad_object_type
         self.breakdowns = list(breakdown)
         self.action_breakdowns = list(action_breakdown)
@@ -150,12 +150,12 @@ class FacebookMarketingReader(Reader):
 
         else:
             for el in chain(
-                *[
-                    self.run_query_on_fb_adset_obj_conf(
-                        params, adset.get("id"), recurse_level - 1
-                    )
-                    for adset in campaign.get_ad_sets()
-                ]
+                    *[
+                        self.run_query_on_fb_adset_obj_conf(
+                            params, adset.get("id"), recurse_level - 1
+                        )
+                        for adset in campaign.get_ad_sets()
+                    ]
             ):
                 yield el
 
@@ -211,19 +211,22 @@ class FacebookMarketingReader(Reader):
         for record in data:
             yield from self.format_and_yield(record.export_all_data())
 
-    def read(self):
-        FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
+    def get_data(self):
+        for object_id in self.ad_object_ids:
+            yield from self.get_data_for_object(object_id)
+
+    def get_data_for_object(self, ad_object_id):
         params = self.get_params()
 
         if self.ad_insights:
             query_mapping = {AD_OBJECT_TYPES[0]: self.run_query_on_fb_account_obj}
-            args = [params, self.ad_object_id]
+            args = [params, ad_object_id]
         else:
             query_mapping = {
                 AD_OBJECT_TYPES[1]: self.run_query_on_fb_campaign_obj_conf,
                 AD_OBJECT_TYPES[2]: self.run_query_on_fb_adset_obj_conf,
             }
-            args = [params, self.ad_object_id, self.recurse_level]
+            args = [params, ad_object_id, self.recurse_level]
         try:
             query = query_mapping[self.ad_object_type]
             data = query(*args)
@@ -231,8 +234,12 @@ class FacebookMarketingReader(Reader):
             raise ClickException(
                 "`{}` is not a valid adObject type".format(self.ad_object_type)
             )
+        yield from self.result_generator(data)
+
+    def read(self):
+        FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
 
         yield NormalizedJSONStream(
-            "results_" + self.ad_object_type + "_" + str(self.ad_object_id),
-            self.result_generator(data),
+            "results_" + self.ad_object_type + "_" + "_".join(self.ad_object_ids),
+            self.get_data(),
         )

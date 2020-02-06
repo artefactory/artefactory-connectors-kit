@@ -18,7 +18,7 @@ class FacebookReaderTest(TestCase):
         "app_id": "",
         "app_secret": "",
         "access_token": "",
-        "ad_object_id": "",
+        "ad_object_ids": "",
         "recurse_level": 0,
         "ad_object_type": "adaccount",
         "desired_fields": ["date_start", "impressions"],
