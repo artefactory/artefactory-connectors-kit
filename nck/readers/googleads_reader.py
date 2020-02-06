@@ -25,10 +25,13 @@ DATEFORMAT = "%Y%m%d"
 @click.option("--googleads-client-secret", required=True)
 @click.option("--googleads-refresh-token", required=True)
 @click.option(
+    "--googleads-manager-id", help="Google Ads Manager Account. Used to get the reports of all accounts in hierarchy"
+)
+@click.option(
     "--googleads-client-customer-id",
     multiple=True,
-    required=True,
-    help="Google Ads Client Account(s) to be called, thanks to their IDs",
+    help="Google Ads Client Account(s) to be called, thanks to their IDs.\n "
+    "This field is ignored if manager_id is specified",
 )
 @click.option("--googleads-report-name", default="Custom Report", help="Name given to your Report")
 @click.option(
@@ -71,6 +74,7 @@ class GoogleAdsReader(Reader):
         client_id,
         client_secret,
         refresh_token,
+        manager_id,
         client_customer_id,
         report_name,
         report_type,
@@ -84,6 +88,8 @@ class GoogleAdsReader(Reader):
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
+        self.oauth2_client = GoogleRefreshTokenClient(self.client_id, self.client_secret, self.refresh_token)
+        self.manager_id = manager_id
         self.client_customer_ids = list(client_customer_id)
         self.report_name = report_name
         self.report_type = report_type
@@ -94,13 +100,14 @@ class GoogleAdsReader(Reader):
         self.report_filter = report_filter
         self.download_format = "CSV"
 
-        oauth2_client = GoogleRefreshTokenClient(self.client_id, self.client_secret, self.refresh_token)
-        self.adwords_client = adwords.AdWordsClient(self.developer_token, oauth2_client)
+    def init_adwords_client(self, id):
+        return adwords.AdWordsClient(self.developer_token, self.oauth2_client, client_customer_id=id)
 
     @retry
     def fetch_report_from_gads_client_customer_obj(self, report_definition, client_customer_id):
         if re.match(r"\d{3}-\d{3}-\d{4}", client_customer_id):
-            report_downloader = self.adwords_client.GetReportDownloader()
+            adwords_client = self.init_adwords_client(client_customer_id)
+            report_downloader = adwords_client.GetReportDownloader()
             customer_report = report_downloader.DownloadReportAsStream(
                 report_definition,
                 client_customer_id=client_customer_id,
@@ -110,11 +117,55 @@ class GoogleAdsReader(Reader):
             )
         else:
             raise ClickException(
-                "Wrong format: "
-                + client_customer_id
-                + ". Client Account ID should be a 'ddd-ddd-dddd' pattern, with digits separated by dashes"
+                "Wrong format: " + client_customer_id + ". Client customer ID should be in the form 123-456-7890"
             )
         return customer_report
+
+    def get_customer_ids(self, manager_id):
+        """Retrieves all CustomerIds in the account hierarchy.
+        Note that your configuration file must specify a client_customer_id belonging
+        to an AdWords manager account.
+        Args:
+        client: an AdWordsClient instance.
+        Raises:
+        Exception: if no CustomerIds could be found.
+        Returns:
+        A list of customer accounts
+        """
+
+        adwords_client = self.init_adwords_client(manager_id)
+        managed_customer_service = adwords_client.GetService("ManagedCustomerService", version="v201809")
+
+        offset = 0
+        PAGE_SIZE = 500
+        # Get the account hierarchy for this account.
+        selector = {
+            "fields": ["CustomerId"],
+            "predicates": [{"field": "CanManageClients", "operator": "EQUALS", "values": [False]}],
+            "paging": {"startIndex": str(offset), "numberResults": str(PAGE_SIZE)},
+        }
+
+        client_customer_ids = []
+        more_pages = True
+
+        while more_pages:
+            page = managed_customer_service.get(selector)
+
+            if page and "entries" in page and page["entries"]:
+                for entry in page["entries"]:
+                    client_customer_ids.append(self.format_customer_id(entry["customerId"]))
+            else:
+                raise Exception("Can't retrieve any customer ID.")
+            offset += PAGE_SIZE
+            selector["paging"]["startIndex"] = str(offset)
+            more_pages = offset < int(page["totalNumEntries"])
+
+        return client_customer_ids
+
+    @staticmethod
+    def format_customer_id(id):
+        id_string = repr(id)
+        return id_string[:3] + "-" + id_string[3:6] + "-" + id_string[6:10]
 
     def get_report_definition(self):
         """Get required parameters for report fetching"""
@@ -135,10 +186,10 @@ class GoogleAdsReader(Reader):
             logging.warning(
                 "⚠️ Custom Date Range selected but no date range provided :"
                 + DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
-                + " by default ⚠️",
+                + " by default ⚠️"
             )
             logging.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
-            report_definition["dateRangeType"]=DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
+            report_definition["dateRangeType"] = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
         elif self.date_range_type == "CUSTOM_DATE":
             logging.info("ℹ️ Date format used for request : Custom Date Range with start_date and end_date provided")
             report_definition["selector"]["dateRange"] = self.create_date_range(self.start_date, self.end_date)
@@ -172,6 +223,9 @@ class GoogleAdsReader(Reader):
 
     def read(self):
         report_definition = self.get_report_definition()
+
+        if self.manager_id:
+            self.client_customer_ids = self.get_customer_ids(self.manager_id)
 
         for googleads_account_id in self.client_customer_ids:
             customer_report = self.fetch_report_from_gads_client_customer_obj(report_definition, googleads_account_id)
