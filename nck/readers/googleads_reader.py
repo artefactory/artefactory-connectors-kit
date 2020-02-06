@@ -45,8 +45,8 @@ DATEFORMAT = "%Y%m%d"
     help="Desired Date Range Type to fetch\n"
     "https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges",
 )
-@click.option("--googleads-start-date", type=click.DateTime(), default="")
-@click.option("--googleads-end-date", type=click.DateTime(), default="")
+@click.option("--googleads-start-date", type=click.DateTime())
+@click.option("--googleads-end-date", type=click.DateTime())
 @click.option(
     "--googleads-field",
     multiple=True,
@@ -133,8 +133,9 @@ class GoogleAdsReader(Reader):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
         if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
             logging.warning(
-                "⚠️ Custom Date Range selected but no date range provided",
-                "{} by default ⚠️".format(DATE_RANGE_TYPE_POSSIBLE_VALUES[0]),
+                "⚠️ Custom Date Range selected but no date range provided :"
+                + DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
+                + " by default ⚠️",
             )
             logging.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
             report_definition["dateRangeType"]=DATE_RANGE_TYPE_POSSIBLE_VALUES[0]

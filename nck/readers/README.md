@@ -20,7 +20,7 @@ The following command retrieves some insights of every Ads in the Facebook accou
 a Facebook App whose access_token is <ACCESS_TOKEN>.
 
 ```
-python bin/run.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-ad-object-id <ACCOUNT_ID> --facebook-breakdown gender --facebook-ad-level ad --facebook-start-date 2019-01-01 --facebook-end-date 2019-01-01 --facebook-field date_start --facebook-field date_stop --facebook-field account_currency --facebook-field account_id --facebook-field account_name --facebook-field ad_id --facebook-field ad_name --facebook-field adset_id --facebook-field adset_name --facebook-field campaign_id --facebook-field campaign_name --facebook-field clicks --facebook-field impressions --facebook-desired-field date_start --facebook-desired-field date_stop --facebook-desired-field account_name --facebook-desired-field account_id --facebook-desired-field ad_id --facebook-desired-field ad_namefacebook-desired-field clicks --facebook-desired-field impressions write_console
+python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-ad-object-id <ACCOUNT_ID> --facebook-breakdown gender --facebook-ad-level ad --facebook-start-date 2019-01-01 --facebook-end-date 2019-01-01 --facebook-field date_start --facebook-field date_stop --facebook-field account_currency --facebook-field account_id --facebook-field account_name --facebook-field ad_id --facebook-field ad_name --facebook-field adset_id --facebook-field adset_name --facebook-field campaign_id --facebook-field campaign_name --facebook-field clicks --facebook-field impressions --facebook-desired-field date_start --facebook-desired-field date_stop --facebook-desired-field account_name --facebook-desired-field account_id --facebook-desired-field ad_id --facebook-desired-field ad_namefacebook-desired-field clicks --facebook-desired-field impressions write_console
 ```
 
 The report below is the output of the command. You can easily store it in GCS or Biquery thanks to the corresponding
@@ -92,6 +92,8 @@ your company <DEVELOPER_TOKEN>, and your <CLIENT_ID>, <CLIENT_SECRET> and <REFRE
 python nck/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions  
 ```
 
+*If it doesn't work, try to * `export PYTHONPATH="."` in the nautilus-connector-kit folder
+*If you want the output to be printed in your console, add* `write_console` *at the end of your command (see writers for more details)*
 
 - Parameters of the GoogleAds Readers
 
