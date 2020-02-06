@@ -134,9 +134,10 @@ class GoogleAdsReader(Reader):
         if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
             logging.warning(
                 "⚠️ Custom Date Range selected but no date range provided",
-                "Select another DateRangeType or provide start and end dates ⚠️",
+                "{} by default ⚠️".format(DATE_RANGE_TYPE_POSSIBLE_VALUES[0]),
             )
             logging.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
+            report_definition["dateRangeType"]=DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
         elif self.date_range_type == "CUSTOM_DATE":
             logging.info("ℹ️ Date format used for request : Custom Date Range with start_date and end_date provided")
             report_definition["selector"]["dateRange"] = self.create_date_range(self.start_date, self.end_date)

@@ -51,8 +51,8 @@ REPORT_TYPE_POSSIBLE_VALUES = [
 
 # https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges
 DATE_RANGE_TYPE_POSSIBLE_VALUES = [
-    "TODAY",
     "YESTERDAY",
+    "TODAY",
     "LAST_7_DAYS",
     "LAST_WEEK",
     "LAST_BUSINESS_WEEK",
