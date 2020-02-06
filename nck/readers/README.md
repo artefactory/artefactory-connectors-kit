@@ -56,11 +56,15 @@ See the documents below for a better understanding of the parameters:
 
 #### How to obtain Credentials
 
+
 Using the Google Ads API require four things:
 - A developer token (Generated at a company level - one per company -, takes around 2 days to be approved by Google) which can be completely independant from the Google Ads Account you will be calling (though you need a Manager Google Ads Account to request a token for your company)
+
 - OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
+
 - A refresh token, created with the email address able to access to all the Google Ads Account you will be calling
-- The ID of the GAds Accounts you will be reading from (XXX-XXX-XXXX numbers, written right next to your Account Name)
+
+- The ID of the GAds Accounts <CLIENT_CUSTOMER_ID> you will be reading from (XXX-XXX-XXXX numbers, written right next to your Account Name)
 
 See the [documentation here](https://developers.google.com/adwords/api/docs/guides/signup "Sign Up for Google Ads API")
 to apply for access if your Company does not already have a developer token (granting you the right to use the API).
@@ -68,11 +72,19 @@ to apply for access if your Company does not already have a developer token (gra
 See the [documentation here](https://developers.google.com/adwords/api/docs/guides/first-api-call "Make your first API call")
 to set-up your OAuth2 credentials and refresh token specifically for your Google Ads Accounts.
 
+
 #### Which Reports and Metrics are available in the API
 
-https://developers.google.com/adwords/api/docs/appendix/reports#available-reports
+
+The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/adwords/api/docs/appendix/reports#available-reports "Report Types")
 
 #### Simple API call example
 
 
+The following command retrieves some insights of every Ads in the Google Ads Account <CLIENT_CUSTOMER_ID> thanks to
+your company <DEVELOPER_TOKEN>, and your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
+
+```
+python nck/entrypoint.py read_googleads ----googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions  
+```
 
