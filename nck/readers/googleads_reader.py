@@ -25,10 +25,11 @@ DATEFORMAT = "%Y%m%d"
 @click.option("--googleads-client-secret", required=True)
 @click.option("--googleads-refresh-token", required=True)
 @click.option(
-    "--googleads-manager-id", help="Google Ads Manager Account. Used to get the reports of all accounts in hierarchy"
+    "--googleads-manager-id", help="Google Ads Manager Account. Used to get the reports from all accounts in hierarchy"
 )
 @click.option(
     "--googleads-client-customer-id",
+    "googleads-client-customer-ids",
     multiple=True,
     help="Google Ads Client Account(s) to be called, thanks to their IDs.\n "
     "This field is ignored if manager_id is specified",
@@ -52,6 +53,7 @@ DATEFORMAT = "%Y%m%d"
 @click.option("--googleads-end-date", type=click.DateTime())
 @click.option(
     "--googleads-field",
+    "googleads-fields",
     multiple=True,
     help="Google Ads API fields for the request\n"
     "https://developers.google.com/adwords/api/docs/appendix/reports#available-reports",
@@ -75,13 +77,13 @@ class GoogleAdsReader(Reader):
         client_secret,
         refresh_token,
         manager_id,
-        client_customer_id,
+        client_customer_ids,
         report_name,
         report_type,
         date_range_type,
         start_date,
         end_date,
-        field,
+        fields,
         report_filter,
     ):
         self.developer_token = developer_token
@@ -90,13 +92,13 @@ class GoogleAdsReader(Reader):
         self.refresh_token = refresh_token
         self.oauth2_client = GoogleRefreshTokenClient(self.client_id, self.client_secret, self.refresh_token)
         self.manager_id = manager_id
-        self.client_customer_ids = list(client_customer_id)
+        self.client_customer_ids = list(client_customer_ids)
         self.report_name = report_name
         self.report_type = report_type
         self.date_range_type = date_range_type
         self.start_date = start_date
         self.end_date = end_date
-        self.fields = list(field)
+        self.fields = list(fields)
         self.report_filter = report_filter
         self.download_format = "CSV"
 
