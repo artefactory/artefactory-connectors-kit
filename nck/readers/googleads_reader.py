@@ -29,7 +29,7 @@ DATEFORMAT = "%Y%m%d"
 )
 @click.option(
     "--googleads-client-customer-id",
-    "googleads-client-customer-ids",
+    "googleads_client_customer_ids",
     multiple=True,
     help="Google Ads Client Account(s) to be called, thanks to their IDs.\n "
     "This field is ignored if manager_id is specified",
@@ -53,7 +53,7 @@ DATEFORMAT = "%Y%m%d"
 @click.option("--googleads-end-date", type=click.DateTime())
 @click.option(
     "--googleads-field",
-    "googleads-fields",
+    "googleads_fields",
     multiple=True,
     help="Google Ads API fields for the request\n"
     "https://developers.google.com/adwords/api/docs/appendix/reports#available-reports",
@@ -225,22 +225,22 @@ class GoogleAdsReader(Reader):
     def create_date_range(start_date, end_date):
         return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
 
-    def format_and_yield(self, customer_report):
-        stream_reader = codecs.getreader(ENCODING)
-        customer_report = stream_reader(customer_report)
-        for row in customer_report:
-            reader = csv.DictReader(StringIO(row), self.fields)
-            yield next(reader)
-
-    def read(self):
+    def format_and_yield(self):
         report_definition = self.get_report_definition()
-
-        if self.manager_id:
-            self.client_customer_ids = self.get_customer_ids(self.manager_id)
+        stream_reader = codecs.getreader(ENCODING)
 
         for googleads_account_id in self.client_customer_ids:
             customer_report = self.fetch_report_from_gads_client_customer_obj(report_definition, googleads_account_id)
+            customer_report = stream_reader(customer_report)
 
-            yield NormalizedJSONStream(
-                "results_" + self.report_name + "_" + str(googleads_account_id), self.format_and_yield(customer_report)
-            )
+            for row in customer_report:
+                reader = csv.DictReader(StringIO(row), self.fields)
+                yield next(reader)
+
+    def read(self):
+        if self.manager_id:
+            self.client_customer_ids = self.get_customer_ids(self.manager_id)
+
+        yield NormalizedJSONStream(
+            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield()
+        )
