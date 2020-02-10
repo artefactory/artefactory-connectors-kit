@@ -1,6 +1,8 @@
 import logging
-from typing import Dict, Generator, Union
+from typing import Dict, Generator, List, Union
 import re
+import csv
+from io import StringIO
 
 
 def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
@@ -42,7 +44,19 @@ def get_generator_dict_from_str_csv(
         if line == "":
             break
         else:
-            yield dict(zip(headers, line.split(",")))
+            yield dict(zip(headers, parse_decoded_line(line)))
+
+
+def parse_decoded_line(line: str) -> List[str]:
+    line_as_file = StringIO(line)
+    reader = csv.reader(
+        line_as_file,
+        delimiter=",",
+        quotechar='"',
+        quoting=csv.QUOTE_ALL,
+        skipinitialspace=True
+    )
+    return next(reader)
 
 
 def reformat_naming_for_bq(text, char="_"):
