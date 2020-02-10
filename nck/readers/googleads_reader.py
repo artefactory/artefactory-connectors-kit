@@ -217,8 +217,8 @@ class GoogleAdsReader(Reader):
             }
         else:
             logging.warning(
-                "⚠️ A Report filter was provided but is missing necessary information",
-                "Dictionary {'field','operator','values'} ⚠️",
+                "⚠️ A Report filter was provided but is missing necessary information: "
+                "Dictionary {'field','operator','values'} ⚠️"
             )
 
     @staticmethod
