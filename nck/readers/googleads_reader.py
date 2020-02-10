@@ -3,6 +3,7 @@ import logging
 import click
 import re
 import csv
+import ast
 
 from io import StringIO
 from click import ClickException
@@ -25,14 +26,15 @@ DATEFORMAT = "%Y%m%d"
 @click.option("--googleads-client-secret", required=True)
 @click.option("--googleads-refresh-token", required=True)
 @click.option(
-    "--googleads-manager-id", help="Google Ads Manager Account. Used to get the reports from all accounts in hierarchy"
+    "--googleads-manager-id",
+    help="Google Ads Manager Account. Optional: can be used to get the reports from all accounts in hierarchy",
 )
 @click.option(
     "--googleads-client-customer-id",
     "googleads_client_customer_ids",
     multiple=True,
     help="Google Ads Client Account(s) to be called, thanks to their IDs.\n "
-    "This field is ignored if manager_id is specified",
+    "This field is ignored if manager_id is specified (replaced by the accounts linked to the MCC)",
 )
 @click.option("--googleads-report-name", default="Custom Report", help="Name given to your Report")
 @click.option(
@@ -61,12 +63,12 @@ DATEFORMAT = "%Y%m%d"
 @click.option(
     "--googleads-report-filter",
     default=None,
-    help="A filter can be applied on a chosen field, in the form of a Dictionary {'field','operator','values'}\n"
+    help="A filter can be applied on a chosen field, in the form of a String containing a Dictionary \"{'field','operator','values'}\"\n"
     "https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition",
 )
 @click.option(
     "--googleads-include-zero-impressions",
-    default=True,
+    default=False,
     type=click.BOOL,
     help="A boolean indicating whether the report should show rows with zero impressions",
 )
@@ -106,7 +108,7 @@ class GoogleAdsReader(Reader):
         self.start_date = start_date
         self.end_date = end_date
         self.fields = list(fields)
-        self.report_filter = report_filter
+        self.report_filter = ast.literal_eval(report_filter)
         self.include_zero_impressions = include_zero_impressions
         self.download_format = "CSV"
 
