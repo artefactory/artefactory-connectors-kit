@@ -7,6 +7,7 @@ from nck.utils.text import get_generator_dict_from_str_csv, parse_decoded_line
 class TestTextUtilsMethod(unittest.TestCase):
 
     def test_multiple_encodings(self):
+        self.maxDiff = None
         test_string_to_encode = (
             "BR,Sanofi Aventis Brasil,3945535,Active,Allegra,3992233,0,,"
             "YR_Sanofi_Allegra_201910_Consideration_DV360_Precision_"
@@ -52,14 +53,14 @@ class TestTextUtilsMethod(unittest.TestCase):
             "Line Item ID": "1130016",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
-            "Targeted Data Providers": '"    "',
+            "Targeted Data Providers": '    ',
             "Cookie Reach: Average Impression Frequency": "0.00",
             "Cookie Reach: Impression Reach": "4080863",
         }
         for yielded_dict in get_generator_dict_from_str_csv(
             line_iterator_multiple_encodings
         ):
-            self.assertEqual(yielded_dict, expected_dict)
+            self.assertDictEqual(yielded_dict, expected_dict)
 
     def test_blank_line(self):
         lines = [
@@ -107,7 +108,7 @@ class TestTextUtilsMethod(unittest.TestCase):
             "Line Item ID": "26143278",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
-            "Targeted Data Providers": '""',
+            "Targeted Data Providers": '',
             "Cookie Reach: Average Impression Frequency": "0.00",
             "Cookie Reach: Impression Reach": "41",
         }
@@ -115,7 +116,7 @@ class TestTextUtilsMethod(unittest.TestCase):
         for dic in get_generator_dict_from_str_csv(
             line_iterator_with_blank_line
         ):
-            self.assertEqual(dic, expected_dict)
+            self.assertDictEqual(dic, expected_dict)
 
         lines.append("This is something that should not be here.")
         line_iterator_with_blank_line = (line for line in lines)
@@ -165,7 +166,7 @@ class TestTextUtilsMethod(unittest.TestCase):
             "Line Item ID": "26143278",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
-            "Targeted Data Providers": '"   $"',
+            "Targeted Data Providers": '   $',
             "Cookie Reach: Average Impression Frequency": "0.00",
             "Cookie Reach: Impression Reach": "41",
         }
@@ -173,7 +174,7 @@ class TestTextUtilsMethod(unittest.TestCase):
             for yielded_dict in get_generator_dict_from_str_csv(
                 line_iterator_invalid_byte
             ):
-                self.assertEqual(yielded_dict, expected_dict)
+                self.assertDictEqual(yielded_dict, expected_dict)
         self.assertEqual(
             cm.output,
             ["WARNING:root:An error has occured while parsing the file. "
@@ -219,7 +220,7 @@ class TestTextUtilsMethod(unittest.TestCase):
             "Line Item ID": "26143278",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
-            "Targeted Data Providers": '""',
+            "Targeted Data Providers": '',
             "Cookie Reach: Average Impression Frequency": "0.00",
             "Cookie Reach: Impression Reach": "41",
         }
