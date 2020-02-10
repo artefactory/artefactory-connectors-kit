@@ -64,6 +64,12 @@ DATEFORMAT = "%Y%m%d"
     help="A filter can be applied on a chosen field, in the form of a Dictionary {'field','operator','values'}\n"
     "https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition",
 )
+@click.option(
+    "--googleads-include-zero-impressions",
+    default=True,
+    type=click.BOOL,
+    help="A boolean indicating whether the report should show rows with zero impressions",
+)
 @processor("googleads_developer_token", "googleads_app_secret", "googleads_refresh_token")
 def google_ads(**kwargs):
     return GoogleAdsReader(**extract_args("googleads_", kwargs))
@@ -85,6 +91,7 @@ class GoogleAdsReader(Reader):
         end_date,
         fields,
         report_filter,
+        include_zero_impressions,
     ):
         self.developer_token = developer_token
         self.client_id = client_id
@@ -100,6 +107,7 @@ class GoogleAdsReader(Reader):
         self.end_date = end_date
         self.fields = list(fields)
         self.report_filter = report_filter
+        self.include_zero_impressions = include_zero_impressions
         self.download_format = "CSV"
 
     def init_adwords_client(self, id):
@@ -113,6 +121,7 @@ class GoogleAdsReader(Reader):
             customer_report = report_downloader.DownloadReportAsStream(
                 report_definition,
                 client_customer_id=client_customer_id,
+                include_zero_impressions=self.include_zero_impressions,
                 skip_report_header=True,
                 skip_column_header=True,
                 skip_report_summary=True,
