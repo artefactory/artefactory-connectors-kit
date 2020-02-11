@@ -58,7 +58,7 @@ See the documents below for a better understanding of the parameters:
 #### How to obtain Credentials
 
 
-Using the Google Ads API require four things:
+Using the Google Ads API requires four things:
 - A developer token (Generated at a company level - one per company -, takes around 2 days to be approved by Google) which can be completely independant from the Google Ads Account you will be calling (though you need a Manager Google Ads Account to request a token for your company)
 
 - OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>

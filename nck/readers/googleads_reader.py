@@ -27,7 +27,8 @@ DATEFORMAT = "%Y%m%d"
 @click.option("--googleads-refresh-token", required=True)
 @click.option(
     "--googleads-manager-id",
-    help="Google Ads Manager Account. Optional: can be used to get the reports from all accounts in hierarchy",
+    help="Google Ads Manager Account. "
+    "Optional: can be used to get the reports from all accounts in hierarchy",
 )
 @click.option(
     "--googleads-client-customer-id",
@@ -63,7 +64,8 @@ DATEFORMAT = "%Y%m%d"
 @click.option(
     "--googleads-report-filter",
     default="{}",
-    help="A filter can be applied on a chosen field, in the form of a String containing a Dictionary \"{'field','operator','values'}\"\n"
+    help="A filter can be applied on a chosen field, "
+    "in the form of a String containing a Dictionary \"{'field','operator','values'}\"\n"
     "https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition",
 )
 @click.option(
