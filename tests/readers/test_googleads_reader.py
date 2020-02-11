@@ -1,9 +1,6 @@
 from unittest import TestCase, mock
 
 from nck.readers.googleads_reader import GoogleAdsReader
-from nck.helpers.googleads_helper import REPORT_TYPE_POSSIBLE_VALUES, DATE_RANGE_TYPE_POSSIBLE_VALUES, ENCODING
-
-from googleads import adwords
 
 
 class GoogleAdsReaderTest(TestCase):

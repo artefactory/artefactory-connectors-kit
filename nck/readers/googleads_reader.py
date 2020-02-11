@@ -199,20 +199,20 @@ class GoogleAdsReader(Reader):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
         if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
             logging.warning(
-                "⚠️ Custom Date Range selected but no date range provided :"
+                "WARNING: Custom Date Range selected but no date range provided :"
                 + DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
-                + " by default ⚠️"
+                + " by default"
             )
             logging.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
             report_definition["dateRangeType"] = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
         elif self.date_range_type == "CUSTOM_DATE":
-            logging.info("ℹ️ Date format used for request : Custom Date Range with start_date and end_date provided")
+            logging.info("INFO: Date format used for request : Custom Date Range with start_date and end_date provided")
             report_definition["selector"]["dateRange"] = self.create_date_range(self.start_date, self.end_date)
 
     def add_report_filter(self, report_definition):
         """Check if a filter was provided and contains the necessary information"""
         if not self.report_filter:
-            logging.info("ℹ️ No filter provided by user")
+            logging.info("INFO: No filter provided by user")
         elif all(required_param in self.report_filter for required_param in ("field", "operator", "values")):
             report_definition["selector"]["predicates"] = {
                 "field": self.report_filter["field"],
@@ -221,8 +221,8 @@ class GoogleAdsReader(Reader):
             }
         else:
             logging.warning(
-                "⚠️ A Report filter was provided but is missing necessary information: "
-                "Dictionary {'field','operator','values'} ⚠️"
+                "WARNING: A Report filter was provided but is missing necessary information: "
+                "Dictionary {'field','operator','values'}"
             )
 
     @staticmethod
