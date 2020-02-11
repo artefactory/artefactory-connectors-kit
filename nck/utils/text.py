@@ -47,12 +47,16 @@ def get_generator_dict_from_str_csv(
             yield dict(zip(headers, parse_decoded_line(line)))
 
 
-def parse_decoded_line(line: str) -> List[str]:
+def parse_decoded_line(
+    line: str,
+    delimiter=",",
+    quotechar='"'
+) -> List[str]:
     line_as_file = StringIO(line)
     reader = csv.reader(
         line_as_file,
-        delimiter=",",
-        quotechar='"',
+        delimiter=delimiter,
+        quotechar=quotechar,
         quoting=csv.QUOTE_ALL,
         skipinitialspace=True
     )
