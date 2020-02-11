@@ -66,7 +66,6 @@ DATE_RANGE_TYPE_POSSIBLE_VALUES = [
     "LAST_WEEK_SUN_SAT",
     "CUSTOM_DATE",
 ]
-# If "CUSTOM_DATE" is chosen, a min and max date in YYYYMMDD format are required
 
 # Encoding for Stream Reader
 ENCODING = "utf-8"
