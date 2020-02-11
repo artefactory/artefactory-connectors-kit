@@ -7,7 +7,6 @@ from nck.utils.text import get_generator_dict_from_str_csv, parse_decoded_line
 class TestTextUtilsMethod(unittest.TestCase):
 
     def test_multiple_encodings(self):
-        self.maxDiff = None
         test_string_to_encode = (
             "BR,Sanofi Aventis Brasil,3945535,Active,Allegra,3992233,0,,"
             "YR_Sanofi_Allegra_201910_Consideration_DV360_Precision_"
