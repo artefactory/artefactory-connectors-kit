@@ -62,13 +62,13 @@ DATEFORMAT = "%Y%m%d"
 )
 @click.option(
     "--googleads-report-filter",
-    default=None,
+    default="{}",
     help="A filter can be applied on a chosen field, in the form of a String containing a Dictionary \"{'field','operator','values'}\"\n"
     "https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition",
 )
 @click.option(
     "--googleads-include-zero-impressions",
-    default=False,
+    default=True,
     type=click.BOOL,
     help="A boolean indicating whether the report should show rows with zero impressions",
 )
