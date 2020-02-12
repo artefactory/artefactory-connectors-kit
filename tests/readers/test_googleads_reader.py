@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from parameterized import parameterized
 import datetime
 
 from nck.readers.googleads_reader import GoogleAdsReader, DATEFORMAT
@@ -30,11 +31,10 @@ class GoogleAdsReaderTest(TestCase):
         "include_zero_impressions": True,
     }
 
-    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
     def test_format_customer_id(self):
         input_id = 1234567890
         expected = "123-456-7890"
-        assert GoogleAdsReader(**self.kwargs).format_customer_id(input_id) == expected
+        assert GoogleAdsReader.format_customer_id(input_id) == expected
 
     @mock.patch("nck.readers.googleads_reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
@@ -59,21 +59,92 @@ class GoogleAdsReaderTest(TestCase):
             for record, output in zip(data.readlines(), iter(expected)):
                 assert record == output
 
+    @parameterized.expand(['1231231234', '123_123_1234', 'abc-abc-abcd', '1234-123-123'])
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
-    def test_refuse_incorrect_id(self):
+    def test_refuse_incorrect_id(self, invalid_input):
         """Test the function checking the Client Customer IDs
         format in order to refuse an invalid input
         """
-        invalid_inputs = [
-            '1231231234',
-            '123_123_1234',
-            'abc-abc-abcd',
-            '1234-123-123',
-        ]
         expected = None
+        assert GoogleAdsReader(**self.kwargs).valid_client_customer_id(invalid_input) == expected
 
-        for invalid_input in invalid_inputs:
-            assert GoogleAdsReader(**self.kwargs).valid_client_customer_id(invalid_input) == expected
+    @parameterized.expand(['123-123-1234'])
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_validate_correct_id(self, valid_input):
+        """Test the function checking the Client Customer IDs
+        format in order to refuse an invalid input
+        """
+        cond = GoogleAdsReader(**self.kwargs).valid_client_customer_id(valid_input)
+        assert cond
+
+    @parameterized.expand([
+        ["end_date", {'date_range_type': "CUSTOM_DATE", 'start_date': datetime.date(2019, 1, 1), 'end_date': None}],
+        ["start_date", {'date_range_type': "CUSTOM_DATE", 'start_date': None, 'end_date': datetime.date(2019, 1, 1)}],
+        ["all_dates", {'date_range_type': "CUSTOM_DATE", 'start_date': None, 'end_date': None}],
+    ])
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_add_invalid_custom_period_to_report_definition(self, name, invalid_parameter):
+        """Test that report definition dateRangeType is replaced by default value
+        when no start_date and end_date are provided
+        """
+        expected_range_type = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
+
+        report_definition = self.get_report_definition(invalid_parameter['date_range_type'])
+
+        temp_kwargs = self.kwargs
+        temp_kwargs.update(invalid_parameter)
+        GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
+
+        assert report_definition['dateRangeType'] == expected_range_type
+        with self.assertRaises(KeyError):
+            report_definition['start_date']
+            report_definition['end_date']
+
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_add_valid_custom_period_to_report_definition(self):
+        """Test that report definition with custom dateRangeType is correctly implemented
+        when start_date and end_date are provided
+        """
+
+        valid_parameter = {
+            'date_range_type': "CUSTOM_DATE",
+            'start_date': datetime.date(2019, 1, 1),
+            'end_date': datetime.date(2021, 2, 1)
+        }
+
+        report_definition = self.get_report_definition(valid_parameter['date_range_type'])
+        expected_date_range = {
+            "min": valid_parameter['start_date'].strftime(DATEFORMAT),
+            "max": valid_parameter['end_date'].strftime(DATEFORMAT)
+        }
+
+        temp_kwargs = self.kwargs
+        temp_kwargs.update(valid_parameter)
+        GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
+
+        assert report_definition['dateRangeType'] == valid_parameter['date_range_type']
+        assert report_definition['selector']['dateRange'] == expected_date_range
+
+    @parameterized.expand([
+        ["with_date", {'date_range_type': "LAST_7_DAYS", 'start_date': datetime.date(2019, 1, 1), 'end_date': None}],
+        ["no_date", {'date_range_type': "LAST_30_DAYS", 'start_date': None, 'end_date': None}],
+    ])
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_add_standard_period_to_report_definition(self, name, valid_parameter):
+        """Test that report definition with classic dateRangeType is correctly implemented
+        whether or not the user specify a date range (not taken into account)
+        """
+        report_definition = self.get_report_definition(valid_parameter['date_range_type'])
+
+        temp_kwargs = self.kwargs
+        temp_kwargs.update(valid_parameter)
+        GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
+
+        assert report_definition['dateRangeType'] == valid_parameter['date_range_type']
+        with self.assertRaises(KeyError):
+            report_definition['start_date']
+        with self.assertRaises(KeyError):
+            report_definition['end_date']
 
     @staticmethod
     def get_report_definition(date_range_type):
@@ -85,88 +156,3 @@ class GoogleAdsReaderTest(TestCase):
             "selector": {"fields": ["AdGroupName", "Date", "Impressions"]},
         }
         return report_definition
-
-    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
-    def test_add_invalid_custom_period_to_report_definition(self):
-        """Test that report definition dateRangeType is replaced by default value
-        when no start_date and end_date are provided
-        """
-        invalid_parameters = [
-            {
-                'date_range_type': "CUSTOM_DATE",
-                'start_date': datetime.date(2019, 1, 1),
-                'end_date': None,
-            },
-        ]
-        expected_range_type = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
-
-        for param in invalid_parameters:
-            report_definition = self.get_report_definition(param['date_range_type'])
-
-            temp_kwargs = self.kwargs
-            temp_kwargs.update(param)
-            GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
-
-            assert report_definition['dateRangeType'] == expected_range_type
-            with self.assertRaises(KeyError):
-                report_definition['start_date']
-                report_definition['end_date']
-
-    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
-    def test_add_valid_custom_period_to_report_definition(self):
-        """Test that report definition dateRangeType is replaced by default value
-        when no start_date and end_date are provided
-        """
-
-        valid_parameters = [
-            {
-                'date_range_type': "CUSTOM_DATE",
-                'start_date': datetime.date(2019, 1, 1),
-                'end_date': datetime.date(2021, 2, 1)
-            },
-        ]
-
-        for param in valid_parameters:
-            report_definition = self.get_report_definition(param['date_range_type'])
-            expected_date_range = {
-                "min": param['start_date'].strftime(DATEFORMAT),
-                "max": param['end_date'].strftime(DATEFORMAT)
-            }
-
-            temp_kwargs = self.kwargs
-            temp_kwargs.update(param)
-            GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
-
-            assert report_definition['dateRangeType'] == param['date_range_type']
-            assert report_definition['selector']['dateRange'] == expected_date_range
-
-    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
-    def test_add_standard_period_to_report_definition(self):
-        """Test that report definition dateRangeType is correctly implemented
-        when user provide correct RangeType and parameters
-        """
-
-        valid_parameters = [
-            {
-                'date_range_type': "LAST_7_DAYS",
-                'start_date': datetime.date(2019, 1, 1),
-                'end_date': None
-            },
-            {
-                'date_range_type': "LAST_30_DAYS",
-                'start_date': None,
-                'end_date': None
-            },
-        ]
-
-        for param in valid_parameters:
-            report_definition = self.get_report_definition(param['date_range_type'])
-
-            temp_kwargs = self.kwargs
-            temp_kwargs.update(param)
-            GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
-
-            assert report_definition['dateRangeType'] == param['date_range_type']
-            with self.assertRaises(KeyError):
-                report_definition['start_date']
-                report_definition['end_date']
