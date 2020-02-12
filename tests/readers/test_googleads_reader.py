@@ -46,8 +46,8 @@ class GoogleAdsReaderTest(TestCase):
 
         expected = [
             {
-                "AdGroupName": "ad_group_example", 
-                "Date": "2019-01-01", 
+                "AdGroupName": "ad_group_example",
+                "Date": "2019-01-01",
                 "Impressions": "0"},
             {
                 "AdGroupName": "ad_group_example",
@@ -131,7 +131,7 @@ class GoogleAdsReaderTest(TestCase):
             expected_date_range = {
                 "min": param['start_date'].strftime(DATEFORMAT),
                 "max": param['end_date'].strftime(DATEFORMAT)
-                }
+            }
 
             temp_kwargs = self.kwargs
             temp_kwargs.update(param)
