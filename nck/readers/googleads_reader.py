@@ -117,9 +117,13 @@ class GoogleAdsReader(Reader):
     def init_adwords_client(self, id):
         return adwords.AdWordsClient(self.developer_token, self.oauth2_client, client_customer_id=id)
 
+    @staticmethod
+    def valid_client_customer_id(client_customer_id):
+        return re.match(r"\d{3}-\d{3}-\d{4}", client_customer_id)
+
     @retry
     def fetch_report_from_gads_client_customer_obj(self, report_definition, client_customer_id):
-        if re.match(r"\d{3}-\d{3}-\d{4}", client_customer_id):
+        if self.valid_client_customer_id(client_customer_id):
             adwords_client = self.init_adwords_client(client_customer_id)
             report_downloader = adwords_client.GetReportDownloader()
             customer_report = report_downloader.DownloadReportAsStream(
