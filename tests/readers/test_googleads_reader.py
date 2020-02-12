@@ -4,14 +4,6 @@ import datetime
 from nck.readers.googleads_reader import GoogleAdsReader, DATEFORMAT
 from nck.helpers.googleads_helper import DATE_RANGE_TYPE_POSSIBLE_VALUES
 
-"""
-La par exemple pour le gads_reader, je testerais bien:
-- la fonction "format_customer_id"
-- le fait de formatter un stream en njson
-- le fait que si tu recois un stream vide, tu renvoies rien
-- éventuellement des petites trucs à côté autour des dates etc. 
-"""
-
 
 class GoogleAdsReaderTest(TestCase):
     DATEFORMAT = "%Y%m%d"
