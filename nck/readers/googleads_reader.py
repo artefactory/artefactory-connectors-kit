@@ -179,7 +179,7 @@ class GoogleAdsReader(Reader):
             selector["paging"]["startIndex"] = str(offset)
             more_pages = offset < int(page["totalNumEntries"])
 
-        return client_customer_ids
+        return [id for id in client_customer_ids if id]
 
     @staticmethod
     def format_customer_id(id):
