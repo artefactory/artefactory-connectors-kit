@@ -70,12 +70,8 @@ class AdobeReader(Reader):
         report_description = {
             "reportDescription": {
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [
-                    {"id": el} for el in self.kwargs.get("report_element_id", [])
-                ],
-                "metrics": [
-                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
-                ],
+                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
+                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
             }
         }
         self.set_date_gran_report_desc(report_description)
@@ -104,33 +100,21 @@ class AdobeReader(Reader):
         else:
             end_date = datetime.datetime.now().date()
             start_date = end_date - datetime.timedelta(days=self.get_days_delta())
-        report_description["reportDescription"]["dateFrom"] = start_date.strftime(
-            "%Y-%m-%d"
-        )
-        report_description["reportDescription"]["dateTo"] = end_date.strftime(
-            "%Y-%m-%d"
-        )
+        report_description["reportDescription"]["dateFrom"] = start_date.strftime("%Y-%m-%d")
+        report_description["reportDescription"]["dateTo"] = end_date.strftime("%Y-%m-%d")
 
     def set_date_gran_report_desc(self, report_description):
         if self.kwargs.get("date_granularity", None) is not None:
-            report_description["reportDescription"][
-                "dateGranularity"
-            ] = self.kwargs.get("date_granularity")
+            report_description["reportDescription"]["dateGranularity"] = self.kwargs.get("date_granularity")
 
     @retry
     def query_report(self):
-        query_report = self.request(
-            api="Report", method="Queue", data=self.build_report_description()
-        )
+        query_report = self.request(api="Report", method="Queue", data=self.build_report_description())
         return query_report
 
     @retry
     def get_report(self, report_id, page_number=1):
-        request_f = lambda: self.request( # noqa : E731
-            api="Report", # noqa : E731
-            method="Get", # noqa : E731
-            data={"reportID": report_id, "page": page_number},# noqa : E731
-        ) # noqa : E731
+        request_f = lambda: self.request(api="Report", method="Get", data={"reportID": report_id, "page": page_number})
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":
@@ -139,7 +123,7 @@ class AdobeReader(Reader):
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
                 raise ReportNotReadyError(f"waited too long for report to be ready")
             idx = idx * 2
-            response = request_f() # noqa : E731
+            response = request_f()
         return response
 
     def download_report(self, rep_id):
