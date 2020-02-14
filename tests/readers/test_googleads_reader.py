@@ -27,9 +27,10 @@ class GoogleAdsReaderTest(TestCase):
         "start_date": "",
         "end_date": "",
         "download_format": "CSV",
-        "fields": ("AdGroupName", "Date", "Impressions"),
+        "fields": ("CampaignId", "Date", "Impressions"),
         "report_filter": {},
         "include_zero_impressions": True,
+        "filter_on_video_campaigns": False,
     }
 
     def test_format_customer_id(self):
@@ -89,6 +90,65 @@ class GoogleAdsReaderTest(TestCase):
         for data in reader.read():
             for record, output in zip(data.readlines(), iter(expected)):
                 assert record == output
+
+    @mock.patch("nck.readers.googleads_reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_list_video_campaign_ids(self, mock_query):
+        temp_kwargs = self.kwargs.copy()
+        temp_kwargs.update({"filter_on_video_campaigns": True})
+        example_row1 = b'1234567890'
+        example_row2 = b'1111111111'
+        mock_query.stream_reader.return_value = [example_row1, example_row2]
+
+        expected = [
+            '1234567890',
+            '1111111111',
+        ]
+        for data in GoogleAdsReader(**temp_kwargs).list_video_campaign_ids():
+            for record, output in zip(data.readlines(), iter(expected)):
+                assert record == output
+
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_no_campaignid_for_video_report_definition(self):
+        no_campaignid_field = {"fields": ("CampaignName", "Date", "Impressions")}
+        temp_kwargs = self.kwargs.copy()
+        temp_kwargs.update(no_campaignid_field)
+        with self.assertRaises(ClickException):
+            GoogleAdsReader(**temp_kwargs).get_video_campaign_report_definition()
+
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_get_video_report_definition_standard_date(self):
+        video_report_def = GoogleAdsReader(**self.kwargs).get_video_campaign_report_definition()
+        expected_output_standard_date = {
+            "reportName": "video campaigns ids",
+            "dateRangeType": "LAST_7_DAYS",
+            "reportType": "VIDEO_PERFORMANCE_REPORT",
+            "downloadFormat": "CSV",
+            "selector": {"fields": "CampaignId"},
+        }
+        assert video_report_def == expected_output_standard_date
+
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_get_video_report_definition_custom_date(self):
+        custom_date_param = {
+            'date_range_type': "CUSTOM_DATE",
+            'start_date': datetime.date(2019, 1, 1),
+            'end_date': datetime.date(2019, 3, 1)
+        }
+        temp_kwargs = self.kwargs.copy()
+        temp_kwargs.update(custom_date_param)
+        video_report_def = GoogleAdsReader(**temp_kwargs).get_video_campaign_report_definition()
+        expected_output_custom_date = {
+            "reportName": "video campaigns ids",
+            "dateRangeType": "CUSTOM_DATE",
+            "reportType": "VIDEO_PERFORMANCE_REPORT",
+            "downloadFormat": "CSV",
+            "selector": {
+                "fields": "CampaignId",
+                "dateRange": {"min": "20190101", "max": "20190301"},
+            },
+        }
+        assert video_report_def == expected_output_custom_date
 
     @parameterized.expand(['1231231234', '123_123_1234', 'abc-abc-abcd', '1234-123-123'])
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
