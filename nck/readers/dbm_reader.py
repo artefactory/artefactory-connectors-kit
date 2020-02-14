@@ -14,7 +14,7 @@ from oauth2client import client, GOOGLE_REVOKE_URI
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
-from nck.streams.json_stream import JSONStream
+from nck.streams.format_date_stream import FormatDateStream
 
 from nck.utils.text import (
     get_generator_dict_from_str_csv,
@@ -45,6 +45,9 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-end-date", type=click.DateTime())
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
+@click.option("--dbm-date-format", default="%Y-%m-%d",
+              help="And optional date format for the output stream. "
+                   "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior")
 @click.option(
     "--dbm-day-range",
     required=True,
@@ -129,19 +132,19 @@ class DbmReader(Reader):
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
         }
         if self.kwargs.get("start_date") is not None \
-           and self.kwargs.get("end_date") is not None:
+                and self.kwargs.get("end_date") is not None:
             body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
             body_q["reportDataStartTimeMs"] = \
                 1000 * int(
                     (
-                        self.kwargs.get("start_date")
-                        + datetime.timedelta(days=1)
+                            self.kwargs.get("start_date")
+                            + datetime.timedelta(days=1)
                     ).timestamp())
             body_q["reportDataEndTimeMs"] = \
                 1000 * int(
                     (
-                        self.kwargs.get("end_date")
-                        + datetime.timedelta(days=1)
+                            self.kwargs.get("end_date")
+                            + datetime.timedelta(days=1)
                     ).timestamp())
         return body_q
 
@@ -184,8 +187,8 @@ class DbmReader(Reader):
     def list_query_reports(self):
         reports_infos = (
             self._client.reports()
-            .listreports(queryId=self.kwargs.get("query_id"))
-            .execute()
+                .listreports(queryId=self.kwargs.get("query_id"))
+                .execute()
         )
         for report in reports_infos["reports"]:
             yield report
@@ -194,14 +197,14 @@ class DbmReader(Reader):
         if len(self.kwargs.get("filter")) > 0:
             filter_types = [filt[0] for filt in self.kwargs.get("filter")]
             assert (
-                len(
-                    [
-                        filter_types[0] == filt
-                        for filt in filter_types
-                        if filter_types[0] == filt
-                    ]
-                )
-                == 1
+                    len(
+                        [
+                            filter_types[0] == filt
+                            for filt in filter_types
+                            if filter_types[0] == filt
+                        ]
+                    )
+                    == 1
             ), "Lineitems accept just one filter type, multiple filter types detected"
             filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
@@ -226,14 +229,14 @@ class DbmReader(Reader):
     def get_sdf_body(self):
         filter_types = [filt[0] for filt in self.kwargs.get("filter")]
         assert (
-            len(
-                [
-                    filter_types[0] == filt
-                    for filt in filter_types
-                    if filter_types[0] == filt
-                ]
-            )
-            == 1
+                len(
+                    [
+                        filter_types[0] == filt
+                        for filt in filter_types
+                        if filter_types[0] == filt
+                    ]
+                )
+                == 1
         ), "sdf accept just one filter type, multiple filter types detected"
         filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
@@ -289,4 +292,5 @@ class DbmReader(Reader):
                 yield record
 
         # should replace results later by a good identifier
-        yield JSONStream("results", result_generator())
+        yield FormatDateStream("results", result_generator(), keys=["Date"],
+                               date_format=self.kwargs.get("date_format"))
