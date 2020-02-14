@@ -52,7 +52,6 @@ class GoogleAdsReaderTest(TestCase):
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
     def test_missing_field_report_filter(self):
         missing_field = {'wrong_key': "CampaignName", 'operator': 'IN', 'values': ['example']}
-        not_a_dict = ['field', 'operator', 'values']
         report_definition = {'selector': {}}
         with self.assertRaises(ClickException):
             temp_kwargs = self.kwargs.copy()
