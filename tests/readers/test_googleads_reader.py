@@ -1,6 +1,7 @@
 from unittest import TestCase, mock
 from parameterized import parameterized
 import datetime
+from click import ClickException
 
 from nck.readers.googleads_reader import GoogleAdsReader, DATEFORMAT
 from nck.helpers.googleads_helper import DATE_RANGE_TYPE_POSSIBLE_VALUES
@@ -27,14 +28,45 @@ class GoogleAdsReaderTest(TestCase):
         "end_date": "",
         "download_format": "CSV",
         "fields": ("AdGroupName", "Date", "Impressions"),
-        "report_filter": "",
+        "report_filter": {},
         "include_zero_impressions": True,
     }
 
     def test_format_customer_id(self):
-        input_id = 1234567890
-        expected = "123-456-7890"
-        assert GoogleAdsReader.format_customer_id(input_id) == expected
+        assert GoogleAdsReader.format_customer_id(1234567890) == "123-456-7890"
+        assert GoogleAdsReader.format_customer_id("abcdefjhij") is None
+        assert GoogleAdsReader.format_customer_id(-1234567890) is None
+        assert GoogleAdsReader.format_customer_id(None) is None
+        assert GoogleAdsReader.format_customer_id(123456789) is None
+
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_add_report_filter(self):
+        report_filter = {'field': "CampaignName", 'operator': 'IN', 'values': ['example']}
+        report_definition = {'selector': {}}
+        expected_output = {'selector': {'predicates': report_filter}}
+        temp_kwargs = self.kwargs.copy()
+        temp_kwargs.update({'report_filter': report_filter})
+        GoogleAdsReader(**temp_kwargs).add_report_filter(report_definition)
+        assert report_definition == expected_output
+
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_missing_field_report_filter(self):
+        missing_field = {'wrong_key': "CampaignName", 'operator': 'IN', 'values': ['example']}
+        not_a_dict = ['field', 'operator', 'values']
+        report_definition = {'selector': {}}
+        with self.assertRaises(ClickException):
+            temp_kwargs = self.kwargs.copy()
+            temp_kwargs.update({'report_filter': missing_field})
+            GoogleAdsReader(**temp_kwargs).add_report_filter(report_definition)
+
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_invalid_report_filter(self):
+        not_a_dict = ['field', 'operator', 'values']
+        report_definition = {'selector': {}}
+        with self.assertRaises(AttributeError):
+            temp_kwargs = self.kwargs.copy()
+            temp_kwargs.update({'report_filter': not_a_dict})
+            GoogleAdsReader(**temp_kwargs).add_report_filter(report_definition)
 
     @mock.patch("nck.readers.googleads_reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
@@ -91,7 +123,7 @@ class GoogleAdsReaderTest(TestCase):
 
         report_definition = self.get_report_definition(invalid_parameter['date_range_type'])
 
-        temp_kwargs = self.kwargs
+        temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(invalid_parameter)
         GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
 
@@ -118,7 +150,7 @@ class GoogleAdsReaderTest(TestCase):
             "max": valid_parameter['end_date'].strftime(DATEFORMAT)
         }
 
-        temp_kwargs = self.kwargs
+        temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(valid_parameter)
         GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
 
@@ -136,7 +168,7 @@ class GoogleAdsReaderTest(TestCase):
         """
         report_definition = self.get_report_definition(valid_parameter['date_range_type'])
 
-        temp_kwargs = self.kwargs
+        temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(valid_parameter)
         GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
 

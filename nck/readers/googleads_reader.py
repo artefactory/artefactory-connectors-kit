@@ -184,7 +184,10 @@ class GoogleAdsReader(Reader):
     @staticmethod
     def format_customer_id(id):
         id_string = repr(id)
-        return id_string[:3] + "-" + id_string[3:6] + "-" + id_string[6:10]
+        formatted_id = id_string[:3] + "-" + id_string[3:6] + "-" + id_string[6:10]
+        if not GoogleAdsReader.valid_client_customer_id(formatted_id):
+            return None
+        return formatted_id
 
     def get_report_definition(self):
         """Get required parameters for report fetching"""
@@ -217,15 +220,15 @@ class GoogleAdsReader(Reader):
         """Check if a filter was provided and contains the necessary information"""
         if not self.report_filter:
             logging.info("No filter provided by user")
-        elif all(required_param in self.report_filter for required_param in ("field", "operator", "values")):
+        elif all(required_param in self.report_filter.keys() for required_param in ("field", "operator", "values")):
             report_definition["selector"]["predicates"] = {
                 "field": self.report_filter["field"],
                 "operator": self.report_filter["operator"],
                 "values": self.report_filter["values"],
             }
         else:
-            logging.warning(
-                "A Report filter was provided but is missing necessary information: "
+            raise ClickException(
+                "Wrong format for Report filter : should be a dictionary as string, with the following fields:\n"
                 "Dictionary {'field','operator','values'}"
             )
 
