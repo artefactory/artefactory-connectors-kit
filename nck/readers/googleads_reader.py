@@ -74,6 +74,13 @@ DATEFORMAT = "%Y%m%d"
     type=click.BOOL,
     help="A boolean indicating whether the report should show rows with zero impressions",
 )
+@click.option(
+    "--googleads-filter-on-video-campaigns",
+    default=False,
+    type=click.BOOL,
+    help="A boolean indicating whether the report should return only Video campaigns\n"
+    "Only available if CampaignId is requested as a report field",
+)
 @processor("googleads_developer_token", "googleads_app_secret", "googleads_refresh_token")
 def google_ads(**kwargs):
     return GoogleAdsReader(**extract_args("googleads_", kwargs))
@@ -96,6 +103,7 @@ class GoogleAdsReader(Reader):
         fields,
         report_filter,
         include_zero_impressions,
+        filter_on_video_campaigns,
     ):
         self.developer_token = developer_token
         self.client_id = client_id
@@ -112,6 +120,7 @@ class GoogleAdsReader(Reader):
         self.fields = list(fields)
         self.report_filter = ast.literal_eval(report_filter)
         self.include_zero_impressions = include_zero_impressions
+        self.filter_on_video_campaigns = filter_on_video_campaigns
         self.download_format = "CSV"
 
     def init_adwords_client(self, id):
@@ -236,9 +245,41 @@ class GoogleAdsReader(Reader):
     def create_date_range(start_date, end_date):
         return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
 
+    def list_video_campaign_ids(self):
+        video_campaign_report_definition = self.get_video_campaign_report_definition()
+        stream_reader = codecs.getreader(ENCODING)
+
+        video_campaign_ids = set()
+        for googleads_account_id in self.client_customer_ids:
+            customer_ids_report = self.fetch_report_from_gads_client_customer_obj(
+                video_campaign_report_definition,
+                googleads_account_id
+            )
+            customer_ids_report = stream_reader(customer_ids_report)
+            for campaign_id in customer_ids_report:
+                video_campaign_ids.add(campaign_id.replace('\n', ''))
+        return video_campaign_ids
+
+    def get_video_campaign_report_definition(self):
+        if "CampaignId" not in self.fields:
+            raise ClickException(
+                "Filter On Video Campaigns is only available if 'CampaignId' is requested as a report field"
+            )
+        video_campaigns_report = {
+            "reportName": "video campaigns ids",
+            "dateRangeType": self.date_range_type,
+            "reportType": "VIDEO_PERFORMANCE_REPORT",
+            "downloadFormat": self.download_format,
+            "selector": {"fields": "CampaignId"},
+        }
+        self.add_period_to_report_definition(video_campaigns_report)
+        return video_campaigns_report
+
     def format_and_yield(self):
         report_definition = self.get_report_definition()
         stream_reader = codecs.getreader(ENCODING)
+        if self.filter_on_video_campaigns:
+            video_campaign_ids = self.list_video_campaign_ids()
 
         for googleads_account_id in self.client_customer_ids:
             customer_report = self.fetch_report_from_gads_client_customer_obj(report_definition, googleads_account_id)
@@ -246,12 +287,18 @@ class GoogleAdsReader(Reader):
 
             for row in customer_report:
                 reader = csv.DictReader(StringIO(row), self.fields)
-                yield next(reader)
+                if self.filter_on_video_campaigns:
+                    for row in reader:
+                        if row['CampaignId'] in video_campaign_ids:
+                            yield row
+                else:
+                    yield next(reader)
 
     def read(self):
         if self.manager_id:
             self.client_customer_ids = self.get_customer_ids(self.manager_id)
 
         yield NormalizedJSONStream(
-            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield()
+            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids),
+            self.format_and_yield()
         )
