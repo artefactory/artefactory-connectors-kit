@@ -3,9 +3,8 @@ import logging
 import httplib2
 
 import requests
-import time
 import datetime
-
+from tenacity import retry, wait_exponential, stop_after_delay
 from itertools import chain
 
 from googleapiclient import discovery
@@ -137,14 +136,14 @@ class DbmReader(Reader):
             body_q["reportDataStartTimeMs"] = \
                 1000 * int(
                     (
-                            self.kwargs.get("start_date")
-                            + datetime.timedelta(days=1)
+                        self.kwargs.get("start_date")
+                        + datetime.timedelta(days=1)
                     ).timestamp())
             body_q["reportDataEndTimeMs"] = \
                 1000 * int(
                     (
-                            self.kwargs.get("end_date")
-                            + datetime.timedelta(days=1)
+                        self.kwargs.get("end_date")
+                        + datetime.timedelta(days=1)
                     ).timestamp())
         return body_q
 
@@ -153,23 +152,26 @@ class DbmReader(Reader):
         query = self._client.queries().createquery(body=body_query).execute()
         return query
 
+    @retry(wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000))
+    def _wait_for_query(self, query_id):
+        logging.info(
+            "waiting for query of id : {} to complete running".format(
+                query_id
+            )
+        )
+        query_infos = self.get_query(query_id, None)
+        if query_infos["metadata"]["running"]:
+            raise Exception("Query still running.")
+        else:
+            return query_infos
+
     def get_query_report_url(self, existing_query=True):
         if existing_query:
             query_infos = self.get_existing_query()
         else:
             query_infos = self.create_and_get_query()
             query_id = query_infos["queryId"]
-            while True:
-                if not (query_infos["metadata"]["running"]):
-                    break
-                else:
-                    logging.info(
-                        "waiting for query of id : {} to complete running".format(
-                            query_id
-                        )
-                    )
-                    time.sleep(5)
-                    query_infos = self.get_query(query_id, None)
+            query_infos = self._wait_for_query(query_id)
 
         if query_infos["metadata"]["googleCloudStoragePathForLatestReport"]:
             url = query_infos["metadata"]["googleCloudStoragePathForLatestReport"]
@@ -197,14 +199,14 @@ class DbmReader(Reader):
         if len(self.kwargs.get("filter")) > 0:
             filter_types = [filt[0] for filt in self.kwargs.get("filter")]
             assert (
-                    len(
-                        [
-                            filter_types[0] == filt
-                            for filt in filter_types
-                            if filter_types[0] == filt
-                        ]
-                    )
-                    == 1
+                len(
+                    [
+                        filter_types[0] == filt
+                        for filt in filter_types
+                        if filter_types[0] == filt
+                    ]
+                )
+                == 1
             ), "Lineitems accept just one filter type, multiple filter types detected"
             filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
@@ -229,14 +231,14 @@ class DbmReader(Reader):
     def get_sdf_body(self):
         filter_types = [filt[0] for filt in self.kwargs.get("filter")]
         assert (
-                len(
-                    [
-                        filter_types[0] == filt
-                        for filt in filter_types
-                        if filter_types[0] == filt
-                    ]
-                )
-                == 1
+            len(
+                [
+                    filter_types[0] == filt
+                    for filt in filter_types
+                    if filter_types[0] == filt
+                ]
+            )
+            == 1
         ), "sdf accept just one filter type, multiple filter types detected"
         filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
