@@ -20,7 +20,7 @@ class GoogleAdsReaderTest(TestCase):
         "client_secret": "",
         "refresh_token": "",
         "manager_id": "",
-        "client_customer_ids": "",
+        "client_customer_ids": "123-456-7890",
         "report_name": "Custom Report",
         "report_type": "AD_PERFORMANCE_REPORT",
         "date_range_type": "LAST_7_DAYS",
@@ -95,7 +95,7 @@ class GoogleAdsReaderTest(TestCase):
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
     def test_read_data_and_include_account_id(self, mock_query):
         temp_kwargs = self.kwargs.copy()
-        temp_kwargs.update({'include_client_customer_id': "123-456-7890"})
+        temp_kwargs.update({'include_client_customer_id': TRUE})
         reader = GoogleAdsReader(**temp_kwargs)
         example_row1 = b'ad_group_example,2019-01-01,0'
         example_row2 = b'ad_group_example,2019-01-01,4'
