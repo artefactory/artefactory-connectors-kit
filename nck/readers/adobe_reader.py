@@ -1,3 +1,20 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 import logging
 import datetime
@@ -70,8 +87,12 @@ class AdobeReader(Reader):
         report_description = {
             "reportDescription": {
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
-                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
+                "elements": [
+                    {"id": el} for el in self.kwargs.get("report_element_id", [])
+                ],
+                "metrics": [
+                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
+                ],
             }
         }
         self.set_date_gran_report_desc(report_description)
@@ -100,21 +121,33 @@ class AdobeReader(Reader):
         else:
             end_date = datetime.datetime.now().date()
             start_date = end_date - datetime.timedelta(days=self.get_days_delta())
-        report_description["reportDescription"]["dateFrom"] = start_date.strftime("%Y-%m-%d")
-        report_description["reportDescription"]["dateTo"] = end_date.strftime("%Y-%m-%d")
+        report_description["reportDescription"]["dateFrom"] = start_date.strftime(
+            "%Y-%m-%d"
+        )
+        report_description["reportDescription"]["dateTo"] = end_date.strftime(
+            "%Y-%m-%d"
+        )
 
     def set_date_gran_report_desc(self, report_description):
         if self.kwargs.get("date_granularity", None) is not None:
-            report_description["reportDescription"]["dateGranularity"] = self.kwargs.get("date_granularity")
+            report_description["reportDescription"][
+                "dateGranularity"
+            ] = self.kwargs.get("date_granularity")
 
     @retry
     def query_report(self):
-        query_report = self.request(api="Report", method="Queue", data=self.build_report_description())
+        query_report = self.request(
+            api="Report", method="Queue", data=self.build_report_description()
+        )
         return query_report
 
     @retry
     def get_report(self, report_id, page_number=1):
-        request_f = lambda: self.request(api="Report", method="Get", data={"reportID": report_id, "page": page_number})
+        request_f = lambda: self.request(
+            api="Report",
+            method="Get",
+            data={"reportID": report_id, "page": page_number},
+        )
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":
