@@ -1,3 +1,20 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging
 from typing import Dict, Generator, List, Union
 import re
@@ -38,7 +55,7 @@ def get_generator_dict_from_str_csv(
                     "The line could not be decoded in %s."
                     "Invalid input that the codec failed on: %s",
                     err.encoding,
-                    err.object[err.start:err.end],
+                    err.object[err.start : err.end],
                 )
                 line = line.decode("utf-8", errors="ignore")
         if line == "":
@@ -47,18 +64,14 @@ def get_generator_dict_from_str_csv(
             yield dict(zip(headers, parse_decoded_line(line)))
 
 
-def parse_decoded_line(
-    line: str,
-    delimiter=",",
-    quotechar='"'
-) -> List[str]:
+def parse_decoded_line(line: str, delimiter=",", quotechar='"') -> List[str]:
     line_as_file = StringIO(line)
     reader = csv.reader(
         line_as_file,
         delimiter=delimiter,
         quotechar=quotechar,
         quoting=csv.QUOTE_ALL,
-        skipinitialspace=True
+        skipinitialspace=True,
     )
     return next(reader)
 

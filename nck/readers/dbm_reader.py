@@ -1,3 +1,20 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 import logging
 import httplib2
@@ -44,9 +61,12 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-end-date", type=click.DateTime())
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
-@click.option("--dbm-date-format", default="%Y-%m-%d",
-              help="And optional date format for the output stream. "
-                   "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior")
+@click.option(
+    "--dbm-date-format",
+    default="%Y-%m-%d",
+    help="And optional date format for the output stream. "
+    "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior",
+)
 @click.option(
     "--dbm-day-range",
     required=True,
@@ -130,21 +150,17 @@ class DbmReader(Reader):
             },
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
         }
-        if self.kwargs.get("start_date") is not None \
-                and self.kwargs.get("end_date") is not None:
+        if (
+            self.kwargs.get("start_date") is not None
+            and self.kwargs.get("end_date") is not None
+        ):
             body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
-            body_q["reportDataStartTimeMs"] = \
-                1000 * int(
-                    (
-                        self.kwargs.get("start_date")
-                        + datetime.timedelta(days=1)
-                    ).timestamp())
-            body_q["reportDataEndTimeMs"] = \
-                1000 * int(
-                    (
-                        self.kwargs.get("end_date")
-                        + datetime.timedelta(days=1)
-                    ).timestamp())
+            body_q["reportDataStartTimeMs"] = 1000 * int(
+                (self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()
+            )
+            body_q["reportDataEndTimeMs"] = 1000 * int(
+                (self.kwargs.get("end_date") + datetime.timedelta(days=1)).timestamp()
+            )
         return body_q
 
     def create_and_get_query(self):
@@ -152,12 +168,13 @@ class DbmReader(Reader):
         query = self._client.queries().createquery(body=body_query).execute()
         return query
 
-    @retry(wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000))
+    @retry(
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(36000),
+    )
     def _wait_for_query(self, query_id):
         logging.info(
-            "waiting for query of id : {} to complete running".format(
-                query_id
-            )
+            "waiting for query of id : {} to complete running".format(query_id)
         )
         query_infos = self.get_query(query_id, None)
         if query_infos["metadata"]["running"]:
@@ -189,8 +206,8 @@ class DbmReader(Reader):
     def list_query_reports(self):
         reports_infos = (
             self._client.reports()
-                .listreports(queryId=self.kwargs.get("query_id"))
-                .execute()
+            .listreports(queryId=self.kwargs.get("query_id"))
+            .execute()
         )
         for report in reports_infos["reports"]:
             yield report
@@ -294,5 +311,9 @@ class DbmReader(Reader):
                 yield record
 
         # should replace results later by a good identifier
-        yield FormatDateStream("results", result_generator(), keys=["Date"],
-                               date_format=self.kwargs.get("date_format"))
+        yield FormatDateStream(
+            "results",
+            result_generator(),
+            keys=["Date"],
+            date_format=self.kwargs.get("date_format"),
+        )

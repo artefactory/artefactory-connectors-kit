@@ -1,3 +1,20 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import codecs
 import logging
 import click
@@ -15,7 +32,11 @@ from nck.utils.args import extract_args
 from nck.utils.retry import retry
 from nck.commands.command import processor
 from nck.streams.normalized_json_stream import NormalizedJSONStream
-from nck.helpers.googleads_helper import REPORT_TYPE_POSSIBLE_VALUES, DATE_RANGE_TYPE_POSSIBLE_VALUES, ENCODING
+from nck.helpers.googleads_helper import (
+    REPORT_TYPE_POSSIBLE_VALUES,
+    DATE_RANGE_TYPE_POSSIBLE_VALUES,
+    ENCODING,
+)
 
 DATEFORMAT = "%Y%m%d"
 
@@ -37,7 +58,9 @@ DATEFORMAT = "%Y%m%d"
     help="Google Ads Client Account(s) to be called, thanks to their IDs.\n "
     "This field is ignored if manager_id is specified (replaced by the accounts linked to the MCC)",
 )
-@click.option("--googleads-report-name", default="Custom Report", help="Name given to your Report")
+@click.option(
+    "--googleads-report-name", default="Custom Report", help="Name given to your Report"
+)
 @click.option(
     "--googleads-report-type",
     type=click.Choice(REPORT_TYPE_POSSIBLE_VALUES),
@@ -81,7 +104,9 @@ DATEFORMAT = "%Y%m%d"
     help="A boolean indicating whether the report should return only Video campaigns\n"
     "Only available if CampaignId is requested as a report field",
 )
-@processor("googleads_developer_token", "googleads_app_secret", "googleads_refresh_token")
+@processor(
+    "googleads_developer_token", "googleads_app_secret", "googleads_refresh_token"
+)
 def google_ads(**kwargs):
     return GoogleAdsReader(**extract_args("googleads_", kwargs))
 
@@ -109,7 +134,9 @@ class GoogleAdsReader(Reader):
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
-        self.oauth2_client = GoogleRefreshTokenClient(self.client_id, self.client_secret, self.refresh_token)
+        self.oauth2_client = GoogleRefreshTokenClient(
+            self.client_id, self.client_secret, self.refresh_token
+        )
         self.manager_id = manager_id
         self.client_customer_ids = list(client_customer_ids)
         self.report_name = report_name
@@ -124,14 +151,18 @@ class GoogleAdsReader(Reader):
         self.download_format = "CSV"
 
     def init_adwords_client(self, id):
-        return adwords.AdWordsClient(self.developer_token, self.oauth2_client, client_customer_id=id)
+        return adwords.AdWordsClient(
+            self.developer_token, self.oauth2_client, client_customer_id=id
+        )
 
     @staticmethod
     def valid_client_customer_id(client_customer_id):
         return re.match(r"\d{3}-\d{3}-\d{4}", client_customer_id)
 
     @retry
-    def fetch_report_from_gads_client_customer_obj(self, report_definition, client_customer_id):
+    def fetch_report_from_gads_client_customer_obj(
+        self, report_definition, client_customer_id
+    ):
         if self.valid_client_customer_id(client_customer_id):
             adwords_client = self.init_adwords_client(client_customer_id)
             report_downloader = adwords_client.GetReportDownloader()
@@ -145,7 +176,9 @@ class GoogleAdsReader(Reader):
             )
         else:
             raise ClickException(
-                "Wrong format: " + client_customer_id + ". Client customer ID should be in the form 123-456-7890"
+                "Wrong format: "
+                + client_customer_id
+                + ". Client customer ID should be in the form 123-456-7890"
             )
         return customer_report
 
@@ -162,14 +195,18 @@ class GoogleAdsReader(Reader):
         """
 
         adwords_client = self.init_adwords_client(manager_id)
-        managed_customer_service = adwords_client.GetService("ManagedCustomerService", version="v201809")
+        managed_customer_service = adwords_client.GetService(
+            "ManagedCustomerService", version="v201809"
+        )
 
         offset = 0
         PAGE_SIZE = 500
         # Get the account hierarchy for this account.
         selector = {
             "fields": ["CustomerId"],
-            "predicates": [{"field": "CanManageClients", "operator": "EQUALS", "values": [False]}],
+            "predicates": [
+                {"field": "CanManageClients", "operator": "EQUALS", "values": [False]}
+            ],
             "paging": {"startIndex": str(offset), "numberResults": str(PAGE_SIZE)},
         }
 
@@ -181,7 +218,9 @@ class GoogleAdsReader(Reader):
 
             if page and "entries" in page and page["entries"]:
                 for entry in page["entries"]:
-                    client_customer_ids.append(self.format_customer_id(entry["customerId"]))
+                    client_customer_ids.append(
+                        self.format_customer_id(entry["customerId"])
+                    )
             else:
                 raise Exception("Can't retrieve any customer ID.")
             offset += PAGE_SIZE
@@ -213,23 +252,34 @@ class GoogleAdsReader(Reader):
 
     def add_period_to_report_definition(self, report_definition):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
-        if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
+        if (self.date_range_type == "CUSTOM_DATE") & (
+            not self.start_date or not self.end_date
+        ):
             logging.warning(
                 "Custom Date Range selected but no date range provided :"
                 + DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
                 + " by default"
             )
-            logging.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
+            logging.warning(
+                "https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges"
+            )
             report_definition["dateRangeType"] = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
         elif self.date_range_type == "CUSTOM_DATE":
-            logging.info("Date format used for request : Custom Date Range with start_date and end_date provided")
-            report_definition["selector"]["dateRange"] = self.create_date_range(self.start_date, self.end_date)
+            logging.info(
+                "Date format used for request : Custom Date Range with start_date and end_date provided"
+            )
+            report_definition["selector"]["dateRange"] = self.create_date_range(
+                self.start_date, self.end_date
+            )
 
     def add_report_filter(self, report_definition):
         """Check if a filter was provided and contains the necessary information"""
         if not self.report_filter:
             logging.info("No filter provided by user")
-        elif all(required_param in self.report_filter.keys() for required_param in ("field", "operator", "values")):
+        elif all(
+            required_param in self.report_filter.keys()
+            for required_param in ("field", "operator", "values")
+        ):
             report_definition["selector"]["predicates"] = {
                 "field": self.report_filter["field"],
                 "operator": self.report_filter["operator"],
@@ -243,7 +293,10 @@ class GoogleAdsReader(Reader):
 
     @staticmethod
     def create_date_range(start_date, end_date):
-        return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
+        return {
+            "min": start_date.strftime(DATEFORMAT),
+            "max": end_date.strftime(DATEFORMAT),
+        }
 
     def list_video_campaign_ids(self):
         video_campaign_report_definition = self.get_video_campaign_report_definition()
@@ -252,12 +305,11 @@ class GoogleAdsReader(Reader):
         video_campaign_ids = set()
         for googleads_account_id in self.client_customer_ids:
             customer_ids_report = self.fetch_report_from_gads_client_customer_obj(
-                video_campaign_report_definition,
-                googleads_account_id
+                video_campaign_report_definition, googleads_account_id
             )
             customer_ids_report = stream_reader(customer_ids_report)
             for campaign_id in customer_ids_report:
-                video_campaign_ids.add(campaign_id.replace('\n', ''))
+                video_campaign_ids.add(campaign_id.replace("\n", ""))
         return video_campaign_ids
 
     def get_video_campaign_report_definition(self):
@@ -282,14 +334,16 @@ class GoogleAdsReader(Reader):
             video_campaign_ids = self.list_video_campaign_ids()
 
         for googleads_account_id in self.client_customer_ids:
-            customer_report = self.fetch_report_from_gads_client_customer_obj(report_definition, googleads_account_id)
+            customer_report = self.fetch_report_from_gads_client_customer_obj(
+                report_definition, googleads_account_id
+            )
             customer_report = stream_reader(customer_report)
 
             for row in customer_report:
                 reader = csv.DictReader(StringIO(row), self.fields)
                 if self.filter_on_video_campaigns:
                     for row in reader:
-                        if row['CampaignId'] in video_campaign_ids:
+                        if row["CampaignId"] in video_campaign_ids:
                             yield row
                 else:
                     yield next(reader)
@@ -300,5 +354,5 @@ class GoogleAdsReader(Reader):
 
         yield NormalizedJSONStream(
             "results_" + self.report_name + "_" + "_".join(self.client_customer_ids),
-            self.format_and_yield()
+            self.format_and_yield(),
         )
