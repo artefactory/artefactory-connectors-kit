@@ -93,6 +93,33 @@ class GoogleAdsReaderTest(TestCase):
 
     @mock.patch("nck.readers.googleads_reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
+    def test_read_data_and_include_account_id(self, mock_query):
+        temp_kwargs = self.kwargs.copy()
+        temp_kwargs.update({'include_client_customer_id': "123-456-7890"})
+        reader = GoogleAdsReader(**temp_kwargs)
+        example_row1 = b'ad_group_example,2019-01-01,0'
+        example_row2 = b'ad_group_example,2019-01-01,4'
+        mock_query.stream_reader.return_value = [example_row1, example_row2]
+
+        expected = [
+            {
+                "AdGroupName": "ad_group_example",
+                "AccountId": "123-456-7890",
+                "Date": "2019-01-01",
+                "Impressions": "0"},
+            {
+                "AdGroupName": "ad_group_example",
+                "AccountId": "123-456-7890",
+                "Date": "2019-01-01",
+                "Impressions": "4"}
+        ]
+
+        for data in reader.read():
+            for record, output in zip(data.readlines(), iter(expected)):
+                assert record == output
+
+    @mock.patch("nck.readers.googleads_reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
+    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
     def test_list_video_campaign_ids(self, mock_query):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"filter_on_video_campaigns": True})
