@@ -81,6 +81,13 @@ DATEFORMAT = "%Y%m%d"
     help="A boolean indicating whether the report should return only Video campaigns\n"
     "Only available if CampaignId is requested as a report field",
 )
+@click.option(
+    "--googleads-include-client-customer-id",
+    default=False,
+    type=click.BOOL,
+    help="A boolean indicating whether the Account ID should be included as a field in the output stream\n"
+    "(because AccountId is not available as a report field in the API)",
+)
 @processor("googleads_developer_token", "googleads_app_secret", "googleads_refresh_token")
 def google_ads(**kwargs):
     return GoogleAdsReader(**extract_args("googleads_", kwargs))
@@ -104,6 +111,7 @@ class GoogleAdsReader(Reader):
         report_filter,
         include_zero_impressions,
         filter_on_video_campaigns,
+        include_client_customer_id,
     ):
         self.developer_token = developer_token
         self.client_id = client_id
@@ -121,6 +129,7 @@ class GoogleAdsReader(Reader):
         self.report_filter = ast.literal_eval(report_filter)
         self.include_zero_impressions = include_zero_impressions
         self.filter_on_video_campaigns = filter_on_video_campaigns
+        self.include_client_customer_id = include_client_customer_id
         self.download_format = "CSV"
 
     def init_adwords_client(self, id):
@@ -287,12 +296,15 @@ class GoogleAdsReader(Reader):
 
             for row in customer_report:
                 reader = csv.DictReader(StringIO(row), self.fields)
-                if self.filter_on_video_campaigns:
-                    for row in reader:
+                for row in reader:
+                    if self.include_client_customer_id:
+                        row['AccountId'] = googleads_account_id
+
+                    if self.filter_on_video_campaigns:
                         if row['CampaignId'] in video_campaign_ids:
                             yield row
-                else:
-                    yield next(reader)
+                    else:
+                        yield row
 
     def read(self):
         if self.manager_id:
