@@ -49,15 +49,9 @@ DATEFORMAT = "%Y-%m-%d"
 @click.option("--ga-end-date", type=click.DateTime(), default=None)
 @click.option("--ga-date-range", nargs=2, type=click.DateTime(), default=None)
 @click.option(
-    "--ga-day-range",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
-    default=None,
+    "--ga-day-range", type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]), default=None
 )
-@click.option(
-    "--ga-sampling-level",
-    type=click.Choice(["SMALL", "DEFAULT", "LARGE"]),
-    default="LARGE",
-)
+@click.option("--ga-sampling-level", type=click.Choice(["SMALL", "DEFAULT", "LARGE"]), default="LARGE")
 @processor("ga_access_token", "ga_refresh_token", "ga_client_secret")
 def ga(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
@@ -80,11 +74,7 @@ class GaReader(Reader):
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
         self.client_v4 = discovery.build(
-            "analytics",
-            "v4",
-            http=http,
-            cache_discovery=False,
-            discoveryServiceUrl=DISCOVERY_URI,
+            "analytics", "v4", http=http, cache_discovery=False, discoveryServiceUrl=DISCOVERY_URI
         )
         self.client_v3 = discovery.build("analytics", "v3", http=http)
         self.kwargs = kwargs
@@ -101,16 +91,16 @@ class GaReader(Reader):
         day_range = self.kwargs.get("day_range")
 
         if start_date and end_date:
-            logging.info("ℹ️ Date format used for request : startDate and endDate")
+            logging.info("Date format used for request : startDate and endDate")
             return self.create_date_range(start_date, end_date)
         elif date_range:
-            logging.info("ℹ️ Date format used for request : dateRange")
+            logging.info("Date format used for request : dateRange")
             return self.create_date_range(date_range[0], date_range[1])
         elif day_range:
-            logging.info("ℹ️ Date format used for request : dayRange")
+            logging.info("Date format used for request : dayRange")
             return self.generate_date_range_with_day_range(day_range)
         else:
-            logging.warning("⚠️ No date range provided - Last 7 days by default ⚠️")
+            logging.warning("No date range provided - Last 7 days by default")
             return []
 
     def generate_date_range_with_day_range(self, day_range):
@@ -122,19 +112,11 @@ class GaReader(Reader):
 
     @staticmethod
     def create_date_range(start_date, end_date):
-        return {
-            "startDate": start_date.strftime(DATEFORMAT),
-            "endDate": end_date.strftime(DATEFORMAT),
-        }
+        return {"startDate": start_date.strftime(DATEFORMAT), "endDate": end_date.strftime(DATEFORMAT)}
 
     @staticmethod
     def get_days_delta(day_range):
-        delta_mapping = {
-            "PREVIOUS_DAY": 1,
-            "LAST_7_DAYS": 7,
-            "LAST_30_DAYS": 30,
-            "LAST_90_DAYS": 90,
-        }
+        delta_mapping = {"PREVIOUS_DAY": 1, "LAST_7_DAYS": 7, "LAST_30_DAYS": 30, "LAST_90_DAYS": 90}
         try:
             days_delta = delta_mapping[day_range]
         except KeyError:
@@ -169,9 +151,7 @@ class GaReader(Reader):
             logging.warning(f"sample reads : {sample_reads}")
             logging.warning(f"sample space :{sample_space}")
 
-            logging.warning(
-                f"sample percent :{100 * int(sample_reads) / int(sample_space)}%"
-            )
+            logging.warning(f"sample percent :{100 * int(sample_reads) / int(sample_space)}%")
         else:
             logging.info("Report is not sampled.")
 
@@ -190,21 +170,16 @@ class GaReader(Reader):
 
             while "nextPageToken" in report_page["reports"][0]:
                 page_token = report_page["reports"][0]["nextPageToken"]
-                body["reportRequests"][0]["pageToken"] = page_token
+                body["reportRequests"]["pageToken"] = page_token
                 report_page = self.client_v4.reports().batchGet(body=body).execute()
                 yield report_page["reports"][0]
         except Exception as e:
-            raise ClickException(
-                "failed while requesting pages of the report: {}".format(e)
-            )
+            raise ClickException("failed while requesting pages of the report: {}".format(e))
 
     @staticmethod
     def format_and_yield(report):
         dimension_names = report["columnHeader"]["dimensions"]
-        metric_names = [
-            m["name"]
-            for m in report["columnHeader"]["metricHeader"]["metricHeaderEntries"]
-        ]
+        metric_names = [m["name"] for m in report["columnHeader"]["metricHeader"]["metricHeaderEntries"]]
         for row in report["data"].get("rows", []):
             row_dimension_values = row["dimensions"]
             row_metric_values = row["metrics"][0]["values"]
@@ -217,9 +192,7 @@ class GaReader(Reader):
                 formatted_response[metric] = metric_value
 
             if "ga:date" in formatted_response:
-                formatted_response["ga:date"] = GaReader.format_date(
-                    formatted_response["ga:date"]
-                )
+                formatted_response["ga:date"] = GaReader.format_date(formatted_response["ga:date"])
 
             yield formatted_response
 
