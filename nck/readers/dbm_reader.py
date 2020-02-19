@@ -21,11 +21,12 @@ import httplib2
 
 import requests
 import datetime
-from tenacity import retry, wait_exponential, stop_after_delay
+
 from itertools import chain
 
 from googleapiclient import discovery
 from oauth2client import client, GOOGLE_REVOKE_URI
+from tenacity import retry, wait_exponential, stop_after_delay
 
 from nck.commands.command import processor
 from nck.readers.reader import Reader
