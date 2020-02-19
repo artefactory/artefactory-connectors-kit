@@ -29,10 +29,12 @@ def mock_query(*args, **kwargs):
     example_row2 = 'ad_group_example,2019-01-01,4'
     return lambda x: [example_row1, example_row2]
 
+
 def mock_video_query(*args, **kwargs):
     example_row1 = '1234567890\n'
     example_row2 = '1111111111\n'
     return lambda x: [example_row1, example_row2]
+
 
 class GoogleAdsReaderTest(TestCase):
     DATEFORMAT = "%Y%m%d"
