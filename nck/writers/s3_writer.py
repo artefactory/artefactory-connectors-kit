@@ -33,7 +33,7 @@ from nck.utils.retry import retry
 @click.option(
     "--s3-filename", help="Filename (without prefix). Be sure to add file extension."
 )
-@processor()
+@processor("s3_access_key_id", "s3_access_key_secret")
 def s3(**kwargs):
     return S3Writer(**extract_args("s3_", kwargs))
 
