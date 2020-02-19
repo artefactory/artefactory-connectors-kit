@@ -1,3 +1,20 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 import logging
 import datetime
@@ -126,11 +143,11 @@ class AdobeReader(Reader):
 
     @retry
     def get_report(self, report_id, page_number=1):
-        request_f = lambda: self.request( # noqa : E731
-            api="Report", # noqa : E731
-            method="Get", # noqa : E731
-            data={"reportID": report_id, "page": page_number},# noqa : E731
-        ) # noqa : E731
+        request_f = lambda: self.request(
+            api="Report",
+            method="Get",
+            data={"reportID": report_id, "page": page_number},
+        )
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":
@@ -139,7 +156,7 @@ class AdobeReader(Reader):
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
                 raise ReportNotReadyError(f"waited too long for report to be ready")
             idx = idx * 2
-            response = request_f() # noqa : E731
+            response = request_f()
         return response
 
     def download_report(self, rep_id):

@@ -1,3 +1,20 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging
 import click
 
@@ -81,7 +98,7 @@ DATEFORMAT = "%Y-%m-%d"
     multiple=True,
     type=click.Choice(list(DESIRED_FIELDS.keys())),
     help="Desired fields to get in the output report."
-         "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
+    "https://developers.facebook.com/docs/marketing-api/insights/parameters/v5.0#fields",
 )
 @click.option("--facebook-start-date", type=click.DateTime())
 @click.option("--facebook-end-date", type=click.DateTime())
@@ -98,23 +115,23 @@ def facebook_marketing(**kwargs):
 
 class FacebookMarketingReader(Reader):
     def __init__(
-            self,
-            app_id,
-            app_secret,
-            access_token,
-            ad_object_id,
-            ad_object_type,
-            breakdown,
-            action_breakdown,
-            ad_insights,
-            ad_level,
-            time_increment,
-            field,
-            desired_field,
-            start_date,
-            end_date,
-            date_preset,
-            recurse_level,
+        self,
+        app_id,
+        app_secret,
+        access_token,
+        ad_object_id,
+        ad_object_type,
+        breakdown,
+        action_breakdown,
+        ad_insights,
+        ad_level,
+        time_increment,
+        field,
+        desired_field,
+        start_date,
+        end_date,
+        date_preset,
+        recurse_level,
     ):
         self.app_id = app_id
         self.app_secret = app_secret
@@ -150,12 +167,12 @@ class FacebookMarketingReader(Reader):
 
         else:
             for el in chain(
-                    *[
-                        self.run_query_on_fb_adset_obj_conf(
-                            params, adset.get("id"), recurse_level - 1
-                        )
-                        for adset in campaign.get_ad_sets()
-                    ]
+                *[
+                    self.run_query_on_fb_adset_obj_conf(
+                        params, adset.get("id"), recurse_level - 1
+                    )
+                    for adset in campaign.get_ad_sets()
+                ]
             ):
                 yield el
 
