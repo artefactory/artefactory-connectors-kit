@@ -1,11 +1,27 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 import logging
 import httplib2
 
 import requests
-import time
 import datetime
-
+from tenacity import retry, wait_exponential, stop_after_delay
 from itertools import chain
 
 from googleapiclient import discovery
@@ -14,7 +30,7 @@ from oauth2client import client, GOOGLE_REVOKE_URI
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
-from nck.streams.json_stream import JSONStream
+from nck.streams.format_date_stream import FormatDateStream
 
 from nck.utils.text import (
     get_generator_dict_from_str_csv,
@@ -45,6 +61,12 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-end-date", type=click.DateTime())
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
+@click.option(
+    "--dbm-date-format",
+    default="%Y-%m-%d",
+    help="And optional date format for the output stream. "
+    "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior",
+)
 @click.option(
     "--dbm-day-range",
     required=True,
@@ -128,21 +150,17 @@ class DbmReader(Reader):
             },
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
         }
-        if self.kwargs.get("start_date") is not None \
-           and self.kwargs.get("end_date") is not None:
+        if (
+            self.kwargs.get("start_date") is not None
+            and self.kwargs.get("end_date") is not None
+        ):
             body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
-            body_q["reportDataStartTimeMs"] = \
-                1000 * int(
-                    (
-                        self.kwargs.get("start_date")
-                        + datetime.timedelta(days=1)
-                    ).timestamp())
-            body_q["reportDataEndTimeMs"] = \
-                1000 * int(
-                    (
-                        self.kwargs.get("end_date")
-                        + datetime.timedelta(days=1)
-                    ).timestamp())
+            body_q["reportDataStartTimeMs"] = 1000 * int(
+                (self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()
+            )
+            body_q["reportDataEndTimeMs"] = 1000 * int(
+                (self.kwargs.get("end_date") + datetime.timedelta(days=1)).timestamp()
+            )
         return body_q
 
     def create_and_get_query(self):
@@ -150,23 +168,27 @@ class DbmReader(Reader):
         query = self._client.queries().createquery(body=body_query).execute()
         return query
 
+    @retry(
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(36000),
+    )
+    def _wait_for_query(self, query_id):
+        logging.info(
+            "waiting for query of id : {} to complete running".format(query_id)
+        )
+        query_infos = self.get_query(query_id, None)
+        if query_infos["metadata"]["running"]:
+            raise Exception("Query still running.")
+        else:
+            return query_infos
+
     def get_query_report_url(self, existing_query=True):
         if existing_query:
             query_infos = self.get_existing_query()
         else:
             query_infos = self.create_and_get_query()
             query_id = query_infos["queryId"]
-            while True:
-                if not (query_infos["metadata"]["running"]):
-                    break
-                else:
-                    logging.info(
-                        "waiting for query of id : {} to complete running".format(
-                            query_id
-                        )
-                    )
-                    time.sleep(5)
-                    query_infos = self.get_query(query_id, None)
+            query_infos = self._wait_for_query(query_id)
 
         if query_infos["metadata"]["googleCloudStoragePathForLatestReport"]:
             url = query_infos["metadata"]["googleCloudStoragePathForLatestReport"]
@@ -289,4 +311,9 @@ class DbmReader(Reader):
                 yield record
 
         # should replace results later by a good identifier
-        yield JSONStream("results", result_generator())
+        yield FormatDateStream(
+            "results",
+            result_generator(),
+            keys=["Date"],
+            date_format=self.kwargs.get("date_format"),
+        )
