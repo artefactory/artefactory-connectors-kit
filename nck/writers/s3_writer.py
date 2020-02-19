@@ -79,12 +79,7 @@ class S3Writer(Writer):
         else:
             prefix = ""
 
-        filename = f"""{prefix}
-            {
-                self.kwargs['filename']
-                if self.kwargs['filename'] is not None
-                else stream.name
-            }"""
+        filename = f"{prefix}{self.kwargs['filename'] if self.kwargs['filename'] is not None else stream.name}"
         bucket.upload_fileobj(stream.as_file(), filename)
         url_file = self._s3_resource.meta.client.generate_presigned_url(
             "get_object",
