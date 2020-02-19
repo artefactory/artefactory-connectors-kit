@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from unittest import TestCase, mock
+from freezegun import freeze_time
 
 from nck.readers.facebook_reader import FacebookMarketingReader
 
@@ -35,10 +36,11 @@ class FacebookReaderTest(TestCase):
         "app_id": "",
         "app_secret": "",
         "access_token": "",
-        "ad_object_ids": "",
+        "ad_object_ids": "123456789",
         "recurse_level": 0,
         "ad_object_type": "adaccount",
         "desired_fields": ["date_start", "impressions"],
+        "add_date_to_report": False,
     }
 
     @mock.patch("nck.readers.facebook_reader.FacebookMarketingReader.run_query_on_fb_account_obj")
@@ -64,27 +66,37 @@ class FacebookReaderTest(TestCase):
 
         expected = [{"date_start": "2019-01-01", "impressions": "1"}, {"date_start": "2019-01-01", "impressions": "2"}]
 
-        for data in reader.read():
-            for record, output in zip(data.readlines(), iter(expected)):
-                assert record == output
+        data = next(reader.read())
+        assert len(list(data.readlines())) != 0
+        data = next(reader.read())
+        for record, output in zip(data.readlines(), iter(expected)):
+            assert record == output
 
     @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
     def test_format_standard_field(self):
-        kwargs = {"desired_fields": ["clicks", "gender", "impressions"]}
+        kwargs = {"desired_fields": ["clicks", "gender", "impressions"], "add_date_to_report": False}
         record = {"clicks": "0", "date_start": "2020-01-01", "gender": "unknown", "impressions": "300"}
         expected = {"clicks": "0", "gender": "unknown", "impressions": "300"}
         assert next(FacebookMarketingReader(**kwargs).format_and_yield(record)) == expected
 
     @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
     def test_format_nested_field(self):
-        kwargs = {"desired_fields": ["outbound_clicks"]}
+        kwargs = {"desired_fields": ["outbound_clicks"], "add_date_to_report": False}
         record = {"outbound_clicks": [{"action_type": "outbound_click", "value": "1"}]}
         expected = {"outbound_clicks": "1"}
         assert next(FacebookMarketingReader(**kwargs).format_and_yield(record)) == expected
 
     @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
     def test_format_field_not_in_report(self):
-        kwargs = {"desired_fields": ["age", "outbound_clicks"]}
+        kwargs = {"desired_fields": ["age", "outbound_clicks"], "add_date_to_report": False}
         record = {"gender": "unknown"}
         expected = {"age": None, "outbound_clicks": None}
+        assert next(FacebookMarketingReader(**kwargs).format_and_yield(record)) == expected
+
+    @mock.patch.object(FacebookMarketingReader, "__init__", mock_facebook_reader)
+    @freeze_time("2020-01-01")
+    def test_add_date_to_report_in_report(self):
+        kwargs = {"desired_fields": ["clicks"], "add_date_to_report": True}
+        record = {"clicks": "0", "date_start": "2020-01-01"}
+        expected = {"clicks": "0", "date": "2020-01-01"}
         assert next(FacebookMarketingReader(**kwargs).format_and_yield(record)) == expected

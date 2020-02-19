@@ -33,10 +33,7 @@ from nck.readers.reader import Reader
 from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
 
-from nck.utils.text import (
-    get_generator_dict_from_str_csv,
-    add_column_value_to_csv_line_iterator,
-)
+from nck.utils.text import get_generator_dict_from_str_csv, add_column_value_to_csv_line_iterator
 
 from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES, FILE_TYPES_DICT
 
@@ -100,9 +97,7 @@ class DbmReader(Reader):
         credentials.refresh(http)
 
         # API_SCOPES = ['https://www.googleapis.com/auth/doubleclickbidmanager']
-        self._client = discovery.build(
-            self.API_NAME, self.API_VERSION, http=http, cache_discovery=False
-        )
+        self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
         self.kwargs = kwargs
 
@@ -113,11 +108,7 @@ class DbmReader(Reader):
                 if q["queryId"] == query_id or q["metadata"]["title"] == query_title:
                     return q
         else:
-            logging.info(
-                "No query found with the id {} or the title {}".format(
-                    query_id, query_title
-                )
-            )
+            logging.info("No query found with the id {} or the title {}".format(query_id, query_title))
             return None
 
     def get_existing_query(self):
@@ -127,11 +118,7 @@ class DbmReader(Reader):
         if query:
             return query
         else:
-            raise Exception(
-                "No query found with the id {} or the title {}".format(
-                    query_id, query_title
-                )
-            )
+            raise Exception("No query found with the id {} or the title {}".format(query_id, query_title))
 
     def get_query_body(self):
         body_q = {
@@ -144,17 +131,11 @@ class DbmReader(Reader):
                 "type": self.kwargs.get("query_param_type", "TYPE_TRUEVIEW"),
                 "groupBys": self.kwargs.get("query_dimension"),
                 "metrics": self.kwargs.get("query_metric"),
-                "filters": [
-                    {"type": filt[0], "value": str(filt[1])}
-                    for filt in self.kwargs.get("filter")
-                ],
+                "filters": [{"type": filt[0], "value": str(filt[1])} for filt in self.kwargs.get("filter")],
             },
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
         }
-        if (
-            self.kwargs.get("start_date") is not None
-            and self.kwargs.get("end_date") is not None
-        ):
+        if self.kwargs.get("start_date") is not None and self.kwargs.get("end_date") is not None:
             body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
             body_q["reportDataStartTimeMs"] = 1000 * int(
                 (self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()
@@ -205,11 +186,7 @@ class DbmReader(Reader):
         return get_generator_dict_from_str_csv(report.iter_lines())
 
     def list_query_reports(self):
-        reports_infos = (
-            self._client.reports()
-            .listreports(queryId=self.kwargs.get("query_id"))
-            .execute()
-        )
+        reports_infos = self._client.reports().listreports(queryId=self.kwargs.get("query_id")).execute()
         for report in reports_infos["reports"]:
             yield report
 
@@ -217,31 +194,17 @@ class DbmReader(Reader):
         if len(self.kwargs.get("filter")) > 0:
             filter_types = [filt[0] for filt in self.kwargs.get("filter")]
             assert (
-                len(
-                    [
-                        filter_types[0] == filt
-                        for filt in filter_types
-                        if filter_types[0] == filt
-                    ]
-                )
-                == 1
+                len([filter_types[0] == filt for filt in filter_types if filter_types[0] == filt]) == 1
             ), "Lineitems accept just one filter type, multiple filter types detected"
             filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
-            return {
-                "filterType": filter_types[0],
-                "filterIds": filter_ids,
-                "format": "CSV",
-                "fileSpec": "EWF",
-            }
+            return {"filterType": filter_types[0], "filterIds": filter_ids, "format": "CSV", "fileSpec": "EWF"}
         else:
             return {}
 
     def get_lineitems_objects(self):
         body_lineitems = self.get_lineitems_body()
-        response = (
-            self._client.lineitems().downloadlineitems(body=body_lineitems).execute()
-        )
+        response = self._client.lineitems().downloadlineitems(body=body_lineitems).execute()
         lineitems = response["lineItems"]
         lines = lineitems.split("\n")
         return get_generator_dict_from_str_csv(lines)
@@ -249,24 +212,12 @@ class DbmReader(Reader):
     def get_sdf_body(self):
         filter_types = [filt[0] for filt in self.kwargs.get("filter")]
         assert (
-            len(
-                [
-                    filter_types[0] == filt
-                    for filt in filter_types
-                    if filter_types[0] == filt
-                ]
-            )
-            == 1
+            len([filter_types[0] == filt for filt in filter_types if filter_types[0] == filt]) == 1
         ), "sdf accept just one filter type, multiple filter types detected"
         filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
         file_types = self.kwargs.get("file_type")
-        body_sdf = {
-            "version": "4.2",
-            "filterIds": filter_ids,
-            "filterType": filter_types,
-            "fileTypes": file_types,
-        }
+        body_sdf = {"version": "4.2", "filterIds": filter_ids, "filterType": filter_types, "fileTypes": file_types}
         return body_sdf
 
     def get_sdf_objects(self):
@@ -278,9 +229,7 @@ class DbmReader(Reader):
             *[
                 get_generator_dict_from_str_csv(
                     add_column_value_to_csv_line_iterator(
-                        response[FILE_TYPES_DICT[file_type]].split("\n"),
-                        "file_type",
-                        file_type,
+                        response[FILE_TYPES_DICT[file_type]].split("\n"), "file_type", file_type
                     )
                 )
                 for file_type in file_types
