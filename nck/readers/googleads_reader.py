@@ -267,6 +267,7 @@ class GoogleAdsReader(Reader):
             customer_ids_report = stream_reader(customer_ids_report)
             for campaign_id in customer_ids_report:
                 video_campaign_ids.add(campaign_id.replace('\n', ''))
+        logging.info(video_campaign_ids)
         return video_campaign_ids
 
     def get_video_campaign_report_definition(self):
