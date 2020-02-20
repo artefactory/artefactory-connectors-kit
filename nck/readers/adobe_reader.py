@@ -29,6 +29,8 @@ from nck.streams.json_stream import JSONStream
 import requests
 from nck.helpers.adobe_helper import build_headers, ReportNotReadyError, parse
 
+from click import ClickException
+
 # Credit goes to Mr Martin Winkel for the base code provided :
 # github : https://github.com/SaturnFromTitan/adobe_analytics
 
@@ -87,31 +89,22 @@ class AdobeReader(Reader):
         report_description = {
             "reportDescription": {
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [
-                    {"id": el} for el in self.kwargs.get("report_element_id", [])
-                ],
-                "metrics": [
-                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
-                ],
+                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
+                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
             }
         }
         self.set_date_gran_report_desc(report_description)
         self.set_date_range_report_desc(report_description)
-        logging.debug(f"report_decription content {report_description}")
+        logging.debug(f"report_description content {report_description}")
         return report_description
 
     def get_days_delta(self):
         days_range = self.kwargs.get("day_range")
-        if days_range == "PREVIOUS_DAY":
-            days_delta = 1
-        elif days_range == "LAST_7_DAYS":
-            days_delta = 7
-        elif days_range == "LAST_30_DAYS":
-            days_delta = 30
-        elif days_range == "LAST_90_DAYS":
-            days_delta = 90
-        else:
-            raise Exception("{} is not handled by the reader".format(days_range))
+        delta_mapping = {"PREVIOUS_DAY": 1, "LAST_7_DAYS": 7, "LAST_30_DAYS": 30, "LAST_90_DAYS": 90}
+        try:
+            days_delta = delta_mapping[days_range]
+        except KeyError:
+            raise ClickException("{} is not handled by the reader".format(days_range))
         return days_delta
 
     def set_date_range_report_desc(self, report_description):
@@ -121,33 +114,21 @@ class AdobeReader(Reader):
         else:
             end_date = datetime.datetime.now().date()
             start_date = end_date - datetime.timedelta(days=self.get_days_delta())
-        report_description["reportDescription"]["dateFrom"] = start_date.strftime(
-            "%Y-%m-%d"
-        )
-        report_description["reportDescription"]["dateTo"] = end_date.strftime(
-            "%Y-%m-%d"
-        )
+        report_description["reportDescription"]["dateFrom"] = start_date.strftime("%Y-%m-%d")
+        report_description["reportDescription"]["dateTo"] = end_date.strftime("%Y-%m-%d")
 
     def set_date_gran_report_desc(self, report_description):
         if self.kwargs.get("date_granularity", None) is not None:
-            report_description["reportDescription"][
-                "dateGranularity"
-            ] = self.kwargs.get("date_granularity")
+            report_description["reportDescription"]["dateGranularity"] = self.kwargs.get("date_granularity")
 
     @retry
     def query_report(self):
-        query_report = self.request(
-            api="Report", method="Queue", data=self.build_report_description()
-        )
+        query_report = self.request(api="Report", method="Queue", data=self.build_report_description())
         return query_report
 
     @retry
     def get_report(self, report_id, page_number=1):
-        request_f = lambda: self.request(
-            api="Report",
-            method="Get",
-            data={"reportID": report_id, "page": page_number},
-        )
+        request_f = lambda: self.request(api="Report", method="Get", data={"reportID": report_id, "page": page_number})
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":

@@ -52,9 +52,7 @@ def build_headers(password, username):
 
 
 def _parse_header(report):
-    dimensions = [
-        _classification_or_name(dimension) for dimension in report["elements"]
-    ]
+    dimensions = [_classification_or_name(dimension) for dimension in report["elements"]]
     metrics = [metric["name"] for metric in report["metrics"]]
     return dimensions, metrics
 
@@ -127,19 +125,12 @@ def _dimension_value(chunk):
 
 
 def _dimension_value_is_nan(chunk):
-    return (
-        ("name" not in chunk)
-        or (chunk["name"] == "")
-        or (chunk["name"] == "::unspecified::")
-    )
+    return ("name" not in chunk) or (chunk["name"] == "") or (chunk["name"] == "::unspecified::")
 
 
 def _to_datetime(chunk):
     time_stamp = datetime.datetime(
-        year=chunk["year"],
-        month=chunk["month"],
-        day=chunk["day"],
-        hour=chunk.get("hour", 0),
+        year=chunk["year"], month=chunk["month"], day=chunk["day"], hour=chunk.get("hour", 0)
     )
     return time_stamp.strftime("%Y-%m-%d %H:00:00")
 
@@ -149,13 +140,14 @@ def parse(raw_response):
     raw_data = report["data"]
     dimensions, metrics = _parse_header(report)
     data = _parse_data(raw_data, metric_count=len(metrics))
-    if data == []:
-        yield []
-    else:
+    if data:
         headers = _fix_header(dimensions, metrics, data)
         headers = [reformat_naming_for_bq(header) for header in headers]
         for row in data:
-            yield {headers[i]: row[i] for i in range(len(headers))}
+            if len(row) >= len(headers):
+                yield {headers[i]: row[i] for i in range(len(headers))}
+            else:
+                yield {header: None for header in headers}
 
 
 class ReportNotReadyError(Exception):
