@@ -20,15 +20,20 @@ import click
 from nck.writers import writers, Writer
 from nck.readers import readers, Reader
 import nck.state_service as state
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 
 
 @click.group(chain=True)
 @click.option("--state-service-name")
 @click.option("--state-service-host", help="Redis server IP address")
 @click.option("--state-service-port", help="Redis server port", default=6379)
-def app(state_service_name, state_service_host, state_service_port):
+@click.option("--normalize-keys", default=False,
+              help="(Optional) If set to true, will normalize the output files keys, removing "
+                   "white spaces and special characters.", type=bool)
+def app(state_service_name, state_service_host, state_service_port, normalize_keys):
     if (state_service_name or state_service_host) and not (
-        state_service_name and state_service_host
+            state_service_name and state_service_host
     ):
         raise click.BadParameter(
             "You must specify both a name and a host for the state service"
@@ -36,7 +41,7 @@ def app(state_service_name, state_service_host, state_service_port):
 
 
 @app.resultcallback()
-def run(processors, state_service_name, state_service_host, state_service_port):
+def run(processors, state_service_name, state_service_host, state_service_port, normalize_keys):
     state.configure(state_service_name, state_service_host, state_service_port)
 
     processor_instances = [p() for p in processors]
@@ -58,7 +63,10 @@ def run(processors, state_service_name, state_service_host, state_service_port):
     # A stream should represent a full file!
     for stream in reader.read():
         for writer in _writers:
-            writer.write(stream)
+            if normalize_keys and issubclass(stream.__class__, JSONStream):
+                writer.write(NormalizedJSONStream.create_from_stream(stream))
+            else:
+                writer.write(stream)
 
 
 def cli_entrypoint():

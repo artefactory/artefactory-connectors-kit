@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 import dateutil.parser
 from datetime import datetime
 
 
-class FormatDateStream(NormalizedJSONStream):
+class FormatDateStream(JSONStream):
     keys = []
     date_format = '%Y-%m-%d'
 
