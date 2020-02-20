@@ -40,7 +40,7 @@ from nck.utils.retry import retry
 @click.option("--search-console-site-url", required=True)
 @click.option("--search-console-start-date", type=click.DateTime(), default=None)
 @click.option("--search-console-end-date", type=click.DateTime(), default=None)
-@click.option("--search-console-date-column", "-d", type=click.BOOL, default=False)
+@click.option("--search-console-date-column", type=click.BOOL, default=False)
 @click.option("--search-console-row-limit", type=click.INT, default=25000)
 @processor()
 def search_console(**params):
@@ -98,18 +98,13 @@ class SearchConsoleReader(Reader):
             credentials.refresh(http)
 
             self._service = build(
-                serviceName="webmasters",
-                version="v3",
-                credentials=credentials,
-                cache_discovery=False,
+                serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False
             )
 
     @staticmethod
     def check_end_date(end_date):
         if end_date > MAX_END_DATE:
-            logging.warning(
-                f"⚠️ The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)} ⚠️"
-            )
+            logging.warning(f"The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)}")
         return end_date
 
     def build_query(self):
@@ -130,26 +125,14 @@ class SearchConsoleReader(Reader):
     def _run_query(self):
         self.initialize_analyticsreporting()
 
-        response = (
-            self._service.searchanalytics()
-            .query(siteUrl=self.site_url, body=self.build_query())
-            .execute()
-        )
+        response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
         yield response
 
         # Pagination
         while len(response.get("rows", [])) != 0:
-            logging.info(
-                "{} lines successfully processed...".format(
-                    len(response.get("rows")) + self.start_row
-                )
-            )
+            logging.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
             self.start_row += self.row_limit
-            response = (
-                self._service.searchanalytics()
-                .query(siteUrl=self.site_url, body=self.build_query())
-                .execute()
-            )
+            response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
             yield response
 
     def format_and_yield(self, data):

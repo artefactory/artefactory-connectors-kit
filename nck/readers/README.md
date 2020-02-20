@@ -85,11 +85,9 @@ to set-up your OAuth2 credentials and refresh token specifically for your Google
 
 #### Which Reports and Metrics are available in the API
 
-
 The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/adwords/api/docs/appendix/reports#available-reports "Report Types")
 
 #### Simple API call example
-
 
 - Call Example
 
@@ -118,3 +116,41 @@ See the documents below for a better understanding of the parameters:
 - [Possible Date Ranges](https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges)
 
 
+### Google Search Console Reader
+
+#### How to obtain Credentials
+
+Using the Google Search Console API requires three main parameters:
+- OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
+
+- A refresh token, created with the email address able to access to your Google Search Console Account.
+
+- The URLs whose performance you want to see.
+
+See the [documentation here](https://developers.google.com/webmaster-tools/search-console-api-original/v3/prereqs "Search Console API")
+to see an Overview of the Search Console API.
+
+
+#### Search Analytics
+
+The list of available dimensions and metrics in the API can be [found here](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query "Search Analytics")
+
+#### Simple API call example
+
+- Call Example
+
+The following command retrieves insights about the URL <SITE_URL> thanks to your company <CLIENT_ID> and <REFRESH_TOKEN> 
+with the necessary permissions to access your Accounts.
+
+```
+python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_ID> --search-console-refresh-token <REFRESH_TOKEN> --search-console-site-url <SITE_URL> --search-console-dimensions country --search-console-dimensions device --search-console-start-date 2020-01-01 --search-console-end-date 2020-01-01 write_console 
+```
+
+- Parameters of the Google Search Console Readers
+
+| --search-console-client-id | --search-console-client-secret | --search-console-access-token | --search-console-refresh-token | --search-console-dimensions | --search-console-site-url  | --search-console-start-date | --search-console-end-date | --search-console-date-column | --search-console-row-limit |
+|:-----------------:|:---------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:--------------------:|:---------------------------:|:----------------------:|:----------------------:|
+|OAuth2 ID| OAuth2 Secret| Access token | Refresh token for OAuth2 | [Dimensions to request](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension) |Site URL whose performance you want to request| Start Date for the request | End Date for the request | If true, include date column in the report | Row number by report page |
+
+See the documents below for a better understanding of the parameters:
+- [Google Search Console API](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query)

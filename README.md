@@ -6,16 +6,19 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 
 ### Readers
 
-- Google DoubleClick Manager (DV360)
+- Google DoubleClick Manager (DBM / DV360)
 - Google Analytics
 - Google Search Console
 - Google Sheets
 - Google Cloud Storage
+- Google Adwords
+- Google Search Console
 - Facebook Business Manager
 - Amazon S3
 - Oracle
 - SalesForce
 - MySQL
+- Radarly
 - Adobe Analytics 1.4 
 
 ### Writers
@@ -30,12 +33,12 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 
 NCK is divided in three main components : Readers, Streams, and Writers.
 
-- [Readers](./lib/readers/README.md) role is to read data from distant sources and transform it into stream object
-- [Streams](./lib/streams/README.md) role is to be read as file or line by line. There are local objects usable by writers
-- [Writers](./lib/writers/README.md) role is to write stream into distant location
+- [Readers](./nck/readers/README.md) role is to read data from distant sources and transform it into stream object
+- [Streams](./nck/streams/README.md) role is to be read as file or line by line. There are local objects usable by writers
+- [Writers](./nck/writers/README.md) role is to write stream into distant location
 
 ## Usage
-**nck** could be consumed throught a docker image or can be installed as package and then be used as library or a binary.
+**nck** could be consumed through a docker image or can be installed as package and then be used as library or a binary.
 
 ### Docker image
 
@@ -70,7 +73,7 @@ It is advised to do the following in a virtual env
 #### Install via the wheel in dist :
 `pip wheel --wheel-dir=wheels -r requirements.txt (that creates folder of wheels for packages in requierements)`
 
-`pip install --no-index --find-links=./wheels dist/[nck-file-genrated].whl`
+`pip install --no-index --find-links=./wheels dist/[nck-file-generated].whl`
 
 #### Install in editable mode :
 `pip install -e .`
@@ -80,7 +83,7 @@ It is advised to do the following in a virtual env
 
 #### Usage as binary :
 
-* Run cmd `nckrun --help` (which is equivalent to python bin/run.py)
+* Run cmd `nckrun --help` (which is equivalent to python nck/entrypoint.py)
 
 #### Usage as library : 
 
