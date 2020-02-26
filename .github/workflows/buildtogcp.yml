@@ -1,5 +1,24 @@
-# This workflow will build a docker container and publish it to Google Container Registry.
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
 #
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This workflow will build a docker container and publish it to Google Container Registry.
+
+
+
 # To configure this workflow:
 #
 # 1. Set up secrets in your workspace: GCP_PROJECT with the name of the project, GCP_EMAIL with the service account
@@ -10,17 +29,22 @@
 name: Build and Deploy image to GCP
 
 on:
-  push:
-    branches:
-    - master
+  pull_request:
+    types: [closed]
 
 # Environment variables available to all jobs and steps in this workflow
 env:
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_EMAIL: ${{ secrets.GCP_EMAIL }}
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  DOCKER_TAG: ${{ github.run_id }}
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+  DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}-${{ github.ref }}
+
 
 jobs:
   setup-build-publish:
+    if: github.event.pull_request.merged == true
     name: Setup, Build, Publish
     runs-on: ubuntu-latest
     steps:
@@ -35,10 +59,15 @@ jobs:
         service_account_email: ${{ secrets.GCP_EMAIL }}
         service_account_key: ${{ secrets.GCP_KEY }}
 
+    - name: Clean ENV
+      run: |
+        > .env
+
+
     # Build the Docker image
     - name: Build And Publish
       run: |
-         make publish_base_image
+        make publish_base_image
 
 
 

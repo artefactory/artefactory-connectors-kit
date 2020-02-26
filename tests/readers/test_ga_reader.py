@@ -1,8 +1,25 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from datetime import datetime
 from unittest import TestCase, mock
 from click import ClickException
 
-from lib.readers.ga_reader import GaReader, GaStream
+from nck.readers.ga_reader import GaReader, GaStream
 
 
 class GaReaderTest(TestCase):
@@ -33,7 +50,7 @@ class GaReaderTest(TestCase):
         fail = "PVRIOUES_DAY"
         self.assertRaises(ClickException, GaReader.get_days_delta, fail)
 
-    @mock.patch("lib.readers.ga_reader.GaReader._run_query")
+    @mock.patch("nck.readers.ga_reader.GaReader._run_query")
     @mock.patch.object(GaReader, "__init__", mock_ga_reader)
     def test_read(self, mock_query):
 
@@ -41,7 +58,7 @@ class GaReaderTest(TestCase):
             "dimensions": ("date",),
             "metric": (),
             "start_date": datetime(2019, 1, 1),
-            "view_id": "0",
+            "view_ids": ("0", "1"),
             "end_date": datetime(2019, 1, 1),
         }
         reader = GaReader(**kwargs)

@@ -1,4 +1,21 @@
-from lib.readers.radarly_reader import RadarlyReader
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from nck.readers.radarly_reader import RadarlyReader
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
@@ -35,9 +52,9 @@ def create_mock_publications_iterator(
 
 
 class RadarlyReaderTest(TestCase):
-    @mock.patch("lib.readers.radarly_reader.RadarlyApi")
-    @mock.patch("lib.readers.radarly_reader.Project")
-    @mock.patch("lib.readers.radarly_reader.RadarlyReader.get_payload")
+    @mock.patch("nck.readers.radarly_reader.RadarlyApi")
+    @mock.patch("nck.readers.radarly_reader.Project")
+    @mock.patch("nck.readers.radarly_reader.RadarlyReader.get_payload")
     def test_read(self, mock_get_payload, mock_Project, mock_RadarlyApi):
         mock_RadarlyApi.init.side_effect = lambda client_id, client_secret: logging.info(
             "Mock RadarlyApi successfully initiated"

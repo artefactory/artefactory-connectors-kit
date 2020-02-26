@@ -1,0 +1,9 @@
+[flake8]
+
+max-line-length = 127
+ignore =
+    W503,  # W503 line break after binary operator
+    E203,  # Conflicts with black, see https://github.com/psf/black/issues/544
+    W605,  # Invalid excape sequences like "\(" in string regexes
+
+per-file-ignores = nck/readers/adobe_reader.py:E731
