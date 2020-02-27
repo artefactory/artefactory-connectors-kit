@@ -46,9 +46,9 @@ def get_generator_dict_from_str_csv(
 ) -> Generator[Dict[str, str], None, None]:
     first_line = next(line_iterator)
     headers = (
-        first_line.decode("utf-8").split(",")
+        parse_decoded_line(first_line.decode("utf-8"))
         if isinstance(first_line, bytes)
-        else first_line.split(",")
+        else parse_decoded_line(first_line)
     )
     if add_date:
         headers.extend(["date_start", "date_stop"])
