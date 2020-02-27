@@ -41,11 +41,11 @@ class TestDateHandler(unittest.TestCase):
     @parameterized.expand([
         (
             date(2020, 1, 6),
-            (date(2019, 12, 30), date(2020, 1, 5))
+            (date(2019, 12, 29), date(2020, 1, 4))
         ),
         (
             date(2020, 1, 13),
-            (date(2020, 1, 6), date(2020, 1, 12))
+            (date(2020, 1, 5), date(2020, 1, 11))
         )
     ])
     def test_get_date_start_and_date_stop_with_previous_week(self, date_of_day, expected):

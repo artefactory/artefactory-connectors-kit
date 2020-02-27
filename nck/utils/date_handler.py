@@ -14,7 +14,8 @@ def get_date_start_and_date_stop_from_range(
         month = last_day_of_previous_month.month
         return date(year, month, 1), date(year, month, calendar.monthrange(year, month)[1])
     elif date_range == "PREVIOUS_WEEK":
-        first_day_of_last_week = today - timedelta(days=today.weekday(), weeks=1)
+        # The API uses American standard, weeks go from sunday yo next saturday
+        first_day_of_last_week = today - timedelta(days=today.weekday() + 1, weeks=1)
         return first_day_of_last_week, first_day_of_last_week + timedelta(days=6)
     else:
         return None
