@@ -21,6 +21,8 @@ import re
 import csv
 from io import StringIO
 
+from nck.utils.date_handler import get_date_start_and_date_stop_from_range
+
 
 def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
     first_line = True
@@ -37,7 +39,10 @@ def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
 
 
 def get_generator_dict_from_str_csv(
-    line_iterator: Generator[Union[bytes, str], None, None]
+    line_iterator: Generator[Union[bytes, str], None, None],
+    add_date=False,
+    day_range=None,
+    date_format="%Y-%m-%d"
 ) -> Generator[Dict[str, str], None, None]:
     first_line = next(line_iterator)
     headers = (
@@ -45,6 +50,8 @@ def get_generator_dict_from_str_csv(
         if isinstance(first_line, bytes)
         else first_line.split(",")
     )
+    if add_date:
+        headers.extend(["date_start", "date_stop"])
     for line in line_iterator:
         if isinstance(line, bytes):
             try:
@@ -58,10 +65,15 @@ def get_generator_dict_from_str_csv(
                     err.object[err.start : err.end],
                 )
                 line = line.decode("utf-8", errors="ignore")
+
         if line == "":
             break
-        else:
-            yield dict(zip(headers, parse_decoded_line(line)))
+
+        if add_date:
+            start, end = get_date_start_and_date_stop_from_range(day_range)
+            line += f", {start.strftime(date_format)}, {end.strftime(date_format)}"
+
+        yield dict(zip(headers, parse_decoded_line(line)))
 
 
 def parse_decoded_line(line: str, delimiter=",", quotechar='"') -> List[str]:
