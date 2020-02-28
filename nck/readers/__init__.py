@@ -26,6 +26,7 @@ from nck.readers.gsheets_reader import gsheets
 from nck.readers.salesforce_reader import salesforce
 from nck.readers.facebook_reader import facebook_marketing
 from nck.readers.dbm_reader import dbm
+from nck.readers.dcm_reader import dcm
 from nck.readers.ga_reader import ga
 from nck.readers.search_console_reader import search_console
 from nck.readers.adobe_reader import adobe
@@ -42,6 +43,7 @@ readers = [
     facebook_marketing,
     oracle,
     dbm,
+    dcm,
     ga,
     search_console,
     adobe,
