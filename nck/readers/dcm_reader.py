@@ -22,11 +22,6 @@ from io import StringIO
 import click
 import logging
 
-import requests
-
-from click import ClickException
-from tenacity import retry, wait_exponential, stop_after_delay
-
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
@@ -107,81 +102,10 @@ class DcmReader(Reader):
         self.start_date = start_date
         self.end_date = end_date
         self.filters = list(filters)
-        self.download_format = "CSV"
         self.date_format = date_format
 
-    def build_report_skeleton(self, report_name, report_type):
-        report = {
-            # Set the required fields "name" and "type".
-            "name": report_name,
-            "type": report_type,
-            "format": self.download_format,
-        }
-        return report
-
     @staticmethod
-    def get_date_range(start_date=None, end_date=None):
-        if start_date and end_date:
-            start = start_date.strftime("%Y-%m-%d")
-            end = end_date.strftime("%Y-%m-%d")
-            logger.warning("Custom date range selected: " + start + " --> " + end)
-            return {"startDate": start, "endDate": end}
-        else:
-            raise ClickException("Please provide start date and end date in your request")
-
-    def add_report_criteria(self, report, start_date, end_date, metrics, dimensions):
-        criteria = {
-            "dateRange": self.get_date_range(start_date, end_date),
-            "dimensions": [{"name": dim} for dim in dimensions],
-            "metricNames": metrics,
-        }
-        report["criteria"] = criteria
-
-    def add_dimension_filters(self, report, profile_id, filters):
-        for dimension_name, dimension_value in filters:
-            request = {
-                "dimensionName": dimension_name,
-                "endDate": report["criteria"]["dateRange"]["endDate"],
-                "startDate": report["criteria"]["dateRange"]["startDate"],
-            }
-            values = self.dcm_client._service.dimensionValues().query(profileId=profile_id, body=request).execute()
-
-            report["criteria"]["dimensionFilters"] = report["criteria"].get("dimensionFilters", [])
-            if values["items"]:
-                # Add value as a filter to the report criteria.
-                filter_value = next((val for val in values["items"] if val["value"] == dimension_value), {})
-                if filter_value:
-                    report["criteria"]["dimensionFilters"].append(filter_value)
-
-    # @retry(wait=wait_exponential(multiplier=60, min=60, max=240), stop=stop_after_delay(3600))
-    @retry(wait=wait_exponential(multiplier=1, min=1, max=4), stop=stop_after_delay(3600))
-    def is_report_file_ready(self, report_id, file_id):
-        """Poke the report file status"""
-        report_file = self.dcm_client._service.files().get(reportId=report_id, fileId=file_id).execute()
-
-        status = report_file["status"]
-        if status == "REPORT_AVAILABLE":
-            logger.info("File status is %s, ready to download." % status)
-            return True
-        elif status != "PROCESSING":
-            raise ClickException("File status is %s, processing failed." % status)
-        else:
-            raise ClickException("File status is PROCESSING")
-
-    def direct_download(self, report_id, file_id):
-        # Retrieve the file metadata.
-        report_file = self.dcm_client._service.files().get(reportId=report_id, fileId=file_id).execute()
-
-        if report_file["status"] == "REPORT_AVAILABLE":
-            # Create a get request.
-            request = self.dcm_client._service.files().get_media(reportId=report_id, fileId=file_id)
-            headers = request.headers
-            headers.update({"Authorization": self.dcm_client.auth})
-            r = requests.get(request.uri, stream=True, headers=headers)
-
-            yield from r.iter_lines()
-
-    def format_response(self, report_generator):
+    def format_response(report_generator):
         is_main_data = False
         headers = []
 
@@ -201,22 +125,14 @@ class DcmReader(Reader):
 
     def read(self):
         def result_generator():
-            report = self.build_report_skeleton(self.report_name, self.report_type)
-            self.add_report_criteria(report, self.start_date, self.end_date, self.metrics, self.dimensions)
-            self.add_dimension_filters(report, self.profile_id, self.filters)
+            report = self.dcm_client.build_report_skeleton(self.report_name, self.report_type)
+            self.dcm_client.add_report_criteria(report, self.start_date, self.end_date, self.metrics, self.dimensions)
+            self.dcm_client.add_dimension_filters(report, self.profile_id, self.filters)
+            report_id, file_id = self.dcm_client.run_report(report, self.profile_id)
+            self.dcm_client.is_report_file_ready(file_id=file_id, report_id=report_id)
+            report_generator = self.dcm_client.direct_report_download(report_id, file_id)
 
-            inserted_report = (
-                self.dcm_client._service.reports().insert(profileId=self.profile_id, body=report).execute()
-            )
-
-            report_id = inserted_report["id"]
-
-            file = self.dcm_client._service.reports().run(profileId=self.profile_id, reportId=report_id).execute()
-
-            file_id = file["id"]
-
-            self.is_report_file_ready(file_id=file_id, report_id=report_id)
-            yield from self.format_response(self.direct_download(report_id, file_id))
+            yield from self.format_response(report_generator)
 
         # should replace results later by a good identifier
         yield FormatDateStream("results", result_generator(), keys=["Date"], date_format=self.date_format)
