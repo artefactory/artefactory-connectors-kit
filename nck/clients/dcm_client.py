@@ -4,7 +4,6 @@ import requests
 
 from click import ClickException
 from tenacity import retry, wait_exponential, stop_after_delay
-
 from oauth2client import client, GOOGLE_TOKEN_URI
 from googleapiclient import discovery
 

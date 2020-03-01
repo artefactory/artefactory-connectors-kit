@@ -17,10 +17,9 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import csv
 import re
-from io import StringIO
-
 import click
-import logging
+
+from io import StringIO
 
 from nck.commands.command import processor
 from nck.readers.reader import Reader
@@ -28,8 +27,6 @@ from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
 from nck.clients.dcm_client import DCMClient
 from nck.helpers.dcm_helper import REPORT_TYPES
-
-logger = logging.getLogger("CM_client")
 
 DATEFORMAT = "%Y-%m-%d"
 ENCODING = "utf-8"
@@ -40,7 +37,7 @@ ENCODING = "utf-8"
 @click.option("--dcm-client-id", required=True)
 @click.option("--dcm-client-secret", required=True)
 @click.option("--dcm-refresh-token", required=True)
-@click.option("--dcm-profile-id", required=True)
+@click.option("--dcm-profile-id", "dcm_profile_ids", required=True, multiple=True)
 @click.option("--dcm-report-name", default="DCM Report")
 @click.option("--dcm-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
@@ -83,7 +80,7 @@ class DcmReader(Reader):
         client_id,
         client_secret,
         refresh_token,
-        profile_id,
+        profile_ids,
         report_name,
         report_type,
         metrics,
@@ -94,7 +91,7 @@ class DcmReader(Reader):
         date_format,
     ):
         self.dcm_client = DCMClient(access_token, client_id, client_secret, refresh_token)
-        self.profile_id = profile_id
+        self.profile_ids = list(profile_ids)
         self.report_name = report_name
         self.report_type = report_type
         self.metrics = list(metrics)
@@ -123,16 +120,21 @@ class DcmReader(Reader):
                 csv_reader = csv.DictReader(StringIO(decoded_row), headers)
                 yield next(csv_reader)
 
+    def result_generator(self):
+        report = self.dcm_client.build_report_skeleton(self.report_name, self.report_type)
+        self.dcm_client.add_report_criteria(report, self.start_date, self.end_date, self.metrics, self.dimensions)
+
+        for profile_id in self.profile_ids:
+            self.dcm_client.add_dimension_filters(report, profile_id, self.filters)
+
+            report_id, file_id = self.dcm_client.run_report(report, profile_id)
+
+            is_ready = self.dcm_client.is_report_file_ready(file_id=file_id, report_id=report_id)
+
+            if is_ready:
+                report_generator = self.dcm_client.direct_report_download(report_id, file_id)
+                yield from self.format_response(report_generator)
+
     def read(self):
-        def result_generator():
-            report = self.dcm_client.build_report_skeleton(self.report_name, self.report_type)
-            self.dcm_client.add_report_criteria(report, self.start_date, self.end_date, self.metrics, self.dimensions)
-            self.dcm_client.add_dimension_filters(report, self.profile_id, self.filters)
-            report_id, file_id = self.dcm_client.run_report(report, self.profile_id)
-            self.dcm_client.is_report_file_ready(file_id=file_id, report_id=report_id)
-            report_generator = self.dcm_client.direct_report_download(report_id, file_id)
-
-            yield from self.format_response(report_generator)
-
         # should replace results later by a good identifier
-        yield FormatDateStream("results", result_generator(), keys=["Date"], date_format=self.date_format)
+        yield FormatDateStream("results", self.result_generator(), keys=["Date"], date_format=self.date_format)
