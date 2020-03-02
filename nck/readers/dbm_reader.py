@@ -57,6 +57,15 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-query-param-type", default="TYPE_TRUEVIEW")
 @click.option("--dbm-start-date", type=click.DateTime())
 @click.option("--dbm-end-date", type=click.DateTime())
+@click.option(
+    "--dbm-add-date-to-report",
+    type=click.BOOL,
+    default=False,
+    help=(
+        "Sometimes the date range on which metrics are computed is missing from the report. "
+        "If this option is set to True, this range will be added."
+    )
+)
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
 @click.option(
@@ -69,7 +78,7 @@ default_end_date = datetime.date.today()
     "--dbm-day-range",
     required=True,
     default="LAST_7_DAYS",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS"]),
+    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK"]),
 )
 @processor("dbm_access_token", "dbm_refresh_token", "dbm_client_secret")
 def dbm(**kwargs):
@@ -180,10 +189,18 @@ class DbmReader(Reader):
         return url
 
     def get_query_report(self, existing_query=True):
-
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
-        return get_generator_dict_from_str_csv(report.iter_lines())
+        if self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY" \
+           and self.kwargs["add_date_to_report"]:
+            return get_generator_dict_from_str_csv(
+                report.iter_lines(),
+                add_date=True,
+                day_range=self.kwargs["day_range"],
+                date_format=self.kwargs.get("date_format")
+            )
+        else:
+            return get_generator_dict_from_str_csv(report.iter_lines())
 
     def list_query_reports(self):
         reports_infos = self._client.reports().listreports(queryId=self.kwargs.get("query_id")).execute()

@@ -15,8 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from datetime import date
 import logging
 import unittest
+from unittest.mock import patch
 
 from nck.utils.text import get_generator_dict_from_str_csv, parse_decoded_line
 
@@ -25,12 +27,9 @@ class TestTextUtilsMethod(unittest.TestCase):
 
     def test_multiple_encodings(self):
         test_string_to_encode = (
-            "BR,Sanofi Aventis Brasil,3945535,Active,Allegra,3992233,0,,"
-            "YR_Sanofi_Allegra_201910_Consideration_DV360_Precision_"
-            "Native-Ads_Cross-Device_BR,11140383,Active,,"
-            "YR_Sanofi_Allegra_201910_Consideration_DV360_Precision_OA"
-            "_Native-Ads_DV-Affinity-Health_Desktop_BR,"
-            '1130016,0,,"    ",0.00,4080863'
+            'BR,test_partner,123,Active,test_advertiser,123,'
+            '0,,test_io,123,Active,,test_line_item'
+            ',123,0,,"",0.00,41'
         )
         lines = [
             (b"Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
@@ -48,30 +47,24 @@ class TestTextUtilsMethod(unittest.TestCase):
         line_iterator_multiple_encodings = (line for line in lines)
         expected_dict = {
             "Country": "BR",
-            "Partner": "Sanofi Aventis Brasil",
-            "Partner ID": "3945535",
+            "Partner": "test_partner",
+            "Partner ID": "123",
             "Partner Status": "Active",
-            "Advertiser": "Allegra",
-            "Advertiser ID": "3992233",
+            "Advertiser": "test_advertiser",
+            "Advertiser ID": "123",
             "Advertiser Status": "0",
             "Advertiser Integration Code": "",
-            "Insertion Order": (
-                "YR_Sanofi_Allegra_201910_Consideration_DV360"
-                "_Precision_Native-Ads_Cross-Device_BR"
-            ),
-            "Insertion Order ID": "11140383",
+            "Insertion Order": "test_io",
+            "Insertion Order ID": "123",
             "Insertion Order Status": "Active",
             "Insertion Order Integration Code": "",
-            "Line Item": (
-                "YR_Sanofi_Allegra_201910_Consideration_DV360_Precision_"
-                "OA_Native-Ads_DV-Affinity-Health_Desktop_BR"
-            ),
-            "Line Item ID": "1130016",
+            "Line Item": "test_line_item",
+            "Line Item ID": "123",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
-            "Targeted Data Providers": '    ',
+            "Targeted Data Providers": '',
             "Cookie Reach: Average Impression Frequency": "0.00",
-            "Cookie Reach: Impression Reach": "4080863",
+            "Cookie Reach: Impression Reach": "41",
         }
         for yielded_dict in get_generator_dict_from_str_csv(
             line_iterator_multiple_encodings
@@ -96,32 +89,24 @@ class TestTextUtilsMethod(unittest.TestCase):
 
         lines.insert(
             1,
-            (b'BR,Sanofi Aventis Brasil,3945535,Active,Allegra,3992233,'
-             b'0,,YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360'
-             b'_Cross-Device_BR,8674464,Active,,YR_Sanofi_Allegra_Hardsell'
-             b'_Display_Datalogix-Health-Beauty-Buyers-Allergy_Desktop_BR'
-             b',26143278,0,,"",0.00,41'))
+            (b'BR,test_partner,123,Active,test_advertiser,123,'
+             b'0,,test_io,123,Active,,test_line_item'
+             b',123,0,,"",0.00,41'))
         expected_dict = {
             "Country": "BR",
-            "Partner": "Sanofi Aventis Brasil",
-            "Partner ID": "3945535",
+            "Partner": "test_partner",
+            "Partner ID": "123",
             "Partner Status": "Active",
-            "Advertiser": "Allegra",
-            "Advertiser ID": "3992233",
+            "Advertiser": "test_advertiser",
+            "Advertiser ID": "123",
             "Advertiser Status": "0",
             "Advertiser Integration Code": "",
-            "Insertion Order": (
-                "YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360"
-                "_Cross-Device_BR"
-            ),
-            "Insertion Order ID": "8674464",
+            "Insertion Order": "test_io",
+            "Insertion Order ID": "123",
             "Insertion Order Status": "Active",
             "Insertion Order Integration Code": "",
-            "Line Item": (
-                "YR_Sanofi_Allegra_Hardsell_Display_Datalogix-Health"
-                "-Beauty-Buyers-Allergy_Desktop_BR"
-            ),
-            "Line Item ID": "26143278",
+            "Line Item": "test_line_item",
+            "Line Item ID": "123",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
             "Targeted Data Providers": '',
@@ -152,34 +137,26 @@ class TestTextUtilsMethod(unittest.TestCase):
              b" Status,Line Item Integration Code,Targeted Data Providers,"
              b"Cookie Reach: Average Impression Frequency,Cookie Reach: "
              b"Impression Reach"),
-            (b'BR,Sanofi Aventis Brasil,3945535,Active,Allegra,3992233,'
-             b'0,,YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360'
-             b'_Cross-Device_BR,8674464,Active,,YR_Sanofi_Allegra_Hardsell'
-             b'_Display_Datalogix-Health-Beauty-Buyers-Allergy_Desktop_BR'
-             b',26143278,0,,"   \x91\xea\xd0$",0.00,41'),
+            (b'BR,test_partner,123,Active,test_advertiser,123,'
+             b'0,,test_io,123,Active,,test_line_item'
+             b',123,0,,"   \x91\xea\xd0$",0.00,41'),
         ]
         line_iterator_invalid_byte = (line for line in lines)
         expected_dict = {
             "Country": "BR",
-            "Partner": "Sanofi Aventis Brasil",
-            "Partner ID": "3945535",
+            "Partner": "test_partner",
+            "Partner ID": "123",
             "Partner Status": "Active",
-            "Advertiser": "Allegra",
-            "Advertiser ID": "3992233",
+            "Advertiser": "test_advertiser",
+            "Advertiser ID": "123",
             "Advertiser Status": "0",
             "Advertiser Integration Code": "",
-            "Insertion Order": (
-                "YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360"
-                "_Cross-Device_BR"
-            ),
-            "Insertion Order ID": "8674464",
+            "Insertion Order": "test_io",
+            "Insertion Order ID": "123",
             "Insertion Order Status": "Active",
             "Insertion Order Integration Code": "",
-            "Line Item": (
-                "YR_Sanofi_Allegra_Hardsell_Display_Datalogix-Health-Beauty"
-                "-Buyers-Allergy_Desktop_BR"
-            ),
-            "Line Item ID": "26143278",
+            "Line Item": "test_line_item",
+            "Line Item ID": "123",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
             "Targeted Data Providers": '   $',
@@ -207,33 +184,25 @@ class TestTextUtilsMethod(unittest.TestCase):
              " Status,Line Item Integration Code,Targeted Data Providers,"
              "Cookie Reach: Average Impression Frequency,Cookie Reach: "
              "Impression Reach"),
-            ('BR,Sanofi Aventis Brasil,3945535,Active,Allegra,3992233,'
-             '0,,YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360'
-             '_Cross-Device_BR,8674464,Active,,YR_Sanofi_Allegra_Hardsell'
-             '_Display_Datalogix-Health-Beauty-Buyers-Allergy_Desktop_BR'
-             ',26143278,0,,"",0.00,41')
+            ('BR,test_partner,123,Active,test_advertiser,123,'
+             '0,,test_io,123,Active,,test_line_item'
+             ',123,0,,"",0.00,41')
         ]
         expected_dict = {
             "Country": "BR",
-            "Partner": "Sanofi Aventis Brasil",
-            "Partner ID": "3945535",
+            "Partner": "test_partner",
+            "Partner ID": "123",
             "Partner Status": "Active",
-            "Advertiser": "Allegra",
-            "Advertiser ID": "3992233",
+            "Advertiser": "test_advertiser",
+            "Advertiser ID": "123",
             "Advertiser Status": "0",
             "Advertiser Integration Code": "",
-            "Insertion Order": (
-                "YR_Sanofi_Awareness_2019_Allegra_Hardsell_Display_DV360"
-                "_Cross-Device_BR"
-            ),
-            "Insertion Order ID": "8674464",
+            "Insertion Order": "test_io",
+            "Insertion Order ID": "123",
             "Insertion Order Status": "Active",
             "Insertion Order Integration Code": "",
-            "Line Item": (
-                "YR_Sanofi_Allegra_Hardsell_Display_Datalogix-Health"
-                "-Beauty-Buyers-Allergy_Desktop_BR"
-            ),
-            "Line Item ID": "26143278",
+            "Line Item": "test_line_item",
+            "Line Item ID": "123",
             "Line Item Status": "0",
             "Line Item Integration Code": "",
             "Targeted Data Providers": '',
@@ -262,3 +231,51 @@ class TestTextUtilsMethod(unittest.TestCase):
                 parse_decoded_line(input_lines[index]),
                 expected_outputs[index]
             )
+
+    def test_response_not_binary_with_date(self):
+        lines = [
+            ("Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
+             " ID,Advertiser Status,Advertiser Integration Code,Insertion"
+             " Order,Insertion Order ID,Insertion Order Status,Insertion"
+             " Order Integration Code,Line Item,Line Item ID,Line Item"
+             " Status,Line Item Integration Code,Targeted Data Providers,"
+             "Cookie Reach: Average Impression Frequency,Cookie Reach: "
+             "Impression Reach"),
+            ('BR,test_partner,123,Active,test_advertiser,123,'
+             '0,,test_io,123,Active,,test_line_item'
+             ',123,0,,"",0.00,41')
+        ]
+        expected_dict = {
+            "Country": "BR",
+            "Partner": "test_partner",
+            "Partner ID": "123",
+            "Partner Status": "Active",
+            "Advertiser": "test_advertiser",
+            "Advertiser ID": "123",
+            "Advertiser Status": "0",
+            "Advertiser Integration Code": "",
+            "Insertion Order": "test_io",
+            "Insertion Order ID": "123",
+            "Insertion Order Status": "Active",
+            "Insertion Order Integration Code": "",
+            "Line Item": "test_line_item",
+            "Line Item ID": "123",
+            "Line Item Status": "0",
+            "Line Item Integration Code": "",
+            "Targeted Data Providers": '',
+            "Cookie Reach: Average Impression Frequency": "0.00",
+            "Cookie Reach: Impression Reach": "41",
+            "date_start": "2020/01/01",
+            "date_stop": "2020/01/31"
+        }
+        line_iterator_with_blank_line = (line for line in lines)
+        with patch("nck.utils.date_handler.date") as mock_date:
+            mock_date.today.return_value = date(2020, 2, 1)
+            mock_date.side_effect = lambda *args, **kw: date(*args, **kw)
+            for dic in get_generator_dict_from_str_csv(
+                line_iterator_with_blank_line,
+                add_date=True,
+                day_range="PREVIOUS_MONTH",
+                date_format="%Y/%m/%d"
+            ):
+                self.assertEqual(dic, expected_dict)
