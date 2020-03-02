@@ -24,7 +24,7 @@ from io import StringIO
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
-from nck.streams.format_date_stream import FormatDateStream
+from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.clients.dcm_client import DCMClient
 from nck.helpers.dcm_helper import REPORT_TYPES
 
@@ -62,12 +62,6 @@ ENCODING = "utf-8"
     help="A filter is a tuple following this pattern: (dimensionName, dimensionValue). "
     "https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-filters",
 )
-@click.option(
-    "--dcm-date-format",
-    default="%Y-%m-%d",
-    help="And optional date format for the output stream. "
-    "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior",
-)
 @processor("dcm_access_token", "dcm_refresh_token", "dcm_client_secret")
 def dcm(**kwargs):
     return DcmReader(**extract_args("dcm_", kwargs))
@@ -88,36 +82,31 @@ class DcmReader(Reader):
         start_date,
         end_date,
         filters,
-        date_format,
     ):
         self.dcm_client = DCMClient(access_token, client_id, client_secret, refresh_token)
         self.profile_ids = list(profile_ids)
         self.report_name = report_name
         self.report_type = report_type
         self.metrics = list(metrics)
-        self.dimensions = dimensions
+        self.dimensions = list(dimensions)
         self.start_date = start_date
         self.end_date = end_date
         self.filters = list(filters)
-        self.date_format = date_format
 
-    @staticmethod
-    def format_response(report_generator):
+    def format_response(self, report_generator):
         is_main_data = False
-        headers = []
 
         for row in report_generator:
             decoded_row = row.decode(ENCODING)
             if re.match("^Report Fields", decoded_row):
-                decoded_row = next(report_generator).decode(ENCODING)
-                headers = decoded_row.split(",")
+                next(report_generator)
                 decoded_row = next(report_generator).decode(ENCODING)
                 is_main_data = True
             if re.match("^Grand Total", decoded_row):
                 is_main_data = False
 
             if is_main_data:
-                csv_reader = csv.DictReader(StringIO(decoded_row), headers)
+                csv_reader = csv.DictReader(StringIO(decoded_row), self.dimensions + self.metrics)
                 yield next(csv_reader)
 
     def result_generator(self):
@@ -137,4 +126,12 @@ class DcmReader(Reader):
 
     def read(self):
         # should replace results later by a good identifier
-        yield FormatDateStream("results", self.result_generator(), keys=["Date"], date_format=self.date_format)
+        yield DCMStream("results" + "_".join(self.profile_ids), self.result_generator())
+
+
+class DCMStream(NormalizedJSONStream):
+    DCM_PREFIX = "^dfa:"
+
+    @staticmethod
+    def _normalize_key(key):
+        return re.split(DCMStream.DCM_PREFIX, key)[-1].replace(" ", "_").replace("-", "_")

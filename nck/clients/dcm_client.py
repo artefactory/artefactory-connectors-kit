@@ -74,6 +74,8 @@ class DCMClient:
                 filter_value = next((val for val in values["items"] if val["value"] == dimension_value), {})
                 if filter_value:
                     report["criteria"]["dimensionFilters"].append(filter_value)
+                else:
+                    logger.info("Filter not found: %s - %s" % (dimension_name, dimension_value))
 
     def run_report(self, report, profile_id):
         inserted_report = self._service.reports().insert(profileId=profile_id, body=report).execute()
@@ -82,8 +84,7 @@ class DCMClient:
         file_id = file["id"]
         return report_id, file_id
 
-    # @retry(wait=wait_exponential(multiplier=60, min=60, max=240), stop=stop_after_delay(3600))
-    @retry(wait=wait_exponential(multiplier=1, min=1, max=4), stop=stop_after_delay(3600))
+    @retry(wait=wait_exponential(multiplier=60, min=60, max=240), stop=stop_after_delay(3600))
     def is_report_file_ready(self, report_id, file_id):
         """Poke the report file status"""
         report_file = self._service.files().get(reportId=report_id, fileId=file_id).execute()
