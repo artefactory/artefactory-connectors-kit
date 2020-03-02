@@ -71,7 +71,7 @@ def get_generator_dict_from_str_csv(
 
         if add_date:
             start, end = get_date_start_and_date_stop_from_range(day_range)
-            line += f", {start.strftime(date_format)}, {end.strftime(date_format)}"
+            line += f",{start.strftime(date_format)},{end.strftime(date_format)}"
 
         yield dict(zip(headers, parse_decoded_line(line)))
 
