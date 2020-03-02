@@ -18,7 +18,7 @@
 from datetime import date
 import logging
 import unittest
-from unittest import mock
+from unittest.mock import patch
 
 from nck.utils.text import get_generator_dict_from_str_csv, parse_decoded_line
 
@@ -232,11 +232,7 @@ class TestTextUtilsMethod(unittest.TestCase):
                 expected_outputs[index]
             )
 
-    @mock.patch(
-        "nck.utils.date_handler.get_date_start_and_date_stop_from_range",
-        return_value=(date(2020, 1, 1), date(2020, 1, 31))
-    )
-    def test_response_not_binary_with_date(self, mock_date_function):
+    def test_response_not_binary_with_date(self):
         lines = [
             ("Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
              " ID,Advertiser Status,Advertiser Integration Code,Insertion"
@@ -273,10 +269,13 @@ class TestTextUtilsMethod(unittest.TestCase):
             "date_stop": "2020/01/31"
         }
         line_iterator_with_blank_line = (line for line in lines)
-        for dic in get_generator_dict_from_str_csv(
-            line_iterator_with_blank_line,
-            add_date=True,
-            day_range="PREVIOUS_MONTH",
-            date_format="%Y/%m/%d"
-        ):
-            self.assertEqual(dic, expected_dict)
+        with patch("nck.utils.date_handler.date") as mock_date:
+            mock_date.today.return_value = date(2020, 2, 1)
+            mock_date.side_effect = lambda *args, **kw: date(*args, **kw)
+            for dic in get_generator_dict_from_str_csv(
+                line_iterator_with_blank_line,
+                add_date=True,
+                day_range="PREVIOUS_MONTH",
+                date_format="%Y/%m/%d"
+            ):
+                self.assertEqual(dic, expected_dict)
