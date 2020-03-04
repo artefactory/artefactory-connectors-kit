@@ -98,11 +98,11 @@ class DcmReader(Reader):
 
         for row in report_generator:
             decoded_row = row.decode(ENCODING)
-            if re.match("^Report Fields", decoded_row):
+            if decoded_row.startswith("Report Fields"):
                 next(report_generator)
                 decoded_row = next(report_generator).decode(ENCODING)
                 is_main_data = True
-            if re.match("^Grand Total", decoded_row):
+            if decoded_row.startswith("Grand Total"):
                 is_main_data = False
 
             if is_main_data:
@@ -118,14 +118,12 @@ class DcmReader(Reader):
 
             report_id, file_id = self.dcm_client.run_report(report, profile_id)
 
-            is_ready = self.dcm_client.is_report_file_ready(file_id=file_id, report_id=report_id)
+            self.dcm_client.assert_report_file_ready(file_id=file_id, report_id=report_id)
 
-            if is_ready:
-                report_generator = self.dcm_client.direct_report_download(report_id, file_id)
-                yield from self.format_response(report_generator)
+            report_generator = self.dcm_client.direct_report_download(report_id, file_id)
+            yield from self.format_response(report_generator)
 
     def read(self):
-        # should replace results later by a good identifier
         yield DCMStream("results" + "_".join(self.profile_ids), self.result_generator())
 
 
