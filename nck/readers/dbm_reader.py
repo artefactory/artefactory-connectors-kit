@@ -234,7 +234,7 @@ class DbmReader(Reader):
         filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
         file_types = self.kwargs.get("file_type")
-        body_sdf = {"version": "4.2", "filterIds": filter_ids, "filterType": filter_types, "fileTypes": file_types}
+        body_sdf = {"version": "5.1", "filterIds": filter_ids, "filterType": filter_types, "fileTypes": file_types}
         return body_sdf
 
     def get_sdf_objects(self):
