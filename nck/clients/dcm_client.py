@@ -19,7 +19,6 @@ import logging
 import httplib2
 import requests
 
-from click import ClickException
 from tenacity import retry, wait_exponential, stop_after_delay
 from oauth2client import client, GOOGLE_TOKEN_URI
 from googleapiclient import discovery
@@ -103,9 +102,9 @@ class DCMClient:
             logger.info(f"File status is {status}, ready to download.")
             pass
         elif status != "PROCESSING":
-            raise ClickException(f"File status is {status}, processing failed.")
+            raise FileNotFoundError(f"File status is {status}, processing failed.")
         else:
-            raise ClickException("File status is PROCESSING")
+            raise FileNotFoundError("File status is PROCESSING")
 
     def direct_report_download(self, report_id, file_id):
         # Retrieve the file metadata.
@@ -128,7 +127,7 @@ class DCMClient:
             logger.warning(f"Custom date range selected: {start} --> {end}")
             return {"startDate": start, "endDate": end}
         else:
-            raise ClickException("Please provide start date and end date in your request")
+            raise SyntaxError("Please provide start date and end date in your request")
 
     @staticmethod
     def get_filter_value(dimension_value, values):
