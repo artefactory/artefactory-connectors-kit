@@ -140,6 +140,10 @@ DESIRED_FIELDS = {
     "start_time": "start_time",
     "stop_time": "end_time",
     "daily_budget": "daily_budget",
+    "device_platform": "device_platform",
+    "platform_position": "platform_position",
+    "publisher_platform": "publisher_platform",
+    "impression_device": "impression_device"
 }
 
 
