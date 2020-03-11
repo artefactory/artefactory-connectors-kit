@@ -44,6 +44,7 @@ STR_LIST_TYPE = StrList()
 )
 @click.option(
     "--yandex-filter",
+    "yandex_filters",
     multiple=True,
     type=click.Tuple([click.Choice(FIELDS), click.Choice(OPERATORS), STR_LIST_TYPE])
 )
@@ -58,6 +59,7 @@ STR_LIST_TYPE = StrList()
 )
 @click.option(
     "--yandex-field-name",
+    "yandex_fields",
     multiple=True,
     type=click.Choice(FIELDS),
     required=True,
@@ -101,4 +103,30 @@ def yandex(**kwargs):
 
 
 class YandexReader(Reader):
-    pass
+    def __init__(
+        self,
+        token,
+        report_language,
+        filters,
+        attribution_model,
+        max_rows,
+        fields,
+        report_name,
+        report_type,
+        date_range,
+        include_vat,
+        date_start,
+        date_stop
+    ):
+        self.token = token
+        self.report_language = report_language
+        self.filters = filters
+        self.attribution_model = attribution_model
+        self.max_rows = max_rows
+        self.fields = fields
+        self.report_name = report_name
+        self.report_type = report_type
+        self.date_range = date_range
+        self.include_vat = include_vat
+        self.date_start = date_start
+        self.date_stop = date_stop
