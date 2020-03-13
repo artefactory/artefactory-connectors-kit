@@ -15,55 +15,50 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from unittest import TestCase, mock
+from unittest import TestCase
 
-from nck.clients.yandex_client import YandexClient
+from nck.clients.api_client import ApiClient
 
 
-class YandexClientTest(TestCase):
+class ApiClientTest(TestCase):
 
     def test_get_formatted_request_body(self):
-        params = {
-            "SelectionCriteria": {
-                "Filter": [
-                    {
-                        "Field": "CampaignId",
-                        "Operator": "IN",
-                        "Values": ["123", "456"]
-                    }
-                ]
-            }
+        selection_criteria = {
+            "Filter": [
+                {
+                    "Field": "CampaignId",
+                    "Operator": "IN",
+                    "Values": ["123", "456"]
+                }
+            ]
         }
         page = {
             "Limit": 10
         }
         field_names = ["AdGroupId", "Year", "CampaignName"]
-        report_name = "test",
+        report_name = "test"
         report_type = "CAMPAIGN_PERFORMANCE_REPORT"
         date_range_type = "ALL_TIME"
-        format = "TSV"
         include_vat = "NO"
 
         expected_output = {
-            "params": params,
+            "SelectionCriteria": selection_criteria,
             "Page": page,
             "FieldNames": field_names,
             "ReportName": report_name,
             "ReportType": report_type,
             "DateRangeType": date_range_type,
-            "Format": format,
             "IncludeVAT": include_vat
         }
         self.assertDictEqual(
-            YandexClient.get_formatted_request_body(
-                params,
-                page,
-                field_names,
-                report_name,
-                report_type,
-                date_range_type,
-                format,
-                include_vat
+            ApiClient.get_formatted_request_body(
+                selection_criteria=selection_criteria,
+                page=page,
+                field_names=field_names,
+                report_name=report_name,
+                report_type=report_type,
+                date_range_type=date_range_type,
+                include_v_a_t=include_vat
             ),
             expected_output
         )

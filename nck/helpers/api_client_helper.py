@@ -15,22 +15,29 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from typing import Dict
 import logging
 
-logger = logging.getLogger("YandexClient")
+logging.getLogger("ApiClient")
+
+POSSIBLE_STRING_FORMATS = ["PascalCase"]
 
 
-class YandexClient:
-    API_VERSION = "v5"
-
-    def __init__(self, token, language, skip_report_summary):
-        self.token = token
-        self.language = language
-        self.skip_report_summary = skip_report_summary
-
-    @staticmethod
-    def get_formatted_request_body(**request_body_elements):
-        pass
-
-    def execute_request(self, body):
-        pass
+def get_dict_with_keys_converted_to_new_string_format(
+    dictionary: Dict, str_format: str
+) -> Dict:
+    if str_format in POSSIBLE_STRING_FORMATS and str_format == "PascalCase":
+        new_keys = [
+            "".join(word.capitalize() for word in old_key.split("_"))
+            for old_key in dictionary
+        ]
+        old_keys = dictionary.copy().keys()
+        for old_key, new_key in zip(old_keys, new_keys):
+            dictionary[new_key] = dictionary.pop(old_key)
+        return dictionary
+    else:
+        logging.error((
+            "Unable to convert to new string format. "
+            "Format not in %s"
+        ) % POSSIBLE_STRING_FORMATS)
+    return None
