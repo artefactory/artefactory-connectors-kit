@@ -338,7 +338,6 @@ class GoogleAdsReader(Reader):
 
     def format_and_yield(self):
         report_definition = self.get_report_definition()
-        #import ipdb; ipdb.set_trace()
         stream_reader = codecs.getreader(ENCODING)
         if self.filter_on_video_campaigns:
             video_campaign_ids = self.list_video_campaign_ids()

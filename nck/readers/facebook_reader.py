@@ -230,7 +230,6 @@ class FacebookMarketingReader(Reader):
         yield report
 
     def result_generator(self, data):
-       # import ipdb; ipdb.set_trace()
         for record in data:
             yield from self.format_and_yield(record.export_all_data())
 
