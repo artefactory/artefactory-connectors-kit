@@ -143,16 +143,28 @@ DESIRED_FIELDS = {
     "device_platform": "device_platform",
     "platform_position": "platform_position",
     "publisher_platform": "publisher_platform",
-    "impression_device": "impression_device"
+    "impression_device": "impression_device",
+    "link_url_asset" : {'value':'website_url'}
 }
 
 
 def get_field_value(row, field):
+    if is_url_asset(field):
+        return extract_special_field(row, field)
     return (
         row.get(DESIRED_FIELDS[field], None)
         if isinstance(DESIRED_FIELDS[field], str)
         else get_nested_field_value(row, field)
     )
+
+
+def extract_special_field(row, field):
+    dic = DESIRED_FIELDS[field]
+    return row.get(field, {}).get(dic.get('value'),None)
+
+
+def is_url_asset(field):
+    return field == "link_url_asset"
 
 
 def get_nested_field_value(row, field):

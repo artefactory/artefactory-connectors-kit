@@ -223,12 +223,14 @@ class FacebookMarketingReader(Reader):
         return {"since": start_date.strftime(DATEFORMAT), "until": end_date.strftime(DATEFORMAT)}
 
     def format_and_yield(self, record):
+        import ipdb; ipdb.set_trace()
         report = {field: get_field_value(record, field) for field in self.desired_fields}
         if self.add_date_to_report:
             report["date"] = datetime.today().strftime(DATEFORMAT)
         yield report
 
     def result_generator(self, data):
+       # import ipdb; ipdb.set_trace()
         for record in data:
             yield from self.format_and_yield(record.export_all_data())
 
@@ -238,7 +240,6 @@ class FacebookMarketingReader(Reader):
 
     def get_data_for_object(self, ad_object_id):
         params = self.get_params()
-
         if self.ad_insights:
             query_mapping = {AD_OBJECT_TYPES[0]: self.run_query_on_fb_account_obj}
         else:
@@ -256,7 +257,6 @@ class FacebookMarketingReader(Reader):
 
     def read(self):
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
-
         yield NormalizedJSONStream(
             "results_" + self.ad_object_type + "_" + "_".join(self.ad_object_ids), self.get_data()
         )
