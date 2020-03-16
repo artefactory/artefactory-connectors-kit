@@ -254,9 +254,6 @@ class FacebookMarketingReader(Reader):
         }
 
     def format_and_yield(self, record):
-        import ipdb
-
-        ipdb.set_trace()
         report = {
             field: get_field_value(record, field) for field in self.desired_fields
         }
