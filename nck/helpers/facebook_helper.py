@@ -17,10 +17,14 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from facebook_business.adobjects.adsinsights import AdsInsights
 
-BREAKDOWNS_POSSIBLE_VALUES = [v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")]
+BREAKDOWNS_POSSIBLE_VALUES = [
+    v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")
+]
 
 ACTION_BREAKDOWNS_POSSIBLE_VALUES = [
-    v for k, v in AdsInsights.ActionBreakdowns.__dict__.items() if not k.startswith("__")
+    v
+    for k, v in AdsInsights.ActionBreakdowns.__dict__.items()
+    if not k.startswith("__")
 ]
 
 AD_OBJECT_TYPES = ["adaccount", "campaign", "adset", "ad", "user"]
@@ -88,7 +92,9 @@ ADS_POSSIBLE_VALUES = [
     "status",
 ]
 
-DATE_PRESETS = [v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")]
+DATE_PRESETS = [
+    v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")
+]
 
 DESIRED_FIELDS = {
     "date_start": "date_start",
@@ -108,9 +114,15 @@ DESIRED_FIELDS = {
     "post_engagement": ("actions", "post_engagement"),
     "purchases": ("actions", "omni_purchase"),
     "website_purchases": ("actions", "offsite_conversion.fb_pixel_purchase"),
-    "purchases_conversion_value": ("action_values", "offsite_conversion.fb_pixel_purchase"),
+    "purchases_conversion_value": (
+        "action_values",
+        "offsite_conversion.fb_pixel_purchase",
+    ),
     "website_purchases_conversion_value": ("action_values", "omni_purchase"),
-    "website_purchase_roas": ("website_purchase_roas", "offsite_conversion.fb_pixel_purchase"),
+    "website_purchase_roas": (
+        "website_purchase_roas",
+        "offsite_conversion.fb_pixel_purchase",
+    ),
     "objective": "objective",
     "reach": "reach",
     "spend": "spend",
@@ -144,7 +156,7 @@ DESIRED_FIELDS = {
     "platform_position": "platform_position",
     "publisher_platform": "publisher_platform",
     "impression_device": "impression_device",
-    "link_url_asset" : {'value':'website_url'}
+    "link_url_asset": {"value": "website_url"},
 }
 
 
@@ -160,7 +172,7 @@ def get_field_value(row, field):
 
 def extract_special_field(row, field):
     dic = DESIRED_FIELDS[field]
-    return row.get(field, {}).get(dic.get('value'),None)
+    return row.get(field, {}).get(dic.get("value"), None)
 
 
 def is_url_asset(field):
@@ -170,5 +182,12 @@ def is_url_asset(field):
 def get_nested_field_value(row, field):
     if DESIRED_FIELDS[field][0] not in row:
         return None
-    nested_field = next((x for x in row[DESIRED_FIELDS[field][0]] if x["action_type"] == DESIRED_FIELDS[field][1]), {})
+    nested_field = next(
+        (
+            x
+            for x in row[DESIRED_FIELDS[field][0]]
+            if x["action_type"] == DESIRED_FIELDS[field][1]
+        ),
+        {},
+    )
     return nested_field["value"] if nested_field else None
