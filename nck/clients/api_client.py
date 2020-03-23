@@ -16,7 +16,9 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging
-from typing import Dict
+from typing import Dict, Any
+
+from requests_toolbelt import sessions
 
 from nck.helpers.api_client_helper import get_dict_with_keys_converted_to_new_string_format
 
@@ -24,12 +26,10 @@ logger = logging.getLogger("ApiClient")
 
 
 class ApiClient:
-    API_VERSION = "v5"
 
-    def __init__(self, token, language, skip_report_summary):
+    def __init__(self, token, base_url):
         self.token = token
-        self.language = language
-        self.skip_report_summary = skip_report_summary
+        self.session = sessions.BaseUrlSession(base_url=base_url)
 
     @staticmethod
     def get_formatted_request_body(
@@ -41,5 +41,13 @@ class ApiClient:
             str_format
         )
 
-    def execute_request(self, body):
-        pass
+    def execute_request(
+        self,
+        method: str = "GET",
+        url: str = "",
+        body: Dict[str, Any] = None,
+        headers: Dict[str, str] = None
+    ):
+        headers["Authorization"] = f"Bearer {self.token}"
+        response = self.session.request(method, url, json=body, headers=headers)
+        return response

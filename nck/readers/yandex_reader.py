@@ -22,8 +22,10 @@ from nck.readers.reader import Reader
 from nck.utils.args import extract_args
 from nck.helpers.yandex_helper import (
     LANGUAGES, REPORT_TYPES, FIELDS, ATTRIBUTION_MODELS,
-    DATE_RANGE_TYPES, OPERATORS
+    DATE_RANGE_TYPES, OPERATORS, CAMPAIGN_STATES, CAMPAIGN_STATUSES
 )
+from nck.clients.api_client import ApiClient
+from nck.streams.json_stream import JSONStream
 
 
 class StrList(click.ParamType):
@@ -41,6 +43,24 @@ STR_LIST_TYPE = StrList()
     "--yandex-report-language",
     type=click.Choice(LANGUAGES),
     default="en"
+)
+@click.option(
+    "--yandex-campaign-id",
+    multiple=True
+)
+@click.option(
+    "--yandex-campaign-state",
+    multiple=True,
+    type=click.Choice(CAMPAIGN_STATES)
+)
+@click.option(
+    "--yandex-campaign-status",
+    multiple=True,
+    type=click.Choice(CAMPAIGN_STATUSES)
+)
+@click.option(
+    "--yandex-campaign-payment-allowed",
+    type=click.BOOL
 )
 @click.option(
     "--yandex-filter",
@@ -70,8 +90,7 @@ STR_LIST_TYPE = StrList()
     )
 )
 @click.option(
-    "--yandex-report-name",
-    required=True
+    "--yandex-report-name"
 )
 @click.option(
     "--yandex-report-type",
@@ -80,13 +99,11 @@ STR_LIST_TYPE = StrList()
 )
 @click.option(
     "--yandex-date-range",
-    type=click.Choice(DATE_RANGE_TYPES),
-    required=True
+    type=click.Choice(DATE_RANGE_TYPES)
 )
 @click.option(
     "--yandex-include-vat",
     type=click.BOOL,
-    default=False,
     help="Whether to include VAT in the monetary amounts in the report."
 )
 @click.option(
@@ -102,31 +119,41 @@ def yandex(**kwargs):
     return YandexReader(**extract_args("yandex_", kwargs))
 
 
+YANDEX_DIRECT_API_BASE_URL = "https://api.direct.yandex.com/json/v5/"
+
+
 class YandexReader(Reader):
+
     def __init__(
         self,
         token,
-        report_language,
-        filters,
-        attribution_model,
-        max_rows,
         fields,
-        report_name,
         report_type,
-        date_range,
-        include_vat,
-        date_start,
-        date_stop
+        **kwargs
     ):
         self.token = token
-        self.report_language = report_language
-        self.filters = filters
-        self.attribution_model = attribution_model
-        self.max_rows = max_rows
         self.fields = fields
-        self.report_name = report_name
         self.report_type = report_type
-        self.date_range = date_range
-        self.include_vat = include_vat
-        self.date_start = date_start
-        self.date_stop = date_stop
+        self.kwargs = kwargs
+
+    def result_generator(self):
+        api_client = ApiClient(self.token, YANDEX_DIRECT_API_BASE_URL)
+        request_body = self._build_query_body()
+        response = api_client.execute_request(url="campaigns", body=request_body, headers={})
+        yield response.json()
+
+    def _build_query_body(self):
+        body = {}
+        if self.report_type == "CAMPAIGN_OBJECT_REPORT":
+            body["method"] = "get"
+            body["params"] = ApiClient.get_formatted_request_body(
+                field_names=self.fields,
+                selection_criteria={}
+            )
+        return body
+
+    def read(self):
+        yield JSONStream(
+            f"results_{self.report_type}",
+            self.result_generator()
+        )
