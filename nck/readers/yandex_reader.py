@@ -132,7 +132,7 @@ class YandexReader(Reader):
         **kwargs
     ):
         self.token = token
-        self.fields = fields
+        self.fields = list(fields)
         self.report_type = report_type
         self.kwargs = kwargs
 
