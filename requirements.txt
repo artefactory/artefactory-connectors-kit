@@ -48,7 +48,7 @@ PyYAML==5.2
 radarly-py==1.0.10
 redis==3.3.11
 requests==2.22.0
-requests-toolbet==0.9.1
+requests-toolbelt==0.9.1
 rsa==4.0
 s3transfer==0.2.1
 six==1.13.0
