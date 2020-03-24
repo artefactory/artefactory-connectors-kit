@@ -24,15 +24,11 @@ from nck.helpers.api_client_helper import get_dict_with_keys_converted_to_new_st
 class ApiClientHelperTest(unittest.TestCase):
 
     def test_string_conversion_to_camel_case(self):
-        dict_with_unformatted_keys = {
-            "abc_de": 1,
-            "abc": "abc",
-            "abc_de_fg": 2
-        }
         self.assertDictEqual(
             get_dict_with_keys_converted_to_new_string_format(
-                dict_with_unformatted_keys,
-                "PascalCase"
+                abc_de=1,
+                abc="abc",
+                abc_de_fg=2
             ),
             {
                 "AbcDe": 1,
@@ -44,7 +40,7 @@ class ApiClientHelperTest(unittest.TestCase):
     def test_unknown_case(self):
         with self.assertLogs() as cm:
             logging.getLogger("ApiClient")
-            get_dict_with_keys_converted_to_new_string_format({}, "UnknownCase")
+            get_dict_with_keys_converted_to_new_string_format("UnknownCase")
             self.assertEqual(
                 cm.output,
                 ["ERROR:root:Unable to convert to new string format. Format not in ['PascalCase']"]
