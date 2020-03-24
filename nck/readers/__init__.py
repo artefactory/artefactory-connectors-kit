@@ -31,8 +31,8 @@ from nck.readers.ga_reader import ga
 from nck.readers.search_console_reader import search_console
 from nck.readers.adobe_reader import adobe
 from nck.readers.radarly_reader import radarly
-from nck.readers.yandex_reader import yandex
-
+from nck.readers.yandex_campaign_reader import yandex_campaigns
+from nck.readers.yandex_statistics_reader import yandex_statistics
 
 readers = [
     mysql,
@@ -49,7 +49,7 @@ readers = [
     search_console,
     adobe,
     radarly,
-    yandex
+    yandex_campaigns
 ]
 
 
