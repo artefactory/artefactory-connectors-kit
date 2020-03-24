@@ -20,8 +20,6 @@ from typing import Dict, Any
 
 from requests_toolbelt import sessions
 
-from nck.helpers.api_client_helper import get_dict_with_keys_converted_to_new_string_format
-
 logger = logging.getLogger("ApiClient")
 
 
@@ -30,16 +28,6 @@ class ApiClient:
     def __init__(self, token, base_url):
         self.token = token
         self.session = sessions.BaseUrlSession(base_url=base_url)
-
-    @staticmethod
-    def get_formatted_request_body(
-        str_format: str = "PascalCase",
-        **request_body_elements
-    ) -> Dict:
-        return get_dict_with_keys_converted_to_new_string_format(
-            request_body_elements,
-            str_format
-        )
 
     def execute_request(
         self,

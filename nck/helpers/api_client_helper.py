@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from typing import Dict
+from typing import Dict, Any
 import logging
 
 logging.getLogger("ApiClient")
@@ -24,7 +24,7 @@ POSSIBLE_STRING_FORMATS = ["PascalCase"]
 
 
 def get_dict_with_keys_converted_to_new_string_format(
-    dictionary: Dict, str_format: str
+    dictionary: Dict[str, Any], str_format: str = "PascalCase"
 ) -> Dict:
     if str_format in POSSIBLE_STRING_FORMATS and str_format == "PascalCase":
         new_keys = [
