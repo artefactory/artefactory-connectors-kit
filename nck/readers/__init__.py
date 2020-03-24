@@ -49,7 +49,8 @@ readers = [
     search_console,
     adobe,
     radarly,
-    yandex_campaigns
+    yandex_campaigns,
+    yandex_statistics
 ]
 
 
