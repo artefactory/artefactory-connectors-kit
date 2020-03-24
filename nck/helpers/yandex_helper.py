@@ -8,33 +8,10 @@ REPORT_TYPES = [
     "CRITERIA_PERFORMANCE_REPORT",
     "CUSTOM_REPORT",
     "REACH_AND_FREQUENCY_PERFORMANCE_REPORT",
-    "SEARCH_QUERY_PERFORMANCE_REPORT",
-    "CAMPAIGN_OBJECT_REPORT"
+    "SEARCH_QUERY_PERFORMANCE_REPORT"
 ]
 
-FIELDS = [
-    "BlockedIps",
-    "ExcludedSites",
-    "Currency",
-    "DailyBudget",
-    "Notification",
-    "EndDate",
-    "Funds",
-    "ClientInfo",
-    "Id",
-    "Name",
-    "NegativeKeywords",
-    "RepresentedBy",
-    "StartDate",
-    "Statistics",
-    "State",
-    "Status",
-    "StatusPayment",
-    "StatusClarification",
-    "SourceId",
-    "TimeTargeting",
-    "TimeZone",
-    "Type",
+STATS_FIELDS = [
     "AdFormat",
     "AdGroupId",
     "AdGroupName",
@@ -99,6 +76,31 @@ FIELDS = [
     "WeightedCtr",
     "WeightedImpressions",
     "Year"
+]
+
+CAMPAIGN_FIELDS = [
+    "BlockedIps",
+    "ExcludedSites",
+    "Currency",
+    "DailyBudget",
+    "Notification",
+    "EndDate",
+    "Funds",
+    "ClientInfo",
+    "Id",
+    "Name",
+    "NegativeKeywords",
+    "RepresentedBy",
+    "StartDate",
+    "Statistics",
+    "State",
+    "Status",
+    "StatusPayment",
+    "StatusClarification",
+    "SourceId",
+    "TimeTargeting",
+    "TimeZone",
+    "Type"
 ]
 
 ATTRIBUTION_MODELS = ["FC", "LC", "LSC", "LYDC"]
