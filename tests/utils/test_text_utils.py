@@ -15,12 +15,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from datetime import date
 import logging
 import unittest
+from datetime import date
 from unittest.mock import patch
 
-from nck.utils.text import get_generator_dict_from_str_csv, parse_decoded_line
+from parameterized import parameterized
+
+from nck.utils.text import (get_generator_dict_from_str_csv,
+                            get_generator_dict_from_str_tsv,
+                            parse_decoded_line)
 
 
 class TestTextUtilsMethod(unittest.TestCase):
@@ -279,3 +283,35 @@ class TestTextUtilsMethod(unittest.TestCase):
                 date_format="%Y/%m/%d"
             ):
                 self.assertEqual(dic, expected_dict)
+
+    @parameterized.expand([
+        (
+            True,
+            [
+                b'"Perf report (2017-03-01 - 2020-03-25)"',
+                b'AdFormat\tAdGroupId\tAdGroupName',
+                b'IMAGE\t123\tAdGroup',
+                b'IMAGE\t123\tAdGroup',
+            ]
+        ),
+        (
+            False,
+            [
+                b'AdFormat\tAdGroupId\tAdGroupName',
+                b'IMAGE\t123\tAdGroup',
+                b'IMAGE\t123\tAdGroup',
+            ]
+        )
+    ])
+    def test_parse_tsv_with_first_row_skipped(self, skip_first_row, lines):
+        expected_dict = {
+            "AdFormat": "IMAGE",
+            "AdGroupId": "123",
+            "AdGroupName": "AdGroup"
+        }
+        line_iterator = (line for line in lines)
+        for dic in get_generator_dict_from_str_tsv(
+            line_iterator,
+            skip_first_row=skip_first_row
+        ):
+            self.assertEqual(dic, expected_dict)

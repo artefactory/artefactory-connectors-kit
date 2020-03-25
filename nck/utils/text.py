@@ -76,6 +76,35 @@ def get_generator_dict_from_str_csv(
         yield dict(zip(headers, parse_decoded_line(line)))
 
 
+def get_generator_dict_from_str_tsv(
+    line_iterator: Generator[Union[bytes, str], None, None],
+    skip_first_row=False
+) -> Generator[Dict[str, str], None, None]:
+    if skip_first_row:
+        next(line_iterator)
+    headers_line = next(line_iterator)
+    headers = (
+        parse_decoded_line(headers_line.decode("utf-8"), delimiter="\t")
+        if isinstance(headers_line, bytes)
+        else parse_decoded_line(headers_line, delimiter="\t")
+    )
+    for line in line_iterator:
+        if isinstance(line, bytes):
+            try:
+                line = line.decode("utf-8")
+            except UnicodeDecodeError as err:
+                logging.warning(
+                    "An error has occured while parsing the file. "
+                    "The line could not be decoded in %s."
+                    "Invalid input that the codec failed on: %s",
+                    err.encoding,
+                    err.object[err.start : err.end],
+                )
+                line = line.decode("utf-8", errors="ignore")
+
+        yield dict(zip(headers, parse_decoded_line(line, delimiter="\t")))
+
+
 def parse_decoded_line(line: str, delimiter=",", quotechar='"') -> List[str]:
     line_as_file = StringIO(line)
     reader = csv.reader(

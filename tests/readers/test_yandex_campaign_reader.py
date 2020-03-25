@@ -22,7 +22,7 @@ from parameterized import parameterized
 from nck.readers.yandex_campaign_reader import YandexCampaignReader
 
 
-class TestYandexReader(unittest.TestCase):
+class TestYandexCampaignReader(unittest.TestCase):
 
     @parameterized.expand([
         (

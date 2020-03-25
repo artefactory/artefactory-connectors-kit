@@ -15,16 +15,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import datetime
+from http import HTTPStatus
+import logging
+import time
+from typing import Tuple, Dict
+
 import click
 
+import nck.helpers.api_client_helper as api_client_helper
 from nck.clients.api_client import ApiClient
 from nck.commands.command import processor
-from nck.helpers.yandex_helper import (ATTRIBUTION_MODELS, DATE_RANGE_TYPES,
+from nck.helpers.yandex_helper import (DATE_RANGE_TYPES,
                                        LANGUAGES, OPERATORS, REPORT_TYPES,
                                        STATS_FIELDS)
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
+from nck.utils.text import get_generator_dict_from_str_tsv
 
 
 class StrList(click.ParamType):
@@ -34,6 +42,8 @@ class StrList(click.ParamType):
 
 
 STR_LIST_TYPE = StrList()
+
+logger = logging.getLogger(__name__)
 
 
 @click.command(name="read_yandex_statistics")
@@ -50,11 +60,6 @@ STR_LIST_TYPE = StrList()
     type=click.Tuple([click.Choice(STATS_FIELDS), click.Choice(OPERATORS), STR_LIST_TYPE])
 )
 @click.option(
-    "--yandex-attribution-model",
-    multiple=True,
-    type=click.Choice(ATTRIBUTION_MODELS)
-)
-@click.option(
     "--yandex-max-rows",
     type=int
 )
@@ -62,7 +67,7 @@ STR_LIST_TYPE = StrList()
     "--yandex-field-name",
     "yandex_fields",
     multiple=True,
-    type=click.Choice(),
+    type=click.Choice(STATS_FIELDS),
     required=True,
     help=(
         "Fields to output in the report (columns)."
@@ -72,7 +77,7 @@ STR_LIST_TYPE = StrList()
 )
 @click.option(
     "--yandex-report-name",
-    required=True
+    default=f"stats_report_{datetime.date.today()}"
 )
 @click.option(
     "--yandex-report-type",
@@ -111,11 +116,11 @@ class YandexStatisticsReader(Reader):
     def __init__(
         self,
         token,
-        fields,
-        report_type,
-        report_name,
-        date_range,
-        include_vat,
+        fields: Tuple[str],
+        report_type: str,
+        report_name: str,
+        date_range: str,
+        include_vat: bool,
         **kwargs
     ):
         self.token = token
@@ -128,13 +133,69 @@ class YandexStatisticsReader(Reader):
 
     def result_generator(self):
         api_client = ApiClient(self.token, YANDEX_DIRECT_API_BASE_URL)
-        request_body = self._build_query_body()
-        response = api_client.execute_request(url="reports", body=request_body, headers={})
-        yield response.json()
+        body = self._build_request_body()
+        headers = self._build_request_headers()
+        while True:
+            response = api_client.execute_request(
+                url="reports",
+                body=body,
+                headers=headers,
+                stream=True
+            )
+            if response.status_code == HTTPStatus.CREATED:
+                waiting_time = int(response.headers["retryIn"])
+                logger.info(f"Report added to queue. Should be ready in {waiting_time} min.")
+                time.sleep(waiting_time * 60)
+            elif response.status_code == HTTPStatus.ACCEPTED:
+                logger.info("Report in queue.")
+            elif response.status_code == HTTPStatus.OK:
+                logger.info("Report successfully retrieved.")
+                return get_generator_dict_from_str_tsv(
+                    response.iter_lines(),
+                    skip_first_row=True
+                )
+            elif response.status_code == HTTPStatus.BAD_REQUEST:
+                logger.error("Invalid request.")
+                logger.error(response.json())
+                break
+        return None
 
-    def _build_request_body(self):
+    def _build_request_body(self) -> Dict:
         body = {}
+        selection_criteria = {}
+        if len(self.kwargs["filters"]) > 0:
+            selection_criteria["Filter"] = [
+                api_client_helper.get_dict_with_keys_converted_to_new_string_format(
+                    field=filter_element[0],
+                    operator=filter_element[1],
+                    values=filter_element[2]
+                )
+                for filter_element in self.kwargs["filters"]
+            ]
+        if self.kwargs["date_start"] is not None:
+            selection_criteria["DateFrom"] = self.kwargs["date_start"].strftime("%Y-%m-%d")
+        if self.kwargs["date_stop"] is not None:
+            selection_criteria["DateTo"] = self.kwargs["date_stop"].strftime("%Y-%m-%d")
+        body["params"] = api_client_helper.get_dict_with_keys_converted_to_new_string_format(
+            selection_criteria=selection_criteria,
+            field_names=self.fields,
+            report_name=self.report_name,
+            report_type=self.report_type,
+            date_range_type=self.date_range,
+            format="TSV",
+            include_v_a_t="YES" if self.include_vat else "NO"
+        )
+        if self.kwargs["max_rows"] is not None:
+            body["params"]["Page"] = api_client_helper.get_dict_with_keys_converted_to_new_string_format(
+                limit=self.kwargs["max_rows"]
+            )
         return body
+
+    def _build_request_headers(self) -> Dict:
+        return {
+            "skipReportSummary": "true",
+            "Accept-Language": self.kwargs["report_language"]
+        }
 
     def read(self):
         yield JSONStream(

@@ -103,8 +103,6 @@ CAMPAIGN_FIELDS = [
     "Type"
 ]
 
-ATTRIBUTION_MODELS = ["FC", "LC", "LSC", "LYDC"]
-
 DATE_RANGE_TYPES = [
     "TODAY",
     "YESTERDAY",

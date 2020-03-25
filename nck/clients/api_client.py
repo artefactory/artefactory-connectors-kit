@@ -34,7 +34,8 @@ class ApiClient:
         method: str = "GET",
         url: str = "",
         body: Dict[str, Any] = None,
-        headers: Dict[str, str] = None
+        headers: Dict[str, str] = None,
+        stream: bool = False
     ):
         headers["Authorization"] = f"Bearer {self.token}"
         response = self.session.request(method, url, json=body, headers=headers)
