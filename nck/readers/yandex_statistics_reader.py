@@ -169,7 +169,7 @@ class YandexStatisticsReader(Reader):
 
     def _build_request_body(self) -> Dict:
         body = {}
-        selection_criteria = {}
+        selection_criteria = self._add_custom_dates_if_set()
         if len(self.kwargs["filters"]) > 0:
             selection_criteria["Filter"] = [
                 api_client_helper.get_dict_with_keys_converted_to_new_string_format(
@@ -179,10 +179,6 @@ class YandexStatisticsReader(Reader):
                 )
                 for filter_element in self.kwargs["filters"]
             ]
-        if self.kwargs["date_start"] is not None:
-            selection_criteria["DateFrom"] = self.kwargs["date_start"].strftime("%Y-%m-%d")
-        if self.kwargs["date_stop"] is not None:
-            selection_criteria["DateTo"] = self.kwargs["date_stop"].strftime("%Y-%m-%d")
         body["params"] = api_client_helper.get_dict_with_keys_converted_to_new_string_format(
             selection_criteria=selection_criteria,
             field_names=self.fields,
@@ -203,6 +199,35 @@ class YandexStatisticsReader(Reader):
             "skipReportSummary": "true",
             "Accept-Language": self.kwargs["report_language"]
         }
+
+    def _add_custom_dates_if_set(self) -> Dict:
+        selection_criteria = {}
+        if (
+            self.kwargs["date_start"] is not None
+            and self.kwargs["date_stop"] is not None
+            and self.date_range == "CUSTOM_DATE"
+        ):
+            selection_criteria["DateFrom"] = self.kwargs["date_start"].strftime("%Y-%m-%d")
+            selection_criteria["DateTo"] = self.kwargs["date_stop"].strftime("%Y-%m-%d")
+        elif (
+            self.kwargs["date_start"] is not None
+            and self.kwargs["date_stop"] is not None
+            and self.date_range != "CUSTOM_DATE"
+        ):
+            raise click.ClickException("Wrong date range. If start and stop dates are set, should be CUSTOM_DATE.")
+        elif (
+            self.kwargs["date_start"] is not None
+            and self.kwargs["date_stop"] is None
+            and self.date_range == "CUSTOM_DATE"
+        ):
+            raise click.ClickException("Stop date missing.")
+        elif (
+            self.kwargs["date_start"] is None
+            and self.kwargs["date_stop"] is not None
+            and self.date_range == "CUSTOM_DATE"
+        ):
+            raise click.ClickException("Start date missing.")
+        return selection_criteria
 
     def read(self):
         yield JSONStream(

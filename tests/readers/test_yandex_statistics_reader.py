@@ -18,6 +18,7 @@
 import datetime
 import unittest
 
+import click
 from parameterized import parameterized
 
 from nck.readers.yandex_statistics_reader import YandexStatisticsReader
@@ -27,6 +28,7 @@ class TestYandexStatisticsReader(unittest.TestCase):
 
     @parameterized.expand([
         (
+            "ALL_TIME",
             {
                 "report_language": "en",
                 "filters": (),
@@ -48,6 +50,7 @@ class TestYandexStatisticsReader(unittest.TestCase):
             }
         ),
         (
+            "ALL_TIME",
             {
                 "report_language": "en",
                 "filters": (),
@@ -69,6 +72,7 @@ class TestYandexStatisticsReader(unittest.TestCase):
             }
         ),
         (
+            "CUSTOM_DATE",
             {
                 "report_language": "en",
                 "filters": (),
@@ -89,13 +93,14 @@ class TestYandexStatisticsReader(unittest.TestCase):
                     "FieldNames": ["AdFormat", "AdGroupId"],
                     "ReportName": "stats_report_2020-03_25",
                     "ReportType": "AD_PERFORMANCE_REPORT",
-                    "DateRangeType": "ALL_TIME",
+                    "DateRangeType": "CUSTOM_DATE",
                     "Format": "TSV",
                     "IncludeVAT": "NO"
                 }
             }
         ),
         (
+            "CUSTOM_DATE",
             {
                 "report_language": "en",
                 "filters": (
@@ -131,7 +136,7 @@ class TestYandexStatisticsReader(unittest.TestCase):
                     "FieldNames": ["AdFormat", "AdGroupId"],
                     "ReportName": "stats_report_2020-03_25",
                     "ReportType": "AD_PERFORMANCE_REPORT",
-                    "DateRangeType": "ALL_TIME",
+                    "DateRangeType": "CUSTOM_DATE",
                     "Format": "TSV",
                     "IncludeVAT": "NO"
                 }
@@ -140,6 +145,7 @@ class TestYandexStatisticsReader(unittest.TestCase):
     ])
     def test_get_query_body(
         self,
+        date_range,
         kwargs,
         include_vat,
         expected_query_body
@@ -149,7 +155,7 @@ class TestYandexStatisticsReader(unittest.TestCase):
             ("AdFormat", "AdGroupId"),
             "AD_PERFORMANCE_REPORT",
             "stats_report_2020-03_25",
-            "ALL_TIME",
+            date_range,
             include_vat,
             report_language=kwargs["report_language"],
             filters=kwargs["filters"],
@@ -181,3 +187,77 @@ class TestYandexStatisticsReader(unittest.TestCase):
             },
             reader._build_request_headers()
         )
+
+    @parameterized.expand([
+        (
+            "ALL_TIME",
+            None,
+            None,
+            {}
+        ),
+        (
+            "CUSTOM_DATE",
+            datetime.datetime(2020, 1, 1),
+            datetime.datetime(2020, 1, 2),
+            {
+                "DateFrom": "2020-01-01",
+                "DateTo": "2020-01-02"
+            }
+        )
+    ])
+    def test_custom_dates_correctly_set(self, date_range, start_date, stop_date, expected):
+        reader = YandexStatisticsReader(
+            "123",
+            ("AdFormat", "AdGroupId"),
+            "AD_PERFORMANCE_REPORT",
+            "stats_report_2020-03_25",
+            date_range,
+            True,
+            date_start=start_date,
+            date_stop=stop_date
+        )
+        self.assertDictEqual(
+            expected,
+            reader._add_custom_dates_if_set()
+        )
+
+    @parameterized.expand([
+        (
+            "ALL_TIME",
+            datetime.datetime(2020, 1, 1),
+            datetime.datetime(2020, 1, 2),
+            "Wrong date range. If start and stop dates are set, should be CUSTOM_DATE."
+        ),
+        (
+            "CUSTOM_DATE",
+            datetime.datetime(2020, 1, 1),
+            None,
+            "Stop date missing."
+        ),
+        (
+            "CUSTOM_DATE",
+            None,
+            datetime.datetime(2020, 1, 1),
+            "Start date missing."
+        )
+    ])
+    def test_custom_dates_not_correctly_set(
+        self,
+        date_range,
+        start_date,
+        stop_date,
+        error_message_expected
+    ):
+        reader = YandexStatisticsReader(
+            "123",
+            ("AdFormat", "AdGroupId"),
+            "AD_PERFORMANCE_REPORT",
+            "stats_report_2020-03_25",
+            date_range,
+            True,
+            date_start=start_date,
+            date_stop=stop_date
+        )
+        with self.assertRaises(click.ClickException) as click_exception:
+            reader._add_custom_dates_if_set()
+        self.assertEquals(click_exception.exception.message, error_message_expected)
