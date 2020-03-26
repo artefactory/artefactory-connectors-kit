@@ -27,18 +27,14 @@ def get_dict_with_keys_converted_to_new_string_format(
     str_format: str = "PascalCase", **kwargs
 ) -> Dict:
     if str_format in POSSIBLE_STRING_FORMATS and str_format == "PascalCase":
-        new_keys = [
-            "".join(word.capitalize() for word in old_key.split("_"))
-            for old_key in kwargs
-        ]
-        old_keys = kwargs.copy().keys()
-        formatted_dict = {}
-        for old_key, new_key in zip(old_keys, new_keys):
-            formatted_dict[new_key] = kwargs.pop(old_key)
-        return formatted_dict
+        return {to_pascal_key(key): value for key, value in kwargs.items()}
     else:
         logging.error((
             "Unable to convert to new string format. "
             "Format not in %s"
         ) % POSSIBLE_STRING_FORMATS)
     return None
+
+
+def to_pascal_key(key: str):
+    return "".join(word.capitalize() for word in key.split("_"))

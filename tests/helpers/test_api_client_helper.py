@@ -18,7 +18,10 @@
 import unittest
 import logging
 
-from nck.helpers.api_client_helper import get_dict_with_keys_converted_to_new_string_format
+from parameterized import parameterized
+
+from nck.helpers.api_client_helper import (get_dict_with_keys_converted_to_new_string_format,
+                                           to_pascal_key)
 
 
 class ApiClientHelperTest(unittest.TestCase):
@@ -36,6 +39,16 @@ class ApiClientHelperTest(unittest.TestCase):
                 "AbcDeFg": 2
             }
         )
+
+    @parameterized.expand([
+        ("test", "Test"),
+        ("test_test", "TestTest"),
+        ("test_test_test", "TestTestTest"),
+        ("tEST", "Test"),
+        ("t_e_s_t", "TEST")
+    ])
+    def test_to_pascal_key(self, key, pascal_key):
+        self.assertEquals(to_pascal_key(key), pascal_key)
 
     def test_unknown_case(self):
         with self.assertLogs() as cm:
