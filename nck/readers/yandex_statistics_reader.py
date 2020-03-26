@@ -16,19 +16,19 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
-from http import HTTPStatus
 import logging
+import random
 import time
-from typing import Tuple, Dict
+from http import HTTPStatus
+from typing import Dict, Tuple
 
 import click
 
 import nck.helpers.api_client_helper as api_client_helper
 from nck.clients.api_client import ApiClient
 from nck.commands.command import processor
-from nck.helpers.yandex_helper import (DATE_RANGE_TYPES,
-                                       LANGUAGES, OPERATORS, REPORT_TYPES,
-                                       STATS_FIELDS)
+from nck.helpers.yandex_helper import (DATE_RANGE_TYPES, LANGUAGES, OPERATORS,
+                                       REPORT_TYPES, STATS_FIELDS)
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
@@ -77,7 +77,7 @@ logger = logging.getLogger(__name__)
 )
 @click.option(
     "--yandex-report-name",
-    default=f"stats_report_{datetime.date.today()}"
+    default=f"stats_report_{datetime.date.today()}_{random.randrange(10000)}"
 )
 @click.option(
     "--yandex-report-type",
