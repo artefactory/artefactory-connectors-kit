@@ -158,6 +158,13 @@ class YandexStatisticsReader(Reader):
                 logger.error("Invalid request.")
                 logger.error(response.json())
                 break
+            elif response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
+                logger.error("Internal server error.")
+                logger.error(response.json())
+                break
+            else:
+                logger.error(response.json())
+                break
         return None
 
     def _build_request_body(self) -> Dict:
