@@ -230,16 +230,40 @@ class TestYandexStatisticsReader(unittest.TestCase):
         ),
         (
             "CUSTOM_DATE",
+            None,
+            None,
+            "Missing at least one date. Have you set start and stop dates?"
+        ),
+        (
+            "CUSTOM_DATE",
             datetime.datetime(2020, 1, 1),
             None,
-            "Stop date missing."
+            "Missing at least one date. Have you set start and stop dates?"
         ),
         (
             "CUSTOM_DATE",
             None,
             datetime.datetime(2020, 1, 1),
-            "Start date missing."
-        )
+            "Missing at least one date. Have you set start and stop dates?"
+        ),
+        (
+            "ALL_TIME",
+            None,
+            datetime.datetime(2020, 1, 1),
+            (
+                "Wrong combination of date parameters. "
+                "Only use date start and date stop with date range set to CUSTOM_DATE."
+            )
+        ),
+        (
+            "ALL_TIME",
+            datetime.datetime(2020, 1, 1),
+            None,
+            (
+                "Wrong combination of date parameters. "
+                "Only use date start and date stop with date range set to CUSTOM_DATE."
+            )
+        ),
     ])
     def test_custom_dates_not_correctly_set(
         self,

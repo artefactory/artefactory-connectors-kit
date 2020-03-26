@@ -216,17 +216,26 @@ class YandexStatisticsReader(Reader):
         ):
             raise click.ClickException("Wrong date range. If start and stop dates are set, should be CUSTOM_DATE.")
         elif (
-            self.kwargs["date_start"] is not None
-            and self.kwargs["date_stop"] is None
-            and self.date_range == "CUSTOM_DATE"
+            (
+                self.kwargs["date_start"] is not None
+                or self.kwargs["date_stop"] is not None
+            )
+            and self.date_range != "CUSTOM_DATE"
         ):
-            raise click.ClickException("Stop date missing.")
+            raise click.ClickException(
+                (
+                    "Wrong combination of date parameters. "
+                    "Only use date start and date stop with date range set to CUSTOM_DATE."
+                )
+            )
         elif (
-            self.kwargs["date_start"] is None
-            and self.kwargs["date_stop"] is not None
+            (
+                self.kwargs["date_start"] is None
+                or self.kwargs["date_stop"] is None
+            )
             and self.date_range == "CUSTOM_DATE"
         ):
-            raise click.ClickException("Start date missing.")
+            raise click.ClickException("Missing at least one date. Have you set start and stop dates?")
         return selection_criteria
 
     def read(self):
