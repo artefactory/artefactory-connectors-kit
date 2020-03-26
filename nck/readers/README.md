@@ -158,7 +158,7 @@ See the documents below for a better understanding of the parameters:
 ## Yandex readers
 
 For now, there is only one Yandex API you can access through Nautilus connectors: [Direct API](https://tech.yandex.com/direct/).
-This API allows you to collect display and video metrics.
+This API allows you to collect display metrics.
 
 ### Access Yandex Direct API
 
@@ -221,5 +221,5 @@ Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/
 | `--yandex-report-type` | Type of report. Linked to the fields you want to select. |
 | `--yandex-date-range` | List [here](https://tech.yandex.com/direct/doc/reports/period-docpage/). |
 | `--yandex-include-vat` | Adds VAT to your expenses if set to `True`|
-| `--yandex-date-start` | Selects data on a specific period of time. Combined with `--yandex-date-stop`. |
-| `--yandex-date-stop` | Selects data on a specific period of time. Combined with `--yandex-date-start`. |
+| `--yandex-date-start` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-stop` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
+| `--yandex-date-stop` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-start` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
