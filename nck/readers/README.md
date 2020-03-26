@@ -184,6 +184,8 @@ If you want to quickly get to the point, here is a simple command that get the d
 python nck/entrypoint.py read_yandex_campaigns --yandex-token <TOKEN> --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
 ```
 
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
 #### Parameters
 
 | CLI option | Documentation |
@@ -207,6 +209,8 @@ The command below gives you a performance report for all your campaigns and sinc
 python nck/entrypoint.py read_yandex_statistics --yandex-token <TOKEN> --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_DATE write_console
 ```
 
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
 #### Parameters
 
 Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/).
@@ -223,3 +227,12 @@ Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/
 | `--yandex-include-vat` | Adds VAT to your expenses if set to `True`|
 | `--yandex-date-start` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-stop` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
 | `--yandex-date-stop` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-start` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
+
+### Troubleshooting
+
+You encountered and you don't know what 's going on. You may find an answer in the troubleshooting guide below.
+
+1. **Have you install NCK dependencies?** In order to run NCK, you need to install all dependencies. First create a [virtual environment](https://docs.python.org/3/library/venv.html) and then run `pip install -r requirements.txt`.
+2. **Have you set `PYTHONPATH` environment variable to the root of NCK folder?**
+3. **Have you checked logs?** The code has been implmented so that every error is logged. For example, if you did not provide a valid token, you will see something like ```Invalid request.
+{'error': {'error_code': '53', 'request_id': '8998435864716615689', 'error_string': 'Authorization error', 'error_detail': 'Invalid OAuth token'}}```. If you misspelled a field, you will get a message like this one: ```Error: Invalid value for "--yandex-field-name"```.
