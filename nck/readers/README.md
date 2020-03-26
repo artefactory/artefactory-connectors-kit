@@ -154,3 +154,72 @@ python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_
 
 See the documents below for a better understanding of the parameters:
 - [Google Search Console API](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query)
+
+## Yandex readers
+
+For now, there is only one Yandex API you can access through Nautilus connectors: [Direct API](https://tech.yandex.com/direct/).
+This API allows you to collect display and video metrics.
+
+### Access Yandex Direct API
+
+In order to access Yandex Direct API, you need two accounts: an advertiser account and a developer account.
+Here is the process:
+
+1. Create a developer account if you don't already have one. Click on the *Get started* button on this [page](https://direct.yandex.com/).
+2. Create and register an app that will access Yandex Direct API via [Yandex OAuth](https://oauth.yandex.com/client/new).
+3. Keep app client id safe. Log in with your advertiser account and [give permission to the app to access your data](https://tech.yandex.com/oauth/doc/dg/tasks/get-oauth-token-docpage/).
+4. Store your token very carefully.
+5. Log out and log in as a developer and [ask permission to access Yandex Direct API](https://direct.yandex.com/registered/main.pl?cmd=apiSettings) (ask for Full access). Fill in the form.
+6. Wait for Yandex support to reply but it should be within a week.
+
+### Yandex campaign reader
+
+[Official documentation](https://tech.yandex.com/direct/doc/ref-v5/campaigns/get-docpage/)
+
+#### Quickstart
+
+If you want to quickly get to the point, here is a simple command that get the daily budget for all your campaigns.
+
+```bash
+python nck/entrypoint.py read_yandex_campaigns --yandex-token <TOKEN> --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
+```
+
+#### Parameters
+
+| CLI option | Documentation |
+| ---------- | ------------- |
+| `--yandex-token` | Bear token that allows you to authenticate to the API |
+| `--yandex-campaign-id` | (Optional) Selects campaigns with the specified IDs. |
+| `--yandex-campaign-state` | (Optional) Selects campaigns with the specified [states](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status). |
+| `--yandex-campaign-status` | (Optional) Selects campaigns with the specified [statuses](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status). |
+| `--yandex-campaign-payment-status` | (Optional) Selects campaigns with the specified payment [statuses](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status). |
+| `--yandex-field-name` | Parameters to get that are common to all types of campaigns. |
+
+### Yandex statistics reader
+
+[Official documentation](https://tech.yandex.com/direct/doc/reports/reports-docpage/)
+
+#### Quickstart
+
+The command below gives you a performance report for all your campaigns and since the beginning.
+
+```bash
+python nck/entrypoint.py read_yandex_statistics --yandex-token <TOKEN> --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_DATE write_console
+```
+
+#### Parameters
+
+Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/).
+
+| CLI option | Documentation |
+| ---------- | ------------- |
+| `--yandex-token` | Bear token that allows you to authenticate to the API |
+| `--yandex-report-language` | (Optional) Language of the report. See all options [here](https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language). |
+| `--yandex-filter` | (Optional) Filters on a particular field. |
+| `--yandex-max-rows` | (Optional) The maximum number of rows in the report. |
+| `--yandex-field-name` | Information you want to collect. Complete list [here](https://tech.yandex.com/direct/doc/reports/fields-list-docpage/). |
+| `--yandex-report-type` | Type of report. Linked to the fields you want to select. |
+| `--yandex-date-range` | List [here](https://tech.yandex.com/direct/doc/reports/period-docpage/). |
+| `--yandex-include-vat` | Adds VAT to your expenses if set to `True`|
+| `--yandex-date-start` | Selects data on a specific period of time. Combined with `--yandex-date-stop`. |
+| `--yandex-date-stop` | Selects data on a specific period of time. Combined with `--yandex-date-start`. |
