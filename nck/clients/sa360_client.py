@@ -23,9 +23,7 @@ from tenacity import retry, wait_exponential, stop_after_delay
 from oauth2client import client, GOOGLE_TOKEN_URI
 from googleapiclient import discovery
 
-
 logger = logging.getLogger("SA360_client")
-
 DOWNLOAD_FORMAT = "CSV"
 
 
@@ -50,6 +48,17 @@ class SA360Client:
         )
         self._service = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
+    def get_all_advertisers_of_agency(self, agency_id):
+        body = {
+            "reportScope": {"agencyId": agency_id},
+            "reportType": "advertiser",
+            "columns": [{"columnName": "advertiserId"}],
+            "statisticsCurrency": "usd",
+        }
+        report = self._service.reports().generate(body=body).execute()
+        advertiser_ids = [row["advertiserId"] for row in report["rows"]]
+        return advertiser_ids
+
     @staticmethod
     def generate_report_body(
         agency_id, advertiser_id, report_type, columns, start_date, end_date, custom_metrics, custom_dimensions
@@ -73,7 +82,7 @@ class SA360Client:
         logger.info("Report requested!")
         return report["id"]
 
-    @retry(wait=wait_exponential(multiplier=1, min=1, max=8), stop=stop_after_delay(3600))
+    @retry(wait=wait_exponential(multiplier=60, min=60, max=600), stop=stop_after_delay(3600))
     def assert_report_file_ready(self, report_id):
         """Poll the API with the reportId until the report is ready, up to 100 times.
 
@@ -107,41 +116,12 @@ class SA360Client:
                   report_fragment: The 0-based index of the file fragment from the files array.
                   currency_code: the currency code of the report
                 """
-        # csv_fragment_report = (self._service.reports().getFile(reportId=report_id, reportFragment=fragment).execute())
-        # print(csv_fragment_report)
-        # print(io.BytesIO(csv_fragment_report))
         request = self._service.reports().getFile(reportId=report_id, reportFragment=fragment)
         headers = request.headers
         headers.update({"Authorization": self.auth})
         r = requests.get(request.uri, stream=True, headers=headers)
 
         yield from r.iter_lines()
-
-        # i = 0
-        # index = 0
-        # impr_keyword = 0
-        # for row in r.iter_lines():
-        #     decoded_row = row.decode("utf-8")
-        #     if "impr" in decoded_row:
-        #         decoded_row = decoded_row.split(",")
-        #         index = decoded_row.index("impr")
-        #         continue
-        #
-        #     if "samsung note 10+ 6.8" in decoded_row:
-        #         r = decoded_row.split(",")
-        #         impr_keyword += int(r[index])
-        #     print(decoded_row)
-        #     decoded_row = decoded_row.split(",")
-        #     i += int(decoded_row[index])
-        # print("IMPRESSIONS", i, impr_keyword)
-
-        # yield from r.iter_lines()
-
-        # df = pd.DataFrame.from_csv(io.BytesIO(csv_fragment_report))
-        # df["currency_code"] = currency_code
-        # from tabulate import tabulate
-        # print(tabulate(df, headers='keys', tablefmt='psql'))
-        # return df
 
     def direct_report_download(self, report_id, file_id):
         # Retrieve the file metadata.
