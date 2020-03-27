@@ -155,6 +155,63 @@ python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_
 See the documents below for a better understanding of the parameters:
 - [Google Search Console API](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query)
 
+
+### Search Ads 360 Reader (SA360)
+
+#### How to obtain Credentials
+
+Using the Search Ads API requires two things:
+
+- OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
+
+- A refresh token, created with the email address able to access to all the Search Ads 360 Account you will be calling
+
+See the [documentation here](https://developers.google.com/search-ads/v2/authorizing "SA360 Authentication")
+to set-up your OAuth2 credentials and refresh token specifically for Searc hAds 360 Reporting.
+
+
+#### Which Reports and Metrics are available in the API
+
+The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/search-ads/v2/report-types "Report Types")
+
+#### Simple API call example
+
+- Call Example
+
+
+The following command retrieves insights about the Ads in the Search Ads 360 Account <ADVERTISER_ID> from the agency <AGENCY_ID> thanks to
+your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
+
+```
+python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-agency-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
+```
+
+*If it doesn't work, try to* `export PYTHONPATH="."` *in the nautilus-connector-kit folder (to be sure Python is reading correctly)*
+*If you want the output to be printed in your console, add* `write_console` *at the end of your command (see writers for more details)*
+
+
+- Parameters of the SA360 Reader
+
+| CLI option | Documentation |
+| ---------- | ------------- |
+|`--sa360-access-token` | (Optional) Access token |
+|`--sa360-client-id` | OAuth2 ID |
+|`--sa360-client-secret` | OAuth2 ID Secret |
+|`--sa360-refresh-token` | Refresh token |
+|`--sa360-agency-id` | Agency ID to request in SA360 |
+|`--sa360-advertiser-id` | (Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested|
+|`--sa360-report-name` | (Optional) Name of the output report |
+|`--sa360-report-type` | Type of the report to request. List [here](https://developers.google.com/search-ads/v2/report-types)|
+|`--sa360-column` | Dimensions and metrics to request in the report |
+|`--sa360-custom-dimension` | (Optional) Custom dimensions to report |
+|`--sa360-custom-metric` | (Optional) Custom metrics to report |
+|`--sa360-start-date` | Start date of the period to request |
+|`--sa360-end-date` | End date of the period to request |
+
+See the documents below for a better understanding of the parameters:
+- [SA360 Reporting](https://developers.google.com/search-ads/v2/how-tos/reporting)
+
+
 ## Yandex readers
 
 For now, there is only one Yandex API you can access through Nautilus connectors: [Direct API](https://tech.yandex.com/direct/).
