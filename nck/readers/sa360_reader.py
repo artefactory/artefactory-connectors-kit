@@ -37,7 +37,12 @@ ENCODING = "utf-8"
 @click.option("--sa360-client-secret", required=True)
 @click.option("--sa360-refresh-token", required=True)
 @click.option("--sa360-agency-id", required=True)
-@click.option("--sa360-advertiser-id", "sa360_advertiser_ids", required=True, multiple=True)
+@click.option(
+    "--sa360-advertiser-id",
+    "sa360_advertiser_ids",
+    multiple=True,
+    help="If empty, all advertisers from agency will be requested",
+)
 @click.option("--sa360-report-name", default="SA360 Report")
 @click.option("--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
@@ -100,24 +105,27 @@ class SA360Reader(Reader):
             yield next(csv_reader)
 
     def result_generator(self):
-        advertiser_id = next((a for a in self.advertiser_ids), "")
-        body = self.sa360_client.generate_report_body(
-            self.agency_id,
-            advertiser_id,
-            self.report_type,
-            self.columns,
-            self.start_date,
-            self.end_date,
-            self.custom_dimensions,
-            self.custom_metrics,
-        )
+        for advertiser_id in self.advertiser_ids:
+            body = self.sa360_client.generate_report_body(
+                self.agency_id,
+                advertiser_id,
+                self.report_type,
+                self.columns,
+                self.start_date,
+                self.end_date,
+                self.custom_dimensions,
+                self.custom_metrics,
+            )
 
-        report_id = self.sa360_client.request_report_id(body)
+            report_id = self.sa360_client.request_report_id(body)
 
-        report_data = self.sa360_client.assert_report_file_ready(report_id)
+            report_data = self.sa360_client.assert_report_file_ready(report_id)
 
-        for report_generator in self.sa360_client.download_report_files(report_data, report_id):
-            yield from self.format_response(report_generator)
+            for report_generator in self.sa360_client.download_report_files(report_data, report_id):
+                yield from self.format_response(report_generator)
 
     def read(self):
+        if not self.advertiser_ids:
+            self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(self.agency_id)
+
         yield NormalizedJSONStream("results" + "_".join(self.advertiser_ids), self.result_generator())
