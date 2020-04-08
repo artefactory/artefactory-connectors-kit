@@ -167,7 +167,7 @@ Using the Search Ads API requires two things:
 - A refresh token, created with the email address able to access to all the Search Ads 360 Account you will be calling
 
 See the [documentation here](https://developers.google.com/search-ads/v2/authorizing "SA360 Authentication")
-to set-up your OAuth2 credentials and refresh token specifically for Searc hAds 360 Reporting.
+to set-up your OAuth2 credentials and refresh token specifically for Search Ads 360 Reporting.
 
 
 #### Which Reports and Metrics are available in the API
@@ -183,7 +183,7 @@ The following command retrieves insights about the Ads in the Search Ads 360 Acc
 your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
 
 ```
-python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-agency-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
+python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
 ```
 
 *If it doesn't work, try to* `export PYTHONPATH="."` *in the nautilus-connector-kit folder (to be sure Python is reading correctly)*

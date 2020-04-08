@@ -60,10 +60,8 @@ class SA360Client:
         return advertiser_ids
 
     @staticmethod
-    def generate_report_body(
-        agency_id, advertiser_id, report_type, columns, start_date, end_date, custom_metrics, custom_dimensions
-    ):
-        all_columns = SA360Client.generate_columns(columns, custom_metrics, custom_dimensions)
+    def generate_report_body(agency_id, advertiser_id, report_type, columns, start_date, end_date, saved_columns):
+        all_columns = SA360Client.generate_columns(columns, saved_columns)
         body = {
             "reportScope": {"agencyId": agency_id, "advertiserId": advertiser_id},
             "reportType": report_type,
@@ -74,7 +72,6 @@ class SA360Client:
             "statisticsCurrency": "usd",
         }
         logger.info("Report Body Generated")
-
         return body
 
     def request_report_id(self, body):
@@ -100,7 +97,7 @@ class SA360Client:
             # know the report ID and the index of a file fragment.
             return report_data
         else:
-            logger.info("Report is not ready.")
+            logger.info("Report is not ready. Retrying...")
             raise FileNotFoundError
 
     def download_report_files(self, json_data, report_id):
@@ -113,8 +110,7 @@ class SA360Client:
 
                 Args:
                   report_id: The ID SA360 has assigned to a report.
-                  report_fragment: The 0-based index of the file fragment from the files array.
-                  currency_code: the currency code of the report
+                  fragment: The 0-based index of the file fragment from the files array.
                 """
         request = self._service.reports().getFile(reportId=report_id, reportFragment=fragment)
         headers = request.headers
@@ -136,12 +132,11 @@ class SA360Client:
             yield from r.iter_lines()
 
     @staticmethod
-    def generate_columns(columns, custom_dimensions, custom_metrics):
+    def generate_columns(columns, saved_columns):
         standard = [{"columnName": column} for column in columns]
-        dimensions = [{"columnDimensionName": column, "platformSource": "floodlight"} for column in custom_dimensions]
-        metrics = [{"columnMetricName": column, "platformSource": "floodlight"} for column in custom_metrics]
+        saved = [{"savedColumnName": column} for column in saved_columns]
 
-        return standard + dimensions + metrics
+        return standard + saved
 
     @staticmethod
     def get_date_range(start_date, end_date):
