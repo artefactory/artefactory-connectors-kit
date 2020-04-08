@@ -49,16 +49,10 @@ ENCODING = "utf-8"
     "--sa360-column", "sa360_columns", multiple=True, help="https://developers.google.com/search-ads/v2/report-types"
 )
 @click.option(
-    "--sa360-custom-dimension",
-    "sa360_custom_dimensions",
+    "--sa360-saved-column",
+    "sa360_saved_columns",
     multiple=True,
-    help="https://developers.google.com/search-ads/v2/how-tos/reporting/custom-metrics-dimensions",
-)
-@click.option(
-    "--sa360-custom-metric",
-    "sa360_custom_metrics",
-    multiple=True,
-    help="https://developers.google.com/search-ads/v2/how-tos/reporting/custom-metrics-dimensions",
+    help="https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns",
 )
 @click.option("--sa360-start-date", type=click.DateTime(), required=True)
 @click.option("--sa360-end-date", type=click.DateTime(), required=True)
@@ -79,8 +73,7 @@ class SA360Reader(Reader):
         report_name,
         report_type,
         columns,
-        custom_metrics,
-        custom_dimensions,
+        saved_columns,
         start_date,
         end_date,
     ):
@@ -90,9 +83,8 @@ class SA360Reader(Reader):
         self.report_name = report_name
         self.report_type = report_type
         self.columns = list(columns)
-        self.custom_metrics = list(custom_metrics)
-        self.custom_dimensions = list(custom_dimensions)
-        self.all_columns = self.columns + self.custom_dimensions + self.custom_metrics
+        self.saved_columns = list(saved_columns)
+        self.all_columns = self.columns + self.saved_columns
         self.start_date = start_date
         self.end_date = end_date
 
@@ -113,8 +105,7 @@ class SA360Reader(Reader):
                 self.columns,
                 self.start_date,
                 self.end_date,
-                self.custom_dimensions,
-                self.custom_metrics,
+                self.saved_columns,
             )
 
             report_id = self.sa360_client.request_report_id(body)
