@@ -34,8 +34,7 @@ class SA360ReaderTest(TestCase):
     def test_empty_data(self):
         reader = SA360Reader(**self.kwargs)
         input_report = (row for row in [b"Just Headers in this empty report"])
-        if len(list(reader.format_response(input_report))) > 0:
-            assert False, "Data is not empty"
+        self.assertFalse(next(reader.format_response(input_report), False), "Data is not empty")
 
     @mock.patch.object(SA360Reader, "__init__", mock_sa360_reader)
     def test_format_data(self):
@@ -43,7 +42,4 @@ class SA360ReaderTest(TestCase):
         input_report = (row for row in [b"impressions,clicks", b"1,2", b"3,4"])
         expected = [{"impressions": "1", "clicks": "2"}, {"impressions": "3", "clicks": "4"}]
         input_list = list(reader.format_response(input_report))
-        assert len(input_list) == len(expected)
-
-        for input_row, output in zip(input_list, expected):
-            assert input_row == output
+        self.assertListEqual(input_list, expected)
