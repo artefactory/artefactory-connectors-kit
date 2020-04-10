@@ -22,12 +22,6 @@ from nck.clients.sa360_client import SA360Client
 class SA360ClientTest(TestCase):
     def test_generate_all_columns(self):
         standard = ["clicks", "impressions"]
-        custom_dimensions = ["customDimension"]
-        custom_metrics = ["customMetric"]
-        expected = [
-            {"columnName": "clicks"},
-            {"columnName": "impressions"},
-            {"columnDimensionName": "customDimension", "platformSource": "floodlight"},
-            {"columnMetricName": "customMetric", "platformSource": "floodlight"},
-        ]
-        assert SA360Client.generate_columns(standard, custom_dimensions, custom_metrics) == expected
+        saved = ["savedColumn"]
+        expected = [{"columnName": "clicks"}, {"columnName": "impressions"}, {"savedColumnName": "savedColumn"}]
+        self.assertEqual(SA360Client.generate_columns(standard, saved), expected)
