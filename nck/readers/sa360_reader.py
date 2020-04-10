@@ -15,17 +15,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import csv
 import click
-
-from io import StringIO
 
 from nck.commands.command import processor
 from nck.readers.reader import Reader
-from nck.utils.args import extract_args
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.clients.sa360_client import SA360Client
 from nck.helpers.sa360_helper import REPORT_TYPES
+from nck.utils.args import extract_args
+from nck.utils.text import get_generator_dict_from_str_csv
 
 DATEFORMAT = "%Y-%m-%d"
 ENCODING = "utf-8"
@@ -88,14 +86,6 @@ class SA360Reader(Reader):
         self.start_date = start_date
         self.end_date = end_date
 
-    def format_response(self, report_generator):
-        # skip headers in the CSV output
-        next(report_generator)
-        for row in report_generator:
-            decoded_row = row.decode(ENCODING)
-            csv_reader = csv.DictReader(StringIO(decoded_row), self.all_columns)
-            yield next(csv_reader)
-
     def result_generator(self):
         for advertiser_id in self.advertiser_ids:
             body = self.sa360_client.generate_report_body(
@@ -113,7 +103,7 @@ class SA360Reader(Reader):
             report_data = self.sa360_client.assert_report_file_ready(report_id)
 
             for report_generator in self.sa360_client.download_report_files(report_data, report_id):
-                yield from self.format_response(report_generator)
+                yield from get_generator_dict_from_str_csv(report_generator)
 
     def read(self):
         if not self.advertiser_ids:

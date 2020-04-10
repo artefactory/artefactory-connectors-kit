@@ -39,10 +39,7 @@ def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
 
 
 def get_generator_dict_from_str_csv(
-    line_iterator: Generator[Union[bytes, str], None, None],
-    add_date=False,
-    day_range=None,
-    date_format="%Y-%m-%d"
+    line_iterator: Generator[Union[bytes, str], None, None], add_date=False, day_range=None, date_format="%Y-%m-%d"
 ) -> Generator[Dict[str, str], None, None]:
     first_line = next(line_iterator)
     headers = (
@@ -58,7 +55,7 @@ def get_generator_dict_from_str_csv(
                 line = line.decode("utf-8")
             except UnicodeDecodeError as err:
                 logging.warning(
-                    "An error has occured while parsing the file. "
+                    "An error has occurred while parsing the file. "
                     "The line could not be decoded in %s."
                     "Invalid input that the codec failed on: %s",
                     err.encoding,
@@ -77,8 +74,7 @@ def get_generator_dict_from_str_csv(
 
 
 def get_generator_dict_from_str_tsv(
-    line_iterator: Generator[Union[bytes, str], None, None],
-    skip_first_row=False
+    line_iterator: Generator[Union[bytes, str], None, None], skip_first_row=False
 ) -> Generator[Dict[str, str], None, None]:
     if skip_first_row:
         next(line_iterator)
@@ -108,11 +104,7 @@ def get_generator_dict_from_str_tsv(
 def parse_decoded_line(line: str, delimiter=",", quotechar='"') -> List[str]:
     line_as_file = StringIO(line)
     reader = csv.reader(
-        line_as_file,
-        delimiter=delimiter,
-        quotechar=quotechar,
-        quoting=csv.QUOTE_ALL,
-        skipinitialspace=True,
+        line_as_file, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_ALL, skipinitialspace=True
     )
     return next(reader)
 
