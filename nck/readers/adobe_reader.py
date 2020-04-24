@@ -196,10 +196,6 @@ class AdobeReader(Reader):
 
         def result_generator():
             if data:
-                for record in data:
-                    yield record
-            # Returning an empty generator if report is empty
-            else:
-                yield from ()
+                yield from data
 
         yield JSONStream("results_" + idf, result_generator())
