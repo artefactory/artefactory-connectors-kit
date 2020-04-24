@@ -203,8 +203,7 @@ python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client
 |`--sa360-report-name` | (Optional) Name of the output report |
 |`--sa360-report-type` | Type of the report to request. List [here](https://developers.google.com/search-ads/v2/report-types)|
 |`--sa360-column` | Dimensions and metrics to request in the report |
-|`--sa360-custom-dimension` | (Optional) Custom dimensions to report |
-|`--sa360-custom-metric` | (Optional) Custom metrics to report |
+|`--sa360-saved-column` | (Optional) Saved columns to report. See [documentation](https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns)|
 |`--sa360-start-date` | Start date of the period to request |
 |`--sa360-end-date` | End date of the period to request |
 
