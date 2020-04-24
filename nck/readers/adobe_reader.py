@@ -174,13 +174,14 @@ class AdobeReader(Reader):
         Parses reportResponses and iterates over report pages.
         """
         raw_response = self.get_report(rep_id, page_number=1)
-        all_responses = [parse(raw_response)]
-        if "totalPages" in raw_response["report"]:
-            all_responses = all_responses + [
-                parse(self.get_report(rep_id, page_number=np))
-                for np in range(2, raw_response["report"]["totalPages"] + 1)
-            ]
-        return chain(*all_responses)
+        if raw_response.get("error") != "no_warehouse_data":
+            all_responses = [parse(raw_response)]
+            if "totalPages" in raw_response["report"]:
+                all_responses = all_responses + [
+                    parse(self.get_report(rep_id, page_number=np))
+                    for np in range(2, raw_response["report"]["totalPages"] + 1)
+                ]
+            return chain(*all_responses)
 
     def read(self):
         if self.kwargs.get("list_report_suite", False):
@@ -194,7 +195,11 @@ class AdobeReader(Reader):
             idf = "report_" + str(rep_id)
 
         def result_generator():
-            for record in data:
-                yield record
+            if data:
+                for record in data:
+                    yield record
+            # Returning an empty generator if report is empty
+            else:
+                yield from ()
 
         yield JSONStream("results_" + idf, result_generator())
