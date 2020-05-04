@@ -30,6 +30,7 @@ from nck.readers.dcm_reader import dcm
 from nck.readers.ga_reader import ga
 from nck.readers.search_console_reader import search_console
 from nck.readers.adobe_reader import adobe
+from nck.readers.adobe_reader_2_0 import adobe_2_0
 from nck.readers.radarly_reader import radarly
 from nck.readers.yandex_campaign_reader import yandex_campaigns
 from nck.readers.yandex_statistics_reader import yandex_statistics
@@ -48,6 +49,7 @@ readers = [
     ga,
     search_console,
     adobe,
+    adobe_2_0,
     radarly,
     yandex_campaigns,
     yandex_statistics
