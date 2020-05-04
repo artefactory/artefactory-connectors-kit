@@ -11,7 +11,7 @@ from nck.clients.adobe_client import JWTClient
 from nck.streams.json_stream import JSONStream
 from nck.helpers.adobe_helper_2_0 import (
     build_request_headers,
-    add_metrics_container_to_report_description,
+    add_metric_container_to_report_description,
     get_node_values_from_response,
     get_item_ids_from_nodes,
     parse_response
@@ -82,7 +82,7 @@ class AdobeReader_2_0(Reader):
                 "settings": {"countRepeatInstances": "true","limit":"500"}
             }
 
-        rep_desc = add_metrics_container_to_report_description(
+        rep_desc = add_metric_container_to_report_description(
             rep_desc = rep_desc,
             dimensions = self.dimensions,
             breakdown_item_ids = breakdown_item_ids,

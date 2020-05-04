@@ -12,7 +12,7 @@ def build_request_headers(jwt_client):
         "x-proxy-global-company-id": jwt_client.global_company_id
     }
 
-def add_metrics_container_to_report_description(rep_desc,dimensions,breakdown_item_ids,metrics):
+def add_metric_container_to_report_description(rep_desc,dimensions,breakdown_item_ids,metrics):
     """
     Filling the metricContainer section of a report description:
     - Creates 1 filter per dimension breakdown x metric
