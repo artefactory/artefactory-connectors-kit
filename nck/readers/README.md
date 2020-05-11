@@ -48,7 +48,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 
 #### Additional details for a relevant use of the Facebook Reader
 
-1. Select the appropriate `--facebook-level`
+**ADVICE #1: Make sure to select the appropriate `--facebook-level`**
 
 |If Facebook Object Type is...|Facebook Level can be...|
 |:--|:--|
@@ -58,7 +58,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 |`ad`|*ad, creative*|
 |`creative`|*creative*|
 
-2. Format Facebook Reader response using `--facebook-fields`
+**ADVICE #2: Format Facebook Reader response using `--facebook-fields`**
 
 2.1. The list of **applicable fields** can be found on the links below:
 
@@ -94,7 +94,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 }
 ```
 
-(2.3) **Action Breakdown filters** can be applied to the fields of ***Facebook Ad Insights* Requests** using the following syntax: `<FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]`. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
+(2.3) **Action Breakdown filters** can be applied to the fields of ***Facebook Ad Insights* Requests** using the following syntax: <FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
 
 *Facebook Reader Request*
 ```
