@@ -30,21 +30,21 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 
 |CLI option|Documentation|
 |:--|:--|
-|`--facebook-app-id`|**[Not mandatory if Facebook Access Token is provided]** Facebook App ID.|
-|`--facebook-app-secret`|**[Not mandatory if Facebook Access Token is provided]** Facebook App Secret.|
+|`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
+|`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-access-token`|Facebook App Access Token.|
 |`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Facebook Object Nodes requests), ad (default), adset, campaign, account.*|
 |`--facebook-object-id`|ID of the root Facebook Object used to make the request.|
-|`--facebook-level`|Granularity of the API response. *Supported values: creative (available only for Facebook Object Nodes requests), ad (default), adset, campaign or account.*|
+|`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Facebook Object Nodes requests), ad (default), adset, campaign or account.*|
 |`--facebook-ad-insights`|*True* (default) if *Facebook Ad Insights* request, *False* if *Facebook Object Nodes* request.|
 |`--facebook-field`|Fields to be retrieved.|
-|`--facebook-start-date`|**[Specific to *Facebook Ad Insights* Requests, and to *Facebook Object Nodes* requests at the Campaign, Adset and Ad levels]** Start date of the requested time range.|
-|`--facebook-end-date`|**[Specific to *Facebook Ad Insights* Requests, and to *Facebook Object Nodes* requests at the Campaign, Adset and Ad levels]** End date of the requested time range.|
-|`--facebook-date-preset`|**[Specific to *Facebook Ad Insights* Requests, and to *Facebook Object Nodes* requests at the Campaign, Adset and Ad levels]** Relative time range. Ignored if a specific *--facebook-start date* and *--facebook-end-date* are  specified.|
-|`--facebook-time-increment`|**[Specific to *Facebook Ad Insights* Requests, and to *Facebook Object Nodes* requests at the Campaign, Adset and Ad levels]** Cuts the results between smaller time slices within the specified time range.|
-|`--facebook-add-date-to-report`|**[Prefered ]** *True* if you wish to add the date of the request to each response record, *False* otherwise (default).|
-|`--facebook-breakdown`|**[Specific to *Facebook Ad Insights* Requests]** How to break down the result.|
-|`--facebook-action-breakdown`|**[Specific to *Facebook Ad Insights* Requests]** How to break down action results.|
+|`--facebook-start-date`|Start date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-end-date`|End date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-date-preset`|Relative time range. Ignored if *--facebook-start date* and *--facebook-end-date* are specified. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-time-increment`|Cuts the results between smaller time slices within the specified time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-add-date-to-report`|*True* if you wish to add the date of the request to each response record, *False* otherwise (default).|
+|`--facebook-breakdown`|How to break down the result. *This parameter is only relevant for Facebook Ad Insights Requests.*|
+|`--facebook-action-breakdown`|How to break down action results. *This parameter is only relevant for Facebook Ad Insights Requests.*|
 
 #### Additional details for a relevant use of the Facebook Reader
 
