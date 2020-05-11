@@ -79,7 +79,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
         "call_to_action": {
             "type": "LEARN_MORE",
             "value": {
-                "link": "http://artefact.com",
+                "link": "http://www.artefact.com",
                 "link_format": "VIDEO_LPP"
             }
         }
