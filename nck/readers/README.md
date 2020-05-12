@@ -14,7 +14,7 @@ Each reader role is to read data from external source and transform it into a St
 
 #### Quickstart
 
-The Facebook Reader handles calls to 2 endpoints of the Facebook Marketing API: **Facebook Ad Insights** (to retrieve performance data), and **Facebook Object Nodes** (to retrieve configuration data).
+The Facebook Reader handles calls to 2 endpoints of the Facebook Marketing API: **Facebook Ad Insights** (to retrieve performance data), and **Facebook Object Node** (to retrieve configuration data).
 
 *Example of Facebook Ad Insights Request*
 ```
@@ -33,22 +33,22 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 |`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-access-token`|Facebook App Access Token.|
-|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Facebook Object Nodes requests), ad (default), adset, campaign, account.*|
+|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Facebook Object Node requests), ad (default), adset, campaign, account.*|
 |`--facebook-object-id`|ID of the root Facebook Object used to make the request.|
-|`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Facebook Object Nodes requests), ad (default), adset, campaign or account.*|
-|`--facebook-ad-insights`|*True* (default) if *Facebook Ad Insights* request, *False* if *Facebook Object Nodes* request.|
+|`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Facebook Object Node requests), ad (default), adset, campaign or account.*|
+|`--facebook-ad-insights`|*True* (default) if *Facebook Ad Insights* request, *False* if *Facebook Object Node* request.|
 |`--facebook-field`|Fields to be retrieved.|
-|`--facebook-start-date`|Start date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
-|`--facebook-end-date`|End date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
-|`--facebook-date-preset`|Relative time range. Ignored if *--facebook-start date* and *--facebook-end-date* are specified. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
-|`--facebook-time-increment`|Cuts the results between smaller time slices within the specified time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Nodes requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-start-date`|Start date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-end-date`|End date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-date-preset`|Relative time range. Ignored if *--facebook-start date* and *--facebook-end-date* are specified. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-time-increment`|Cuts the results between smaller time slices within the specified time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
 |`--facebook-add-date-to-report`|*True* if you wish to add the date of the request to each response record, *False* otherwise (default).|
 |`--facebook-breakdown`|How to break down the result. *This parameter is only relevant for Facebook Ad Insights Requests.*|
 |`--facebook-action-breakdown`|How to break down action results. *This parameter is only relevant for Facebook Ad Insights Requests.*|
 
 #### Additional details for a relevant use of the Facebook Reader
 
-**ADVICE #1: Make sure to select the appropriate `--facebook-level`**
+**#1: Make sure to select the appropriate `--facebook-level`**
 
 |If Facebook Object Type is...|Facebook Level can be...|
 |:--|:--|
@@ -58,12 +58,12 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 |`ad`|*ad, creative*|
 |`creative`|*creative*|
 
-**ADVICE #2: Format Facebook Reader response using `--facebook-fields`**
+**#2: Format Facebook Reader response using `--facebook-fields`**
 
 2.1. The list of **applicable fields** can be found on the links below:
 
 - **Facebook Ad Insights Request**: [all fields](https://developers.facebook.com/docs/marketing-api/insights/parameters/v7.0)
-- **Facebook Object Nodes Request**: [Account-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-account), [Campaign-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group), [Adset-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign), [Ad-level fields](https://developers.facebook.com/docs/marketing-api/reference/adgroup), [Creative-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)
+- **Facebook Object Node Request**: [Account-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-account), [Campaign-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group), [Adset-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign), [Ad-level fields](https://developers.facebook.com/docs/marketing-api/reference/adgroup), [Creative-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)
 
 2.2. If you want to select **a nested field value**,  simply indicate the path to this value within the request field.
 
