@@ -168,14 +168,22 @@ class FacebookReader(Reader):
             if missing_action_breakdowns != set():
                 raise ClickException("Wrong query. Please add to Action Breakdowns: {}".format(missing_action_breakdowns))
 
-        elif not self.ad_insights and (self.breakdowns!=[] or self.action_breakdowns!=[]):
-            raise ClickException("Wrong query. Facebook Object Node queries do not accept Breakdowns nor Action Breakdowns.")
+        else:
+
+            if self.breakdowns!=[] or self.action_breakdowns!=[]:
+                raise ClickException("Wrong query. Facebook Object Node queries do not accept Breakdowns nor Action Breakdowns.")
+            
+            if self.level not in ["campaign","adset","ad"] and ((self.start_date and self.end_date) or self.date_preset):
+                raise ClickException("Wrong query. Facebook Object Node queries only accept the time_range and date_preset parameters at the 'campaign', 'adset' or 'ad' levels.")
+
+            if self.time_increment:
+                raise ClickException("Wrong query. Facebook Object Node queries do not accept the time_increment parameter.")
 
     def get_params(self):
         """
         Build the request parameters that will be sent to the API:
-        - If AdInsights query: all levels accept parameters
-        - If Facebook Object Node query: only the Campaign, AdSet or Ad objects accept parameters
+        - If AdInsights query: breakdown, action_breakdowns, level, time_range and date_preset
+        - If Facebook Object Node query at the campaign, adset or ad level: time_range and date_preset
         """
         params = {}
 
@@ -194,19 +202,24 @@ class FacebookReader(Reader):
 
     def add_period_to_params(self, params):
         """
-        Adding the time_increment, time_range and/or date_preset keys to parameters.
+        Add the time_increment, time_range and/or date_preset keys to parameters.
+        - time_increment: available in AdInsights queries
+        - time_range and date_preset: available in AdInsights queries,
+        and in Facebook Object Node queries at the campaign, adset or ad levels only
         """
-        if self.time_increment:
+        if self.ad_insights and self.time_increment:
             params["time_increment"] = self.time_increment
-        if self.start_date and self.end_date:
-            logging.info("Date format used for request: start_date and end_date")
-            params["time_range"] = self.create_time_range()
-        elif self.date_preset:
-            logging.info("Date format used for request: date_preset")
-            params["date_preset"] = self.date_preset
-        else:
-            logging.warning("No date range provided - Last 30 days by default")
-            logging.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
+
+        if self.ad_insights or self.level in ["campaign","adset","ad"]:
+            if self.start_date and self.end_date:
+                logging.info("Date format used for request: start_date and end_date")
+                params["time_range"] = self.create_time_range()
+            elif self.date_preset:
+                logging.info("Date format used for request: date_preset")
+                params["date_preset"] = self.date_preset
+            else:
+                logging.warning("No date range provided - Last 30 days by default")
+                logging.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
     
     def create_time_range(self):
         return {"since": self.start_date.strftime(DATEFORMAT), "until": self.end_date.strftime(DATEFORMAT)}
