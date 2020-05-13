@@ -79,7 +79,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
         "call_to_action": {
             "type": "LEARN_MORE",
             "value": {
-                "link": "http://www.artefact.com",
+                "link": "https://www.artefact.com",
                 "link_format": "VIDEO_LPP"
             }
         }
@@ -89,9 +89,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 
 *Facebook Reader Response*
 ```
-{
-  "object_story_spec[video_data][call_to_action][value][link]": "https://www.artefact.com"
-}
+{"object_story_spec[video_data][call_to_action][value][link]": "https://www.artefact.com"}
 ```
 
 (2.3) **Action Breakdown filters** can be applied to the fields of ***Facebook Ad Insights* Requests** using the following syntax: <FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
@@ -126,10 +124,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 
 *Facebook Reader Response*
 ```
-{
-  "actions[action_type:video_view]": "17",
-  "actions[action_type:post_engagement]": "25",
-}
+{"actions[action_type:video_view]": "17", "actions[action_type:post_engagement]": "25"}
 ```
 
 ## Google Readers
