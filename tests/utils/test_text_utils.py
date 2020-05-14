@@ -83,6 +83,7 @@ class TestTextUtilsMethod(TestCase):
                 b"Cookie Reach: Average Impression Frequency,Cookie Reach: "
                 b"Impression Reach"
             ),
+            b"(Not desired) Total line: ,,,,,,,,,,100,,100,100,,,,,,,100",
             "",
         ]
         line_iterator_with_blank_line = (line for line in lines)
