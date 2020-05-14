@@ -114,3 +114,6 @@ credentials/*
 
 .nck.egg-info
 .DS_Store
+
+# Pipenv
+Pipfile*
