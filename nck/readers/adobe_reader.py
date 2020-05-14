@@ -98,8 +98,12 @@ class AdobeReader(Reader):
             "reportDescription": {
                 "source": "warehouse",
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
-                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])]
+                "elements": [
+                    {"id": el} for el in self.kwargs.get("report_element_id", [])
+                ],
+                "metrics": [
+                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
+                ],
             }
         }
         self.set_date_gran_report_desc(report_description)
@@ -109,7 +113,12 @@ class AdobeReader(Reader):
 
     def get_days_delta(self):
         days_range = self.kwargs.get("day_range")
-        delta_mapping = {"PREVIOUS_DAY": 1, "LAST_7_DAYS": 7, "LAST_30_DAYS": 30, "LAST_90_DAYS": 90}
+        delta_mapping = {
+            "PREVIOUS_DAY": 1,
+            "LAST_7_DAYS": 7,
+            "LAST_30_DAYS": 30,
+            "LAST_90_DAYS": 90,
+        }
         try:
             days_delta = delta_mapping[days_range]
         except KeyError:
@@ -126,15 +135,21 @@ class AdobeReader(Reader):
         else:
             end_date = datetime.datetime.now().date()
             start_date = end_date - datetime.timedelta(days=self.get_days_delta())
-        report_description["reportDescription"]["dateFrom"] = start_date.strftime("%Y-%m-%d")
-        report_description["reportDescription"]["dateTo"] = end_date.strftime("%Y-%m-%d")
+        report_description["reportDescription"]["dateFrom"] = start_date.strftime(
+            "%Y-%m-%d"
+        )
+        report_description["reportDescription"]["dateTo"] = end_date.strftime(
+            "%Y-%m-%d"
+        )
 
     def set_date_gran_report_desc(self, report_description):
         """
         Adds the dateGranularity parameter to a reportDescription.
         """
         if self.kwargs.get("date_granularity", None) is not None:
-            report_description["reportDescription"]["dateGranularity"] = self.kwargs.get("date_granularity")
+            report_description["reportDescription"][
+                "dateGranularity"
+            ] = self.kwargs.get("date_granularity")
 
     @retry
     def query_report(self):
@@ -145,7 +160,9 @@ class AdobeReader(Reader):
         - Output: reportID, to be passed to the Report.Get method
         - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Queue.md
         """
-        query_report = self.request(api="Report", method="Queue", data=self.build_report_description())
+        query_report = self.request(
+            api="Report", method="Queue", data=self.build_report_description()
+        )
         return query_report
 
     @retry
@@ -157,14 +174,18 @@ class AdobeReader(Reader):
         - Output: reportResponse containing the requested report data
         - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Get.md
         """
-        request_f = lambda: self.request(api="Report", method="Get", data={"reportID": report_id, "page": page_number})
+        request_f = lambda: self.request(
+            api="Report",
+            method="Get",
+            data={"reportID": report_id, "page": page_number},
+        )
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":
             logging.info(f"waiting {idx} s for report to be ready")
             sleep(idx + 1)
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
-                raise ReportNotReadyError(f"waited too long for report to be ready")
+                raise ReportNotReadyError("waited too long for report to be ready")
             idx = idx * 2
             response = request_f()
         return response
