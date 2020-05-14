@@ -161,7 +161,7 @@ class FacebookReader(Reader):
         self.breakdowns = list(breakdown)
         self.action_breakdowns = list(action_breakdown)
         self.fields = list(field)
-        self._field_paths = [re.split(r"[][]+", f.strip("]")) for f in self.fields]
+        self._field_paths = [re.split(r"[\]\[]+", f.strip("]")) for f in self.fields]
         self._api_fields = list(
             {f[0] for f in self._field_paths if f[0] not in self.breakdowns}
         )
