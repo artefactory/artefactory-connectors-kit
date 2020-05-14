@@ -35,7 +35,6 @@ from nck.helpers.facebook_helper import (
     ACTION_BREAKDOWNS,
     get_action_breakdown_filters,
     get_field_values,
-    format_field_path
 )
 
 from facebook_business.api import FacebookAdsApi
@@ -52,15 +51,16 @@ OBJECT_CREATION_MAPPING = {
     "campaign": Campaign,
     "adset": AdSet,
     "ad": Ad,
-    "creative": AdCreative
+    "creative": AdCreative,
 }
 
 EDGE_MAPPING = {
     "account": ["campaign", "adset", "ad", "creative"],
     "campaign": ["adset", "ad"],
     "adset": ["ad", "creative"],
-    "ad": ["creative"]
+    "ad": ["creative"],
 }
+
 
 def check_object_id(ctx, param, values):
     try:
@@ -69,13 +69,31 @@ def check_object_id(ctx, param, values):
     except ValueError:
         raise ClickException("Wrong format. Ad object IDs should only contains digits.")
 
+
 @click.command(name="read_facebook")
-@click.option("--facebook-app-id", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
-@click.option("--facebook-app-secret", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
+@click.option(
+    "--facebook-app-id",
+    default="",
+    help="Not mandatory for AdsInsights reporting if access-token provided",
+)
+@click.option(
+    "--facebook-app-secret",
+    default="",
+    help="Not mandatory for AdsInsights reporting if access-token provided",
+)
 @click.option("--facebook-access-token", required=True)
-@click.option("--facebook-object-id", required=True, multiple=True, callback=check_object_id)
-@click.option("--facebook-object-type",type=click.Choice(FACEBOOK_OBJECTS),default="account")
-@click.option("--facebook-level", type=click.Choice(FACEBOOK_OBJECTS), default="ad", help="Granularity of result")
+@click.option(
+    "--facebook-object-id", required=True, multiple=True, callback=check_object_id
+)
+@click.option(
+    "--facebook-object-type", type=click.Choice(FACEBOOK_OBJECTS), default="account"
+)
+@click.option(
+    "--facebook-level",
+    type=click.Choice(FACEBOOK_OBJECTS),
+    default="ad",
+    help="Granularity of result",
+)
 @click.option(
     "--facebook-ad-insights",
     type=click.BOOL,
@@ -94,7 +112,9 @@ def check_object_id(ctx, param, values):
     type=click.Choice(ACTION_BREAKDOWNS),
     help="https://developers.facebook.com/docs/marketing-api/insights/breakdowns#actionsbreakdown",
 )
-@click.option("--facebook-field", multiple=True, help="API fields, following Artefact format")
+@click.option(
+    "--facebook-field", multiple=True, help="API fields, following Artefact format"
+)
 @click.option("--facebook-time-increment")
 @click.option("--facebook-start-date", type=click.DateTime())
 @click.option("--facebook-end-date", type=click.DateTime())
@@ -108,6 +128,7 @@ def check_object_id(ctx, param, values):
 @processor("facebook_app_secret", "facebook_access_token")
 def facebook(**kwargs):
     return FacebookReader(**extract_args("facebook_", kwargs))
+
 
 class FacebookReader(Reader):
     def __init__(
@@ -135,13 +156,15 @@ class FacebookReader(Reader):
         self.object_ids = object_id
         self.object_type = object_type
         self.level = level
-        
+
         self.ad_insights = ad_insights
         self.breakdowns = list(breakdown)
         self.action_breakdowns = list(action_breakdown)
         self.fields = list(field)
-        self._field_paths = [re.split(r"[][]+",f.strip("]")) for f in self.fields]
-        self._api_fields = list({f[0] for f in self._field_paths if f[0] not in self.breakdowns})
+        self._field_paths = [re.split(r"[][]+", f.strip("]")) for f in self.fields]
+        self._api_fields = list(
+            {f[0] for f in self._field_paths if f[0] not in self.breakdowns}
+        )
 
         self.time_increment = time_increment or False
         self.start_date = start_date
@@ -149,35 +172,72 @@ class FacebookReader(Reader):
         self.date_preset = date_preset
         self.add_date_to_report = add_date_to_report
 
-        # Check input parameters 
+        # Check input parameters
 
-        if (self.level != self.object_type) and (self.level not in EDGE_MAPPING[self.object_type]):
-            raise ClickException("Wrong query. Asked level ({}) is not compatible with object type ({}). Please choose level from: {}".format(self.level,self.object_type,[self.object_type]+EDGE_MAPPING[self.object_type]))
+        if (self.level != self.object_type) and (
+            self.level not in EDGE_MAPPING[self.object_type]
+        ):
+            raise ClickException(
+                "Wrong query. Asked level ({}) is not compatible with object type ({}). Please choose level from: {}".format(
+                    self.level,
+                    self.object_type,
+                    [self.object_type] + EDGE_MAPPING[self.object_type],
+                )
+            )
 
         if self.ad_insights:
 
-            if self.level == "creative" or self.object_type == 'creative':
-                raise ClickException("Wrong query. The 'creative' level is not available in AdInsights queries. Accepted levels: {}".format(FACEBOOK_OBJECTS[1:]))
+            if self.level == "creative" or self.object_type == "creative":
+                raise ClickException(
+                    "Wrong query. The 'creative' level is not available in AdInsights queries. Accepted levels: {}".format(
+                        FACEBOOK_OBJECTS[1:]
+                    )
+                )
 
-            missing_breakdowns = {f[0] for f in self._field_paths if (f[0] in BREAKDOWNS) and (f[0] not in self.breakdowns)}
+            missing_breakdowns = {
+                f[0]
+                for f in self._field_paths
+                if (f[0] in BREAKDOWNS) and (f[0] not in self.breakdowns)
+            }
             if missing_breakdowns != set():
-                raise ClickException("Wrong query. Please add to Breakdowns: {}".format(missing_breakdowns))
+                raise ClickException(
+                    "Wrong query. Please add to Breakdowns: {}".format(
+                        missing_breakdowns
+                    )
+                )
 
-            missing_action_breakdowns = {flt for f in self._field_paths for flt in get_action_breakdown_filters(f)
-                if flt not in self.action_breakdowns}
+            missing_action_breakdowns = {
+                flt
+                for f in self._field_paths
+                for flt in get_action_breakdown_filters(f)
+                if flt not in self.action_breakdowns
+            }
             if missing_action_breakdowns != set():
-                raise ClickException("Wrong query. Please add to Action Breakdowns: {}".format(missing_action_breakdowns))
+                raise ClickException(
+                    "Wrong query. Please add to Action Breakdowns: {}".format(
+                        missing_action_breakdowns
+                    )
+                )
 
         else:
 
-            if self.breakdowns!=[] or self.action_breakdowns!=[]:
-                raise ClickException("Wrong query. Facebook Object Node queries do not accept Breakdowns nor Action Breakdowns.")
-            
-            if self.level not in ["campaign","adset","ad"] and ((self.start_date and self.end_date) or self.date_preset):
-                raise ClickException("Wrong query. Facebook Object Node queries only accept the time_range and date_preset parameters at the 'campaign', 'adset' or 'ad' levels.")
+            if self.breakdowns != [] or self.action_breakdowns != []:
+                raise ClickException(
+                    "Wrong query. Facebook Object Node queries do not accept Breakdowns nor Action Breakdowns."
+                )
+
+            if self.level not in ["campaign", "adset", "ad"] and (
+                (self.start_date and self.end_date) or self.date_preset
+            ):
+                raise ClickException(
+                    "Wrong query. Facebook Object Node queries only accept the time_range\
+                    and date_preset parameters at the 'campaign', 'adset' or 'ad' levels."
+                )
 
             if self.time_increment:
-                raise ClickException("Wrong query. Facebook Object Node queries do not accept the time_increment parameter.")
+                raise ClickException(
+                    "Wrong query. Facebook Object Node queries do not accept the time_increment parameter."
+                )
 
     def get_params(self):
         """
@@ -195,7 +255,7 @@ class FacebookReader(Reader):
             self.add_period_to_params(params)
 
         else:
-            if self.level in ["campaign","adset","ad"]:
+            if self.level in ["campaign", "adset", "ad"]:
                 self.add_period_to_params(params)
 
         return params
@@ -210,7 +270,7 @@ class FacebookReader(Reader):
         if self.ad_insights and self.time_increment:
             params["time_increment"] = self.time_increment
 
-        if self.ad_insights or self.level in ["campaign","adset","ad"]:
+        if self.ad_insights or self.level in ["campaign", "adset", "ad"]:
             if self.start_date and self.end_date:
                 logging.info("Date format used for request: start_date and end_date")
                 params["time_range"] = self.create_time_range()
@@ -219,17 +279,22 @@ class FacebookReader(Reader):
                 params["date_preset"] = self.date_preset
             else:
                 logging.warning("No date range provided - Last 30 days by default")
-                logging.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
-    
+                logging.warning(
+                    "https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters"
+                )
+
     def create_time_range(self):
-        return {"since": self.start_date.strftime(DATEFORMAT), "until": self.end_date.strftime(DATEFORMAT)}
+        return {
+            "since": self.start_date.strftime(DATEFORMAT),
+            "until": self.end_date.strftime(DATEFORMAT),
+        }
 
     def create_object(self, object_id):
         """
         Create a Facebook object based on the provided object_type and object_id.
         """
         if self.object_type == "account":
-            object_id = "act_" + object_id       
+            object_id = "act_" + object_id
         obj = OBJECT_CREATION_MAPPING[self.object_type](object_id)
 
         return obj
@@ -246,7 +311,7 @@ class FacebookReader(Reader):
         # Step 2 - Run AdInsights query on Facebook object
         for element in obj.get_insights(fields=fields, params=params):
             yield element
-    
+
     @retry
     def query_object_node(self, fields, params, object_id):
         """
@@ -265,10 +330,12 @@ class FacebookReader(Reader):
                 "campaign": obj.get_campaigns(),
                 "adset": obj.get_ad_sets(),
                 "ad": obj.get_ads(),
-                "creative": obj.get_ad_creatives()
+                "creative": obj.get_ad_creatives(),
             }
             edge_objs = EDGE_QUERY_MAPPING[self.level]
-            for element in [edge_obj.api_get(fields=fields, params=params) for edge_obj in edge_objs]:
+            for element in [
+                edge_obj.api_get(fields=fields, params=params) for edge_obj in edge_objs
+            ]:
                 yield element
 
     def format_and_yield(self, record):
@@ -278,13 +345,15 @@ class FacebookReader(Reader):
         report = {}
 
         for field_path in self._field_paths:
-            field_values = get_field_values(record, field_path, self.action_breakdowns, visited=None)
+            field_values = get_field_values(
+                record, field_path, self.action_breakdowns, visited=None
+            )
             if field_values:
                 report = {**report, **field_values}
 
         if self.add_date_to_report:
             report["date"] = datetime.today().strftime(DATEFORMAT)
-        
+
         yield report
 
     def result_generator(self, data):
@@ -293,7 +362,7 @@ class FacebookReader(Reader):
         """
         for record in data:
             yield from self.format_and_yield(record.export_all_data())
-    
+
     def get_data_for_object(self, object_id):
         """
         Run an API query (AdInsights or Facebook Object Node) on a single object_id.
@@ -317,4 +386,7 @@ class FacebookReader(Reader):
     def read(self):
 
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
-        yield NormalizedJSONStream("results_" + self.object_type + "_" + "_".join(self.object_ids), self.get_data())
+        yield NormalizedJSONStream(
+            "results_" + self.object_type + "_" + "_".join(self.object_ids),
+            self.get_data(),
+        )
