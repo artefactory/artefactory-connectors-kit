@@ -35,7 +35,7 @@ class FacebookReaderTest(TestCase):
         "app_id": "",
         "app_secret": "",
         "access_token": "123456789",
-        "object_id": "123456789",
+        "object_id": ["123456789"],
         "object_type": "account",
         "level": "ad",
         "ad_insights": True,
@@ -161,7 +161,6 @@ class FacebookReaderTest(TestCase):
         for record, report in zip(data.readlines(), iter(expected)):
             self.assertEqual(record, report)
 
-    # Test fails, but I didn't manage to get why: any idea?
     @mock.patch("nck.readers.facebook_reader.FacebookReader.query_object_node")
     @mock.patch.object(FacebookReader, "get_params", lambda *args: {})
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
@@ -171,7 +170,7 @@ class FacebookReaderTest(TestCase):
 
         row1, row2 = Ad(), Ad()
         row1.set_data({"id": "123456789", "status": "ACTIVE"})
-        row1.set_data({"id": "987654321", "status": "PAUSED"})
+        row2.set_data({"id": "987654321", "status": "PAUSED"})
         mock_query_object_node.return_value = [row1, row2]
 
         data = next(FacebookReader(**temp_kwargs).read())
