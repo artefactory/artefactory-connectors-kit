@@ -85,13 +85,10 @@ def check_if_obj_meets_action_breakdown_filters(obj, filters):
     - {'action_type':'video_view', 'action_device':'iphone', 'value':12}: True
     - {'action_type':'post_engagement', 'action_device':'desktop', 'value':12}: False
     """
-    obj_meets_all_filters = True
     for action_breakdown in filters:
-        obj_meets_filter = obj[action_breakdown] in filters[action_breakdown]
-        obj_meets_all_filters = obj_meets_all_filters and obj_meets_filter
-        if obj_meets_all_filters is False:
-            break
-    return obj_meets_all_filters
+        if obj[action_breakdown] not in filters[action_breakdown]:
+            return False
+    return True
 
 
 def get_action_breakdown_value(obj, visited, action_breakdowns):
