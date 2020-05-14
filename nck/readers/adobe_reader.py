@@ -99,7 +99,7 @@ class AdobeReader(Reader):
                 "source": "warehouse",
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
                 "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
-                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])]
+                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
             }
         }
         self.set_date_gran_report_desc(report_description)
@@ -164,7 +164,7 @@ class AdobeReader(Reader):
             logging.info(f"waiting {idx} s for report to be ready")
             sleep(idx + 1)
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
-                raise ReportNotReadyError(f"waited too long for report to be ready")
+                raise ReportNotReadyError("waited too long for report to be ready")
             idx = idx * 2
             response = request_f()
         return response
