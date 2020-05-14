@@ -115,7 +115,7 @@ class FacebookReaderTest(TestCase):
             }
         )
         expected = ["impressions", "actions"]
-        assert set(FacebookReader(**temp_kwargs)._api_fields) == set(expected)
+        self.assertEqual(set(FacebookReader(**temp_kwargs)._api_fields), set(expected))
 
     def test_get_field_paths(self):
 
@@ -136,7 +136,7 @@ class FacebookReaderTest(TestCase):
             ["link_url_asset", "website_url"],
             ["actions", "action_type:link_click"],
         ]
-        assert FacebookReader(**temp_kwargs)._field_paths == expected
+        self.assertEqual(FacebookReader(**temp_kwargs)._field_paths, expected)
 
     @mock.patch("nck.readers.facebook_reader.FacebookReader.query_ad_insights")
     @mock.patch.object(FacebookReader, "get_params", lambda *args: {})
@@ -159,7 +159,7 @@ class FacebookReaderTest(TestCase):
         ]
 
         for record, report in zip(data.readlines(), iter(expected)):
-            assert record == report
+            self.assertEqual(record, report)
 
     # Test fails, but I didn't manage to get why: any idea?
     @mock.patch("nck.readers.facebook_reader.FacebookReader.query_object_node")
@@ -181,7 +181,7 @@ class FacebookReaderTest(TestCase):
         ]
 
         for record, report in zip(data.readlines(), iter(expected)):
-            assert record == report
+            self.assertEqual(record, report)
 
     @parameterized.expand(
         [
@@ -257,4 +257,6 @@ class FacebookReaderTest(TestCase):
     def test_format_and_yield(self, name, parameters, record, expected):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(parameters)
-        assert next(FacebookReader(**temp_kwargs).format_and_yield(record)) == expected
+        self.assertEqual(
+            next(FacebookReader(**temp_kwargs).format_and_yield(record)), expected
+        )
