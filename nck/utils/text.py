@@ -50,8 +50,8 @@ def get_generator_dict_from_str_csv(
     if add_date:
         headers.extend(["date_start", "date_stop"])
 
-    next_line = next(line_iterator)
-    while True:
+    next_line = next(line_iterator, None)
+    while next_line is not None:
         current_line = next_line
         if isinstance(current_line, bytes):
             try:
@@ -66,7 +66,7 @@ def get_generator_dict_from_str_csv(
                 )
                 current_line = current_line.decode("utf-8", errors="ignore")
 
-        next_line = next(line_iterator)
+        next_line = next(line_iterator, "")
         if len(next_line) == 0:
             break
 
