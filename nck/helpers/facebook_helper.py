@@ -49,8 +49,7 @@ def get_action_breakdown_filters(field_path):
     filters = {}
     for path_item in field_path:
         if ":" in path_item:
-            action_breakdown = path_item.split(":")[0]
-            action_breakdown_value = path_item.split(":")[1]
+            action_breakdown, action_breakdown_value = path_item.split(":")
             if action_breakdown not in filters:
                 filters[action_breakdown] = [action_breakdown_value]
             else:
@@ -70,9 +69,7 @@ def format_field_path(field_path):
     if len(field_path) == 1:
         return field_path[0]
     else:
-        return "".join(
-            [field_path[0]] + ["[{}]".format(element) for element in field_path[1:]]
-        )
+        return "".join([field_path[0]] + [f"[{element}]" for element in field_path[1:]])
 
 
 def check_if_obj_meets_action_breakdown_filters(obj, filters):
@@ -110,35 +107,33 @@ def get_action_breakdown_value(obj, visited, action_breakdowns):
         {'actions[action_type:video_view][action_device:iphone]': '12'}
     """
     obj_action_breakdown = [
-        "{}:{}".format(action_breakdown, obj[action_breakdown])
+        f"{action_breakdown}:{obj[action_breakdown]}"
         for action_breakdown in action_breakdowns
         if action_breakdown in obj
     ]
     return {format_field_path(visited + obj_action_breakdown): obj["value"]}
 
 
-def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filters=None):
+def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filters={}):
     """
     Extracts action breakdown values from a list of nested action breakdown objects,
     only if they meet the conditions defined by action breakdown filters.
     """
     action_breakdown_values = {}
     for obj in resp_obj:
-        if filters:
+        if filters != {}:
             if check_if_obj_meets_action_breakdown_filters(obj, filters):
-                action_breakdown_values = {
-                    **action_breakdown_values,
-                    **get_action_breakdown_value(obj, visited, action_breakdowns),
-                }
+                action_breakdown_values.update(
+                    get_action_breakdown_value(obj, visited, action_breakdowns)
+                )
         else:
-            action_breakdown_values = {
-                **action_breakdown_values,
-                **get_action_breakdown_value(obj, visited, action_breakdowns),
-            }
+            action_breakdown_values.update(
+                get_action_breakdown_value(obj, visited, action_breakdowns)
+            )
     return action_breakdown_values
 
 
-def get_field_values(resp_obj, field_path, action_breakdowns, visited=None):
+def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
     """
     Recursive function extracting (and formating) the values
     of a requested field from an API response and a field path.
@@ -146,10 +141,7 @@ def get_field_values(resp_obj, field_path, action_breakdowns, visited=None):
     path_item = field_path[0]
     remaining_path_items = len(field_path) - 1
 
-    if visited is None:
-        visited = [path_item]
-    else:
-        visited.append(path_item)
+    visited.append(path_item)
 
     if path_item in resp_obj:
         if remaining_path_items == 0:

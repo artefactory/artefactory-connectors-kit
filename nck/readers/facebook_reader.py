@@ -178,20 +178,16 @@ class FacebookReader(Reader):
             self.level not in EDGE_MAPPING[self.object_type]
         ):
             raise ClickException(
-                "Wrong query. Asked level ({}) is not compatible with object type ({}). Please choose level from: {}".format(
-                    self.level,
-                    self.object_type,
-                    [self.object_type] + EDGE_MAPPING[self.object_type],
-                )
+                f"Wrong query. Asked level ({self.level}) is not compatible with object type ({self.object_type}).\
+                Please choose level from: {[self.object_type] + EDGE_MAPPING[self.object_type]}"
             )
 
         if self.ad_insights:
 
             if self.level == "creative" or self.object_type == "creative":
                 raise ClickException(
-                    "Wrong query. The 'creative' level is not available in AdInsights queries. Accepted levels: {}".format(
-                        FACEBOOK_OBJECTS[1:]
-                    )
+                    f"Wrong query. The 'creative' level is not available in AdInsights queries.\
+                    Accepted levels: {FACEBOOK_OBJECTS[1:]}"
                 )
 
             missing_breakdowns = {
@@ -201,9 +197,7 @@ class FacebookReader(Reader):
             }
             if missing_breakdowns != set():
                 raise ClickException(
-                    "Wrong query. Please add to Breakdowns: {}".format(
-                        missing_breakdowns
-                    )
+                    f"Wrong query. Please add to Breakdowns: {missing_breakdowns}"
                 )
 
             missing_action_breakdowns = {
@@ -214,9 +208,7 @@ class FacebookReader(Reader):
             }
             if missing_action_breakdowns != set():
                 raise ClickException(
-                    "Wrong query. Please add to Action Breakdowns: {}".format(
-                        missing_action_breakdowns
-                    )
+                    f"Wrong query. Please add to Action Breakdowns: {missing_action_breakdowns}"
                 )
 
         else:
@@ -346,10 +338,10 @@ class FacebookReader(Reader):
 
         for field_path in self._field_paths:
             field_values = get_field_values(
-                record, field_path, self.action_breakdowns, visited=None
+                record, field_path, self.action_breakdowns, visited=[]
             )
             if field_values:
-                report = {**report, **field_values}
+                report.update(field_values)
 
         if self.add_date_to_report:
             report["date"] = datetime.today().strftime(DATEFORMAT)
