@@ -50,10 +50,7 @@ def get_action_breakdown_filters(field_path):
     for path_item in field_path:
         if ":" in path_item:
             action_breakdown, action_breakdown_value = path_item.split(":")
-            if action_breakdown not in filters:
-                filters[action_breakdown] = [action_breakdown_value]
-            else:
-                filters[action_breakdown].append(action_breakdown_value)
+            filters.setdefault(action_breakdown, []).append(action_breakdown_value)
     return filters
 
 
