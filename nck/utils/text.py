@@ -39,7 +39,11 @@ def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
 
 
 def get_generator_dict_from_str_csv(
-    line_iterator: Generator[Union[bytes, str], None, None], add_date=False, day_range=None, date_format="%Y-%m-%d"
+    line_iterator: Generator[Union[bytes, str], None, None],
+    add_date=False,
+    day_range=None,
+    date_format="%Y-%m-%d",
+    skip_last_row=True,
 ) -> Generator[Dict[str, str], None, None]:
     first_line = next(line_iterator)
     headers = (
@@ -67,7 +71,7 @@ def get_generator_dict_from_str_csv(
                 current_line = current_line.decode("utf-8", errors="ignore")
 
         next_line = next(line_iterator, "")
-        if len(next_line) == 0:
+        if len(current_line) == 0 or (skip_last_row and len(next_line) == 0):
             break
 
         if add_date:

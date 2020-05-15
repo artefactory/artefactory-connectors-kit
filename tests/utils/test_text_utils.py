@@ -83,7 +83,7 @@ class TestTextUtilsMethod(TestCase):
                 b"Cookie Reach: Average Impression Frequency,Cookie Reach: "
                 b"Impression Reach"
             ),
-            b"(Not desired) Total line: ,,,,,,,,,,100,,100,100,,,,,,,100",
+            b"(Not desired last line) Total line: ,,,,,,,,,,100,100,100,100,100",
             "",
         ]
         line_iterator_with_blank_line = (line for line in lines)
@@ -283,7 +283,9 @@ class TestTextUtilsMethod(TestCase):
 
     def test_csv_with_headers_only(self):
         input_report = (row for row in [b"Just,Headers,in,this,empty,report"])
-        self.assertFalse(next(get_generator_dict_from_str_csv(input_report), False), "Data is not empty")
+        self.assertFalse(
+            next(get_generator_dict_from_str_csv(input_report, skip_last_row=False), False), "Data is not empty"
+        )
 
     @parameterized.expand(
         [
