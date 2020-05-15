@@ -59,7 +59,7 @@ DATEFORMAT = "%Y%m%d"
     "This field is ignored if manager_id is specified (replaced by the accounts linked to the MCC)",
 )
 @click.option(
-    "--googleads-report-name", default="Custom Report", help="Name given to your Report"
+    "--googleads-report-name", default="CustomReport", help="Name given to your Report"
 )
 @click.option(
     "--googleads-report-type",
