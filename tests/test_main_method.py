@@ -21,11 +21,10 @@ class Test_Normalize_Option(unittest.TestCase):
     def mock_read():
         yield JSONStream("plop", Test_Normalize_Option.mock_generator())
 
-    @mock.patch.object(nck.readers.reader.Reader, 'read', mock_read)
-    @mock.patch('nck.writers.writer.Writer.write')
+    @mock.patch.object(nck.readers.reader.Reader, "read", mock_read)
+    @mock.patch("nck.writers.writer.Writer.write")
     def test_normalize_behaviour(self, mock_write):
         r = Reader
         w = Writer
         nck.entrypoint.run([r, w], None, None, None, True)
-
-        assert mock_write.call_args.args[0].__class__ == NormalizedJSONStream
+        self.assertEqual(mock_write.call_args[0][0].__class__, NormalizedJSONStream)
