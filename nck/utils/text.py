@@ -42,7 +42,8 @@ def get_generator_dict_from_str_csv(
     line_iterator: Generator[Union[bytes, str], None, None],
     add_date=False,
     day_range=None,
-    date_format="%Y-%m-%d"
+    date_format="%Y-%m-%d",
+    skip_last_row=True,
 ) -> Generator[Dict[str, str], None, None]:
     first_line = next(line_iterator)
     headers = (
@@ -52,33 +53,36 @@ def get_generator_dict_from_str_csv(
     )
     if add_date:
         headers.extend(["date_start", "date_stop"])
-    for line in line_iterator:
-        if isinstance(line, bytes):
+
+    next_line = next(line_iterator, None)
+    while next_line is not None:
+        current_line = next_line
+        if isinstance(current_line, bytes):
             try:
-                line = line.decode("utf-8")
+                current_line = current_line.decode("utf-8")
             except UnicodeDecodeError as err:
                 logging.warning(
-                    "An error has occured while parsing the file. "
+                    "An error has occurred while parsing the file. "
                     "The line could not be decoded in %s."
                     "Invalid input that the codec failed on: %s",
                     err.encoding,
                     err.object[err.start : err.end],
                 )
-                line = line.decode("utf-8", errors="ignore")
+                current_line = current_line.decode("utf-8", errors="ignore")
 
-        if line == "":
+        next_line = next(line_iterator, "")
+        if len(current_line) == 0 or (skip_last_row and len(next_line) == 0):
             break
 
         if add_date:
             start, end = get_date_start_and_date_stop_from_range(day_range)
-            line += f",{start.strftime(date_format)},{end.strftime(date_format)}"
+            current_line += f",{start.strftime(date_format)},{end.strftime(date_format)}"
 
-        yield dict(zip(headers, parse_decoded_line(line)))
+        yield dict(zip(headers, parse_decoded_line(current_line)))
 
 
 def get_generator_dict_from_str_tsv(
-    line_iterator: Generator[Union[bytes, str], None, None],
-    skip_first_row=False
+    line_iterator: Generator[Union[bytes, str], None, None], skip_first_row=False
 ) -> Generator[Dict[str, str], None, None]:
     if skip_first_row:
         next(line_iterator)
@@ -108,11 +112,7 @@ def get_generator_dict_from_str_tsv(
 def parse_decoded_line(line: str, delimiter=",", quotechar='"') -> List[str]:
     line_as_file = StringIO(line)
     reader = csv.reader(
-        line_as_file,
-        delimiter=delimiter,
-        quotechar=quotechar,
-        quoting=csv.QUOTE_ALL,
-        skipinitialspace=True,
+        line_as_file, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_ALL, skipinitialspace=True
     )
     return next(reader)
 
