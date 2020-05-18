@@ -67,7 +67,7 @@ class AdobeReaderTest_2_0(TestCase):
                 ],
             },
             "dimension": "variables/daterangeday",
-            "settings": {"countRepeatInstances": "true", "limit": "500"},
+            "settings": {"countRepeatInstances": "true", "limit": "5000"},
         }
         self.assertEqual(output, expected)
 
@@ -122,7 +122,7 @@ class AdobeReaderTest_2_0(TestCase):
                 ],
             },
             "dimension": "variables/pagename",
-            "settings": {"countRepeatInstances": "true", "limit": "500"},
+            "settings": {"countRepeatInstances": "true", "limit": "5000"},
         }
         self.assertEqual(output, expected)
 
@@ -163,7 +163,9 @@ class AdobeReaderTest_2_0(TestCase):
         )
         metrics = ["visits", "bounces"]
 
-        output = AdobeReader_2_0(**temp_kwargs).get_parsed_report({}, metrics)
+        output = AdobeReader_2_0(**temp_kwargs).get_parsed_report(
+            {"dimension": "variables/daterangeday"}, metrics
+        )
         expected = [
             {"daterangeday": "2020-01-01", "visits": 11, "bounces": 21},
             {"daterangeday": "2020-01-02", "visits": 12, "bounces": 22},
