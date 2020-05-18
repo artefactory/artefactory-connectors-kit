@@ -1,3 +1,14 @@
+from datetime import datetime
+
+
+def format_date(date_string):
+    """
+    Input: "Jan 1, 2020"
+    Output: "2020-01-01"
+    """
+    return datetime.strptime(date_string, "%b %d, %Y").strftime("%Y-%m-%d")
+
+
 def build_request_headers(jwt_client):
     """
     Building headers to authenticate with the Reporting API.
@@ -14,7 +25,7 @@ def build_request_headers(jwt_client):
 
 
 def add_metric_container_to_report_description(
-    rep_desc, dimensions, breakdown_item_ids, metrics
+    rep_desc, dimensions, metrics, breakdown_item_ids
 ):
     """
     Filling the metricContainer section of a report description:
@@ -87,5 +98,9 @@ def parse_response(response, metrics, parent_dim_parsed):
             **parent_dim_parsed,
             dimension: row["value"],
             **parsed_row_metrics,
+        }
+        parsed_row = {
+            k: (format_date(v) if k == "daterangeday" else v)
+            for k, v in parsed_row.items()
         }
         yield parsed_row
