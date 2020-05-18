@@ -1,3 +1,21 @@
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 import logging
 import click
 import json
@@ -34,11 +52,11 @@ logger = logging.getLogger()
 @click.option("--adobe-client-secret", required=True)
 @click.option("--adobe-metascopes", required=True)
 @click.option("--adobe-private-key-path", required=True)
-@click.option("--adobe-date-start", required=True, type=click.DateTime())
-@click.option("--adobe-date-stop", required=True, type=click.DateTime())
 @click.option("--adobe-report-suite-id", required=True)
 @click.option("--adobe-dimension", required=True, multiple=True)
 @click.option("--adobe-metric", required=True, multiple=True)
+@click.option("--adobe-start-date", required=True, type=click.DateTime())
+@click.option("--adobe-end-date", required=True, type=click.DateTime())
 @processor(
     "adobe_api_key",
     "adobe_tech_account_id",
@@ -60,11 +78,11 @@ class AdobeReader_2_0(Reader):
         client_secret,
         metascopes,
         private_key_path,
-        date_start,
-        date_stop,
         report_suite_id,
         dimension,
         metric,
+        start_date,
+        end_date,
     ):
         # JWT authentification will be changed to OAth authentification
         self.jwt_client = JWTClient(
@@ -75,16 +93,16 @@ class AdobeReader_2_0(Reader):
             metascopes,
             private_key_path,
         )
-        self.date_start = date_start
-        self.date_stop = date_stop + datetime.timedelta(days=1)
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)
         self.metrics = list(metric)
+        self.start_date = start_date
+        self.end_date = end_date + datetime.timedelta(days=1)
         self.ingestion_tracker = []
         self.node_values = {}
 
     def build_date_range(self):
-        return f"{self.date_start.strftime(DATEFORMAT)}/{self.date_stop.strftime(DATEFORMAT)}"
+        return f"{self.start_date.strftime(DATEFORMAT)}/{self.end_date.strftime(DATEFORMAT)}"
 
     def build_report_description(self, metrics, breakdown_item_ids=[]):
         """
@@ -100,9 +118,7 @@ class AdobeReader_2_0(Reader):
                 {"type": "dateRange", "dateRange": self.build_date_range()}
             ],
             "metricContainer": {},
-            "dimension": "variables/{}".format(
-                self.dimensions[len(breakdown_item_ids)]
-            ),
+            "dimension": f"variables/{self.dimensions[len(breakdown_item_ids)]}",
             "settings": {"countRepeatInstances": "true", "limit": "5000"},
         }
 
@@ -145,7 +161,7 @@ class AdobeReader_2_0(Reader):
         self.throttle()
         rep_desc["settings"]["page"] = page_nb
 
-        # As throttling failed occasionnaly, we had to include a back-up check
+        # As throttling failed occasionnaly (with no obvious reason), we had to include a back-up check
         report_available = False
         while not report_available:
 
@@ -175,7 +191,12 @@ class AdobeReader_2_0(Reader):
         so that we can add their values to output records.
         """
 
-        logging.info(f"Getting report: {rep_desc}")
+        report_info = {
+            "parent_dim": parent_dim_parsed,
+            "dim": rep_desc["dimension"].split("variables/")[1],
+            "metrics": metrics,
+        }
+        logging.info(f"Getting report: {report_info}")
 
         first_response = self.get_report_page(rep_desc)
         all_responses = [parse_response(first_response, metrics, parent_dim_parsed)]
@@ -219,6 +240,8 @@ class AdobeReader_2_0(Reader):
             child_node_1: []
             child_node_2: []
         """
+
+        logging.info(f"Adding child nodes of '{node}' to graph.")
 
         breakdown_item_ids = get_item_ids_from_nodes(path_to_node)
         child_node_values = self.get_node_values(breakdown_item_ids)

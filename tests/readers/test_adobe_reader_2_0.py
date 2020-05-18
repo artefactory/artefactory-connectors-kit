@@ -31,11 +31,11 @@ class AdobeReaderTest_2_0(TestCase):
         "client_secret": "",
         "metascopes": "",
         "private_key_path": "",
-        "date_start": datetime.date(2020, 1, 1),
-        "date_stop": datetime.date(2020, 1, 2),
         "report_suite_id": "XXXXXXXXX",
         "dimension": [],
         "metric": [],
+        "start_date": datetime.date(2020, 1, 1),
+        "end_date": datetime.date(2020, 1, 2),
     }
 
     @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
@@ -157,8 +157,8 @@ class AdobeReaderTest_2_0(TestCase):
         temp_kwargs.update(
             {
                 "dimension": ["daterangeday"],
-                "date_start": datetime.date(2020, 1, 1),
-                "date_stop": datetime.date(2020, 1, 4),
+                "start_date": datetime.date(2020, 1, 1),
+                "end_date": datetime.date(2020, 1, 4),
             }
         )
         metrics = ["visits", "bounces"]
