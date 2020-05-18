@@ -103,7 +103,7 @@ class SA360Reader(Reader):
             report_data = self.sa360_client.assert_report_file_ready(report_id)
 
             for report_generator in self.sa360_client.download_report_files(report_data, report_id):
-                yield from get_generator_dict_from_str_csv(report_generator)
+                yield from get_generator_dict_from_str_csv(report_generator, skip_last_row=False)
 
     def read(self):
         if not self.advertiser_ids:
