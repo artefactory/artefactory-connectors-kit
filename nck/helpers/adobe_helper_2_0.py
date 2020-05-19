@@ -9,21 +9,6 @@ def format_date(date_string):
     return datetime.strptime(date_string, "%b %d, %Y").strftime("%Y-%m-%d")
 
 
-def build_request_headers(jwt_client):
-    """
-    Building headers to authenticate with the Reporting API.
-    Input: JWTClient object
-    """
-
-    return {
-        "Accept": "application/json",
-        "Authorization": "Bearer {}".format(jwt_client.access_token),
-        "Content-Type": "application/json",
-        "x-api-key": jwt_client.api_key,
-        "x-proxy-global-company-id": jwt_client.global_company_id,
-    }
-
-
 def add_metric_container_to_report_description(
     rep_desc, dimensions, metrics, breakdown_item_ids
 ):

@@ -328,25 +328,26 @@ python nck/entrypoint.py read_adobe --adobe-username <USERNAME>  --adobe-passwor
 Adobe Analytics Reader 2.0 uses the **JWT authentification framework**.
 - Get developper access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
 - Create a Service Account integration to Adobe Analytics on [Adobe Developper Console](https://console.adobe.io/)
-- This integration will generate your JWT authentification credentials (API Key, Technical Account ID, Organization ID, Client Secret and Metascopes), to be passed to Adobe Analytics Reader 2.0.
+- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID and Organization ID) to retrieve your Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me': [example code](https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/examples/jwt/python/ims_client.py)). All these parameters will be passed to Adobe Analytics Reader 2.0.
 
 #### Quickstart
 
 Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
 
 ```
-python nck/entrypoint.py read_adobe_2_0 --adobe-api-key <API_KEY> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-metascopes <METASCOPES> --adobe-private-key-path <PRIVATE_KEY_PATH> --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-dimension daterangeday --adobe-dimension campaign --adobe-metric visits write_console
+python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key-path <PRIVATE_KEY_PATH> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-dimension daterangeday --adobe-dimension campaign --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 --adobe-metric visits write_console
 ```
 
 #### Parameters
 
 |CLI option|Documentation|
 |--|--|
-|`--adobe-api-key`|API Key, generated after creating the Service Account Integration on Adobe Developper Console|
-|`--adobe-tech-account-id`|Technical Account ID, generated after creating the Service Account Integration on Adobe Developper Console|
-|`--adobe-org-id`|Organization ID, generated after creating the Service Account Integration on Adobe Developper Console|
-|`--adobe-client-secret`|Client Secret, generated after creating the Service Account Integration on Adobe Developper Console|
-|`--adobe-private-key-path`|Path to the private.key file, that you had to provide to create the Service Account Integration on Adobe Developper Console|
+|`--adobe-client-id`|Client ID, that you can find in the integration section on Adobe Developper Console|
+|`--adobe-client-secret`|Client Secret, that you can find in the integration section on Adobe Developper Console|
+|`--adobe-tech-account-id`|Technical Account ID, that you can find in the integration section on Adobe Developper Console|
+|`--adobe-org-id`|Organization ID, that you can find in the integration section on Adobe Developper Console|
+|`--adobe-private-key-path`|Path to the private.key file, that you had to provide to create the integration|
+|`--adobe-global-company-id`|Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me')|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-dimension`|Dimension to include in the report|
 |`--adobe-metric`|Metric  to include in the report|

@@ -27,10 +27,9 @@ from itertools import chain
 from nck.utils.args import extract_args
 from nck.commands.command import processor
 from nck.readers.reader import Reader
-from nck.clients.adobe_client import JWTClient
+from nck.clients.adobe_client import AdobeClient
 from nck.streams.json_stream import JSONStream
 from nck.helpers.adobe_helper_2_0 import (
-    build_request_headers,
     add_metric_container_to_report_description,
     get_node_values_from_response,
     get_item_ids_from_nodes,
@@ -46,23 +45,22 @@ logger = logging.getLogger()
 
 
 @click.command(name="read_adobe_2_0")
-@click.option("--adobe-api-key", required=True)
+@click.option("--adobe-client-id", required=True)
+@click.option("--adobe-client-secret", required=True)
 @click.option("--adobe-tech-account-id", required=True)
 @click.option("--adobe-org-id", required=True)
-@click.option("--adobe-client-secret", required=True)
-@click.option("--adobe-metascopes", required=True)
 @click.option("--adobe-private-key-path", required=True)
+@click.option("--adobe-global-company-id", required=True)
 @click.option("--adobe-report-suite-id", required=True)
 @click.option("--adobe-dimension", required=True, multiple=True)
 @click.option("--adobe-metric", required=True, multiple=True)
 @click.option("--adobe-start-date", required=True, type=click.DateTime())
 @click.option("--adobe-end-date", required=True, type=click.DateTime())
 @processor(
-    "adobe_api_key",
+    "adobe_client_id",
+    "adobe_client_secret",
     "adobe_tech_account_id",
     "adobe_org_id",
-    "adobe_client_secret",
-    "adobe_metascopes",
     "adobe_private_key_path",
 )
 def adobe_2_0(**kwargs):
@@ -72,26 +70,25 @@ def adobe_2_0(**kwargs):
 class AdobeReader_2_0(Reader):
     def __init__(
         self,
-        api_key,
+        client_id,
+        client_secret,
         tech_account_id,
         org_id,
-        client_secret,
-        metascopes,
         private_key_path,
+        global_company_id,
         report_suite_id,
         dimension,
         metric,
         start_date,
         end_date,
     ):
-        # JWT authentification will be changed to OAth authentification
-        self.jwt_client = JWTClient(
-            api_key,
+        self.adobe_client = AdobeClient(
+            client_id,
+            client_secret,
             tech_account_id,
             org_id,
-            client_secret,
-            metascopes,
             private_key_path,
+            global_company_id,
         )
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)
@@ -166,8 +163,8 @@ class AdobeReader_2_0(Reader):
         while not report_available:
 
             response = requests.post(
-                f"https://analytics.adobe.io/api/{self.jwt_client.global_company_id}/reports",
-                headers=build_request_headers(self.jwt_client),
+                f"https://analytics.adobe.io/api/{self.adobe_client.global_company_id}/reports",
+                headers=self.adobe_client.build_request_headers(),
                 data=json.dumps(rep_desc),
             ).json()
 

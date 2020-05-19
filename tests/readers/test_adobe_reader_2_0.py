@@ -25,12 +25,12 @@ import datetime
 class AdobeReaderTest_2_0(TestCase):
 
     kwargs = {
-        "api_key": "",
+        "client_id": "",
+        "client_secret": "",
         "tech_account_id": "",
         "org_id": "",
-        "client_secret": "",
-        "metascopes": "",
         "private_key_path": "",
+        "global_company_id": "",
         "report_suite_id": "XXXXXXXXX",
         "dimension": [],
         "metric": [],
@@ -38,14 +38,14 @@ class AdobeReaderTest_2_0(TestCase):
         "end_date": datetime.date(2020, 1, 2),
     }
 
-    @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
-    def test_build_date_range(self, mock_jwt_client):
+    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    def test_build_date_range(self, mock_adobe_client):
         output = AdobeReader_2_0(**self.kwargs).build_date_range()
         expected = "2020-01-01T00:00:00/2020-01-03T00:00:00"
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
-    def test_build_report_description_one_dimension(self, mock_jwt_client):
+    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    def test_build_report_description_one_dimension(self, mock_adobe_client):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"dimension": ["daterangeday"]})
         metrics = ["visits", "bounces"]
@@ -71,8 +71,8 @@ class AdobeReaderTest_2_0(TestCase):
         }
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
-    def test_build_report_description_multiple_dimensions(self, mock_jwt_client):
+    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    def test_build_report_description_multiple_dimensions(self, mock_adobe_client):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"dimension": ["daterangeday", "campaign", "pagename"]})
         metrics = ["visits", "bounces"]
@@ -126,7 +126,7 @@ class AdobeReaderTest_2_0(TestCase):
         }
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_reader_2_0.AdobeReader_2_0.get_report_page",
         side_effect=[
@@ -152,7 +152,7 @@ class AdobeReaderTest_2_0(TestCase):
             },
         ],
     )
-    def test_get_parsed_report(self, mock_jwt_client, mock_get_report_page):
+    def test_get_parsed_report(self, mock_adobe_client, mock_get_report_page):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(
             {
@@ -175,7 +175,7 @@ class AdobeReaderTest_2_0(TestCase):
         for output_record, expected_record in zip(output, expected):
             self.assertEqual(output_record, expected_record)
 
-    @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_reader_2_0.AdobeReader_2_0.get_node_values",
         return_value={
@@ -183,7 +183,7 @@ class AdobeReaderTest_2_0(TestCase):
             "lasttouchchannel_2": "Natural_Search",
         },
     )
-    def test_add_child_nodes_to_graph(self, mock_jwt_client, mock_get_node_values):
+    def test_add_child_nodes_to_graph(self, mock_adobe_client, mock_get_node_values):
         graph = {
             "root": ["daterangeday_1200201", "daterangeday_1200202"],
             "daterangeday_1200201": [],
@@ -204,7 +204,7 @@ class AdobeReaderTest_2_0(TestCase):
         }
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_reader_2_0.AdobeReader_2_0.get_parsed_report",
         return_value=[
@@ -212,7 +212,9 @@ class AdobeReaderTest_2_0(TestCase):
             {"daterangeday": "2020-01-02", "visits": 12, "bounces": 22},
         ],
     )
-    def test_read_one_dimension_reports(self, mock_jwt_client, mock_get_parsed_report):
+    def test_read_one_dimension_reports(
+        self, mock_adobe_client, mock_get_parsed_report
+    ):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(
             {"dimension": ["daterangeday"], "metric": ["visits", "bounces"]}
@@ -226,7 +228,7 @@ class AdobeReaderTest_2_0(TestCase):
         for output_record, expected_output in zip(output.readlines(), iter(expected)):
             self.assertEqual(output_record, expected_output)
 
-    @mock.patch("nck.clients.adobe_client.JWTClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_reader_2_0.AdobeReader_2_0.add_child_nodes_to_graph",
         side_effect=[
@@ -288,7 +290,7 @@ class AdobeReaderTest_2_0(TestCase):
         ],
     )
     def test_read_multiple_dimension_reports(
-        self, mock_jwt_client, mock_add_child_nodes_to_graph, mock_get_parsed_report
+        self, mock_adobe_client, mock_add_child_nodes_to_graph, mock_get_parsed_report
     ):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(

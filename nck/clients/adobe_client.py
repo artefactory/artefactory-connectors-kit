@@ -29,27 +29,28 @@ logging.basicConfig(level="INFO")
 logger = logging.getLogger()
 
 
-class JWTClient:
+class AdobeClient:
     """
-    Following the steps described in this repo:
+    Create an Adobe Client for JWT Authentification,
+    following the steps described in this repo:
     https://github.com/AdobeDocs/analytics-2.0-apis/tree/master/examples/jwt/python
     """
 
     def __init__(
         self,
-        api_key,
+        client_id,
+        client_secret,
         tech_account_id,
         org_id,
-        client_secret,
-        metascopes,
         private_key_path,
+        global_company_id,
     ):
-        self.api_key = api_key
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.tech_account_id = tech_account_id
         self.org_id = org_id
-        self.client_secret = client_secret
-        self.metascopes = metascopes
         self.private_key_path = private_key_path
+        self.global_company_id = global_company_id
 
         # Creating jwt_token attribute
         logging.info("Getting jwt_token.")
@@ -60,8 +61,8 @@ class JWTClient:
                 "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
                 "iss": self.org_id,
                 "sub": self.tech_account_id,
-                f"https://{IMS_HOST}/s/{self.metascopes}": True,
-                "aud": f"https://{IMS_HOST}/c/{self.api_key}",
+                f"https://{IMS_HOST}/s/ent_analytics_bulk_ingest_sdk": True,
+                "aud": f"https://{IMS_HOST}/c/{self.client_id}",
             },
             private_key,
             algorithm="RS256",
@@ -70,22 +71,21 @@ class JWTClient:
         # Creating access_token attribute
         logging.info("Getting access_token.")
         post_body = {
-            "client_id": self.api_key,
+            "client_id": self.client_id,
             "client_secret": self.client_secret,
             "jwt_token": self.jwt_token,
         }
         response = requests.post(IMS_EXCHANGE, data=post_body)
         self.access_token = response.json()["access_token"]
 
-        # Creating global_company_id attribute
-        logging.info("Getting global_company_id.")
-        response = requests.get(
-            DISCOVERY_URL,
-            headers={
-                "Authorization": f"Bearer {self.access_token}",
-                "x-api-key": self.api_key,
-            },
-        )
-        self.global_company_id = (
-            response.json().get("imsOrgs")[0].get("companies")[0].get("globalCompanyId")
-        )
+    def build_request_headers(self):
+        """
+        Build request headers to be used to interract with Adobe Analytics APIs 2.0.
+        """
+        return {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {self.access_token}",
+            "Content-Type": "application/json",
+            "x-api-key": self.client_id,
+            "x-proxy-global-company-id": self.global_company_id,
+        }
