@@ -31,26 +31,20 @@ logger = logging.getLogger()
 
 class AdobeClient:
     """
-    Create an Adobe Client for JWT Authentification,
-    following the steps described in this repo:
+    Create an Adobe Client for JWT Authentification.
+    Doc: https://github.com/AdobeDocs/adobeio-auth/blob/stage/JWT/JWT.md
+    Most of the code is taken from this repo:
     https://github.com/AdobeDocs/analytics-2.0-apis/tree/master/examples/jwt/python
     """
 
     def __init__(
-        self,
-        client_id,
-        client_secret,
-        tech_account_id,
-        org_id,
-        private_key_path,
-        global_company_id,
+        self, client_id, client_secret, tech_account_id, org_id, private_key_path,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
         self.tech_account_id = tech_account_id
         self.org_id = org_id
         self.private_key_path = private_key_path
-        self.global_company_id = global_company_id
 
         # Creating jwt_token attribute
         logging.info("Getting jwt_token.")
@@ -78,7 +72,7 @@ class AdobeClient:
         response = requests.post(IMS_EXCHANGE, data=post_body)
         self.access_token = response.json()["access_token"]
 
-    def build_request_headers(self):
+    def build_request_headers(self, global_company_id):
         """
         Build request headers to be used to interract with Adobe Analytics APIs 2.0.
         """
@@ -87,5 +81,5 @@ class AdobeClient:
             "Authorization": f"Bearer {self.access_token}",
             "Content-Type": "application/json",
             "x-api-key": self.client_id,
-            "x-proxy-global-company-id": self.global_company_id,
+            "x-proxy-global-company-id": global_company_id,
         }

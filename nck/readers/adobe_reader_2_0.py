@@ -83,13 +83,9 @@ class AdobeReader_2_0(Reader):
         end_date,
     ):
         self.adobe_client = AdobeClient(
-            client_id,
-            client_secret,
-            tech_account_id,
-            org_id,
-            private_key_path,
-            global_company_id,
+            client_id, client_secret, tech_account_id, org_id, private_key_path,
         )
+        self.global_company_id = global_company_id
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)
         self.metrics = list(metric)
@@ -163,8 +159,8 @@ class AdobeReader_2_0(Reader):
         while not report_available:
 
             response = requests.post(
-                f"https://analytics.adobe.io/api/{self.adobe_client.global_company_id}/reports",
-                headers=self.adobe_client.build_request_headers(),
+                f"https://analytics.adobe.io/api/{self.global_company_id}/reports",
+                headers=self.adobe_client.build_request_headers(self.global_company_id),
                 data=json.dumps(rep_desc),
             ).json()
 
