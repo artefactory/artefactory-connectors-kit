@@ -24,6 +24,7 @@ import requests
 import time
 from itertools import chain
 
+from nck.utils.retry import retry
 from nck.utils.args import extract_args
 from nck.commands.command import processor
 from nck.readers.reader import Reader
@@ -146,6 +147,7 @@ class AdobeReader_2_0(Reader):
             )
             time.sleep(sleep_time)
 
+    @retry
     def get_report_page(self, rep_desc, page_nb=0):
         """
         Getting a single report page, and returning it into a raw JSON format.
@@ -154,25 +156,13 @@ class AdobeReader_2_0(Reader):
         self.throttle()
         rep_desc["settings"]["page"] = page_nb
 
-        # As throttling failed occasionnaly (with no obvious reason), we had to include a back-up check
-        report_available = False
-        while not report_available:
+        response = requests.post(
+            f"https://analytics.adobe.io/api/{self.global_company_id}/reports",
+            headers=self.adobe_client.build_request_headers(self.global_company_id),
+            data=json.dumps(rep_desc),
+        )
 
-            response = requests.post(
-                f"https://analytics.adobe.io/api/{self.global_company_id}/reports",
-                headers=self.adobe_client.build_request_headers(self.global_company_id),
-                data=json.dumps(rep_desc),
-            ).json()
-
-            if response.get("message") == "Too many requests":
-                logging.warning(
-                    f"Throttling activated: sleeping for {API_WINDOW_DURATION} seconds..."
-                )
-                time.sleep(API_WINDOW_DURATION)
-            else:
-                report_available = True
-
-        return response
+        return response.json()
 
     def get_parsed_report(self, rep_desc, metrics, parent_dim_parsed={}):
         """

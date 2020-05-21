@@ -292,7 +292,7 @@ As of May 2020 (last update of this section of the documentation), **two version
 
 #### How to obtain credentials
 
-Our Adobe Analytics Reader 1.4 uses the **WSSE authentification framework**. This authentification framework is now deprecated, so you won't be able to generate new WSSE authentification credentials (Username, Password) on Adobe Developper Console if you don't already have them.
+Our Adobe Analytics Reader 1.4 uses the **WSSE authentication framework**. This authentication framework is now deprecated, so you won't be able to generate new WSSE authentication credentials (Username, Password) on Adobe Developper Console if you don't already have them.
 
 #### Quickstart
 
@@ -306,9 +306,9 @@ python nck/entrypoint.py read_adobe --adobe-username <USERNAME>  --adobe-passwor
 
 |CLI option|Documentation|
 |--|--|
-|`--adobe-username`|Username used for WSSE authentification|
-|`--adobe-password`|Password used for WSSE authentification|
-|`--adobe-list-report-suite`|Should be set to *True* if you wish to request the list of available Adobe Report Suites (*default: False*). If set to True, the below parameters should be left empty.|
+|`--adobe-username`|Username used for WSSE authentication|
+|`--adobe-password`|Password used for WSSE authentication|
+|`--adobe-list-report-suite`|Should be set to *True* if you wish to request the list of available Adobe Report Suites (*default: False*). If set to *True*, the below parameters should be left empty.|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-report-element-id`|ID of the element (i.e. dimension) to include in the report|
 |`--adobe-report-metric-id`|ID of the metric to include in the report|
@@ -325,10 +325,10 @@ python nck/entrypoint.py read_adobe --adobe-username <USERNAME>  --adobe-passwor
 
 #### How to obtain credentials
 
-Adobe Analytics Reader 2.0 uses the **JWT authentification framework**.
+Adobe Analytics Reader 2.0 uses the **JWT authentication framework**.
 - Get developper access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
 - Create a Service Account integration to Adobe Analytics on [Adobe Developper Console](https://console.adobe.io/)
-- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID and Organization ID) to retrieve your Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me': [example code](https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/examples/jwt/python/ims_client.py)). All these parameters will be passed to Adobe Analytics Reader 2.0.
+- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me'). All these parameters will be passed to Adobe Analytics Reader 2.0.
 
 #### Quickstart
 
@@ -342,10 +342,10 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-cl
 
 |CLI option|Documentation|
 |--|--|
-|`--adobe-client-id`|Client ID, that you can find in the integration section on Adobe Developper Console|
-|`--adobe-client-secret`|Client Secret, that you can find in the integration section on Adobe Developper Console|
-|`--adobe-tech-account-id`|Technical Account ID, that you can find in the integration section on Adobe Developper Console|
-|`--adobe-org-id`|Organization ID, that you can find in the integration section on Adobe Developper Console|
+|`--adobe-client-id`|Client ID, that you can find on Adobe Developper Console|
+|`--adobe-client-secret`|Client Secret, that you can find on Adobe Developper Console|
+|`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
+|`--adobe-org-id`|Organization ID, that you can find on Adobe Developper Console|
 |`--adobe-private-key-path`|Path to the private.key file, that you had to provide to create the integration|
 |`--adobe-global-company-id`|Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me')|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
