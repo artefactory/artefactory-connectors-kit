@@ -238,7 +238,6 @@ class FacebookMarketingReader(Reader):
 
     def get_data_for_object(self, ad_object_id):
         params = self.get_params()
-
         if self.ad_insights:
             query_mapping = {AD_OBJECT_TYPES[0]: self.run_query_on_fb_account_obj}
         else:
@@ -256,7 +255,6 @@ class FacebookMarketingReader(Reader):
 
     def read(self):
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
-
         yield NormalizedJSONStream(
             "results_" + self.ad_object_type + "_" + "_".join(self.ad_object_ids), self.get_data()
         )

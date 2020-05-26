@@ -71,7 +71,10 @@ class AdobeReader(Reader):
         self.kwargs = kwargs
 
     def request(self, api, method, data=None):
-        """ Compare with https://marketing.adobe.com/developer/api-explorer """
+        """
+        Makes "raw" HTTP requests to Reporting API 1.4 (used within the query_report and get_report methods)
+        API workflow: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/get_started.md
+        """
         api_method = "{0}.{1}".format(api, method)
         data = data or dict()
         logging.info("{}.{} {}".format(api, method, data))
@@ -86,8 +89,14 @@ class AdobeReader(Reader):
         return json_response
 
     def build_report_description(self):
+        """
+        Builds the reportDescription to be passed to the Report.Queue method as an input parameter.
+        Source is set at "warehouse" to get Data Wharehouse reports, and access multiple report pages.
+        Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/data_types/r_reportDescription.md
+        """
         report_description = {
             "reportDescription": {
+                "source": "warehouse",
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
                 "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
                 "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
@@ -108,6 +117,9 @@ class AdobeReader(Reader):
         return days_delta
 
     def set_date_range_report_desc(self, report_description):
+        """
+        Adds the dateFrom and dateTo parameters to a reportDescription.
+        """
         if self.kwargs.get("date_range") != ():
             start_date = self.kwargs.get("start_date")
             end_date = self.kwargs.get("end_date", datetime.datetime.now())
@@ -118,16 +130,33 @@ class AdobeReader(Reader):
         report_description["reportDescription"]["dateTo"] = end_date.strftime("%Y-%m-%d")
 
     def set_date_gran_report_desc(self, report_description):
+        """
+        Adds the dateGranularity parameter to a reportDescription.
+        """
         if self.kwargs.get("date_granularity", None) is not None:
             report_description["reportDescription"]["dateGranularity"] = self.kwargs.get("date_granularity")
 
     @retry
     def query_report(self):
+        """
+        REQUEST STEP #1
+        - Method: Report.Queue
+        - Input: reportDescription
+        - Output: reportID, to be passed to the Report.Get method
+        - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Queue.md
+        """
         query_report = self.request(api="Report", method="Queue", data=self.build_report_description())
         return query_report
 
     @retry
     def get_report(self, report_id, page_number=1):
+        """
+        REQUEST STEP #2
+        - Method: Report.Get
+        - Input: reportID, page
+        - Output: reportResponse containing the requested report data
+        - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Get.md
+        """
         request_f = lambda: self.request(api="Report", method="Get", data={"reportID": report_id, "page": page_number})
         response = request_f()
         idx = 1
@@ -135,20 +164,24 @@ class AdobeReader(Reader):
             logging.info(f"waiting {idx} s for report to be ready")
             sleep(idx + 1)
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
-                raise ReportNotReadyError(f"waited too long for report to be ready")
+                raise ReportNotReadyError("waited too long for report to be ready")
             idx = idx * 2
             response = request_f()
         return response
 
     def download_report(self, rep_id):
+        """
+        Parses reportResponses and iterates over report pages.
+        """
         raw_response = self.get_report(rep_id, page_number=1)
-        all_responses = [parse(raw_response)]
-        if "totalPages" in raw_response["report"]:
-            all_responses = all_responses + [
-                parse(self.get_report(rep_id, page_number=np))
-                for np in range(2, raw_response["report"]["totalPages"] + 1)
-            ]
-        return chain(*all_responses)
+        if raw_response.get("error") != "no_warehouse_data":
+            all_responses = [parse(raw_response)]
+            if "totalPages" in raw_response["report"]:
+                all_responses = all_responses + [
+                    parse(self.get_report(rep_id, page_number=np))
+                    for np in range(2, raw_response["report"]["totalPages"] + 1)
+                ]
+            return chain(*all_responses)
 
     def read(self):
         if self.kwargs.get("list_report_suite", False):
@@ -162,7 +195,7 @@ class AdobeReader(Reader):
             idf = "report_" + str(rep_id)
 
         def result_generator():
-            for record in data:
-                yield record
+            if data:
+                yield from data
 
         yield JSONStream("results_" + idf, result_generator())

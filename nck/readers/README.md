@@ -154,3 +154,141 @@ python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_
 
 See the documents below for a better understanding of the parameters:
 - [Google Search Console API](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query)
+
+
+### Search Ads 360 Reader (SA360)
+
+#### How to obtain Credentials
+
+Using the Search Ads API requires two things:
+
+- OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
+
+- A refresh token, created with the email address able to access to all the Search Ads 360 Account you will be calling
+
+See the [documentation here](https://developers.google.com/search-ads/v2/authorizing "SA360 Authentication")
+to set-up your OAuth2 credentials and refresh token specifically for Search Ads 360 Reporting.
+
+
+#### Which Reports and Metrics are available in the API
+
+The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/search-ads/v2/report-types "Report Types")
+
+#### Simple API call example
+
+- Call Example
+
+
+The following command retrieves insights about the Ads in the Search Ads 360 Account <ADVERTISER_ID> from the agency <AGENCY_ID> thanks to
+your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
+
+```
+python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
+```
+
+*If it doesn't work, try to* `export PYTHONPATH="."` *in the nautilus-connector-kit folder (to be sure Python is reading correctly)*
+*If you want the output to be printed in your console, add* `write_console` *at the end of your command (see writers for more details)*
+
+
+- Parameters of the SA360 Reader
+
+| CLI option | Documentation |
+| ---------- | ------------- |
+|`--sa360-access-token` | (Optional) Access token |
+|`--sa360-client-id` | OAuth2 ID |
+|`--sa360-client-secret` | OAuth2 ID Secret |
+|`--sa360-refresh-token` | Refresh token |
+|`--sa360-agency-id` | Agency ID to request in SA360 |
+|`--sa360-advertiser-id` | (Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested|
+|`--sa360-report-name` | (Optional) Name of the output report |
+|`--sa360-report-type` | Type of the report to request. List [here](https://developers.google.com/search-ads/v2/report-types)|
+|`--sa360-column` | Dimensions and metrics to request in the report |
+|`--sa360-saved-column` | (Optional) Saved columns to report. See [documentation](https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns)|
+|`--sa360-start-date` | Start date of the period to request |
+|`--sa360-end-date` | End date of the period to request |
+
+See the documents below for a better understanding of the parameters:
+- [SA360 Reporting](https://developers.google.com/search-ads/v2/how-tos/reporting)
+
+
+## Yandex readers
+
+For now, there is only one Yandex API you can access through Nautilus connectors: [Direct API](https://tech.yandex.com/direct/).
+This API allows you to collect display metrics.
+
+### Access Yandex Direct API
+
+In order to access Yandex Direct API, you need two accounts: an advertiser account and a developer account.
+Here is the process:
+
+1. Create a developer account if you don't already have one. Click on the *Get started* button on this [page](https://direct.yandex.com/).
+2. Create and register an app that will access Yandex Direct API via [Yandex OAuth](https://oauth.yandex.com/client/new).
+3. Keep app client id safe. Log in with your advertiser account and [give permission to the app to access your data](https://tech.yandex.com/oauth/doc/dg/tasks/get-oauth-token-docpage/).
+4. Store your token very carefully.
+5. Log out and log in as a developer and [ask permission to access Yandex Direct API](https://direct.yandex.com/registered/main.pl?cmd=apiSettings) (ask for Full access). Fill in the form.
+6. Wait for Yandex support to reply but it should be within a week.
+
+### Yandex campaign reader
+
+[Official documentation](https://tech.yandex.com/direct/doc/ref-v5/campaigns/get-docpage/)
+
+#### Quickstart
+
+If you want to quickly get to the point, here is a simple command that get the daily budget for all your campaigns.
+
+```bash
+python nck/entrypoint.py read_yandex_campaigns --yandex-token <TOKEN> --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+| CLI option | Documentation |
+| ---------- | ------------- |
+| `--yandex-token` | Bear token that allows you to authenticate to the API |
+| `--yandex-campaign-id` | (Optional) Selects campaigns with the specified IDs. |
+| `--yandex-campaign-state` | (Optional) Selects campaigns with the specified [states](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status). |
+| `--yandex-campaign-status` | (Optional) Selects campaigns with the specified [statuses](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status). |
+| `--yandex-campaign-payment-status` | (Optional) Selects campaigns with the specified payment [statuses](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status). |
+| `--yandex-field-name` | Parameters to get that are common to all types of campaigns. |
+
+### Yandex statistics reader
+
+[Official documentation](https://tech.yandex.com/direct/doc/reports/reports-docpage/)
+
+#### Quickstart
+
+The command below gives you a performance report for all your campaigns and since the beginning.
+
+```bash
+python nck/entrypoint.py read_yandex_statistics --yandex-token <TOKEN> --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/).
+
+| CLI option | Documentation |
+| ---------- | ------------- |
+| `--yandex-token` | Bear token that allows you to authenticate to the API |
+| `--yandex-report-language` | (Optional) Language of the report. See all options [here](https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language). |
+| `--yandex-filter` | (Optional) Filters on a particular field. |
+| `--yandex-max-rows` | (Optional) The maximum number of rows in the report. |
+| `--yandex-field-name` | Information you want to collect. Complete list [here](https://tech.yandex.com/direct/doc/reports/fields-list-docpage/). |
+| `--yandex-report-type` | Type of report. Linked to the fields you want to select. |
+| `--yandex-date-range` | List [here](https://tech.yandex.com/direct/doc/reports/period-docpage/). |
+| `--yandex-include-vat` | Adds VAT to your expenses if set to `True`|
+| `--yandex-date-start` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-stop` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
+| `--yandex-date-stop` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-start` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
+
+### Troubleshooting
+
+You encountered and you don't know what 's going on. You may find an answer in the troubleshooting guide below.
+
+1. **Have you install NCK dependencies?** In order to run NCK, you need to install all dependencies. First create a [virtual environment](https://docs.python.org/3/library/venv.html) and then run `pip install -r requirements.txt`.
+2. **Have you set `PYTHONPATH` environment variable to the root of NCK folder?**
+3. **Have you checked logs?** The code has been implmented so that every error is logged. For example, if you did not provide a valid token, you will see something like ```Invalid request.
+{'error': {'error_code': '53', 'request_id': '8998435864716615689', 'error_string': 'Authorization error', 'error_detail': 'Invalid OAuth token'}}```. If you misspelled a field, you will get a message like this one: ```Error: Invalid value for "--yandex-field-name"```.
