@@ -34,7 +34,6 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_EMAIL: ${{ secrets.GCP_EMAIL }}
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   DOCKER_TAG: ${{ github.run_id }}
@@ -46,11 +45,21 @@ jobs:
   setup-build-publish:
     if: github.event.pull_request.merged == true
     name: Setup, Build, Publish
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
 
     - name: Checkout
       uses: actions/checkout@v1
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     # Setup gcloud CLI
     - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
