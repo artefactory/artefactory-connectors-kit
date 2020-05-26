@@ -34,6 +34,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
+  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_EMAIL: ${{ secrets.GCP_EMAIL }}
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   DOCKER_TAG: ${{ github.run_id }}
@@ -45,7 +46,7 @@ jobs:
   setup-build-publish:
     if: github.event.pull_request.merged == true
     name: Setup, Build, Publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
 
     - name: Checkout
@@ -54,7 +55,7 @@ jobs:
     # Setup gcloud CLI
     - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
-        version: '270.0.0'
+        version: '290.0.1'
         service_account_email: ${{ secrets.GCP_EMAIL }}
         service_account_key: ${{ secrets.GCP_KEY }}
 
