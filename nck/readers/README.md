@@ -335,7 +335,7 @@ Adobe Analytics Reader 2.0 uses the **JWT authentication framework**.
 Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
 
 ```
-python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key-path <PRIVATE_KEY_PATH> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-dimension daterangeday --adobe-dimension campaign --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 --adobe-metric visits write_console
+python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-dimension daterangeday --adobe-dimension campaign --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 --adobe-metric visits write_console
 ```
 
 #### Parameters
@@ -346,7 +346,7 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-cl
 |`--adobe-client-secret`|Client Secret, that you can find on Adobe Developper Console|
 |`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
 |`--adobe-org-id`|Organization ID, that you can find on Adobe Developper Console|
-|`--adobe-private-key-path`|Path to the private.key file, that you had to provide to create the integration|
+|`--adobe-private-key-path`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
 |`--adobe-global-company-id`|Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me')|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-dimension`|Dimension to include in the report|
@@ -356,7 +356,7 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-cl
 
 #### Additional information
 
-- **In API 2.0, dimension and metric names are slightly different from API 1.4**. To get new metric and dimension names and reproduce the behavior Adobe Analytics UI as closely as possible,  [enable the Debugger feature in Adobe Analytics Workspace](https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md): it allow you to visualize the back-end JSON requests made by Adobe Analytics UI to Reporting API 2.0.
+- **In API 2.0, dimension and metric names are slightly different from API 1.4**. To get new metric and dimension names and reproduce the behavior of Adobe Analytics UI as closely as possible,  [enable the Debugger feature in Adobe Analytics Workspace](https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md): it allow you to visualize the back-end JSON requests made by Adobe Analytics UI to Reporting API 2.0.
 -  **In API 2.0, the date granularity parameter was removed, and should now be handled as a dimension**: a request featuring `--adobe-dimension daterangeday` will produce a report with a day granularity.
 - **API 2.0 does not feature Data Warehouse reports yet** (along with other features, that are indicated on the "Current limitations" section of [this page](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/migration-guide.md)). For this reason, if you wish to collect multiple-dimension reports, Adobe Analytics Reader 1.4 might be a more efficient solution in terms of processing time. 
 - **If you need any further information**, the documentation of Adobe APIs 2.0 can be found [here](https://github.com/AdobeDocs/analytics-2.0-apis).

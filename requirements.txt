@@ -61,4 +61,4 @@ uritemplate==3.0.0
 urllib3==1.25.7
 Werkzeug==0.16.0
 googleads==22.0.0
-jwt==1.0.0
+pyjwt==1.7.1

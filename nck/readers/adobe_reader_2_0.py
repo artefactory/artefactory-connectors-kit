@@ -19,10 +19,10 @@
 import logging
 import click
 import json
-import datetime
 import requests
 import time
 from itertools import chain
+from datetime import timedelta
 
 from nck.utils.retry import retry
 from nck.utils.args import extract_args
@@ -45,24 +45,86 @@ logging.basicConfig(level="INFO")
 logger = logging.getLogger()
 
 
+def format_key_if_needed(ctx, param, value):
+    """
+    In some cases, newlines are escaped when passed as a click.option().
+    This callback corrects this unexpected behaviour.
+    """
+    return value.replace("\\n", "\n")
+
+
 @click.command(name="read_adobe_2_0")
-@click.option("--adobe-client-id", required=True)
-@click.option("--adobe-client-secret", required=True)
-@click.option("--adobe-tech-account-id", required=True)
-@click.option("--adobe-org-id", required=True)
-@click.option("--adobe-private-key-path", required=True)
-@click.option("--adobe-global-company-id", required=True)
-@click.option("--adobe-report-suite-id", required=True)
-@click.option("--adobe-dimension", required=True, multiple=True)
-@click.option("--adobe-metric", required=True, multiple=True)
-@click.option("--adobe-start-date", required=True, type=click.DateTime())
-@click.option("--adobe-end-date", required=True, type=click.DateTime())
+@click.option(
+    "--adobe-client-id",
+    required=True,
+    help="Client ID, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-client-secret",
+    required=True,
+    help="Client Secret, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-tech-account-id",
+    required=True,
+    help="Technical Account ID, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-org-id",
+    required=True,
+    help="Organization ID, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-private-key",
+    required=True,
+    callback=format_key_if_needed,
+    help="Content of the private.key file, that you had to provide to create the integration. "
+    "Make sure to enter the parameter in quotes, include headers, and indicate newlines as '\\n'.",
+)
+@click.option(
+    "--adobe-global-company-id",
+    required=True,
+    help="Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me')",
+)
+@click.option(
+    "--adobe-report-suite-id",
+    required=True,
+    help="ID of the requested Adobe Report Suite",
+)
+@click.option(
+    "--adobe-dimension",
+    required=True,
+    multiple=True,
+    help="To get dimension names, enable the Debugger feature in Adobe Analytics Workspace: "
+    "it will allow you to visualize the back-end JSON requests made by Adobe Analytics UI to Reporting API 2.0. "
+    "Doc: https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md",
+)
+@click.option(
+    "--adobe-metric",
+    required=True,
+    multiple=True,
+    help="To get metric names, enable the Debugger feature in Adobe Analytics Workspace: "
+    "it will allow you to visualize the back-end JSON requests made by Adobe Analytics UI to Reporting API 2.0. "
+    "Doc: https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md",
+)
+@click.option(
+    "--adobe-start-date",
+    required=True,
+    type=click.DateTime(),
+    help="Start date of the report",
+)
+@click.option(
+    "--adobe-end-date",
+    required=True,
+    type=click.DateTime(),
+    help="End date of the report",
+)
 @processor(
     "adobe_client_id",
     "adobe_client_secret",
     "adobe_tech_account_id",
     "adobe_org_id",
-    "adobe_private_key_path",
+    "adobe_private_key",
 )
 def adobe_2_0(**kwargs):
     return AdobeReader_2_0(**extract_args("adobe_", kwargs))
@@ -75,7 +137,7 @@ class AdobeReader_2_0(Reader):
         client_secret,
         tech_account_id,
         org_id,
-        private_key_path,
+        private_key,
         global_company_id,
         report_suite_id,
         dimension,
@@ -84,14 +146,14 @@ class AdobeReader_2_0(Reader):
         end_date,
     ):
         self.adobe_client = AdobeClient(
-            client_id, client_secret, tech_account_id, org_id, private_key_path,
+            client_id, client_secret, tech_account_id, org_id, private_key,
         )
         self.global_company_id = global_company_id
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)
         self.metrics = list(metric)
         self.start_date = start_date
-        self.end_date = end_date + datetime.timedelta(days=1)
+        self.end_date = end_date + timedelta(days=1)
         self.ingestion_tracker = []
         self.node_values = {}
 
@@ -147,7 +209,6 @@ class AdobeReader_2_0(Reader):
             )
             time.sleep(sleep_time)
 
-    @retry
     def get_report_page(self, rep_desc, page_nb=0):
         """
         Getting a single report page, and returning it into a raw JSON format.
@@ -164,6 +225,7 @@ class AdobeReader_2_0(Reader):
 
         return response.json()
 
+    @retry
     def get_parsed_report(self, rep_desc, metrics, parent_dim_parsed={}):
         """
         Iterating over report pages, parsing them, and returning a list of iterators,
@@ -193,6 +255,7 @@ class AdobeReader_2_0(Reader):
 
         return chain(*all_responses)
 
+    @retry
     def get_node_values(self, breakdown_item_ids):
         """
         Extracting dimension values from a full report response (all pages),

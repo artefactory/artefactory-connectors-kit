@@ -17,13 +17,14 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import logging
-import datetime
+from datetime import datetime, timedelta
 import requests
 import jwt
 
+from nck.utils.retry import retry
+
 IMS_HOST = "ims-na1.adobelogin.com"
 IMS_EXCHANGE = "https://ims-na1.adobelogin.com/ims/exchange/jwt"
-DISCOVERY_URL = "https://analytics.adobe.io/discovery/me"
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger()
@@ -37,28 +38,27 @@ class AdobeClient:
     https://github.com/AdobeDocs/analytics-2.0-apis/tree/master/examples/jwt/python
     """
 
+    @retry
     def __init__(
-        self, client_id, client_secret, tech_account_id, org_id, private_key_path,
+        self, client_id, client_secret, tech_account_id, org_id, private_key,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
         self.tech_account_id = tech_account_id
         self.org_id = org_id
-        self.private_key_path = private_key_path
+        self.private_key = private_key
 
         # Creating jwt_token attribute
         logging.info("Getting jwt_token.")
-        with open(self.private_key_path, "r") as file:
-            private_key = file.read()
         self.jwt_token = jwt.encode(
             {
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
+                "exp": datetime.utcnow() + timedelta(seconds=30),
                 "iss": self.org_id,
                 "sub": self.tech_account_id,
                 f"https://{IMS_HOST}/s/ent_analytics_bulk_ingest_sdk": True,
                 "aud": f"https://{IMS_HOST}/c/{self.client_id}",
             },
-            private_key,
+            self.private_key,
             algorithm="RS256",
         )
 

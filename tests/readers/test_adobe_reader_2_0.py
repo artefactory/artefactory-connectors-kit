@@ -29,7 +29,7 @@ class AdobeReaderTest_2_0(TestCase):
         "client_secret": "",
         "tech_account_id": "",
         "org_id": "",
-        "private_key_path": "",
+        "private_key": "",
         "global_company_id": "",
         "report_suite_id": "XXXXXXXXX",
         "dimension": [],
