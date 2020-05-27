@@ -20,8 +20,7 @@ import logging
 from datetime import datetime, timedelta
 import requests
 import jwt
-
-from nck.utils.retry import retry
+from tenacity import retry, wait_exponential, stop_after_delay
 
 IMS_HOST = "ims-na1.adobelogin.com"
 IMS_EXCHANGE = "https://ims-na1.adobelogin.com/ims/exchange/jwt"
@@ -38,10 +37,7 @@ class AdobeClient:
     https://github.com/AdobeDocs/analytics-2.0-apis/tree/master/examples/jwt/python
     """
 
-    @retry
-    def __init__(
-        self, client_id, client_secret, tech_account_id, org_id, private_key,
-    ):
+    def __init__(self, client_id, client_secret, tech_account_id, org_id, private_key):
         self.client_id = client_id
         self.client_secret = client_secret
         self.tech_account_id = tech_account_id
@@ -64,13 +60,13 @@ class AdobeClient:
 
         # Creating access_token attribute
         logging.info("Getting access_token.")
-        post_body = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-            "jwt_token": self.jwt_token,
-        }
+        self.access_token = self.get_access_token()
+
+    @retry(wait=wait_exponential(multiplier=60, min=60, max=1200), stop=stop_after_delay(3600))
+    def get_access_token(self):
+        post_body = {"client_id": self.client_id, "client_secret": self.client_secret, "jwt_token": self.jwt_token}
         response = requests.post(IMS_EXCHANGE, data=post_body)
-        self.access_token = response.json()["access_token"]
+        return response.json()["access_token"]
 
     def build_request_headers(self, global_company_id):
         """
