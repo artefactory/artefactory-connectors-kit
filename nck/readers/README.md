@@ -346,7 +346,7 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-cl
 |`--adobe-client-secret`|Client Secret, that you can find on Adobe Developper Console|
 |`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
 |`--adobe-org-id`|Organization ID, that you can find on Adobe Developper Console|
-|`--adobe-private-key-path`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
+|`--adobe-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
 |`--adobe-global-company-id`|Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me')|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-dimension`|Dimension to include in the report|
