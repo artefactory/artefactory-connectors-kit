@@ -16,7 +16,17 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import logging
 from datetime import datetime
+
+logging.basicConfig(level="INFO")
+logger = logging.getLogger()
+
+
+class APIRateLimitError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        logging.error(message)
 
 
 def add_metric_container_to_report_description(

@@ -328,7 +328,7 @@ python nck/entrypoint.py read_adobe --adobe-username <USERNAME>  --adobe-passwor
 Adobe Analytics Reader 2.0 uses the **JWT authentication framework**.
 - Get developper access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
 - Create a Service Account integration to Adobe Analytics on [Adobe Developper Console](https://console.adobe.io/)
-- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me'). All these parameters will be passed to Adobe Analytics Reader 2.0.
+- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md')). All these parameters will be passed to Adobe Analytics Reader 2.0.
 
 #### Quickstart
 
@@ -347,7 +347,7 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-cl
 |`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
 |`--adobe-org-id`|Organization ID, that you can find on Adobe Developper Console|
 |`--adobe-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
-|`--adobe-global-company-id`|Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me')|
+|`--adobe-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md'))|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-dimension`|Dimension to include in the report|
 |`--adobe-metric`|Metric  to include in the report|

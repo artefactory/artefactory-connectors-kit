@@ -31,6 +31,7 @@ from nck.readers.reader import Reader
 from nck.clients.adobe_client import AdobeClient
 from nck.streams.json_stream import JSONStream
 from nck.helpers.adobe_helper_2_0 import (
+    APIRateLimitError,
     add_metric_container_to_report_description,
     get_node_values_from_response,
     get_item_ids_from_nodes,
@@ -84,7 +85,8 @@ def format_key_if_needed(ctx, param, value):
 @click.option(
     "--adobe-global-company-id",
     required=True,
-    help="Global Company ID (to be requested to 'https://analytics.adobe.io/discovery/me')",
+    help="Global Company ID, to be requested to Discovery API. "
+    "Doc: https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md)",
 )
 @click.option(
     "--adobe-report-suite-id",
@@ -209,6 +211,7 @@ class AdobeReader_2_0(Reader):
             )
             time.sleep(sleep_time)
 
+    @retry
     def get_report_page(self, rep_desc, page_nb=0):
         """
         Getting a single report page, and returning it into a raw JSON format.
@@ -221,11 +224,13 @@ class AdobeReader_2_0(Reader):
             f"https://analytics.adobe.io/api/{self.global_company_id}/reports",
             headers=self.adobe_client.build_request_headers(self.global_company_id),
             data=json.dumps(rep_desc),
-        )
+        ).json()
 
-        return response.json()
+        if response.get("message") == "Too many requests":
+            raise APIRateLimitError("API rate limit was exceeded.")
 
-    @retry
+        return response
+
     def get_parsed_report(self, rep_desc, metrics, parent_dim_parsed={}):
         """
         Iterating over report pages, parsing them, and returning a list of iterators,
@@ -255,7 +260,6 @@ class AdobeReader_2_0(Reader):
 
         return chain(*all_responses)
 
-    @retry
     def get_node_values(self, breakdown_item_ids):
         """
         Extracting dimension values from a full report response (all pages),
