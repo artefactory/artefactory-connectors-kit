@@ -98,12 +98,8 @@ class AdobeReader(Reader):
             "reportDescription": {
                 "source": "warehouse",
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [
-                    {"id": el} for el in self.kwargs.get("report_element_id", [])
-                ],
-                "metrics": [
-                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
-                ],
+                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
+                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
             }
         }
         self.set_date_gran_report_desc(report_description)
