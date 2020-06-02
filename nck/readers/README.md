@@ -10,46 +10,122 @@ Each reader role is to read data from external source and transform it into a St
 4. Reference click command into [commands list](./__init__.py)
 5. Update current README.md
 
-
 ## Facebook Reader
 
-- Example
+#### Quickstart
 
-The following command retrieves some insights of every Ads in the Facebook account <ACCOUNT_ID> thanks to
-a Facebook App whose access_token is <ACCESS_TOKEN>.
+The Facebook Reader handles calls to 2 endpoints of the Facebook Marketing API: **Facebook Ad Insights** (to retrieve performance data), and **Facebook Object Node** (to retrieve configuration data).
 
+*Example of Facebook Ad Insights Request*
 ```
-python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-ad-object-id <ACCOUNT_ID> --facebook-breakdown gender --facebook-level ad --facebook-start-date 2019-01-01 --facebook-end-date 2019-01-01 --facebook-field date_start --facebook-field date_stop --facebook-field account_currency --facebook-field account_id --facebook-field account_name --facebook-field ad_id --facebook-field ad_name --facebook-field adset_id --facebook-field adset_name --facebook-field campaign_id --facebook-field campaign_name --facebook-field clicks --facebook-field impressions --facebook-desired-field date_start --facebook-desired-field date_stop --facebook-desired-field account_name --facebook-desired-field account_id --facebook-desired-field ad_id --facebook-desired-field ad_namefacebook-desired-field clicks --facebook-desired-field impressions write_console
+python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID> --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions[action_type:post_engagement] --facebook-field actions[action_type:video_view] --facebook-field age --facebook-field gender --facebook-time-increment 1 --facebook-start-date 2020-01-01 --facebook-end-date 2020-01-03 write_console
 ```
 
-The report below is the output of the command. You can easily store it in GCS or Biquery thanks to the corresponding
-writers([GCS writer](../writers/gcs_writer.py), [BQ writer](../writers/bigquery_writer.py)):
+*Example of Facebook Object Node Request*
 ```
-{
-  "date_start": "2019-01-05",
-  "date_stop": "2019-01-05",
-  "account_name": "example_name"
-  "account_id": "0000000000"
-  "ad_id": "00000000000",
-  "ad_name": "example_name",
-  "clicks": "1",
-  "impressions": "100"
+python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID>  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative[id] --facebook-add-date-to-report True --facebook-start-date 2020-01-01 --facebook-end-date 2019-01-01 write_console
+```
+
+#### Parameters
+
+|CLI option|Documentation|
+|:--|:--|
+|`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
+|`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
+|`--facebook-access-token`|Facebook App Access Token.|
+|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Facebook Object Node requests), ad, adset, campaign, account (default).*|
+|`--facebook-object-id`|ID of the root Facebook Object used to make the request.|
+|`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Facebook Object Node requests), ad (default), adset, campaign or account.*|
+|`--facebook-ad-insights`|*True* (default) if *Facebook Ad Insights* request, *False* if *Facebook Object Node* request.|
+|`--facebook-field`|Fields to be retrieved.|
+|`--facebook-start-date`|Start date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-end-date`|End date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-date-preset`|Relative time range. Ignored if *--facebook-start date* and *--facebook-end-date* are specified. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-time-increment`|Cuts the results between smaller time slices within the specified time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-add-date-to-report`|*True* if you wish to add the date of the request to each response record, *False* otherwise (default).|
+|`--facebook-breakdown`|How to break down the result. *This parameter is only relevant for Facebook Ad Insights Requests.*|
+|`--facebook-action-breakdown`|How to break down action results. *This parameter is only relevant for Facebook Ad Insights Requests.*|
+
+#### Additional details for a relevant use of the Facebook Reader
+
+**#1: Make sure to select the appropriate `--facebook-level`**
+
+|If Facebook Object Type is...|Facebook Level can be...|
+|:--|:--|
+|`account`|account, campaign, adset, ad, creative|
+|`campaign`|campaign, adset, ad|
+|`adset`|adset, ad, creative|
+|`ad`|ad, creative|
+|`creative`|creative|
+
+**#2: Format Facebook Reader response using `--facebook-fields`**
+
+2.1. The list of **applicable fields** can be found on the links below:
+
+- **Facebook Ad Insights Request**: [all fields](https://developers.facebook.com/docs/marketing-api/insights/parameters/v7.0)
+- **Facebook Object Node Request**: [Account-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-account), [Campaign-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group), [Adset-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign), [Ad-level fields](https://developers.facebook.com/docs/marketing-api/reference/adgroup), [Creative-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)
+
+2.2. If you want to select **a nested field value**,  simply indicate the path to this value within the request field.
+
+*Facebook Reader Request*
+```
+--facebook-field object_story_spec[video_data][call_to_action][value][link]
+```
+
+*API Response*
+```
+"object_story_spec": {
+    "video_data": {
+        "call_to_action": {
+            "type": "LEARN_MORE",
+            "value": {
+                "link": "https://www.artefact.com",
+                "link_format": "VIDEO_LPP"
+            }
+        }
+    }
 }
 ```
-See the [documentation here](https://developers.facebook.com/docs/marketing-api/insights/#marketing-api-quickstart "Create a Facebook App")
-to create a Facebook App and an access token.
 
-- Parameters of the Facebook Readers
+*Facebook Reader Response*
+```
+{"object_story_spec_video_data_call_to_action_value_link": "https://www.artefact.com"}
+```
 
-| --facebook-app-id | --facebook-app-secret | --facebook-access-token | --facebook-ad-object-id | --facebook-ad-object-type | --facebook-breakdown | --facebook-action-breakdown | --facebook-ad-insights | --facebook-level | --facebook-time-increment | --facebook-field | --facebook-desired-field | --facebook-start-date | --facebook-end-date | --facebook-date-preset | --facebook-request-date
-|:-----------------:|:---------------------:|:-----------------------:|:-----------------------:|:-------------------------:|:--------------------:|:---------------------------:|:----------------------:|:-------------------:|:-------------------------:|:----------------:|:------------------------:|:---------------------:|:-------------------:|:----------------------:|:----------------------:|
-|Facebook App ID |Facebook App ID| Facebook App access token|Object ID to request (account ID, campaign ID, ...)|Object type (account, campaign, ...)|List of breakdowns for the request|List of action-breakdowns for the request|If set to true, request insights|Represents the granularity of result|Time increment|List of fields to request|Desired fields in the output report |Start date of period|End date of period|Preset period|If set to true, the date of the request will appear in the report
+(2.3) **Action Breakdown filters** can be applied to the fields of ***Facebook Ad Insights* Requests** using the following syntax: <FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
 
-See the documents below for a better understanding of the parameters:
-- [Facebook API Insights documentation](https://developers.facebook.com/docs/marketing-api/insights)
-- [API Reference for Ad Insights](https://developers.facebook.com/docs/marketing-api/reference/adgroup/insights/)
-- [Available Fields for Nautilus](../helpers/facebook_helper.py)
+*Facebook Reader Request*
+```
+--facebook-action-breakdown action_type
+--facebook-field actions[action_type:video_view][action_type:post_engagement]
+```
 
+*API Response*
+```
+"actions": [
+    {
+        "action_type": "video_view",
+        "value": "17"
+    },
+    {
+        "action_type": "link_click",
+        "value": "8"
+    },
+    {
+        "action_type": "post_engagement",
+        "value": "25"
+    },
+    {
+        "action_type": "page_engagement",
+        "value": "12"
+    }
+]
+```
+
+*Facebook Reader Response*
+```
+{"actions_action_type_video_view": "17", "actions_action_type_post_engagement": "25"}
+```
 
 ## Google Readers
 
