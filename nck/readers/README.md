@@ -33,7 +33,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 |`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-access-token`|Facebook App Access Token.|
-|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Facebook Object Node requests), ad (default), adset, campaign, account.*|
+|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Facebook Object Node requests), ad, adset, campaign, account (default).*|
 |`--facebook-object-id`|ID of the root Facebook Object used to make the request.|
 |`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Facebook Object Node requests), ad (default), adset, campaign or account.*|
 |`--facebook-ad-insights`|*True* (default) if *Facebook Ad Insights* request, *False* if *Facebook Object Node* request.|
