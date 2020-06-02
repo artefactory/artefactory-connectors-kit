@@ -77,19 +77,6 @@ class FacebookReaderTest(TestCase):
                 {"ad_insights": False, "action_breakdown": ["action_type"]},
             ),
             (
-                "time_range_for_object_node_query",
-                {
-                    "ad_insights": False,
-                    "level": "account",
-                    "start_date": "2020-01-01",
-                    "end_date": "2020-01-01",
-                },
-            ),
-            (
-                "date_preset_for_object_node_query",
-                {"ad_insights": False, "level": "account", "date_preset": "last_30d"},
-            ),
-            (
                 "time_increment_for_object_node_query",
                 {"ad_insights": False, "time_increment": "1"},
             ),
