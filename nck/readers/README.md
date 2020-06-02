@@ -360,6 +360,83 @@ Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/
 | `--yandex-date-start` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-stop` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
 | `--yandex-date-stop` | (Optional) Selects data on a specific period of time. Combined with `--yandex-date-start` and  `--yandex-date-range` set to `CUSTOM_DATE`. |
 
+## Adobe Analytics Readers
+
+As of May 2020 (last update of this section of the documentation), **two versions of Adobe Analytics Reporting API are  coexisting: 1.4 and 2.0**. As some functionalities of API 1.4 have not been made available in API 2.0 yet (Data Warehouse reports in particular), our Adobe Analytics Readers are also available in these two versions.
+
+### Adobe Analytics Reader 1.4
+
+#### How to obtain credentials
+
+Our Adobe Analytics Reader 1.4 uses the **WSSE authentication framework**. This authentication framework is now deprecated, so you won't be able to generate new WSSE authentication credentials (Username, Password) on Adobe Developper Console if you don't already have them.
+
+#### Quickstart
+
+Call example to Adobe Analytics Reader 1.4, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
+
+```
+python nck/entrypoint.py read_adobe --adobe-username <USERNAME>  --adobe-password <PASSWORD> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 write_console
+```
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--adobe-username`|Username used for WSSE authentication|
+|`--adobe-password`|Password used for WSSE authentication|
+|`--adobe-list-report-suite`|Should be set to *True* if you wish to request the list of available Adobe Report Suites (*default: False*). If set to *True*, the below parameters should be left empty.|
+|`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
+|`--adobe-report-element-id`|ID of the element (i.e. dimension) to include in the report|
+|`--adobe-report-metric-id`|ID of the metric to include in the report|
+|`--adobe-date-granularity`|Granularity of the report. *Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS*|
+|`--adobe-start-date`|Start date of the report (format: YYYY-MM-DD)|
+|`--adobe-end-date`|End date of the report (format: YYYY-MM-DD)|
+
+#### Addtional information
+- **The full list of available elements and metrics** can be retrieved with the [GetElements](https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_GetElements.md) and [GetMetrics](https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_GetMetrics.md) methods.
+- **Adobe Analytics Reader 1.4 requests Data Warehouse reports** (the "source" parameter is set to "warehouse" in the report description), allowing it to efficiently process multiple-dimension requests.
+- **If you need further information**, the documentation of Adobe APIs 1.4 can be found [here](https://github.com/AdobeDocs/analytics-1.4-apis).
+
+### Adobe Analytics Reader 2.0
+
+#### How to obtain credentials
+
+Adobe Analytics Reader 2.0 uses the **JWT authentication framework**.
+- Get developper access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
+- Create a Service Account integration to Adobe Analytics on [Adobe Developper Console](https://console.adobe.io/)
+- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md')). All these parameters will be passed to Adobe Analytics Reader 2.0.
+
+#### Quickstart
+
+Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
+
+```
+python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-dimension daterangeday --adobe-dimension campaign --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 --adobe-metric visits write_console
+```
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--adobe-client-id`|Client ID, that you can find on Adobe Developper Console|
+|`--adobe-client-secret`|Client Secret, that you can find on Adobe Developper Console|
+|`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
+|`--adobe-org-id`|Organization ID, that you can find on Adobe Developper Console|
+|`--adobe-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
+|`--adobe-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md'))|
+|`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
+|`--adobe-dimension`|Dimension to include in the report|
+|`--adobe-metric`|Metric  to include in the report|
+|`--adobe-start-date`|Start date of the report (format: YYYY-MM-DD)|
+|`--adobe-end-date`|End date of the report (format: YYYY-MM-DD)|
+
+#### Additional information
+
+- **In API 2.0, dimension and metric names are slightly different from API 1.4**. To get new metric and dimension names and reproduce the behavior of Adobe Analytics UI as closely as possible,  [enable the Debugger feature in Adobe Analytics Workspace](https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md): it allow you to visualize the back-end JSON requests made by Adobe Analytics UI to Reporting API 2.0.
+-  **In API 2.0, the date granularity parameter was removed, and should now be handled as a dimension**: a request featuring `--adobe-dimension daterangeday` will produce a report with a day granularity.
+- **API 2.0 does not feature Data Warehouse reports yet** (along with other features, that are indicated on the "Current limitations" section of [this page](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/migration-guide.md)). For this reason, if you wish to collect multiple-dimension reports, Adobe Analytics Reader 1.4 might be a more efficient solution in terms of processing time. 
+- **If you need any further information**, the documentation of Adobe APIs 2.0 can be found [here](https://github.com/AdobeDocs/analytics-2.0-apis).
+
 ### Troubleshooting
 
 You encountered and you don't know what 's going on. You may find an answer in the troubleshooting guide below.

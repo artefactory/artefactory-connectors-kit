@@ -22,6 +22,7 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 - MySQL
 - Radarly
 - Adobe Analytics 1.4
+- Adobe Analytics 2.0
 - Yandex
 
 ### Writers
