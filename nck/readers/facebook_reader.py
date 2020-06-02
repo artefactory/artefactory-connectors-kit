@@ -218,14 +218,6 @@ class FacebookReader(Reader):
                     "Wrong query. Facebook Object Node queries do not accept Breakdowns nor Action Breakdowns."
                 )
 
-            if self.level not in ["campaign", "adset", "ad"] and (
-                (self.start_date and self.end_date) or self.date_preset
-            ):
-                raise ClickException(
-                    "Wrong query. Facebook Object Node queries only accept the time_range\
-                    and date_preset parameters at the 'campaign', 'adset' or 'ad' levels."
-                )
-
             if self.time_increment:
                 raise ClickException(
                     "Wrong query. Facebook Object Node queries do not accept the time_increment parameter."
