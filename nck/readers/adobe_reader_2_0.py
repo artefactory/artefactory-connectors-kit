@@ -56,45 +56,41 @@ def format_key_if_needed(ctx, param, value):
 
 @click.command(name="read_adobe_2_0")
 @click.option(
-    "--adobe-client-id",
+    "--adobe-2-0-client-id",
     required=True,
     help="Client ID, that you can find in your integration section on Adobe Developper Console.",
 )
 @click.option(
-    "--adobe-client-secret",
+    "--adobe-2-0-client-secret",
     required=True,
     help="Client Secret, that you can find in your integration section on Adobe Developper Console.",
 )
 @click.option(
-    "--adobe-tech-account-id",
+    "--adobe-2-0-tech-account-id",
     required=True,
     help="Technical Account ID, that you can find in your integration section on Adobe Developper Console.",
 )
 @click.option(
-    "--adobe-org-id",
+    "--adobe-2-0-org-id",
     required=True,
     help="Organization ID, that you can find in your integration section on Adobe Developper Console.",
 )
 @click.option(
-    "--adobe-private-key",
+    "--adobe-2-0-private-key",
     required=True,
     callback=format_key_if_needed,
     help="Content of the private.key file, that you had to provide to create the integration. "
     "Make sure to enter the parameter in quotes, include headers, and indicate newlines as '\\n'.",
 )
 @click.option(
-    "--adobe-global-company-id",
+    "--adobe-2-0-global-company-id",
     required=True,
     help="Global Company ID, to be requested to Discovery API. "
     "Doc: https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md)",
 )
+@click.option("--adobe-2-0-report-suite-id", required=True, help="ID of the requested Adobe Report Suite")
 @click.option(
-    "--adobe-report-suite-id",
-    required=True,
-    help="ID of the requested Adobe Report Suite",
-)
-@click.option(
-    "--adobe-dimension",
+    "--adobe-2-0-dimension",
     required=True,
     multiple=True,
     help="To get dimension names, enable the Debugger feature in Adobe Analytics Workspace: "
@@ -102,34 +98,24 @@ def format_key_if_needed(ctx, param, value):
     "Doc: https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md",
 )
 @click.option(
-    "--adobe-metric",
+    "--adobe-2-0-metric",
     required=True,
     multiple=True,
     help="To get metric names, enable the Debugger feature in Adobe Analytics Workspace: "
     "it will allow you to visualize the back-end JSON requests made by Adobe Analytics UI to Reporting API 2.0. "
     "Doc: https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md",
 )
-@click.option(
-    "--adobe-start-date",
-    required=True,
-    type=click.DateTime(),
-    help="Start date of the report",
-)
-@click.option(
-    "--adobe-end-date",
-    required=True,
-    type=click.DateTime(),
-    help="End date of the report",
-)
+@click.option("--adobe-2-0-start-date", required=True, type=click.DateTime(), help="Start date of the report")
+@click.option("--adobe-2-0-end-date", required=True, type=click.DateTime(), help="End date of the report")
 @processor(
-    "adobe_client_id",
-    "adobe_client_secret",
-    "adobe_tech_account_id",
-    "adobe_org_id",
-    "adobe_private_key",
+    "adobe_2_0_client_id",
+    "adobe_2_0_client_secret",
+    "adobe_2_0_tech_account_id",
+    "adobe_2_0_org_id",
+    "adobe_2_0_private_key",
 )
 def adobe_2_0(**kwargs):
-    return AdobeReader_2_0(**extract_args("adobe_", kwargs))
+    return AdobeReader_2_0(**extract_args("adobe_2_0_", kwargs))
 
 
 class AdobeReader_2_0(Reader):
@@ -147,9 +133,7 @@ class AdobeReader_2_0(Reader):
         start_date,
         end_date,
     ):
-        self.adobe_client = AdobeClient(
-            client_id, client_secret, tech_account_id, org_id, private_key,
-        )
+        self.adobe_client = AdobeClient(client_id, client_secret, tech_account_id, org_id, private_key)
         self.global_company_id = global_company_id
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)
@@ -172,19 +156,14 @@ class AdobeReader_2_0(Reader):
 
         rep_desc = {
             "rsid": self.report_suite_id,
-            "globalFilters": [
-                {"type": "dateRange", "dateRange": self.build_date_range()}
-            ],
+            "globalFilters": [{"type": "dateRange", "dateRange": self.build_date_range()}],
             "metricContainer": {},
             "dimension": f"variables/{self.dimensions[len(breakdown_item_ids)]}",
             "settings": {"countRepeatInstances": "true", "limit": "5000"},
         }
 
         rep_desc = add_metric_container_to_report_description(
-            rep_desc=rep_desc,
-            dimensions=self.dimensions,
-            metrics=metrics,
-            breakdown_item_ids=breakdown_item_ids,
+            rep_desc=rep_desc, dimensions=self.dimensions, metrics=metrics, breakdown_item_ids=breakdown_item_ids
         )
 
         return rep_desc
@@ -196,19 +175,11 @@ class AdobeReader_2_0(Reader):
 
         current_time = time.time()
         self.ingestion_tracker.append(current_time)
-        window_ingestion_tracker = [
-            t
-            for t in self.ingestion_tracker
-            if t >= (current_time - API_WINDOW_DURATION)
-        ]
+        window_ingestion_tracker = [t for t in self.ingestion_tracker if t >= (current_time - API_WINDOW_DURATION)]
 
         if len(window_ingestion_tracker) >= API_REQUESTS_OVER_WINDOW_LIMIT:
-            sleep_time = (
-                window_ingestion_tracker[0] + API_WINDOW_DURATION - current_time
-            )
-            logging.warning(
-                f"Throttling activated: sleeping for {sleep_time} seconds..."
-            )
+            sleep_time = window_ingestion_tracker[0] + API_WINDOW_DURATION - current_time
+            logging.warning(f"Throttling activated: sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
 
     @retry
@@ -254,9 +225,7 @@ class AdobeReader_2_0(Reader):
         if first_response["totalPages"] > 1:
             for page_nb in range(1, first_response["totalPages"]):
                 next_response = self.get_report_page(rep_desc, page_nb)
-                all_responses += [
-                    parse_response(next_response, metrics, parent_dim_parsed)
-                ]
+                all_responses += [parse_response(next_response, metrics, parent_dim_parsed)]
 
         return chain(*all_responses)
 
@@ -267,17 +236,13 @@ class AdobeReader_2_0(Reader):
         For instance: {'daterangeday_1200001': 'Jan 1, 2020'}
         """
 
-        rep_desc = self.build_report_description(
-            metrics=["visits"], breakdown_item_ids=breakdown_item_ids
-        )
+        rep_desc = self.build_report_description(metrics=["visits"], breakdown_item_ids=breakdown_item_ids)
         first_response = self.get_report_page(rep_desc)
         node_values = get_node_values_from_response(first_response)
 
         if first_response["totalPages"] > 1:
             for page_nb in range(1, first_response["totalPages"]):
-                next_node_values = get_node_values_from_response(
-                    self.get_report_page(rep_desc, page_nb)
-                )
+                next_node_values = get_node_values_from_response(self.get_report_page(rep_desc, page_nb))
                 node_values.update(next_node_values)
 
         return node_values
@@ -336,13 +301,9 @@ class AdobeReader_2_0(Reader):
 
             # If no remaining node children to explore: get report
             if len(path_to_node) == len(self.dimensions) - 1:
-                parent_dim_parsed = {
-                    node.split("_")[0]: self.node_values[node] for node in path_to_node
-                }
+                parent_dim_parsed = {node.split("_")[0]: self.node_values[node] for node in path_to_node}
                 breakdown_item_ids = get_item_ids_from_nodes(path_to_node)
-                rep_desc = self.build_report_description(
-                    self.metrics, breakdown_item_ids
-                )
+                rep_desc = self.build_report_description(self.metrics, breakdown_item_ids)
                 data = self.get_parsed_report(rep_desc, self.metrics, parent_dim_parsed)
                 yield from self.result_generator(data)
 
@@ -351,9 +312,7 @@ class AdobeReader_2_0(Reader):
             visited.append(node)
 
         # Update unvisited_childs
-        unvisited_childs = [
-            child_node for child_node in graph[node] if child_node not in visited
-        ]
+        unvisited_childs = [child_node for child_node in graph[node] if child_node not in visited]
 
         # Read through child node children
         for child_node in unvisited_childs:
@@ -369,10 +328,6 @@ class AdobeReader_2_0(Reader):
     def read(self):
 
         if len(self.dimensions) == 1:
-            yield JSONStream(
-                "results_" + self.report_suite_id, self.read_one_dimension()
-            )
+            yield JSONStream("results_" + self.report_suite_id, self.read_one_dimension())
         elif len(self.dimensions) > 1:
-            yield JSONStream(
-                "results_" + self.report_suite_id, self.read_through_graph()
-            )
+            yield JSONStream("results_" + self.report_suite_id, self.read_through_graph())
