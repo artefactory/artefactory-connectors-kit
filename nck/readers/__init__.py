@@ -26,6 +26,7 @@ from nck.readers.oracle_reader import oracle
 from nck.readers.gsheets_reader import gsheets
 from nck.readers.salesforce_reader import salesforce
 from nck.readers.facebook_reader import facebook_marketing
+from nck.readers.twitter_reader import twitter
 from nck.readers.dbm_reader import dbm
 from nck.readers.dcm_reader import dcm
 from nck.readers.ga_reader import ga
@@ -44,6 +45,7 @@ readers = [
     s3,
     sa360_reader,
     facebook_marketing,
+    twitter,
     oracle,
     dbm,
     dcm,
@@ -52,7 +54,7 @@ readers = [
     adobe,
     radarly,
     yandex_campaigns,
-    yandex_statistics
+    yandex_statistics,
 ]
 
 

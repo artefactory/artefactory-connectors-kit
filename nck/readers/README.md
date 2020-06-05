@@ -50,6 +50,64 @@ See the documents below for a better understanding of the parameters:
 - [API Reference for Ad Insights](https://developers.facebook.com/docs/marketing-api/reference/adgroup/insights/)
 - [Available Fields for Nautilus](../helpers/facebook_helper.py)
 
+## Twitter Ads Reader
+
+#### How to obtain credentials
+
+* **Apply for a developper account** trough [this link](https://developer.twitter.com/en/apply).
+* **Create a Twitter app** on the developper portal: it will generate your authentication credentials.
+* **Apply for Twitter Ads API access** by filling out [this form]([https://developer.twitter.com/en/docs/ads/general/overview/adsapi-application](https://developer.twitter.com/en/docs/ads/general/overview/adsapi-application)). Receiving Twitter approval may take up to 7 business days.
+* **Get a Campaign Analyst access to the Twitter Ads account** you wish to retrieve data for, on the @handle that you used to create your Twitter App.
+
+#### Quickstart
+
+The Twitter Ads Reader can collect **3 types of reports**, making calls to 3 endpoints of the Twitter Ads API:
+* **ANALYTICS reports**, making calls to the [Asynchronous Analytics endpoint](https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous). These reports return performance data for a wide range of metrics, that **can be aggregated over time**. Output data **can be splitted by day** when requested over a larger time period.
+* **REACH reports**, making calls to the [Reach and Average Frequency endpoint](https://developer.twitter.com/en/docs/ads/analytics/api-reference/reach). These reports return performance data with a focus on reach and frequency metrics, that **cannot be aggregated over time** (*e.g. the reach of day A and B is not equal to the reach of day A + the reach of day B, as it counts unique individuals*). Output data **cannot be splitted by day** when requested over a larger time period. These reports are available **only for the Funding Instrument and Campaign entities**.
+* **ENTITY reports**, making calls to [Campaign Management endpoints](https://developer.twitter.com/en/docs/ads/campaign-management/api-reference). These reports return details on entity configuration since the creation of the Twitter Ads account.
+
+*Call example for ANALYTICS reports*
+This call will collect engagement metrics for Line Item entities, splitting the results by day, from 2020-01-01 to 2020-01-03:
+```
+python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
+```
+
+*Call example for REACH reports*
+This call will collect reach metrics (*total_audience_reach, average_frequency*) for Campaign entities, from 2020-01-01 to 2020-01-03:
+```
+python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
+```
+
+*Call example for ENTITY reports*
+This call collects details on the configuration of Campaign entities (id, name, total_budget_amount_local_micro, currency), since the creation of the Twitter Ads account:
+```
+python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
+```
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--twitter-consumer-key`|API key, available in the 'Keys and tokens' section of your Twitter Developper App.|
+|`--twitter-consumer-secret`|API secret key, available in the 'Keys and tokens' section of your Twitter Developper App.|
+|`--twitter-access-token`|Access token, available in the 'Keys and tokens' section of your Twitter Developper App.|
+|`--twitter-access-token-secret`|Access token secret, available in the 'Keys and tokens' section of your Twitter Developper App.|
+|`--twitter-account-id`|Specifies the Twitter Account ID for which the data should be returned.|
+|`--twitter-report-type`|Specifies the type of report to collect. *Possible values: ANALYTICS, REACH, ENTITY.*|
+|`--twitter-entity`|Specifies the entity type to retrieve data for. *Possible values: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET.*|
+|`--twitter-entity-attribute`|Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned.|
+|`--twitter-granularity`|Specific to ANALYTICS reports. Specifies how granular the retrieved data should be. *Possible values: TOTAL (default), DAY.*|
+|`--twitter-metric-group`|Specific to ANALYTICS reports. Specifies the list of metrics (as a group) that should be returned. *Possible values can be found [here](https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation).* |
+|`--twitter-placement`|Specific to ANALYTICS reports. Scopes the retrieved data to a particular placement. *Possible values: ALL_ON_TWITTER (default), PUBLISHER_NETWORK.*|
+|`--twitter-segmentation-type`|Specific to ANALYTICS reports. Specifies how the retrieved data should be segmented. *Possible values can be found [here](https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation).* |
+|`--twitter-platform`|Specific to ANALYTICS reports. Required if segmentation_type is set to DEVICES or PLATFORM_VERSION. *Possible values can be identified through the targeting_criteria/locations*|
+|`--twitter-country`|Specific to ANALYTICS reports. Required if segmentation_type is set to CITIES, POSTAL_CODES, or REGION. *Possible values can be identified through the GET targeting_criteria/platforms endpoint.*|
+|`--twitter-start-date`|Specifies report start date (format: YYYY-MM-DD).|
+|`--twitter-end-date`|Specifies report end date (format: YYYY-MM-DD).|
+|`--twitter-add-request-date-to-report`|If set to *True* (default: *False*), the date on which the request is made will appear on each report record.|
+
+If you need any further information, the documentation of Twitter Ads API can be found [here](https://developer.twitter.com/en/docs/ads/general/overview).
+
 
 ## Google Readers
 

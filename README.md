@@ -14,6 +14,7 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 - Google Adwords
 - Google Search Console
 - Facebook Business Manager
+- Twitter Ads
 - Amazon S3
 - Oracle
 - SalesForce
