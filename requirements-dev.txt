@@ -1,3 +1,4 @@
+-r requirements.txt
 ipdb
 flake8
 nose
