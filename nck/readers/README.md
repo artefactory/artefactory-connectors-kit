@@ -367,9 +367,9 @@ As of May 2020 (last update of this section of the documentation), **two version
 #### How to obtain credentials
 
 Both Adobe Analytics Readers use the **JWT authentication framework**.
-- Get developper access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
-- Create a Service Account integration to Adobe Analytics on [Adobe Developper Console](https://console.adobe.io/)
-- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md')). All these parameters will be passed to Adobe Analytics Readers.
+- Get developer access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
+- Create a Service Account integration to Adobe Analytics on [Adobe Developer Console](https://console.adobe.io/)
+- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md)). All these parameters will be passed to Adobe Analytics Readers.
 
 ### Adobe Analytics Reader 1.4
 
@@ -385,12 +385,12 @@ python nck/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client
 
 |CLI option|Documentation|
 |--|--|
-|`--adobe-client-id`|Client ID, that you can find on Adobe Developper Console|
-|`--adobe-client-secret`|Client Secret, that you can find on Adobe Developper Console|
-|`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
-|`--adobe-org-id`|Organization ID, that you can find on Adobe Developper Console|
+|`--adobe-client-id`|Client ID, that you can find on Adobe Developer Console|
+|`--adobe-client-secret`|Client Secret, that you can find on Adobe Developer Console|
+|`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developer Console|
+|`--adobe-org-id`|Organization ID, that you can find on Adobe Developer Console|
 |`--adobe-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
-|`--adobe-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md'))|
+|`--adobe-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md))|
 |`--adobe-list-report-suite`|Should be set to *True* if you wish to request the list of available Adobe Report Suites (*default: False*). If set to *True*, the below parameters should be left empty.|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-report-element-id`|ID of the element (i.e. dimension) to include in the report|
@@ -418,12 +418,12 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adob
 
 |CLI option|Documentation|
 |--|--|
-|`--adobe-2-0-client-id`|Client ID, that you can find on Adobe Developper Console|
-|`--adobe-2-0-client-secret`|Client Secret, that you can find on Adobe Developper Console|
-|`--adobe-2-0-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
-|`--adobe-2-0-org-id`|Organization ID, that you can find on Adobe Developper Console|
+|`--adobe-2-0-client-id`|Client ID, that you can find on Adobe Developer Console|
+|`--adobe-2-0-client-secret`|Client Secret, that you can find on Adobe Developer Console|
+|`--adobe-2-0-tech-account-id`|Technical Account ID, that you can find on Adobe Developer Console|
+|`--adobe-2-0-org-id`|Organization ID, that you can find on Adobe Developer Console|
 |`--adobe-2-0-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
-|`--adobe-2-0-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md'))|
+|`--adobe-2-0-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md))|
 |`--adobe-2-0-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-2-0-dimension`|Dimension to include in the report|
 |`--adobe-2-0-metric`|Metric  to include in the report|
