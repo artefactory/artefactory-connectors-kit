@@ -16,9 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
-import binascii
-import uuid
-import hashlib
 import more_itertools
 import logging
 from nck.utils.text import reformat_naming_for_bq
@@ -28,31 +25,10 @@ from nck.utils.text import reformat_naming_for_bq
 # github : https://github.com/SaturnFromTitan/adobe_analytics
 
 
-def _serialize_header(properties):
-    header = ['{key}="{value}"'.format(key=k, value=v) for k, v in properties.items()]
-    return ", ".join(header)
-
-
-def build_headers(password, username):
-    nonce = str(uuid.uuid4())
-    base64nonce = binascii.b2a_base64(binascii.a2b_qp(nonce))
-    created_date = datetime.datetime.utcnow().isoformat() + "Z"
-    sha = nonce + created_date + password
-    sha_object = hashlib.sha1(sha.encode())
-    password_64 = binascii.b2a_base64(sha_object.digest())
-
-    properties = {
-        "Username": username,
-        "PasswordDigest": password_64.decode().strip(),
-        "Nonce": base64nonce.decode().strip(),
-        "Created": created_date,
-    }
-    header = "UsernameToken " + _serialize_header(properties)
-    return {"X-WSSE": header}
-
-
 def _parse_header(report):
-    dimensions = [_classification_or_name(dimension) for dimension in report["elements"]]
+    dimensions = [
+        _classification_or_name(dimension) for dimension in report["elements"]
+    ]
     metrics = [metric["name"] for metric in report["metrics"]]
     return dimensions, metrics
 
@@ -125,12 +101,19 @@ def _dimension_value(chunk):
 
 
 def _dimension_value_is_nan(chunk):
-    return ("name" not in chunk) or (chunk["name"] == "") or (chunk["name"] == "::unspecified::")
+    return (
+        ("name" not in chunk)
+        or (chunk["name"] == "")
+        or (chunk["name"] == "::unspecified::")
+    )
 
 
 def _to_datetime(chunk):
     time_stamp = datetime.datetime(
-        year=chunk["year"], month=chunk["month"], day=chunk["day"], hour=chunk.get("hour", 0)
+        year=chunk["year"],
+        month=chunk["month"],
+        day=chunk["day"],
+        hour=chunk.get("hour", 0),
     )
     return time_stamp.strftime("%Y-%m-%d %H:00:00")
 

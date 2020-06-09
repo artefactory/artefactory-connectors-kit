@@ -19,22 +19,22 @@ import click
 import logging
 import datetime
 import json
+import requests
 from time import sleep
 from itertools import chain
+
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
 from nck.utils.retry import retry
 from nck.streams.json_stream import JSONStream
-import requests
-from nck.helpers.adobe_helper import build_headers, ReportNotReadyError, parse
+from nck.clients.adobe_client import AdobeClient
+from nck.helpers.adobe_helper import ReportNotReadyError, parse
 
 from click import ClickException
 
 # Credit goes to Mr Martin Winkel for the base code provided :
 # github : https://github.com/SaturnFromTitan/adobe_analytics
-
-DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 
 LIMIT_NVIEWS_PER_REQ = 5
 
@@ -43,9 +43,48 @@ ADOBE_API_ENDPOINT = "https://api.omniture.com/admin/1.4/rest/"
 MAX_WAIT_REPORT_DELAY = 4096
 
 
+def format_key_if_needed(ctx, param, value):
+    """
+    In some cases, newlines are escaped when passed as a click.option().
+    This callback corrects this unexpected behaviour.
+    """
+    return value.replace("\\n", "\n")
+
+
 @click.command(name="read_adobe")
-@click.option("--adobe-password", required=True)
-@click.option("--adobe-username", required=True)
+@click.option(
+    "--adobe-client-id",
+    required=True,
+    help="Client ID, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-client-secret",
+    required=True,
+    help="Client Secret, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-tech-account-id",
+    required=True,
+    help="Technical Account ID, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-org-id",
+    required=True,
+    help="Organization ID, that you can find in your integration section on Adobe Developper Console.",
+)
+@click.option(
+    "--adobe-private-key",
+    required=True,
+    callback=format_key_if_needed,
+    help="Content of the private.key file, that you had to provide to create the integration. "
+    "Make sure to enter the parameter in quotes, include headers, and indicate newlines as '\\n'.",
+)
+@click.option(
+    "--adobe-global-company-id",
+    required=True,
+    help="Global Company ID, to be requested to Discovery API. "
+    "Doc: https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md)",
+)
 @click.option("--adobe-list-report-suite", type=click.BOOL, default=False)
 @click.option("--adobe-report-suite-id")
 @click.option("--adobe-report-element-id", multiple=True)
@@ -65,9 +104,20 @@ def adobe(**kwargs):
 
 
 class AdobeReader(Reader):
-    def __init__(self, password, username, **kwargs):
-        self.password = password
-        self.username = username
+    def __init__(
+        self,
+        client_id,
+        client_secret,
+        tech_account_id,
+        org_id,
+        private_key,
+        global_company_id,
+        **kwargs,
+    ):
+        self.adobe_client = AdobeClient(
+            client_id, client_secret, tech_account_id, org_id, private_key
+        )
+        self.global_company_id = global_company_id
         self.kwargs = kwargs
 
     def request(self, api, method, data=None):
@@ -82,7 +132,7 @@ class AdobeReader(Reader):
             ADOBE_API_ENDPOINT,
             params={"method": api_method},
             data=json.dumps(data),
-            headers=build_headers(self.password, self.username),
+            headers=self.adobe_client.build_request_headers(self.global_company_id),
         )
         json_response = response.json()
         logging.debug("Response: {}".format(json_response))
@@ -98,8 +148,12 @@ class AdobeReader(Reader):
             "reportDescription": {
                 "source": "warehouse",
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
-                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
+                "elements": [
+                    {"id": el} for el in self.kwargs.get("report_element_id", [])
+                ],
+                "metrics": [
+                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
+                ],
             }
         }
         self.set_date_gran_report_desc(report_description)
