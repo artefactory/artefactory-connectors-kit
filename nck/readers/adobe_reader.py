@@ -29,7 +29,7 @@ from nck.utils.args import extract_args
 from nck.utils.retry import retry
 from nck.streams.json_stream import JSONStream
 from nck.clients.adobe_client import AdobeClient
-from nck.helpers.adobe_helper import ReportNotReadyError, parse
+from nck.helpers.adobe_helper import ReportDescriptionError, ReportNotReadyError, parse
 
 from click import ClickException
 
@@ -261,9 +261,12 @@ class AdobeReader(Reader):
             idf = "list_rps"
         else:
             query_rep = self.query_report()
-            rep_id = query_rep["reportID"]
-            data = self.download_report(rep_id)
-            idf = "report_" + str(rep_id)
+            if query_rep.get("error"):
+                raise ReportDescriptionError(query_rep)
+            else:
+                rep_id = query_rep["reportID"]
+                data = self.download_report(rep_id)
+                idf = "report_" + str(rep_id)
 
         def result_generator():
             if data:

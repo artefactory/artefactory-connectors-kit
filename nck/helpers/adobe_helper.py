@@ -133,6 +133,12 @@ def parse(raw_response):
                 yield {header: None for header in headers}
 
 
+class ReportDescriptionError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        logging.error(message)
+
+
 class ReportNotReadyError(Exception):
     def __init__(self, message):
         super().__init__(message)
