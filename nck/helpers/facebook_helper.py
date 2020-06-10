@@ -16,6 +16,15 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import config
+import logging
+from tenacity import (
+    retry as _retry,
+    wait_exponential,
+    stop_after_delay,
+    before_sleep_log,
+)
+
 from facebook_business.adobjects.adsinsights import AdsInsights
 
 FACEBOOK_OBJECTS = ["creative", "ad", "adset", "campaign", "account"]
@@ -33,6 +42,15 @@ ACTION_BREAKDOWNS = [
     for k, v in AdsInsights.ActionBreakdowns.__dict__.items()
     if not k.startswith("__")
 ]
+
+
+def facebook_retry(fn):
+    return _retry(
+        wait=wait_exponential(multiplier=60, min=60, max=1200),
+        stop=stop_after_delay(3600),
+        reraise=True,
+        before_sleep=before_sleep_log(config.logger, logging.INFO),
+    )(fn)
 
 
 def get_action_breakdown_filters(field_path):

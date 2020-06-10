@@ -18,7 +18,6 @@
 
 import logging
 import click
-
 import re
 from click import ClickException
 from datetime import datetime
@@ -26,7 +25,6 @@ from datetime import datetime
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
 from nck.commands.command import processor
-from nck.utils.retry import retry
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.helpers.facebook_helper import (
     FACEBOOK_OBJECTS,
@@ -35,6 +33,7 @@ from nck.helpers.facebook_helper import (
     ACTION_BREAKDOWNS,
     get_action_breakdown_filters,
     get_field_values,
+    facebook_retry,
 )
 
 from facebook_business.api import FacebookAdsApi
@@ -283,42 +282,66 @@ class FacebookReader(Reader):
 
         return obj
 
-    @retry
+    @facebook_retry
+    def get_object_node_edges(self, obj):
+        EDGE_QUERY_MAPPING = {
+            "campaign": obj.get_campaigns,
+            "adset": obj.get_ad_sets,
+            "ad": obj.get_ads,
+            "creative": obj.get_ad_creatives,
+        }
+        return EDGE_QUERY_MAPPING[self.level]()
+
+    @facebook_retry
+    def get_object_node_record(self, obj, fields, params):
+        return obj.api_get(fields=fields, params=params)
+
+    @facebook_retry
+    def get_ad_insights_record(self, obj, fields, params):
+        return obj.get_insights(fields=fields, params=params)
+
     def query_ad_insights(self, fields, params, object_id):
         """
         AdInsights documentation:
         https://developers.facebook.com/docs/marketing-api/insights
         """
+
+        logging.info(
+            f"Running Facebook Ad Insights query on {self.object_type}_id: {object_id}"
+        )
+
         # Step 1 - Create Facebook object
         obj = self.create_object(object_id)
 
         # Step 2 - Run AdInsights query on Facebook object
-        for element in obj.get_insights(fields=fields, params=params):
+        for element in self.get_ad_insights_record(obj, fields, params):
             yield element
 
-    @retry
     def query_object_node(self, fields, params, object_id):
         """
         Supported Facebook Object Nodes: AdAccount, Campaign, AdSet, Ad and AdCreative
         Documentation: https://developers.facebook.com/docs/marketing-api/reference/
         """
+
+        logging.info(
+            f"Running Facebook Object Node query on {self.object_type}_id: {object_id}"
+        )
+
         # Step 1 - Create Facebook object
         obj = self.create_object(object_id)
 
         # Step 2 - Run Facebook Object Node query on the Facebook object itself,
         # or on one of its edges (depending on the specified level)
         if self.level == self.object_type:
-            yield obj.api_get(fields=fields, params=params)
+            yield self.get_object_node_record(obj, fields, params)
         else:
-            EDGE_QUERY_MAPPING = {
-                "campaign": obj.get_campaigns(),
-                "adset": obj.get_ad_sets(),
-                "ad": obj.get_ads(),
-                "creative": obj.get_ad_creatives(),
-            }
-            edge_objs = EDGE_QUERY_MAPPING[self.level]
+            edge_objs = self.get_object_node_edges(obj)
+            logging.info(
+                f"Making requests on {edge_objs._total_count} {self.level}s (edges of {self.object_type}_id: {object_id})"
+            )
             for element in [
-                edge_obj.api_get(fields=fields, params=params) for edge_obj in edge_objs
+                self.get_object_node_record(edge_obj, fields, params)
+                for edge_obj in edge_objs
             ]:
                 yield element
 
