@@ -195,17 +195,30 @@ class TwitterReader(Reader):
         self.platform = platform
         self.country = country
 
-        # Define check functions
+        # Validate input parameters
+        self.validate_params()
 
-        def check_report_dates():
+    def validate_params(self):
+        """
+        Validate combination of input parameters (triggered in TwitterReader constructor).
+        """
 
-            if end_date < start_date:
-                raise ClickException(
-                    "Report end date should be equal or anterior to report start date."
-                )
+        self.validate_dates()
+        self.validate_analytics_segmentation()
+        self.validate_analytics_metric_groups()
+        self.validate_reach_entity()
+        self.validate_entity_attributes()
 
-        def check_analytics_report_segmentation():
+    def validate_dates(self):
 
+        if self.end_date - timedelta(days=1) < self.start_date:
+            raise ClickException(
+                "Report end date should be equal or ulterior to report start date."
+            )
+
+    def validate_analytics_segmentation(self):
+
+        if self.report_type == "ANALYTICS":
             if (
                 self.segmentation_type in ["DEVICES", "PLATFORM VERSION"]
                 and not self.platform
@@ -218,7 +231,9 @@ class TwitterReader(Reader):
             ):
                 raise ClickException("Please provide a value for 'country'.")
 
-        def check_analytics_report_metric_groups():
+    def validate_analytics_metric_groups(self):
+
+        if self.report_type == "ANALYTICS":
 
             if self.entity == "FUNDING_INSTRUMENT" and any(
                 [
@@ -238,14 +253,18 @@ class TwitterReader(Reader):
                     "'MOBILE_CONVERSION' data should be requested separately."
                 )
 
-        def check_reach_report_entities():
+    def validate_reach_entity(self):
+
+        if self.report_type == "REACH":
 
             if self.entity not in ["CAMPAIGN", "FUNDING_INSTRUMENT"]:
                 raise ClickException(
                     "'REACH' reports only accept the 'CAMPAIGN' and 'FUNDING_INSTRUMENT' entities."
                 )
 
-        def check_entity_report_entity_attributes():
+    def validate_entity_attributes(self):
+
+        if self.report_type == "ENTITY":
 
             if not all(
                 [
@@ -256,20 +275,6 @@ class TwitterReader(Reader):
                 raise ClickException(
                     f"Available attributes for '{self.entity}' are: {ENTITY_ATTRIBUTES[self.entity]}"
                 )
-
-        # Check input parameters
-
-        check_report_dates()
-
-        if self.report_type == "ANALYTICS":
-            check_analytics_report_segmentation()
-            check_analytics_report_metric_groups()
-
-        elif self.report_type == "REACH":
-            check_reach_report_entities()
-
-        elif self.report_type == "ENTITY":
-            check_entity_report_entity_attributes()
 
     def get_daily_period_items(self):
         """

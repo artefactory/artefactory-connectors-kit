@@ -50,7 +50,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    def test_check_report_dates(self):
+    def test_validate_dates(self):
         temp_kwargs = self.kwargs.copy()
         params = {"start_date": datetime(2020, 1, 3), "end_date": datetime(2020, 1, 1)}
         temp_kwargs.update(params)
@@ -59,7 +59,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    def test_check_analytics_report_segmentation_if_missing_platform(self):
+    def test_validate_analytics_segmentation_if_missing_platform(self):
         temp_kwargs = self.kwargs.copy()
         params = {
             "report_type": "ANALYTICS",
@@ -72,7 +72,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    def test_check_analytics_report_segmentation_if_missing_country(self):
+    def test_validate_analytics_segmentation_if_missing_country(self):
         temp_kwargs = self.kwargs.copy()
         params = {
             "report_type": "ANALYTICS",
@@ -85,7 +85,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    def test_check_analytics_report_metric_groups_if_funding_instrument(self):
+    def test_validate_analytics_metric_groups_if_funding_instrument(self):
         temp_kwargs = self.kwargs.copy()
         params = {
             "report_type": "ANALYTICS",
@@ -98,7 +98,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    def test_check_analytics_report_metric_groups_if_mobile_conversion(self):
+    def test_validate_analytics_metric_groups_if_mobile_conversion(self):
         temp_kwargs = self.kwargs.copy()
         params = {
             "report_type": "ANALYTICS",
@@ -110,7 +110,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    def test_check_reach_report_entities(self):
+    def test_validate_reach_entity(self):
         temp_kwargs = self.kwargs.copy()
         params = {"report_type": "REACH", "entity": "LINE_ITEM"}
         temp_kwargs.update(params)
@@ -119,7 +119,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    def test_check_entity_report_entity_attributes(self):
+    def test_validate_entity_attributes(self):
         temp_kwargs = self.kwargs.copy()
         params = {
             "report_type": "ENTITY",
