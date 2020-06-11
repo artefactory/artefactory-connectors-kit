@@ -13,7 +13,6 @@
 import logging
 import click
 from click import ClickException
-import pandas as pd
 from time import sleep
 from itertools import chain
 from datetime import datetime, timedelta
@@ -38,9 +37,6 @@ from twitter_ads.utils import split_list
 from twitter_ads import API_VERSION
 from twitter_ads.http import Request
 from twitter_ads.cursor import Cursor
-
-logging.basicConfig(level="INFO")
-logger = logging.getLogger()
 
 API_DATEFORMAT = "%Y-%m-%dT%H:%M:%SZ"
 REP_DATEFORMAT = "%Y-%m-%d"
@@ -199,9 +195,16 @@ class TwitterReader(Reader):
         self.platform = platform
         self.country = country
 
-        # Check input parameters
+        # Define check functions
 
-        if self.report_type == "ANALYTICS":
+        def check_report_dates():
+
+            if end_date < start_date:
+                raise ClickException(
+                    "Report end date should be equal or anterior to report start date."
+                )
+
+        def check_analytics_report_segmentation():
 
             if (
                 self.segmentation_type in ["DEVICES", "PLATFORM VERSION"]
@@ -215,6 +218,8 @@ class TwitterReader(Reader):
             ):
                 raise ClickException("Please provide a value for 'country'.")
 
+        def check_analytics_report_metric_groups():
+
             if self.entity == "FUNDING_INSTRUMENT" and any(
                 [
                     metric_group not in ["ENGAGEMENT", "BILLING"]
@@ -225,21 +230,22 @@ class TwitterReader(Reader):
                     "'FUNDING_INSTRUMENT' only accept the 'ENGAGEMENT' and 'BILLING' metric groups."
                 )
 
-            if "MOBILE_CONVERSION" in self.metric_groups and len(
-                self.metric_groups > 1
+            if (
+                "MOBILE_CONVERSION" in self.metric_groups
+                and len(self.metric_groups) > 1
             ):
                 raise ClickException(
                     "'MOBILE_CONVERSION' data should be requested separately."
                 )
 
-        elif self.report_type == "REACH":
+        def check_reach_report_entities():
 
             if self.entity not in ["CAMPAIGN", "FUNDING_INSTRUMENT"]:
                 raise ClickException(
                     "'REACH' reports only accept the 'CAMPAIGN' and 'FUNDING_INSTRUMENT' entities."
                 )
 
-        elif self.report_type == "ENTITY":
+        def check_entity_report_entity_attributes():
 
             if not all(
                 [
@@ -251,20 +257,28 @@ class TwitterReader(Reader):
                     f"Available attributes for '{self.entity}' are: {ENTITY_ATTRIBUTES[self.entity]}"
                 )
 
+        # Check input parameters
+
+        check_report_dates()
+
+        if self.report_type == "ANALYTICS":
+            check_analytics_report_segmentation()
+            check_analytics_report_metric_groups()
+
+        elif self.report_type == "REACH":
+            check_reach_report_entities()
+
+        elif self.report_type == "ENTITY":
+            check_entity_report_entity_attributes()
+
     def get_daily_period_items(self):
         """
         Returns a list of datetime instances representing each date contained
         in the requested period. Useful when granularity is set to 'DAY'.
         """
 
-        period_items = []
-        current_date = self.start_date
-
-        while current_date < self.end_date:
-            period_items.append(current_date)
-            current_date += timedelta(days=1)
-
-        return period_items
+        delta = self.end_date - self.start_date
+        return [self.start_date + timedelta(days=i) for i in range(delta.days)]
 
     def get_active_entity_ids(self):
         """
@@ -333,22 +347,48 @@ class TwitterReader(Reader):
         """
 
         for entity_resp in raw_analytics_response["data"]:
-
             for entity_data in entity_resp["id_data"]:
+                entity_records = [
+                    {
+                        "id": entity_resp["id"],
+                        **{
+                            mt: 0
+                            if entity_data["metrics"][mt] is None
+                            else entity_data["metrics"][mt][i]
+                            for mt in entity_data["metrics"]
+                        },
+                    }
+                    for i in range(raw_analytics_response["time_series_length"])
+                ]
+                entity_records = self.add_daily_timestamps(entity_records)
+                entity_records = self.add_segment(entity_records, entity_data)
+                yield from entity_records
 
-                entity_df = pd.DataFrame(entity_data["metrics"]).fillna(0)
-                entity_df["id"] = entity_resp["id"]
-                if self.granularity == "DAY":
-                    entity_df["date"] = [
-                        item.strftime(REP_DATEFORMAT)
-                        for item in self.get_daily_period_items()
-                    ]
-                if self.segmentation_type:
-                    entity_df[self.segmentation_type.lower()] = entity_data["segment"][
-                        "segment_name"
-                    ]
+    def add_daily_timestamps(self, entity_records):
+        """
+        Add daily timestamps to a list of records, if granularity is 'DAY'.
+        """
 
-                yield from entity_df.to_dict("records")
+        if self.granularity == "DAY":
+            period_items = self.get_daily_period_items()
+            return [
+                {**entity_records[i], "date": period_items[i].strftime(REP_DATEFORMAT)}
+                for i in range(len(entity_records))
+            ]
+        return entity_records
+
+    def add_segment(self, entity_records, entity_data):
+        """
+        Add segment to a list of records, if a segmentation_type is requested.
+        """
+
+        if self.segmentation_type:
+            entity_segment = entity_data["segment"]["segment_name"]
+            return [
+                {**rec, self.segmentation_type.lower(): entity_segment}
+                for rec in entity_records
+            ]
+        return entity_records
 
     def get_analytics_report(self, job_ids):
         """
@@ -380,7 +420,7 @@ class TwitterReader(Reader):
 
     def get_entity_report(self):
         """
-        Get 'ENTITY' report through 'Core Entity' endpoints of Twitter Ads API.
+        Get 'ENTITY' report through 'Campaign Management' endpoints of Twitter Ads API.
         Documentation: https://developer.twitter.com/en/docs/ads/campaign-management/api-reference
         """
 
@@ -403,11 +443,7 @@ class TwitterReader(Reader):
         Documentation: https://developer.twitter.com/en/docs/ads/analytics/api-reference/reach
         """
 
-        resource = (
-            "/"
-            + API_VERSION
-            + f"/stats/accounts/{self.account.id}/reach/{self.entity.lower()}s"
-        )
+        resource = f"/{API_VERSION}/stats/accounts/{self.account.id}/reach/{self.entity.lower()}s"
         entity_ids = self.get_active_entity_ids()
 
         for chunk_entity_ids in split_list(entity_ids, MAX_ENTITY_IDS_PER_JOB):
@@ -420,17 +456,22 @@ class TwitterReader(Reader):
             request = Request(self.client, "get", resource, params=params)
             yield from Cursor(None, request)
 
-    def add_date_if_necessary(self, record):
+    def add_request_or_period_dates(self, record):
         """
         Add request_date, period_start_date and/or period_end_date to a JSON-like record.
         """
 
+        def check_add_period_date_to_report():
+            if self.report_type == "ANALYTICS" and self.granularity == "TOTAL":
+                return True
+            elif self.report_type == "REACH":
+                return True
+            return False
+
         if self.add_request_date_to_report:
             record["request_date"] = datetime.today().strftime(REP_DATEFORMAT)
 
-        if (
-            self.report_type == "ANALYTICS" and self.granularity == "TOTAL"
-        ) or self.report_type == "REACH":
+        if check_add_period_date_to_report():
             record["period_start_date"] = self.start_date.strftime(REP_DATEFORMAT)
             record["period_end_date"] = (self.end_date - timedelta(days=1)).strftime(
                 REP_DATEFORMAT
@@ -461,6 +502,6 @@ class TwitterReader(Reader):
 
         def result_generator():
             for record in data:
-                yield self.add_date_if_necessary(record)
+                yield self.add_request_or_period_dates(record)
 
         yield JSONStream("results_" + self.account.id, result_generator())

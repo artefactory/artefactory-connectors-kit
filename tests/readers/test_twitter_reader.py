@@ -17,33 +17,137 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from unittest import TestCase, mock
+from click import ClickException
 from freezegun import freeze_time
+from datetime import datetime
 
-from datetime import datetime, timedelta
+from twitter_ads.client import Client
 
 from nck.readers.twitter_reader import TwitterReader
 
 
 class TwitterReaderTest(TestCase):
-    def mock_twitter_reader(self, **kwargs):
-        for param, value in kwargs.items():
-            if param == "end_date":
-                setattr(self, param, value + timedelta(days=1))
-            else:
-                setattr(self, param, value)
-        setattr(self, "account", mock.MagicMock())
 
-    @mock.patch.object(TwitterReader, "__init__", mock_twitter_reader)
+    kwargs = {
+        "consumer_key": "",
+        "consumer_secret": "",
+        "access_token": "",
+        "access_token_secret": "",
+        "account_id": "",
+        "report_type": None,
+        "entity": None,
+        "entity_attribute": [],
+        "granularity": None,
+        "metric_group": [],
+        "placement": None,
+        "segmentation_type": None,
+        "platform": None,
+        "country": None,
+        "add_request_date_to_report": None,
+        "start_date": datetime(2020, 1, 1),
+        "end_date": datetime(2020, 1, 3),
+    }
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_check_report_dates(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {"start_date": datetime(2020, 1, 3), "end_date": datetime(2020, 1, 1)}
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_check_analytics_report_segmentation_if_missing_platform(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {
+            "report_type": "ANALYTICS",
+            "segmentation_type": "DEVICES",
+            "platform": None,
+        }
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_check_analytics_report_segmentation_if_missing_country(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {
+            "report_type": "ANALYTICS",
+            "segmentation_type": "CITIES",
+            "country": None,
+        }
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_check_analytics_report_metric_groups_if_funding_instrument(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {
+            "report_type": "ANALYTICS",
+            "entity": "FUNDING_INSTRUMENT",
+            "metric_group": ["ENGAGEMENT", "VIDEO"],
+        }
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_check_analytics_report_metric_groups_if_mobile_conversion(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {
+            "report_type": "ANALYTICS",
+            "metric_group": ["MOBILE_CONVERSION", "ENGAGEMENT"],
+        }
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_check_reach_report_entities(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {"report_type": "REACH", "entity": "LINE_ITEM"}
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_check_entity_report_entity_attributes(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {
+            "report_type": "ENTITY",
+            "entity": "CAMPAIGN",
+            "entity_attribute": ["id", "name", "XXXXX"],
+        }
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
     def test_get_daily_period_items(self):
-        kwargs = {"start_date": datetime(2020, 1, 1), "end_date": datetime(2020, 1, 3)}
-        output = TwitterReader(**kwargs).get_daily_period_items()
+        temp_kwargs = self.kwargs.copy()
+        params = {"start_date": datetime(2020, 1, 1), "end_date": datetime(2020, 1, 3)}
+        temp_kwargs.update(params)
+        output = TwitterReader(**temp_kwargs).get_daily_period_items()
         expected = [datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3)]
         self.assertEqual(output, expected)
 
-    @mock.patch.object(TwitterReader, "__init__", mock_twitter_reader)
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
     def test_parse_with_total_granularity(self):
-        kwargs = {"granularity": "TOTAL", "segmentation_type": None}
+        temp_kwargs = self.kwargs.copy()
+        params = {"granularity": "TOTAL", "segmentation_type": None}
+        temp_kwargs.update(params)
         raw_analytics_response = {
+            "time_series_length": 1,
             "data": [
                 {
                     "id": "XXXXX",
@@ -59,7 +163,7 @@ class TwitterReaderTest(TestCase):
                 },
             ],
         }
-        output = TwitterReader(**kwargs).parse(raw_analytics_response)
+        output = TwitterReader(**temp_kwargs).parse(raw_analytics_response)
         expected = [
             {"id": "XXXXX", "retweets": 11, "likes": 12},
             {"id": "YYYYY", "retweets": 21, "likes": 22},
@@ -67,15 +171,19 @@ class TwitterReaderTest(TestCase):
         for output_record, expected_record in zip(output, expected):
             self.assertEqual(output_record, expected_record)
 
-    @mock.patch.object(TwitterReader, "__init__", mock_twitter_reader)
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
     def test_parse_with_day_granularity(self):
-        kwargs = {
+        temp_kwargs = self.kwargs.copy()
+        params = {
             "granularity": "DAY",
             "segmentation_type": None,
             "start_date": datetime(2020, 1, 1),
             "end_date": datetime(2020, 1, 3),
         }
+        temp_kwargs.update(params)
         raw_analytics_response = {
+            "time_series_length": 3,
             "data": [
                 {
                     "id": "XXXXX",
@@ -103,7 +211,7 @@ class TwitterReaderTest(TestCase):
                 },
             ],
         }
-        output = TwitterReader(**kwargs).parse(raw_analytics_response)
+        output = TwitterReader(**temp_kwargs).parse(raw_analytics_response)
         expected = [
             {"date": "2020-01-01", "id": "XXXXX", "retweets": 11, "likes": 14},
             {"date": "2020-01-02", "id": "XXXXX", "retweets": 12, "likes": 15},
@@ -115,10 +223,14 @@ class TwitterReaderTest(TestCase):
         for output_record, expected_record in zip(output, expected):
             self.assertEqual(output_record, expected_record)
 
-    @mock.patch.object(TwitterReader, "__init__", mock_twitter_reader)
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
     def test_parse_with_segment(self):
-        kwargs = {"granularity": "TOTAL", "segmentation_type": "GENDER"}
+        temp_kwargs = self.kwargs.copy()
+        params = {"granularity": "TOTAL", "segmentation_type": "GENDER"}
+        temp_kwargs.update(params)
         raw_analytics_response = {
+            "time_series_length": 1,
             "data": [
                 {
                     "id": "XXXXX",
@@ -148,7 +260,7 @@ class TwitterReaderTest(TestCase):
                 },
             ],
         }
-        output = TwitterReader(**kwargs).parse(raw_analytics_response)
+        output = TwitterReader(**temp_kwargs).parse(raw_analytics_response)
         expected = [
             {"id": "XXXXX", "gender": "Male", "retweets": 11, "likes": 12},
             {"id": "XXXXX", "gender": "Female", "retweets": 13, "likes": 14},
@@ -158,24 +270,27 @@ class TwitterReaderTest(TestCase):
         for output_record, expected_record in zip(output, expected):
             self.assertDictEqual(output_record, expected_record)
 
-    @freeze_time("2020-01-01")
-    @mock.patch.object(TwitterReader, "__init__", mock_twitter_reader)
-    def test_add_date_if_necessary(self):
-        kwargs = {
+    @freeze_time("2020-01-03")
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_add_request_or_period_dates(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {
             "report_type": "ANALYTICS",
             "granularity": "TOTAL",
             "start_date": datetime(2020, 1, 1),
             "end_date": datetime(2020, 1, 3),
             "add_request_date_to_report": True,
         }
+        temp_kwargs.update(params)
         record = {"id": "XXXXX", "name": "Artefact Campaign"}
-        output = TwitterReader(**kwargs).add_date_if_necessary(record)
+        output = TwitterReader(**temp_kwargs).add_request_or_period_dates(record)
         expected = {
             "id": "XXXXX",
             "name": "Artefact Campaign",
             "period_start_date": "2020-01-01",
             "period_end_date": "2020-01-03",
-            "request_date": "2020-01-01",
+            "request_date": "2020-01-03",
         }
         self.assertEqual(output, expected)
 
@@ -190,7 +305,8 @@ class TwitterReaderTest(TestCase):
             {"id": "YYYYY", "retweets": 21, "likes": 22},
         ]
 
-    @mock.patch.object(TwitterReader, "__init__", mock_twitter_reader)
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
     @mock.patch.object(
         TwitterReader, "get_active_entity_ids", lambda *args: ["XXXXX", "YYYYYY"]
     )
@@ -199,12 +315,16 @@ class TwitterReaderTest(TestCase):
     @mock.patch.object(TwitterReader, "get_raw_analytics_response", lambda *args: {})
     @mock.patch.object(TwitterReader, "parse", mock_parse)
     def test_read_analytics_report(self):
-        kwargs = {
+        temp_kwargs = self.kwargs.copy()
+        params = {
             "report_type": "ANALYTICS",
             "granularity": "DAY",
             "add_request_date_to_report": False,
         }
-        output = next(TwitterReader(**kwargs).read())
+        temp_kwargs.update(params)
+        reader = TwitterReader(**temp_kwargs)
+        reader.account = mock.MagicMock()
+        output = next(reader.read())
         expected = [
             {"id": "XXXXX", "retweets": 11, "likes": 12},
             {"id": "YYYYY", "retweets": 21, "likes": 22},
