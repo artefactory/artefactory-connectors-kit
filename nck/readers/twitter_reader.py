@@ -171,23 +171,23 @@ class TwitterReader(Reader):
         end_date,
         add_request_date_to_report,
     ):
-        # Authentification params
+        # Authentication inputs
         self.client = Client(
             consumer_key, consumer_secret, access_token, access_token_secret
         )
         self.account = self.client.accounts(account_id)
 
-        # General params
+        # General inputs
         self.report_type = report_type
         self.entity = entity
         self.start_date = start_date
         self.end_date = end_date + timedelta(days=1)
         self.add_request_date_to_report = add_request_date_to_report
 
-        # Report params: ENTITY
+        # Report inputs: ENTITY
         self.entity_attributes = list(entity_attribute)
 
-        # Report params: ANALYTICS
+        # Report inputs: ANALYTICS
         self.granularity = granularity
         self.metric_groups = list(metric_group)
         self.placement = placement
@@ -195,10 +195,10 @@ class TwitterReader(Reader):
         self.platform = platform
         self.country = country
 
-        # Validate input parameters
-        self.validate_params()
+        # Validate inputs
+        self.validate_inputs()
 
-    def validate_params(self):
+    def validate_inputs(self):
         """
         Validate combination of input parameters (triggered in TwitterReader constructor).
         """
