@@ -51,13 +51,20 @@ class FacebookReaderTest(TestCase):
 
     @parameterized.expand(
         [
-            ("incompatible_level", {"object_type": "ad", "level": "account"}),
             (
-                "missing_breakdown",
+                "object_type_and_level_combination",
+                {"object_type": "ad", "level": "account"},
+            ),
+            (
+                "ad_insights_level",
+                {"ad_insights": True, "object_type": "creative", "level": "creative"},
+            ),
+            (
+                "ad_insights_breakdowns",
                 {"ad_insights": True, "field": ["age"], "breakdown": []},
             ),
             (
-                "missing_action_breakdown",
+                "ad_insights_action_breakdowns",
                 {
                     "ad_insights": True,
                     "field": ["actions[action_type:link_click]"],
@@ -65,29 +72,27 @@ class FacebookReaderTest(TestCase):
                 },
             ),
             (
-                "creative_level_for_adinsights_query",
-                {"ad_insights": True, "object_type": "creative", "level": "creative"},
-            ),
-            (
-                "breakdown_for_object_node_query",
+                "ad_management_inputs_breakdown_check",
                 {"ad_insights": False, "breakdown": ["age"]},
             ),
             (
-                "action_breakdown_for_object_node_query",
+                "ad_management_inputs_action_breakdown_check",
                 {"ad_insights": False, "action_breakdown": ["action_type"]},
             ),
             (
-                "time_increment_for_object_node_query",
+                "ad_management_inputs_time_increment_check",
                 {"ad_insights": False, "time_increment": "1"},
             ),
         ]
     )
-    def test_refuse_invalid_input(self, name, parameters):
+    @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
+    def test_validate_inputs(self, name, parameters):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(parameters)
         with self.assertRaises(ClickException):
             FacebookReader(**temp_kwargs)
 
+    @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
     def test_get_api_fields(self):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(
@@ -104,6 +109,7 @@ class FacebookReaderTest(TestCase):
         expected = ["impressions", "actions"]
         self.assertEqual(set(FacebookReader(**temp_kwargs)._api_fields), set(expected))
 
+    @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
     def test_get_field_paths(self):
 
         temp_kwargs = self.kwargs.copy()
@@ -148,17 +154,17 @@ class FacebookReaderTest(TestCase):
         for record, report in zip(data.readlines(), iter(expected)):
             self.assertEqual(record, report)
 
-    @mock.patch("nck.readers.facebook_reader.FacebookReader.query_object_node")
+    @mock.patch("nck.readers.facebook_reader.FacebookReader.query_ad_management")
     @mock.patch.object(FacebookReader, "get_params", lambda *args: {})
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
-    def test_read_with_object_node_query(self, mock_query_object_node):
+    def test_read_with_ad_management_query(self, mock_query_ad_management):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"ad_insights": False, "field": ["id", "status"]})
 
         row1, row2 = Ad(), Ad()
         row1.set_data({"id": "123456789", "status": "ACTIVE"})
         row2.set_data({"id": "987654321", "status": "PAUSED"})
-        mock_query_object_node.return_value = [row1, row2]
+        mock_query_ad_management.return_value = [row1, row2]
 
         data = next(FacebookReader(**temp_kwargs).read())
         expected = [
@@ -240,6 +246,7 @@ class FacebookReaderTest(TestCase):
             ),
         ]
     )
+    @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
     def test_format_and_yield(self, name, parameters, record, expected):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(parameters)
