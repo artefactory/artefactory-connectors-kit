@@ -467,11 +467,9 @@ class TwitterReader(Reader):
         """
 
         def check_add_period_date_to_report():
-            if self.report_type == "ANALYTICS" and self.granularity == "TOTAL":
-                return True
-            elif self.report_type == "REACH":
-                return True
-            return False
+            return (
+                self.report_type == "ANALYTICS" and self.granularity == "TOTAL"
+            ) or self.report_type == "REACH"
 
         if self.add_request_date_to_report:
             record["request_date"] = datetime.today().strftime(REP_DATEFORMAT)
