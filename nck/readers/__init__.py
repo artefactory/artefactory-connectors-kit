@@ -25,12 +25,13 @@ from nck.readers.sa360_reader import sa360_reader
 from nck.readers.oracle_reader import oracle
 from nck.readers.gsheets_reader import gsheets
 from nck.readers.salesforce_reader import salesforce
-from nck.readers.facebook_reader import facebook_marketing
+from nck.readers.facebook_reader import facebook
 from nck.readers.dbm_reader import dbm
 from nck.readers.dcm_reader import dcm
 from nck.readers.ga_reader import ga
 from nck.readers.search_console_reader import search_console
 from nck.readers.adobe_reader import adobe
+from nck.readers.adobe_reader_2_0 import adobe_2_0
 from nck.readers.radarly_reader import radarly
 from nck.readers.yandex_campaign_reader import yandex_campaigns
 from nck.readers.yandex_statistics_reader import yandex_statistics
@@ -43,13 +44,14 @@ readers = [
     google_ads,
     s3,
     sa360_reader,
-    facebook_marketing,
+    facebook,
     oracle,
     dbm,
     dcm,
     ga,
     search_console,
     adobe,
+    adobe_2_0,
     radarly,
     yandex_campaigns,
     yandex_statistics

@@ -6,23 +6,25 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 
 ### Readers
 
-- Google DoubleClick Manager (DBM / DV360)
-- Google Campaign Manager (CM / DCM)
-- Google Search Ads 360 (SA360)
+- Adobe Analytics 1.4
+- Adobe Analytics 2.0
+- Amazon S3
+- Facebook Marketing
+- Google Ads
 - Google Analytics
+- Google Cloud Storage
+- Google Campaign Manager
+- Google Display & Video 360
+- Google Search Ads 360
 - Google Search Console
 - Google Sheets
-- Google Cloud Storage
-- Google Adwords
-- Google Search Console
-- Facebook Business Manager
-- Amazon S3
 - Oracle
-- SalesForce
 - MySQL
 - Radarly
-- Adobe Analytics 1.4
-- Yandex
+- SalesForce
+- Twitter Ads
+- Yandex Campaign
+- Yandex Statistics
 
 ### Writers
 

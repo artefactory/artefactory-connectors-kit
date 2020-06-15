@@ -15,160 +15,143 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 from facebook_business.adobjects.adsinsights import AdsInsights
 
-BREAKDOWNS_POSSIBLE_VALUES = [v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")]
+FACEBOOK_OBJECTS = ["creative", "ad", "adset", "campaign", "account"]
 
-ACTION_BREAKDOWNS_POSSIBLE_VALUES = [
-    v for k, v in AdsInsights.ActionBreakdowns.__dict__.items() if not k.startswith("__")
+DATE_PRESETS = [
+    v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")
 ]
 
-AD_OBJECT_TYPES = ["adaccount", "campaign", "adset", "ad", "user"]
-
-LEVELS_POSSIBLE_VALUES = ["ad", "adset", "campaign", "account"]
-
-CMP_POSSIBLE_VALUES = [
-    "account_id",
-    "adlabels",
-    "bid_strategy",
-    "boosted_object_id",
-    "brand_lift_studies",
-    "budget_rebalance_flag",
-    "budget_remaining",
-    "buying_type",
-    "can_create_brand_lift_study",
-    "can_use_spend_cap",
-    "configured_status",
-    "created_time",
-    "daily_budget",
-    "effective_status",
-    "id",
-    "issues_info",
-    "last_budget_toggling_time",
-    "lifetime_budget",
-    "name",
-    "objective",
-    "pacing_type",
-    "promoted_object",
-    "recommendations",
-    "source_campaign",
-    "source_campaign_id",
-    "spend_cap",
-    "start_time",
-    "status",
-    "stop_time",
-    "topline_id",
-    "updated_time",
+BREAKDOWNS = [
+    v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")
 ]
 
-# should have done this list comprehension selection but
-# some of the fields are obsolet and doesn't work, i took the most important
-# ADS_POSSIBLE_VALUES = [v for k,v in AdSet.Field.__dict__.items() if not k.startswith("__")]
-ADS_POSSIBLE_VALUES = [
-    "account_id",
-    "adlabels",
-    "asset_feed_id",
-    "budget_remaining",
-    "campaign",
-    "campaign_id",
-    "configured_status",
-    "created_time",
-    "creative_sequence",
-    "daily_budget",
-    "end_time",
-    "lifetime_budget",
-    "lifetime_imps",
-    "lifetime_min_spend_target",
-    "lifetime_spend_cap",
-    "name",
-    "pacing_type",
-    "source_adset",
-    "source_adset_id",
-    "start_time",
-    "status",
+ACTION_BREAKDOWNS = [
+    v
+    for k, v in AdsInsights.ActionBreakdowns.__dict__.items()
+    if not k.startswith("__")
 ]
 
-DATE_PRESETS = [v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")]
 
-DESIRED_FIELDS = {
-    "date_start": "date_start",
-    "date_stop": "date_stop",
-    "account_name": "account_name",
-    "account_id": "account_id",
-    "ad_id": "ad_id",
-    "ad_name": "ad_name",
-    "adset_id": "adset_id",
-    "adset_name": "adset_name",
-    "campaign_id": "campaign_id",
-    "campaign_name": "campaign_name",
-    "clicks": "clicks",
-    "link_clicks": "inline_link_clicks",
-    "outbound_clicks": ("outbound_clicks", "outbound_click"),
-    "impressions": "impressions",
-    "post_engagement": ("actions", "post_engagement"),
-    "purchases": ("actions", "omni_purchase"),
-    "website_purchases": ("actions", "offsite_conversion.fb_pixel_purchase"),
-    "purchases_conversion_value": ("action_values", "offsite_conversion.fb_pixel_purchase"),
-    "website_purchases_conversion_value": ("action_values", "omni_purchase"),
-    "website_purchase_roas": ("website_purchase_roas", "offsite_conversion.fb_pixel_purchase"),
-    "objective": "objective",
-    "reach": "reach",
-    "spend": "spend",
-    "video_plays_3s": ("actions", "video_view"),
-    "video_plays": ("video_play_actions", "video_view"),
-    "video_plays_100p": ("video_p100_watched_actions", "video_view"),
-    "video_plays_95p": ("video_p95_watched_actions", "video_view"),
-    "video_plays_75p": ("video_p75_watched_actions", "video_view"),
-    "video_plays_50p": ("video_p50_watched_actions", "video_view"),
-    "video_plays_25p": ("video_p25_watched_actions", "video_view"),
-    "age": "age",
-    "gender": "gender",
-    "account_currency": "account_currency",
-    "frequency": "frequency",
-    "buying_type": "buying_type",
-    "video_p100_watched_actions": "video_p100_watched_actions",
-    "video_p75_watched_actions": "video_p75_watched_actions",
-    "video_p25_watched_actions": "video_p25_watched_actions",
-    "video_p50_watched_actions": "video_p50_watched_actions",
-    "video_thruplay_watched_actions": "video_thruplay_watched_actions",
-    "conversions": "conversions",
-    "status": "status",
-    "lifetime_budget": "lifetime_budget",
-    "budget_remaining": "budget_remaining",
-    "name": "name",
-    "id": "id",
-    "start_time": "start_time",
-    "stop_time": "end_time",
-    "daily_budget": "daily_budget",
-    "device_platform": "device_platform",
-    "platform_position": "platform_position",
-    "publisher_platform": "publisher_platform",
-    "impression_device": "impression_device",
-    "link_url_asset": {"value": "website_url"},
-}
+def get_action_breakdown_filters(field_path):
+    """
+    Extracts action breakdown filters from a field path,
+    and returns them as a dictionnary.
+
+    For instance:
+        'actions[action_type:video_view][action_type:post_engagement][action_device:iphone]'
+    returns:
+        {'action_type':['video_view','post_engagement'],
+        'action_device':['iphone']}
+    """
+    filters = {}
+    for path_item in field_path:
+        if ":" in path_item:
+            action_breakdown, action_breakdown_value = path_item.split(":")
+            filters.setdefault(action_breakdown, []).append(action_breakdown_value)
+    return filters
 
 
-def get_field_value(row, field):
-    if is_url_asset(field):
-        return extract_special_field(row, field)
-    return (
-        row.get(DESIRED_FIELDS[field], None)
-        if isinstance(DESIRED_FIELDS[field], str)
-        else get_nested_field_value(row, field)
-    )
+def format_field_path(field_path):
+    """
+    Formats a field_path back into a field.
+
+    For instance:
+        ['actions', 'action_type:post_engagement']
+    returns:
+        'actions[action_type:post_engagement]'
+    """
+    if len(field_path) == 1:
+        return field_path[0]
+    else:
+        return "".join([field_path[0]] + [f"[{element}]" for element in field_path[1:]])
 
 
-def extract_special_field(row, field):
-    dic = DESIRED_FIELDS[field]
-    return row.get(field, {}).get(dic.get("value"), None)
+def check_if_obj_meets_action_breakdown_filters(obj, filters):
+    """
+    Checks if a nested action breakdown object
+    meets the conditions defined by action breakdown filters.
+
+    For instance, if action breakdown filters are:
+        {'action_type': ['post_engagement', 'video_view']
+        'action_device': ['iphone']}
+    Outputs will be:
+    - {'action_type':'post_engagement', 'action_device':'iphone', 'value':12}: True
+    - {'action_type':'video_view', 'action_device':'iphone', 'value':12}: True
+    - {'action_type':'post_engagement', 'action_device':'desktop', 'value':12}: False
+    """
+    for action_breakdown in filters:
+        if obj[action_breakdown] not in filters[action_breakdown]:
+            return False
+    return True
 
 
-def is_url_asset(field):
-    return field == "link_url_asset"
+def get_action_breakdown_value(obj, visited, action_breakdowns):
+    """
+    Extracts the action breakdown value
+    of a nested action breakdown object.
+
+    For instance:
+        {actions: [{'action_type':'video_view', 'action_device':'iphone', 'value':'12'}]}
+        Here, the nested action_breakdown object is:
+            {'action_type':'video_view', 'action_device':'iphone', 'value':'12'}
+    returns:
+        {'actions[action_type:video_view][action_device:iphone]': '12'}
+    """
+    obj_action_breakdown = [
+        f"{action_breakdown}:{obj[action_breakdown]}"
+        for action_breakdown in action_breakdowns
+        if action_breakdown in obj
+    ]
+    return {format_field_path(visited + obj_action_breakdown): obj["value"]}
 
 
-def get_nested_field_value(row, field):
-    if DESIRED_FIELDS[field][0] not in row:
-        return None
-    nested_field = next((x for x in row[DESIRED_FIELDS[field][0]] if x["action_type"] == DESIRED_FIELDS[field][1]), {})
-    return nested_field["value"] if nested_field else None
+def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filters={}):
+    """
+    Extracts action breakdown values from a list of nested action breakdown objects,
+    only if they meet the conditions defined by action breakdown filters.
+    """
+    action_breakdown_values = {}
+    for obj in resp_obj:
+        if filters != {}:
+            if check_if_obj_meets_action_breakdown_filters(obj, filters):
+                action_breakdown_values.update(
+                    get_action_breakdown_value(obj, visited, action_breakdowns)
+                )
+        else:
+            action_breakdown_values.update(
+                get_action_breakdown_value(obj, visited, action_breakdowns)
+            )
+    return action_breakdown_values
+
+
+def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
+    """
+    Recursive function extracting (and formating) the values
+    of a requested field from an API response and a field path.
+    """
+    path_item = field_path[0]
+    remaining_path_items = len(field_path) - 1
+
+    visited.append(path_item)
+
+    if path_item in resp_obj:
+        if remaining_path_items == 0:
+            if isinstance(resp_obj[path_item], str):
+                return {format_field_path(visited): resp_obj[path_item]}
+            if isinstance(resp_obj[path_item], list):
+                return get_all_action_breakdown_values(
+                    resp_obj[path_item], visited, action_breakdowns
+                )
+        else:
+            return get_field_values(
+                resp_obj[path_item], field_path[1:], action_breakdowns, visited
+            )
+    else:
+        if all(":" in f for f in field_path):
+            filters = get_action_breakdown_filters(field_path)
+            return get_all_action_breakdown_values(
+                resp_obj, visited[:-1], action_breakdowns, filters
+            )
