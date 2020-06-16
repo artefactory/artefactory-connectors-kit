@@ -16,6 +16,10 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import logging
+import json
+from time import sleep
+
 from facebook_business.adobjects.adsinsights import AdsInsights
 
 FACEBOOK_OBJECTS = ["creative", "ad", "adset", "campaign", "account"]
@@ -155,3 +159,43 @@ def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
             return get_all_action_breakdown_values(
                 resp_obj, visited[:-1], action_breakdowns, filters
             )
+
+
+def generate_batches(iterable, batch_size):
+    """
+    Yields lists of length size batch_size,
+    containing objects yielded by the iterable.
+    """
+
+    batch = []
+    for obj in iterable:
+        if len(batch) == batch_size:
+            yield batch
+            batch = []
+        batch.append(obj)
+
+    if len(batch):
+        yield batch
+
+
+def monitor_usage(response):
+    """
+    Extracts "X-Business-Use-Case-Usage" header from a FacebookResponse object.
+    If one of the 3 API usage rates (call_count, total_cputime, total_time)
+    is above 75%, puts the program to sleep for 5 minutes.
+    Documentation: https://developers.facebook.com/docs/graph-api/overview/rate-limiting/
+    """
+
+    for header in response._headers:
+        if header["name"] == "X-Business-Use-Case-Usage":
+            usage_header = json.loads(header["value"])
+            usage_header_values = list(usage_header.values())[0][0]
+            usage_rates = [
+                v
+                for k, v in usage_header_values.items()
+                if k in ["call_count", "total_cputime", "total_time"]
+            ]
+
+    if max(usage_rates) > 75:
+        logging.info("75% rate limit reached. Sleeping for 5 minutes...")
+        sleep(300)
