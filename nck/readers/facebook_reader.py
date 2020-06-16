@@ -19,6 +19,7 @@
 import logging
 import click
 import re
+from math import ceil
 from click import ClickException
 from datetime import datetime
 
@@ -318,46 +319,6 @@ class FacebookReader(Reader):
 
         return obj
 
-    def get_edge_obj_records(self, edge_objs, fields, params):
-        """
-        Make batch Ad Management requests on a set of edge objects.
-        """
-
-        total_edge_objs = edge_objs._total_count
-        total_batches = total_edge_objs // BATCH_SIZE_LIMIT + 1
-        logging.info(
-            f"Making {total_batches} batch requests on a total of {total_edge_objs} {self.level}s"
-        )
-
-        for batch in generate_batches(edge_objs, BATCH_SIZE_LIMIT):
-
-            # Create batch
-            api_batch = self.api.new_batch()
-            batch_responses = []
-
-            # Add each campaign request to batch
-            for edge_obj in batch:
-
-                def callback_success(response):
-                    batch_responses.append(response.json())
-                    monitor_usage(response)
-
-                def callback_failure(response):
-                    raise response.error()
-
-                edge_obj.api_get(
-                    fields=fields,
-                    params=params,
-                    batch=api_batch,
-                    success=callback_success,
-                    failure=callback_failure,
-                )
-
-            # Execute batch
-            api_batch.execute()
-
-            yield from batch_responses
-
     def query_ad_insights(self, fields, params, object_id):
         """
         Ad Insights documentation:
@@ -394,7 +355,48 @@ class FacebookReader(Reader):
             yield obj.api_get(fields=fields, params=params)
         else:
             edge_objs = EDGE_QUERY_MAPPING[self.level](obj)
-            yield from self.get_edge_obj_records(edge_objs, fields, params)
+            yield from self.get_edge_objs_records(edge_objs, fields, params)
+
+    def get_edge_objs_records(self, edge_objs, fields, params):
+        """
+        Make batch Ad Management requests on a set of edge objects
+        (edge_objs being a facebook_business.api.Cursor object).
+        """
+
+        total_edge_objs = edge_objs._total_count
+        total_batches = ceil(total_edge_objs / BATCH_SIZE_LIMIT)
+        logging.info(
+            f"Making {total_batches} batch requests on a total of {total_edge_objs} {self.level}s"
+        )
+
+        for batch in generate_batches(edge_objs, BATCH_SIZE_LIMIT):
+
+            # Create batch
+            api_batch = self.api.new_batch()
+            batch_responses = []
+
+            # Add each campaign request to batch
+            for obj in batch:
+
+                def callback_success(response):
+                    batch_responses.append(response.json())
+                    monitor_usage(response)
+
+                def callback_failure(response):
+                    raise response.error()
+
+                obj.api_get(
+                    fields=fields,
+                    params=params,
+                    batch=api_batch,
+                    success=callback_success,
+                    failure=callback_failure,
+                )
+
+            # Execute batch
+            api_batch.execute()
+
+            yield from batch_responses
 
     def format_and_yield(self, record):
         """
