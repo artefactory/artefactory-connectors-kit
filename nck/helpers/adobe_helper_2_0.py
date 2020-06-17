@@ -19,9 +19,6 @@
 import logging
 from datetime import datetime
 
-logging.basicConfig(level="INFO")
-logger = logging.getLogger()
-
 
 class APIRateLimitError(Exception):
     def __init__(self, message):
