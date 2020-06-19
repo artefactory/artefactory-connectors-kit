@@ -58,10 +58,36 @@ class GaReaderTest(TestCase):
             "dimensions": ("date",),
             "metric": (),
             "start_date": datetime(2019, 1, 1),
-            "view_ids": ("0", "1"),
+            "view_ids": ["0", "1"],
             "end_date": datetime(2019, 1, 1),
+            "add_view": False
         }
         reader = GaReader(**kwargs)
+        kwargs["add_view"] = True
+        reader_with_view_id = GaReader(**kwargs)
+
+        format_data_return_value = [
+            {
+                "columnHeader": {
+                    "dimensions": ["ga:date"],
+                    "metricHeader": {"metricHeaderEntries": [{"name": "ga:users", "type": "INTEGER"}]},
+                },
+                "data": {
+                    "rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["2"]}]}],
+                    "isDataGolden": True,
+                },
+            },
+            {
+                "columnHeader": {
+                    "dimensions": ["ga:date"],
+                    "metricHeader": {"metricHeaderEntries": [{"name": "ga:newUsers", "type": "INTEGER"}]},
+                },
+                "data": {
+                    "rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["1"]}]}],
+                    "isDataGolden": True,
+                },
+            },
+        ]
 
         def test_read_empty_data(mock_query):
             mock_query.return_value = [{"data": {"isDataGolden": True}}]
@@ -69,34 +95,31 @@ class GaReaderTest(TestCase):
                 assert False, "Data is not empty"
 
         def test_format_data(mock_query):
-            mock_query.return_value = [
-                {
-                    "columnHeader": {
-                        "dimensions": ["ga:date"],
-                        "metricHeader": {"metricHeaderEntries": [{"name": "ga:users", "type": "INTEGER"}]},
-                    },
-                    "data": {
-                        "rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["2"]}]}],
-                        "isDataGolden": True,
-                    },
-                },
-                {
-                    "columnHeader": {
-                        "dimensions": ["ga:date"],
-                        "metricHeader": {"metricHeaderEntries": [{"name": "ga:newUsers", "type": "INTEGER"}]},
-                    },
-                    "data": {
-                        "rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["1"]}]}],
-                        "isDataGolden": True,
-                    },
-                },
-            ]
+            mock_query.return_value = format_data_return_value
 
-            expected = [{"date": "2019-01-01", "users": "2"}, {"date": "2019-01-01", "newUsers": "1"}]
+            expected = [
+                {"date": "2019-01-01", "users": "2"}, {"date": "2019-01-01", "newUsers": "1"},
+                {"date": "2019-01-01", "users": "2"}, {"date": "2019-01-01", "newUsers": "1"}
+            ]
 
             for data in reader.read():
                 for record, output in zip(data.readlines(), iter(expected)):
                     assert record == output
 
+        def test_format_data_and_view_id(mock_query):
+            mock_query.return_value = format_data_return_value
+
+            expected = [
+                {"viewId": "0", "date": "2019-01-01", "users": "2"},
+                {"viewId": "0", "date": "2019-01-01", "newUsers": "1"},
+                {"viewId": "1", "date": "2019-01-01", "users": "2"},
+                {"viewId": "1", "date": "2019-01-01", "newUsers": "1"}
+            ]
+
+            for data in reader_with_view_id.read():
+                for record, output in zip(data.readlines(), iter(expected)):
+                    assert record == output
+
         test_read_empty_data(mock_query)
         test_format_data(mock_query)
+        test_format_data_and_view_id(mock_query)
