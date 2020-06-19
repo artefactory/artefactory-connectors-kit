@@ -45,6 +45,10 @@ Both Adobe Analytics Readers use the **JWT authentication framework**.
 
 ### Adobe Analytics Reader 1.4
 
+#### Source API
+
+[Analytics API v1.4](https://github.com/AdobeDocs/analytics-1.4-apis)
+
 #### Quickstart
 
 Call example to Adobe Analytics Reader 1.4, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
@@ -52,6 +56,8 @@ Call example to Adobe Analytics Reader 1.4, getting the number of visits per day
 ```
 python nck/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 write_console
 ```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
 
 #### Parameters
 
@@ -68,8 +74,8 @@ python nck/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client
 |`--adobe-report-element-id`|ID of the element (i.e. dimension) to include in the report|
 |`--adobe-report-metric-id`|ID of the metric to include in the report|
 |`--adobe-date-granularity`|Granularity of the report. *Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS*|
-|`--adobe-start-date`|Start date of the report (format: YYYY-MM-DD)|
-|`--adobe-end-date`|End date of the report (format: YYYY-MM-DD)|
+|`--adobe-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--adobe-end-date`|End date of the period to request (format: YYYY-MM-DD)|
 
 #### Addtional information
 
@@ -79,6 +85,10 @@ python nck/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client
 
 ### Adobe Analytics Reader 2.0
 
+#### Source API
+
+[Analytics API v2.0](https://github.com/AdobeDocs/analytics-2.0-apis)
+
 #### Quickstart
 
 Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
@@ -86,6 +96,8 @@ Call example to Adobe Analytics Reader 2.0, getting the number of visits per day
 ```
 python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adobe-2-0-client-secret <CLIENT_SECRET> --adobe-2-0-tech-account-id <TECH_ACCOUNT_ID> --adobe-2-0-org-id <ORG_ID> --adobe-2-0-private-key <PRIVATE_KEY> --adobe-2-0-global-company-id <GLOBAL_COMPANY_ID> --adobe-2-0-report-suite-id <REPORT_SUITE_ID> --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date 2020-01-01 --adobe-2-0-end-date 2020-01-31 --adobe-2-0-metric visits write_console
 ```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
 
 #### Parameters
 
@@ -100,8 +112,8 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adob
 |`--adobe-2-0-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-2-0-dimension`|Dimension to include in the report|
 |`--adobe-2-0-metric`|Metric  to include in the report|
-|`--adobe-2-0-start-date`|Start date of the report (format: YYYY-MM-DD)|
-|`--adobe-2-0-end-date`|End date of the report (format: YYYY-MM-DD)|
+|`--adobe-2-0-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--adobe-2-0-end-date`|Start date of the period to request (format: YYYY-MM-DD)|
 
 #### Additional information
 
@@ -115,6 +127,10 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adob
 *Not documented yet.*
 
 ## Facebook Marketing Reader
+
+#### Source API
+
+[Facebook Marketing API](https://developers.facebook.com/docs/marketing-api/reference/v7.0)
 
 #### Quickstart
 
@@ -130,6 +146,8 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID>  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative[id] --facebook-add-date-to-report True --facebook-start-date 2020-01-01 --facebook-end-date 2019-01-01 write_console
 ```
 
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
 #### Parameters
 
 |CLI option|Documentation|
@@ -137,13 +155,13 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 |`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-access-token`|Facebook App Access Token.|
-|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Ad Management requests), ad, adset, campaign, account (default).*|
+|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Possible values: creative (available only for Ad Management requests), ad, adset, campaign, account (default).*|
 |`--facebook-object-id`|ID of the root Facebook Object used to make the request.|
-|`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Ad Management requests), ad (default), adset, campaign or account.*|
+|`--facebook-level`|Granularity of the response. *Possible values: creative (available only for Ad Management requests), ad (default), adset, campaign, account.*|
 |`--facebook-ad-insights`|*True* (default) if *Ad Insights* request, *False* if *Ad Management* request.|
 |`--facebook-field`|Fields to be retrieved.|
-|`--facebook-start-date`|Start date of the requested time range. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
-|`--facebook-end-date`|End date of the requested time range. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-start-date`|Start date of the period to request (format: YYYY-MM-DD). *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-end-date`|Start date of the period to request (format: YYYY-MM-DD). *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
 |`--facebook-date-preset`|Relative time range. Ignored if *--facebook-start date* and *--facebook-end-date* are specified. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
 |`--facebook-time-increment`|Cuts the results between smaller time slices within the specified time range. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
 |`--facebook-add-date-to-report`|*True* if you wish to add the date of the request to each response record, *False* otherwise (default).|
@@ -235,79 +253,97 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 
 ### Authentication
 
-You can authenticate to most of the readers of the google 
-suite following the same schema. You'll need to generate a **refresh token** to connect
-via the oAuth flow. A full script to do this can be found here:
-
-[Refresh token generator](https://github.com/artefactory/Refresh-token-generator-for-google-oauth)
+You can authenticate to most of the Readers of the Google Suite following the same schema. You'll need to generate a **refresh token** to connect via the OAuth flow. A full script to do this can be found in this [refresh token generator](https://github.com/artefactory/Refresh-token-generator-for-google-oauth).
 
 ### Google Ads Reader
 
+#### Source API
+
+[AdWords API](https://developers.google.com/adwords/api/docs/guides/start)
+
 #### How to obtain credentials
 
-Using the Google Ads API requires four things:
+Using the AdWords API requires four things:
 - A developer token (Generated at a company level - one per company -, takes around 2 days to be approved by Google) which can be completely independant from the Google Ads Account you will be calling (though you need a Manager Google Ads Account to request a token for your company)
-
 - OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
-
 - A refresh token, created with the email address able to access to all the Google Ads Account you will be calling
+- The ID of the Google Ads Accounts <CLIENT_CUSTOMER_ID> you will be reading from (XXX-XXX-XXXX numbers, written right next to your Account Name)
 
-- The ID of the GAds Accounts <CLIENT_CUSTOMER_ID> you will be reading from (XXX-XXX-XXXX numbers, written right next to your Account Name)
+See the [documentation here](https://developers.google.com/adwords/api/docs/guides/signup) to apply for access if your Company does not already have a developer token (granting you the right to use the API).
 
-See the [documentation here](https://developers.google.com/adwords/api/docs/guides/signup "Sign Up for Google Ads API")
-to apply for access if your Company does not already have a developer token (granting you the right to use the API).
+See the [documentation here](https://developers.google.com/adwords/api/docs/guides/first-api-call) to set-up your OAuth2 credentials and refresh token specifically for your Google Ads Accounts.
 
-See the [documentation here](https://developers.google.com/adwords/api/docs/guides/first-api-call "Make your first API call")
-to set-up your OAuth2 credentials and refresh token specifically for your Google Ads Accounts.
+#### Quickstart
 
-#### Which reports and metrics are available in the API
-
-The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/adwords/api/docs/appendix/reports#available-reports "Report Types")
-
-#### Simple API call example
-
-- Call Example
-
-The following command retrieves insights about the Ads of *my_first_campaign* and *my_second_campaign* in the Google Ads Account <CLIENT_CUSTOMER_ID> thanks to
-your company <DEVELOPER_TOKEN>, and your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
+The following command retrieves insights about the Ads of *my_first_campaign* and *my_second_campaign* in the Google Ads Account <CLIENT_CUSTOMER_ID>, thanks to your company <DEVELOPER_TOKEN>, <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
 
 ```
-python nck/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter "{'field':'CampaignName','operator':'IN','values':['my_first_campaign','my_second_campaign']}" 
+python nck/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter "{'field':'CampaignName','operator':'IN','values':['my_first_campaign','my_second_campaign']}"
 ```
 
-*If it doesn't work, try to* `export PYTHONPATH="."` *in the nautilus-connector-kit folder (to be sure Python is reading correctly)*
-*If you want the output to be printed in your console, add* `write_console` *at the end of your command (see writers for more details)*
+Didn't work? See [troubleshooting](#troubleshooting) section.
 
-- Parameters of the Google Ads Reader
+#### Parameters
 
 |CLI option|Documentation|
 |--|--|
 |`--googleads-developer-token`|Company Developer token for Google Ads API|
 |`--googleads-client-id`|OAuth2 ID|
-|`--googleads-client-secret`|OAuth2 Secret|
+|`--googleads-client-secret`|OAuth2 secret|
 |`--googleads-refresh-token`|Refresh token for OAuth2|
-|`--googleads-manager-id`|Manager_Account_ID (XXX-XXX-XXXX identifier) (optional)|
+|`--googleads-manager-id`|(Optional) Manager_Account_ID (XXX-XXX-XXXX identifier)|
 |`--googleads-client-customer-id`|GAds_Account_ID (ignored if a manager account ID was given)|
-|`--googleads-report-name`|Optional name for your output stream ("Custom Report" by default)|
+|`--googleads-report-name`|(Optional) Name of your output stream ("Custom Report" by default)|
 |`--googleads-report-type`|Type of report to be called|
-|`--googleads-date-range-type`|Type of date range to apply (if "CUSTOM_RANGE", a min and max date must be specified)|
-|`--googleads-start-date`|Start date for "CUSTOM_RANGE" date range (optional)|
-|`--googleads-end-date`|End date for "CUSTOM_RANGE" date range (optional)|
-|`--googleads-field`|List of fields to request|
+|`--googleads-date-range-type`|Type of date range to apply (if "CUSTOM_RANGE", a min and max date must be specified). *Possible values can be found [here](https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges).*|
+|`--googleads-start-date`|(Optional) Start date for "CUSTOM_RANGE" date range (format: YYYY-MM-DD)|
+|`--googleads-end-date`|(Optional) End date for "CUSTOM_RANGE" date range (format: YYYY-MM-DD)|
+|`--googleads-field`|Fields to include in the report|
 |`--googleads-report-filter`|Filter to apply on a chosen field (Dictionary as String "{'field':,'operator':,'values':}")|
-|`--googleads-include-zero-impressions`|Boolean specifying whether or not rows with zero impressions should be included in report|
-|`--googleads-filter-on-video-campaigns`|Boolean used to filter on Video Campaigns only (require CampaignId to be listed as a field)|
-|`--googleads-include-client-customer-id`|Boolean used to add "AccountId" as a field in the output stream *|
+|`--googleads-include-zero-impressions`|Boolean specifying whether or not rows with zero impressions should be included in the report|
+|`--googleads-filter-on-video-campaigns`|Boolean used to filter the report on Video Campaigns only (require CampaignId to be listed as a field)|
+|`--googleads-include-client-customer-id`|Boolean used to add "AccountId" as a field in the output stream. *AccountId is not available in the API, but is known since it's a requirement to call the API (= Client Customer ID)*|
 
-\* *AccountId is not available in the API but is known since it's a requirement to call the API (= client customer ID)*
-
-See the documents below for a better understanding of the parameters:
-- [Google Ads API Reporting Basics](https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition)
-- [Possible Date Ranges](https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges)
+See documentation below for a better understanding of the parameters:
+- [Reporting basics](https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition)
+- [Available reports and associated fields](https://developers.google.com/adwords/api/docs/appendix/reports#available-reports)
 
 ### Google Analytics Reader
 
-*Not documented yet.*
+#### Source API
+
+[Analytics Reporting API](https://developers.google.com/analytics/devguides/reporting/core/v4)
+
+#### Quickstart
+
+The following command retrieves sessions, pageviews and bounces volumes by date from 2020-01-01 to 2020-01-03, for the Analytics View <VIEW_ID>, thanks your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+
+```
+python nck/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--ga-client-id`|OAuth2 ID|
+|`--ga-client-secret`|OAuth2 secret|
+|`--ga-access-token`|(Optional) Access token for OAuth2|
+|`--ga-refresh-token`|Refresh token for OAuth2|
+|`--ga-view-id`|Analytics View ID from which to retrieve data. See documentation [here](https://support.google.com/analytics/answer/1009618) for a better understanding of Google Analytics hierrarchy.|
+|`--ga-account-id`|Analytics Account ID from which to retrieve data. See documentation [here](https://support.google.com/analytics/answer/1009618) for a better understanding of Google Analytics hierrarchy.|
+|`--ga-dimension`|Dimensions to include in the report (max 9). Possible values can be found [here](https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/).|
+|`--ga-metric`|Metrics to include in the report (min 1, max 10). Possible values can be found [here](https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/).|
+|`--ga-segment-id`|Segment ID of a built-in or custom segment (for example gaid::-3) on which report data should be segmented.|
+|`--ga-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--ga-end-date`|End date of the period to request (format: YYYY-MM-DD)|
+|`--ga-date-range`|<START_DATE> <END_DATE> of the period to request, specified as a unique argument (format: YYYY-MM-DD YYYY-MM-DD)|
+|`--ga-day-range`|*Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS.*|
+|`--ga-sampling-level`|Desired sample size. See documentation [here](https://support.google.com/analytics/answer/2637192) for a better understanding of Google Analytics sampling. *Possible values: SMALL, DEFAULT, LARGE (default).*|
+
+See documentation [here](https://developers.google.com/analytics/devguides/reporting/core/v4/basics) for a better understanding of the parameters.
 
 ### Google Cloud Storage Reader
 
@@ -315,109 +351,155 @@ See the documents below for a better understanding of the parameters:
 
 ### Google Campaign Manager Reader
 
-*Not documented yet.*
+#### Source API
 
-### Google Display & Video Reader
+[DCM/DFA Reporting and Trafficking API](https://developers.google.com/doubleclick-advertisers/v3.3)
 
-*Not documented yet.*
+#### Quickstart
+
+The following command retrieves impressions, clicks and cost volumes from 2020-01-01 to 2020-01-03, thanks your <CLIENT_ID>, <CLIENT_SECRET>, <REFRESH_TOKEN> and <PROFILE_ID> with the necessary permissions to access your accounts.
+
+```
+python nck/entrypoint.py read_dcm --dcm-client-id <CLIENT_ID> --dcm-client-secret <CLIENT_SECRET> --dcm-refresh-token <REFRESH_TOKEN> --dcm-profile-id <PROFILE_ID> --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date 2020-01-01 --dcm-end-date 2020-01-03 write_console
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+##### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--dcm-client-id`|OAuth2 ID|
+|`--dcm-client-secret`|OAuth2 secret|
+|`--dcm-access-token`|(Optional) Access token for OAuth2|
+|`--dcm-refresh-token`|Refresh token for OAuth2|
+|`--dcm-profile-id`|ID of the DFA user profile that has been granted permissions to the CM account for which you want to retrieve data. You should have 1 DFA user profile per CM account that you can access. The associated ID can be found directly on your Campaign Manager UI (when accessing your list of CM accounts, on the top right hand corner).|
+|`--dcm-report-name`|Name of the report, that will appear in CM UI.|
+|`--dcm-report-type`|Type of the report. *Possible values: CROSS_DIMENSION_REACH, FLOODLIGHT, PATH_TO_CONVERSION, REACH, STANDARD.*|
+|`--dcm-dimension`|Dimensions to include in the report. *Possible values can be found [here](https://developers.google.com/doubleclick-advertisers/v3.3/dimensions).*|
+|`--dcm-metric`|Metrics to include in the report. *Possible values can be found [here](https://developers.google.com/doubleclick-advertisers/v3.3/dimensions).*|
+|`--dcm-filter`|<FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "dfa:advertiserId XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. *Possible filter types can be found [here](https://developers.google.com/doubleclick-advertisers/v3.3/dimensions).*|
+|`--dcm-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--dcm-end-date`|End date of the period to request (format: YYYY-MM-DD)|
+
+### Google Display & Video 360 Reader
+
+#### Source API
+
+[Doubleclick Bid Manager API](https://developers.google.com/bid-manager/v1)
+
+#### Quickstart
+
+The following command retrieves impressions, clicks and cost volumes filtered on a specific <ADVERTISER_ID> from 2020-01-01 to 2020-01-03, thanks your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+
+```
+python nck/entrypoint.py read_dbm --dbm-client-id <CLIENT_ID> --dbm-client-secret <CLIENT_SECRET> —dbm-refresh-token <REFRESH_TOKEN> —dbm-filter FILTER_ADVERTISER <ADVERTISER_ID> --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date 2020-01-01 --dbm-end-date 2020-01-03 write_console
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--dbm-client-id`|OAuth2 ID|
+|`--dbm-client-secret`|OAuth2 secret|
+|`--dbm-access-token`|(Optional) Access token for OAuth2|
+|`--dbm-refresh-token`|Refresh token for OAuth2|
+|`--dbm-query-request-type`|Doubleclick Bid Manager API request type. *Possible values: existing_query, custom_query, existing_query_report, custom_query_report, lineitems_objects, sdf_objects and list_reports.*|
+|`--dbm-query-id`|Query ID.|
+|`--dbm-query-title`|Query title, used to name the reports generated from this query in DV360 UI.|
+|`--dbm-query-frequency`|How often the query is run. *Possible values can be found [here](https://developers.google.com/bid-manager/v1/queries#schedule.frequency). Default: ONE_TIME.*|
+|`--dbm-filter`|<FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "FILTER_ADVERTISER XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. *Possible filter types can be found [here](https://developers.google.com/bid-manager/v1/filters-metrics#filters).*|
+|`--dbm-query-dimension`|Dimensions to include in the report. *Possible values can be found [here](https://developers.google.com/bid-manager/v1/filters-metrics#filters).*|
+|`--dbm-query-metric`|Metrics to include in the report. *Possible values can be found [here](https://developers.google.com/bid-manager/v1/filters-metrics#metrics).*|
+|`--dbm-query-param-type`|Report type. *Possible values can be found [here](https://developers.google.com/bid-manager/v1/queries#params.type). Default: TYPE_TRUEVIEW.*|
+|`--dbm-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--dbm-end-date`|End date of the period to request (format: YYYY-MM-DD)|
 
 ### Google Search Console Reader
 
-#### Which reports and metrics are available in the API
+#### Source API
 
-The list of available dimensions and metrics in the API can be [found here](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query "Search Analytics")
-
-#### Simple API call example
-
-- Call Example
-
-The following command retrieves insights about the URL <SITE_URL> thanks to your company <CLIENT_ID> and <REFRESH_TOKEN> 
-with the necessary permissions to access your Accounts.
-
-```
-python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_ID> --search-console-refresh-token <REFRESH_TOKEN> --search-console-site-url <SITE_URL> --search-console-dimensions country --search-console-dimensions device --search-console-start-date 2020-01-01 --search-console-end-date 2020-01-01 write_console 
-```
-
-- Parameters of the Google Search Console Reader
-
-|CLI option|Documentation|
-|--|--|
-|`--search-console-client-id`|OAuth2 ID|
-|`--search-console-client-secret`|OAuth2 Secret|
-|`--search-console-access-token`|Access token|
-|`--search-console-refresh-token`|Refresh token for OAuth2|
-|`--search-console-dimensions`|[Dimensions to request](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension)|
-|`--search-console-site-url`|Site URL whose performance you want to request|
-|`--search-console-start-date`|Start Date for the request|
-|`--search-console-end-date`|End Date for the request|
-|`--search-console-date-column`|If true, include date column in the report|
-|`--search-console-row-limit`|Row number by report page|
-
-See the documents below for a better understanding of the parameters:
-- [Google Search Console API](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query)
-
-### Google Search Ads 360 Reader
-
-#### How to obtain credentials
-
-Using the Search Ads API requires two things:
-
-- OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
-
-- A refresh token, created with the email address able to access to all the Search Ads 360 Account you will be calling
-
-See the [documentation here](https://developers.google.com/search-ads/v2/authorizing "SA360 Authentication")
-to set-up your OAuth2 credentials and refresh token specifically for Search Ads 360 Reporting.
-
-#### Which reports and metrics are available in the API
-
-The list of available reports for the API, and the associated metrics, can be [found here](https://developers.google.com/search-ads/v2/report-types "Report Types")
-
-#### Simple API call example
-
-- Call Example
-
-The following command retrieves insights about the Ads in the Search Ads 360 Account <ADVERTISER_ID> from the agency <AGENCY_ID> thanks to
-your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
-
-```
-python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
-```
-
-*If it doesn't work, try to* `export PYTHONPATH="."` *in the nautilus-connector-kit folder (to be sure Python is reading correctly)*
-*If you want the output to be printed in your console, add* `write_console` *at the end of your command (see writers for more details)*
-
-- Parameters of the SA360 Reader
-
-|CLI option|Documentation|
-|--|--|
-|`--sa360-access-token`|(Optional) Access token|
-|`--sa360-client-id`|OAuth2 ID|
-|`--sa360-client-secret`|OAuth2 ID Secret|
-|`--sa360-refresh-token`|Refresh token|
-|`--sa360-agency-id`|Agency ID to request in SA360|
-|`--sa360-advertiser-id`|(Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested|
-|`--sa360-report-name`|(Optional) Name of the output report|
-|`--sa360-report-type` Type of the report to request (list [here](https://developers.google.com/search-ads/v2/report-types))|
-|`--sa360-column`|Dimensions and metrics to request in the report|
-|`--sa360-saved-column`|(Optional) Saved columns to report (see [documentation](https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns))|
-|`--sa360-start-date`|Start date of the period to request|
-|`--sa360-end-date`|End date of the period to request|
-
-See the documents below for a better understanding of the parameters:
-- [SA360 Reporting](https://developers.google.com/search-ads/v2/how-tos/reporting)
+[Search Console API (Search Analytics endpoint)](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/)
 
 #### How to obtain credentials
 
 Using the Google Search Console API requires three main parameters:
 - OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
-
 - A refresh token, created with the email address able to access to your Google Search Console Account.
+- The URLs whose performance you want to see
 
-- The URLs whose performance you want to see.
+#### Quickstart
 
-See the [documentation here](https://developers.google.com/webmaster-tools/search-console-api-original/v3/prereqs "Search Console API")
-to see an Overview of the Search Console API.
+The following command retrieves insights about the URL <SITE_URL> from 2020-01-01 to 2020-01-03, thanks to your <CLIENT_ID> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+
+```
+python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_ID> --search-console-refresh-token <REFRESH_TOKEN> --search-console-site-url <SITE_URL> --search-console-dimensions country --search-console-dimensions device --search-console-start-date 2020-01-01 --search-console-end-date 2020-01-03 write_console 
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--search-console-client-id`|OAuth2 ID|
+|`--search-console-client-secret`|OAuth2 secret|
+|`--search-console-access-token`|Access token for OAuth2|
+|`--search-console-refresh-token`|Refresh token for OAuth2|
+|`--search-console-dimensions`|Dimensions of the report. *Possible values can be found [here](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension).*|
+|`--search-console-site-url`|Site URL whose performance you want to request|
+|`--search-console-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--search-console-end-date`|End date of the period to request (format: YYYY-MM-DD)|
+|`--search-console-date-column`|If set to *True*, a date column will be included in the report|
+|`--search-console-row-limit`|Row number by report page|
+
+See documentation [here](https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query) for a better understanding of the parameters.
+
+### Google Search Ads 360 Reader
+
+#### Source API
+
+[Search Ads 360 API](https://developers.google.com/search-ads/v2/reference)
+
+#### How to obtain credentials
+
+Using the Search Ads API requires two things:
+- OAuth2 credentials: <CLIENT_ID> and <CLIENT_SECRET>
+- A refresh token, created with the email address able to access to all the Search Ads 360 Account you will be calling
+
+See the [documentation here](https://developers.google.com/search-ads/v2/authorizing "SA360 Authentication")
+to set-up your OAuth2 credentials and refresh token specifically for Search Ads 360 Reporting.
+
+#### Quickstart
+
+The following command retrieves insights about the Ads in the Search Ads 360 Account <ADVERTISER_ID> from the agency <AGENCY_ID> thanks to your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+
+```
+python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--sa360-client-id`|OAuth2 ID|
+|`--sa360-client-secret`|OAuth2 secret|
+|`--sa360-access-token`|(Optional) Access token|
+|`--sa360-refresh-token`|Refresh token|
+|`--sa360-agency-id`|Agency ID to request in SA360|
+|`--sa360-advertiser-id`|(Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested|
+|`--sa360-report-name`|(Optional) Name of the output report|
+|`--sa360-report-type`| Type of the report to request. *Possible values can be found [here](https://developers.google.com/search-ads/v2/report-types).*|
+|`--sa360-column`|Dimensions and metrics to include in the report|
+|`--sa360-saved-column`|(Optional) Saved columns to report. *Documentation can be found [here](https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns).*|
+|`--sa360-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--sa360-end-date`|End date of the period to request (format: YYYY-MM-DD)|
+
+See documentation [here](https://developers.google.com/search-ads/v2/how-tos/reporting) for a better understanding of the parameters.
 
 ### Google Sheets Reader
 
@@ -440,6 +522,10 @@ to see an Overview of the Search Console API.
 *Not documented yet.*
 
 ## Twitter Ads Reader
+
+#### Source API
+
+[Twitter Ads API](https://developer.twitter.com/en/docs/ads/general/overview)
 
 #### How to obtain credentials
 
@@ -470,6 +556,8 @@ python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter
 python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
 ```
 
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
 #### Parameters
 
 |CLI option|Documentation|
@@ -488,16 +576,17 @@ python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter
 |`--twitter-segmentation-type`|Specific to ANALYTICS reports. Specifies how the retrieved data should be segmented. *Possible values can be found [here](https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation).* |
 |`--twitter-platform`|Specific to ANALYTICS reports. Required if segmentation_type is set to DEVICES or PLATFORM_VERSION. *Possible values can be identified through the targeting_criteria/locations*|
 |`--twitter-country`|Specific to ANALYTICS reports. Required if segmentation_type is set to CITIES, POSTAL_CODES, or REGION. *Possible values can be identified through the GET targeting_criteria/platforms endpoint.*|
-|`--twitter-start-date`|Specifies report start date (format: YYYY-MM-DD).|
-|`--twitter-end-date`|Specifies report end date (format: YYYY-MM-DD).|
+|`--twitter-start-date`|Start date of the period to request (format: YYYY-MM-DD).|
+|`--twitter-end-date`|End date of the period to request (format: YYYY-MM-DD).|
 |`--twitter-add-request-date-to-report`|If set to *True* (default: *False*), the date on which the request is made will appear on each report record.|
 
 If you need any further information, the documentation of Twitter Ads API can be found [here](https://developer.twitter.com/en/docs/ads/general/overview).
 
 ## Yandex Readers
 
-For now, there is only one Yandex API you can access through Nautilus connectors: [Direct API](https://tech.yandex.com/direct/).
-This API allows you to collect display metrics.
+#### Source API
+
+[Yandex Direct API](https://tech.yandex.com/direct/)
 
 #### How to obtain credentials
 
@@ -517,9 +606,9 @@ Here is the process:
 
 #### Quickstart
 
-If you want to quickly get to the point, here is a simple command that get the daily budget for all your campaigns.
+The following command retrieves the daily budget of all your campaigns, since your account creation.
 
-```bash
+```
 python nck/entrypoint.py read_yandex_campaigns --yandex-token <TOKEN> --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
 ```
 
@@ -531,8 +620,8 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |--| -|
 |`--yandex-token`|Bear token that allows you to authenticate to the API|
 |`--yandex-campaign-id`|(Optional) Selects campaigns with the specified IDs.|
-|`--yandex-campaign-state`|(Optional) Selects campaigns with the specified [states](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status).|
-|`--yandex-campaign-status`|(Optional) Selects campaigns with the specified [statuses](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status).|
+|`--yandex-campaign-state`|(Optional) Selects campaigns with the specified states. *Possible values can be found [here](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status).*|
+|`--yandex-campaign-status`|(Optional) Selects campaigns with the specified statuses. *Possible values can be found [here](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status).*|
 |`--yandex-campaign-payment-status`|(Optional) Selects campaigns with the specified payment [statuses](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status).|
 |`--yandex-field-name`|Parameters to get that are common to all types of campaigns.|
 
@@ -542,9 +631,9 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 
 #### Quickstart
 
-The command below gives you a performance report for all your campaigns and since the beginning.
+The following command retrieves a performance report for all your campaigns, since your account creation.
 
-```bash
+```
 python nck/entrypoint.py read_yandex_statistics --yandex-token <TOKEN> --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
 ```
 
@@ -557,19 +646,20 @@ Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/
 |CLI option|Documentation|
 |--|--|
 |`--yandex-token`|Bear token that allows you to authenticate to the API|
-|`--yandex-report-language`|(Optional) Language of the report. See all options [here](https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language).|
+|`--yandex-report-language`|(Optional) Language of the report. *Possible values can be found [here](https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language).*|
 |`--yandex-filter`|(Optional) Filters on a particular field.|
 |`--yandex-max-rows`|(Optional) The maximum number of rows in the report.|
-|`--yandex-field-name`|Information you want to collect. Complete list [here](https://tech.yandex.com/direct/doc/reports/fields-list-docpage/).|
+|`--yandex-field-name`|Information you want to collect. *Possible values can be found [here](https://tech.yandex.com/direct/doc/reports/fields-list-docpage/).*|
 |`--yandex-report-type`|Type of report. Linked to the fields you want to select.|
-|`--yandex-date-range`|List [here](https://tech.yandex.com/direct/doc/reports/period-docpage/).|
+|`--yandex-date-range`|*Possible values can be found [here](https://tech.yandex.com/direct/doc/reports/period-docpage/).*|
 |`--yandex-include-vat`|Adds VAT to your expenses if set to `True`|
 |`--yandex-date-start`|(Optional) Selects data on a specific period of time. Combined with `--yandex-date-stop` and  `--yandex-date-range` set to `CUSTOM_DATE`.|
 |`--yandex-date-stop`|(Optional) Selects data on a specific period of time. Combined with `--yandex-date-start` and  `--yandex-date-range` set to `CUSTOM_DATE`.|
 
 ## Troubleshooting
 
-You encountered an issue and you don't know what's going on. You may find an answer in the troubleshooting guide below.
+You encountered an issue when running a Reader command and you don't know what's going on?
+You may find an answer in the troubleshooting guide below.
 
 1. **Have you installed NCK dependencies?** In order to run NCK, you need to install all dependencies. First create a [virtual environment](https://docs.python.org/3/library/venv.html) and then run `pip install -r requirements.txt`.
 2. **Have you set `PYTHONPATH` environment variable to the root of NCK folder?**
