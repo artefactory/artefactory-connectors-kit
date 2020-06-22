@@ -1,5 +1,6 @@
 -r requirements.txt
 ipdb
+pytest
 flake8
 nose
 parameterized==0.7.1
