@@ -61,5 +61,6 @@ uritemplate==3.0.0
 urllib3==1.25.7
 Werkzeug==0.16.0
 googleads==22.0.0
+twitter-ads==7.0.1
 pyjwt==1.7.1
 cryptography==2.9
