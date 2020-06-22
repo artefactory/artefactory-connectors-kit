@@ -14,14 +14,14 @@ Each reader role is to read data from external source and transform it into a St
 
 #### Quickstart
 
-The Facebook Reader handles calls to 2 endpoints of the Facebook Marketing API: **Facebook Ad Insights** (to retrieve performance data), and **Facebook Object Node** (to retrieve configuration data).
+The Facebook Reader handles calls to 2 endpoints of the Facebook Marketing API: **Facebook Ad Insights** (to retrieve performance data), and **Facebook Ad Management** (to retrieve configuration data).
 
-*Example of Facebook Ad Insights Request*
+*Example of Ad Insights Request*
 ```
 python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID> --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions[action_type:post_engagement] --facebook-field actions[action_type:video_view] --facebook-field age --facebook-field gender --facebook-time-increment 1 --facebook-start-date 2020-01-01 --facebook-end-date 2020-01-03 write_console
 ```
 
-*Example of Facebook Object Node Request*
+*Example of Ad Management Request*
 ```
 python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID>  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative[id] --facebook-add-date-to-report True --facebook-start-date 2020-01-01 --facebook-end-date 2019-01-01 write_console
 ```
@@ -33,18 +33,18 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 |`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-access-token`|Facebook App Access Token.|
-|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Facebook Object Node requests), ad, adset, campaign, account (default).*|
+|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Supported values: creative (available only for Ad Management requests), ad, adset, campaign, account (default).*|
 |`--facebook-object-id`|ID of the root Facebook Object used to make the request.|
-|`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Facebook Object Node requests), ad (default), adset, campaign or account.*|
-|`--facebook-ad-insights`|*True* (default) if *Facebook Ad Insights* request, *False* if *Facebook Object Node* request.|
+|`--facebook-level`|Granularity of the response. *Supported values: creative (available only for Ad Management requests), ad (default), adset, campaign or account.*|
+|`--facebook-ad-insights`|*True* (default) if *Ad Insights* request, *False* if *Ad Management* request.|
 |`--facebook-field`|Fields to be retrieved.|
-|`--facebook-start-date`|Start date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
-|`--facebook-end-date`|End date of the requested time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
-|`--facebook-date-preset`|Relative time range. Ignored if *--facebook-start date* and *--facebook-end-date* are specified. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
-|`--facebook-time-increment`|Cuts the results between smaller time slices within the specified time range. *This parameter is only relevant for Facebook Ad Insights Requests, and Facebook Object Node requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-start-date`|Start date of the requested time range. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-end-date`|End date of the requested time range. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-date-preset`|Relative time range. Ignored if *--facebook-start date* and *--facebook-end-date* are specified. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
+|`--facebook-time-increment`|Cuts the results between smaller time slices within the specified time range. *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
 |`--facebook-add-date-to-report`|*True* if you wish to add the date of the request to each response record, *False* otherwise (default).|
-|`--facebook-breakdown`|How to break down the result. *This parameter is only relevant for Facebook Ad Insights Requests.*|
-|`--facebook-action-breakdown`|How to break down action results. *This parameter is only relevant for Facebook Ad Insights Requests.*|
+|`--facebook-breakdown`|How to break down the result. *This parameter is only relevant for Ad Insights Requests.*|
+|`--facebook-action-breakdown`|How to break down action results. *This parameter is only relevant for Ad Insights Requests.*|
 
 #### Additional details for a relevant use of the Facebook Reader
 
@@ -62,8 +62,8 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 
 2.1. The list of **applicable fields** can be found on the links below:
 
-- **Facebook Ad Insights Request**: [all fields](https://developers.facebook.com/docs/marketing-api/insights/parameters/v7.0)
-- **Facebook Object Node Request**: [Account-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-account), [Campaign-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group), [Adset-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign), [Ad-level fields](https://developers.facebook.com/docs/marketing-api/reference/adgroup), [Creative-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)
+- **Ad Insights Request**: [all fields](https://developers.facebook.com/docs/marketing-api/insights/parameters/v7.0)
+- **Ad Management Request**: [Account-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-account), [Campaign-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group), [Adset-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign), [Ad-level fields](https://developers.facebook.com/docs/marketing-api/reference/adgroup), [Creative-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)
 
 2.2. If you want to select **a nested field value**,  simply indicate the path to this value within the request field.
 
@@ -92,7 +92,7 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 {"object_story_spec_video_data_call_to_action_value_link": "https://www.artefact.com"}
 ```
 
-(2.3) **Action Breakdown filters** can be applied to the fields of ***Facebook Ad Insights* Requests** using the following syntax: <FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
+(2.3) **Action Breakdown filters** can be applied to the fields of ***Ad Insights* Requests** using the following syntax: <FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
 
 *Facebook Reader Request*
 ```
@@ -364,26 +364,33 @@ Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/
 
 As of May 2020 (last update of this section of the documentation), **two versions of Adobe Analytics Reporting API are  coexisting: 1.4 and 2.0**. As some functionalities of API 1.4 have not been made available in API 2.0 yet (Data Warehouse reports in particular), our Adobe Analytics Readers are also available in these two versions.
 
-### Adobe Analytics Reader 1.4
-
 #### How to obtain credentials
 
-Our Adobe Analytics Reader 1.4 uses the **WSSE authentication framework**. This authentication framework is now deprecated, so you won't be able to generate new WSSE authentication credentials (Username, Password) on Adobe Developper Console if you don't already have them.
+Both Adobe Analytics Readers use the **JWT authentication framework**.
+- Get developer access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
+- Create a Service Account integration to Adobe Analytics on [Adobe Developer Console](https://console.adobe.io/)
+- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md)). All these parameters will be passed to Adobe Analytics Readers.
+
+### Adobe Analytics Reader 1.4
 
 #### Quickstart
 
 Call example to Adobe Analytics Reader 1.4, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
 
 ```
-python nck/entrypoint.py read_adobe --adobe-username <USERNAME>  --adobe-password <PASSWORD> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 write_console
+python nck/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 write_console
 ```
 
 #### Parameters
 
 |CLI option|Documentation|
 |--|--|
-|`--adobe-username`|Username used for WSSE authentication|
-|`--adobe-password`|Password used for WSSE authentication|
+|`--adobe-client-id`|Client ID, that you can find on Adobe Developer Console|
+|`--adobe-client-secret`|Client Secret, that you can find on Adobe Developer Console|
+|`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developer Console|
+|`--adobe-org-id`|Organization ID, that you can find on Adobe Developer Console|
+|`--adobe-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
+|`--adobe-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md))|
 |`--adobe-list-report-suite`|Should be set to *True* if you wish to request the list of available Adobe Report Suites (*default: False*). If set to *True*, the below parameters should be left empty.|
 |`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-report-element-id`|ID of the element (i.e. dimension) to include in the report|
@@ -399,36 +406,29 @@ python nck/entrypoint.py read_adobe --adobe-username <USERNAME>  --adobe-passwor
 
 ### Adobe Analytics Reader 2.0
 
-#### How to obtain credentials
-
-Adobe Analytics Reader 2.0 uses the **JWT authentication framework**.
-- Get developper access to Adobe Analytics (documentation can be found [here](https://helpx.adobe.com/enterprise/using/manage-developers.html))
-- Create a Service Account integration to Adobe Analytics on [Adobe Developper Console](https://console.adobe.io/)
-- Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md')). All these parameters will be passed to Adobe Analytics Reader 2.0.
-
 #### Quickstart
 
 Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:
 
 ```
-python nck/entrypoint.py read_adobe_2_0 --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-dimension daterangeday --adobe-dimension campaign --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 --adobe-metric visits write_console
+python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adobe-2-0-client-secret <CLIENT_SECRET> --adobe-2-0-tech-account-id <TECH_ACCOUNT_ID> --adobe-2-0-org-id <ORG_ID> --adobe-2-0-private-key <PRIVATE_KEY> --adobe-2-0-global-company-id <GLOBAL_COMPANY_ID> --adobe-2-0-report-suite-id <REPORT_SUITE_ID> --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date 2020-01-01 --adobe-2-0-end-date 2020-01-31 --adobe-2-0-metric visits write_console
 ```
 
 #### Parameters
 
 |CLI option|Documentation|
 |--|--|
-|`--adobe-client-id`|Client ID, that you can find on Adobe Developper Console|
-|`--adobe-client-secret`|Client Secret, that you can find on Adobe Developper Console|
-|`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developper Console|
-|`--adobe-org-id`|Organization ID, that you can find on Adobe Developper Console|
-|`--adobe-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
-|`--adobe-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md'))|
-|`--adobe-report-suite-id`|ID of the requested Adobe Report Suite|
-|`--adobe-dimension`|Dimension to include in the report|
-|`--adobe-metric`|Metric  to include in the report|
-|`--adobe-start-date`|Start date of the report (format: YYYY-MM-DD)|
-|`--adobe-end-date`|End date of the report (format: YYYY-MM-DD)|
+|`--adobe-2-0-client-id`|Client ID, that you can find on Adobe Developer Console|
+|`--adobe-2-0-client-secret`|Client Secret, that you can find on Adobe Developer Console|
+|`--adobe-2-0-tech-account-id`|Technical Account ID, that you can find on Adobe Developer Console|
+|`--adobe-2-0-org-id`|Organization ID, that you can find on Adobe Developer Console|
+|`--adobe-2-0-private-key`|Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as \n.|
+|`--adobe-2-0-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md))|
+|`--adobe-2-0-report-suite-id`|ID of the requested Adobe Report Suite|
+|`--adobe-2-0-dimension`|Dimension to include in the report|
+|`--adobe-2-0-metric`|Metric  to include in the report|
+|`--adobe-2-0-start-date`|Start date of the report (format: YYYY-MM-DD)|
+|`--adobe-2-0-end-date`|End date of the report (format: YYYY-MM-DD)|
 
 #### Additional information
 

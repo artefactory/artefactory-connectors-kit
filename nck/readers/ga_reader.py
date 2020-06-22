@@ -52,6 +52,7 @@ DATEFORMAT = "%Y-%m-%d"
     "--ga-day-range", type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]), default=None
 )
 @click.option("--ga-sampling-level", type=click.Choice(["SMALL", "DEFAULT", "LARGE"]), default="LARGE")
+@click.option("--ga-add-view", is_flag=True)
 @processor("ga_access_token", "ga_refresh_token", "ga_client_secret")
 def ga(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
@@ -83,6 +84,7 @@ class GaReader(Reader):
         self.view_ids = self.kwargs.get("view_id")
         self.date_range = self.get_date_range_for_ga_request()
         self.sampling_level = self.kwargs.get("sampling_level")
+        self.add_view = self.kwargs.get("add_view", False)
 
     def get_date_range_for_ga_request(self):
         start_date = self.kwargs.get("start_date")
@@ -176,14 +178,16 @@ class GaReader(Reader):
         except Exception as e:
             raise ClickException("failed while requesting pages of the report: {}".format(e))
 
-    @staticmethod
-    def format_and_yield(report):
+    def format_and_yield(self, view_id, report):
         dimension_names = report["columnHeader"]["dimensions"]
         metric_names = [m["name"] for m in report["columnHeader"]["metricHeader"]["metricHeaderEntries"]]
         for row in report["data"].get("rows", []):
             row_dimension_values = row["dimensions"]
             row_metric_values = row["metrics"][0]["values"]
             formatted_response = {}
+
+            if self.add_view:
+                formatted_response["ga:viewId"] = view_id
 
             for dim, value in zip(dimension_names, row_dimension_values):
                 formatted_response[dim] = value
@@ -200,7 +204,7 @@ class GaReader(Reader):
         for view_id in self.view_ids:
             for report in self._run_query(view_id):
                 if "data" in report:
-                    yield from self.format_and_yield(report)
+                    yield from self.format_and_yield(view_id, report)
 
     def read(self):
         yield GaStream(
