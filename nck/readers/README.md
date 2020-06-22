@@ -111,7 +111,7 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |`--adobe-2-0-global-company-id`|Global Company ID (to be requested to [Discovery API](https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md))|
 |`--adobe-2-0-report-suite-id`|ID of the requested Adobe Report Suite|
 |`--adobe-2-0-dimension`|Dimension to include in the report|
-|`--adobe-2-0-metric`|Metric  to include in the report|
+|`--adobe-2-0-metric`|Metric to include in the report|
 |`--adobe-2-0-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
 |`--adobe-2-0-end-date`|Start date of the period to request (format: YYYY-MM-DD)|
 
@@ -340,8 +340,9 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |`--ga-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
 |`--ga-end-date`|End date of the period to request (format: YYYY-MM-DD)|
 |`--ga-date-range`|<START_DATE> <END_DATE> of the period to request, specified as a unique argument (format: YYYY-MM-DD YYYY-MM-DD)|
-|`--ga-day-range`|*Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS.*|
+|`--ga-day-range`|Relative time range. *Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS.*|
 |`--ga-sampling-level`|Desired sample size. See documentation [here](https://support.google.com/analytics/answer/2637192) for a better understanding of Google Analytics sampling. *Possible values: SMALL, DEFAULT, LARGE (default).*|
+|`--ga-add-view`|If set to *True* (default: False)*, adds a "ga:viewId" field to the output stream.|
 
 See documentation [here](https://developers.google.com/analytics/devguides/reporting/core/v4/basics) for a better understanding of the parameters.
 
