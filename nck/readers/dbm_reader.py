@@ -33,7 +33,8 @@ from nck.readers.reader import Reader
 from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
 
-from nck.utils.text import get_generator_dict_from_str_csv, add_column_value_to_csv_line_iterator
+from nck.utils.text import get_report_generator_from_flat_file
+from nck.utils.date_handler import get_date_start_and_date_stop_from_range
 
 from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES, FILE_TYPES_DICT
 
@@ -64,7 +65,7 @@ default_end_date = datetime.date.today()
     help=(
         "Sometimes the date range on which metrics are computed is missing from the report. "
         "If this option is set to True, this range will be added."
-    )
+    ),
 )
 @click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
@@ -78,7 +79,16 @@ default_end_date = datetime.date.today()
     "--dbm-day-range",
     required=True,
     default="LAST_7_DAYS",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK"]),
+    type=click.Choice(
+        [
+            "PREVIOUS_DAY",
+            "LAST_30_DAYS",
+            "LAST_90_DAYS",
+            "LAST_7_DAYS",
+            "PREVIOUS_MONTH",
+            "PREVIOUS_WEEK",
+        ]
+    ),
 )
 @processor("dbm_access_token", "dbm_refresh_token", "dbm_client_secret")
 def dbm(**kwargs):
@@ -106,7 +116,9 @@ class DbmReader(Reader):
         credentials.refresh(http)
 
         # API_SCOPES = ['https://www.googleapis.com/auth/doubleclickbidmanager']
-        self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
+        self._client = discovery.build(
+            self.API_NAME, self.API_VERSION, http=http, cache_discovery=False
+        )
 
         self.kwargs = kwargs
 
@@ -117,7 +129,11 @@ class DbmReader(Reader):
                 if q["queryId"] == query_id or q["metadata"]["title"] == query_title:
                     return q
         else:
-            logging.info("No query found with the id {} or the title {}".format(query_id, query_title))
+            logging.info(
+                "No query found with the id {} or the title {}".format(
+                    query_id, query_title
+                )
+            )
             return None
 
     def get_existing_query(self):
@@ -127,7 +143,11 @@ class DbmReader(Reader):
         if query:
             return query
         else:
-            raise Exception("No query found with the id {} or the title {}".format(query_id, query_title))
+            raise Exception(
+                "No query found with the id {} or the title {}".format(
+                    query_id, query_title
+                )
+            )
 
     def get_query_body(self):
         body_q = {
@@ -140,11 +160,17 @@ class DbmReader(Reader):
                 "type": self.kwargs.get("query_param_type", "TYPE_TRUEVIEW"),
                 "groupBys": self.kwargs.get("query_dimension"),
                 "metrics": self.kwargs.get("query_metric"),
-                "filters": [{"type": filt[0], "value": str(filt[1])} for filt in self.kwargs.get("filter")],
+                "filters": [
+                    {"type": filt[0], "value": str(filt[1])}
+                    for filt in self.kwargs.get("filter")
+                ],
             },
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
         }
-        if self.kwargs.get("start_date") is not None and self.kwargs.get("end_date") is not None:
+        if (
+            self.kwargs.get("start_date") is not None
+            and self.kwargs.get("end_date") is not None
+        ):
             body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
             body_q["reportDataStartTimeMs"] = 1000 * int(
                 (self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()
@@ -191,19 +217,34 @@ class DbmReader(Reader):
     def get_query_report(self, existing_query=True):
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
-        if self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY" \
-           and self.kwargs["add_date_to_report"]:
-            return get_generator_dict_from_str_csv(
+        if (
+            self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY"
+            and self.kwargs["add_date_to_report"]
+        ):
+            start, stop = get_date_start_and_date_stop_from_range(
+                self.kwargs["day_range"]
+            )
+            column_dict = {
+                "date_start": start.strftime(self.kwargs.get("date_format")),
+                "date_stop": stop.strftime(self.kwargs.get("date_format")),
+            }
+            return get_report_generator_from_flat_file(
                 report.iter_lines(),
-                add_date=True,
-                day_range=self.kwargs["day_range"],
-                date_format=self.kwargs.get("date_format")
+                skip_n_last=1,
+                add_column=True,
+                column_dict=column_dict,
             )
         else:
-            return get_generator_dict_from_str_csv(report.iter_lines())
+            return get_report_generator_from_flat_file(
+                report.iter_lines(), skip_n_last=1
+            )
 
     def list_query_reports(self):
-        reports_infos = self._client.reports().listreports(queryId=self.kwargs.get("query_id")).execute()
+        reports_infos = (
+            self._client.reports()
+            .listreports(queryId=self.kwargs.get("query_id"))
+            .execute()
+        )
         for report in reports_infos["reports"]:
             yield report
 
@@ -211,43 +252,69 @@ class DbmReader(Reader):
         if len(self.kwargs.get("filter")) > 0:
             filter_types = [filt[0] for filt in self.kwargs.get("filter")]
             assert (
-                len([filter_types[0] == filt for filt in filter_types if filter_types[0] == filt]) == 1
+                len(
+                    [
+                        filter_types[0] == filt
+                        for filt in filter_types
+                        if filter_types[0] == filt
+                    ]
+                )
+                == 1
             ), "Lineitems accept just one filter type, multiple filter types detected"
             filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
-            return {"filterType": filter_types[0], "filterIds": filter_ids, "format": "CSV", "fileSpec": "EWF"}
+            return {
+                "filterType": filter_types[0],
+                "filterIds": filter_ids,
+                "format": "CSV",
+                "fileSpec": "EWF",
+            }
         else:
             return {}
 
     def get_lineitems_objects(self):
         body_lineitems = self.get_lineitems_body()
-        response = self._client.lineitems().downloadlineitems(body=body_lineitems).execute()
+        response = (
+            self._client.lineitems().downloadlineitems(body=body_lineitems).execute()
+        )
         lineitems = response["lineItems"]
         lines = lineitems.split("\n")
-        return get_generator_dict_from_str_csv(lines)
+        return get_report_generator_from_flat_file(lines, skip_n_last=1)
 
     def get_sdf_body(self):
         filter_types = [filt[0] for filt in self.kwargs.get("filter")]
         assert (
-            len([filter_types[0] == filt for filt in filter_types if filter_types[0] == filt]) == 1
+            len(
+                [
+                    filter_types[0] == filt
+                    for filt in filter_types
+                    if filter_types[0] == filt
+                ]
+            )
+            == 1
         ), "sdf accept just one filter type, multiple filter types detected"
         filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
         file_types = self.kwargs.get("file_type")
-        body_sdf = {"version": "5.1", "filterIds": filter_ids, "filterType": filter_types, "fileTypes": file_types}
+        body_sdf = {
+            "version": "5.1",
+            "filterIds": filter_ids,
+            "filterType": filter_types,
+            "fileTypes": file_types,
+        }
         return body_sdf
 
     def get_sdf_objects(self):
         body_sdf = self.get_sdf_body()
         file_types = body_sdf["fileTypes"]
         response = self._client.sdf().download(body=body_sdf).execute()
-
         return chain(
             *[
-                get_generator_dict_from_str_csv(
-                    add_column_value_to_csv_line_iterator(
-                        response[FILE_TYPES_DICT[file_type]].split("\n"), "file_type", file_type
-                    )
+                get_report_generator_from_flat_file(
+                    response[FILE_TYPES_DICT[file_type]].split("\n"),
+                    skip_n_last=1,
+                    add_column=True,
+                    column_dict={"file_type": file_type},
                 )
                 for file_type in file_types
             ]

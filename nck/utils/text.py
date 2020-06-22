@@ -16,105 +16,117 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging
-from typing import Dict, Generator, List, Union
 import re
 import csv
 from io import StringIO
+from collections import deque
+from itertools import islice
 
-from nck.utils.date_handler import get_date_start_and_date_stop_from_range
 
+def get_report_generator_from_flat_file(
+    line_iterator,
+    delimiter=",",
+    skip_n_first=0,
+    skip_n_last=0,
+    add_column=False,
+    column_dict={},
+):
+    """
+    From the line iterator of a flat file:
+        [
+            "Date,AdvertiserId,Impressions",
+            "2020-01-01,1234,10",
+            "2020-01-01,5678,20"
+        ]
+    Return a generator of {column: value} dictionnaries:
+        [
+            {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
+            {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"}
+        ]
+    Params
+        :line_iterator (iter): line iterator of the file to process
+        :delimiter (str): delimiter to parse file lines
+        :skip_n_first (int): nb of lines to skip at begining of file (excl. blank lines)
+        :skip_n_last (int): nb of lines to skip at end of file (excl. blank lines)
+        :add_column (bool): wether to add a fixed {column: value} at the end of each record
+        :column_dict (dict): if add_column is True, {column: value} dictionnary
+        to add at the end of each record (can include multiple column_names)
+    """
 
-def add_column_value_to_csv_line_iterator(line_iterator, columname, value):
     first_line = True
-    for line in line_iterator:
-        if line == "":
-            break
+    for line in skip(line_iterator, skip_n_first, skip_n_last):
+        line = decode_if_needed(line)
         if first_line:
             first_line = False
-            if columname in line.split(","):
-                raise Exception("Column {} already present".format(columname))
-            yield line + "," + columname
+            headers = parse_decoded_line(line, delimiter)
         else:
-            yield line + "," + value
-
-
-def get_generator_dict_from_str_csv(
-    line_iterator: Generator[Union[bytes, str], None, None],
-    add_date=False,
-    day_range=None,
-    date_format="%Y-%m-%d",
-    skip_last_row=True,
-) -> Generator[Dict[str, str], None, None]:
-    first_line = next(line_iterator)
-    headers = (
-        parse_decoded_line(first_line.decode("utf-8"))
-        if isinstance(first_line, bytes)
-        else parse_decoded_line(first_line)
-    )
-    if add_date:
-        headers.extend(["date_start", "date_stop"])
-
-    next_line = next(line_iterator, None)
-    while next_line is not None:
-        current_line = next_line
-        if isinstance(current_line, bytes):
-            try:
-                current_line = current_line.decode("utf-8")
-            except UnicodeDecodeError as err:
+            parsed_line = parse_decoded_line(line, delimiter)
+            if len(parsed_line) != len(headers):
                 logging.warning(
-                    "An error has occurred while parsing the file. "
-                    "The line could not be decoded in %s."
-                    "Invalid input that the codec failed on: %s",
-                    err.encoding,
-                    err.object[err.start : err.end],
+                    f"Skipping line '{line}': length of parsed line doesn't match length of headers."
                 )
-                current_line = current_line.decode("utf-8", errors="ignore")
-
-        next_line = next(line_iterator, "")
-        if len(current_line) == 0 or (skip_last_row and len(next_line) == 0):
-            break
-
-        if add_date:
-            start, end = get_date_start_and_date_stop_from_range(day_range)
-            current_line += f",{start.strftime(date_format)},{end.strftime(date_format)}"
-
-        yield dict(zip(headers, parse_decoded_line(current_line)))
+            else:
+                record = dict(zip(headers, parsed_line))
+                if add_column:
+                    yield {**record, **column_dict}
+                else:
+                    yield record
 
 
-def get_generator_dict_from_str_tsv(
-    line_iterator: Generator[Union[bytes, str], None, None], skip_first_row=False
-) -> Generator[Dict[str, str], None, None]:
-    if skip_first_row:
-        next(line_iterator)
-    headers_line = next(line_iterator)
-    headers = (
-        parse_decoded_line(headers_line.decode("utf-8"), delimiter="\t")
-        if isinstance(headers_line, bytes)
-        else parse_decoded_line(headers_line, delimiter="\t")
-    )
-    for line in line_iterator:
-        if isinstance(line, bytes):
-            try:
-                line = line.decode("utf-8")
-            except UnicodeDecodeError as err:
-                logging.warning(
-                    "An error has occured while parsing the file. "
-                    "The line could not be decoded in %s."
-                    "Invalid input that the codec failed on: %s",
-                    err.encoding,
-                    err.object[err.start : err.end],
-                )
-                line = line.decode("utf-8", errors="ignore")
-
-        yield dict(zip(headers, parse_decoded_line(line, delimiter="\t")))
+def decode_if_needed(line):
+    if isinstance(line, bytes):
+        try:
+            line = line.decode("utf-8")
+        except UnicodeDecodeError as e:
+            logging.warning(
+                "An error has occurred while parsing the file."
+                f"The line could not be decoded in {e.encoding}."
+                f"Invalid input that the codec failed on: {e.object[e.start : e.end]}"
+            )
+            line = line.decode("utf-8", errors="ignore")
+    return line
 
 
-def parse_decoded_line(line: str, delimiter=",", quotechar='"') -> List[str]:
+def parse_decoded_line(line, delimiter=",", quotechar='"'):
     line_as_file = StringIO(line)
     reader = csv.reader(
-        line_as_file, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_ALL, skipinitialspace=True
+        line_as_file,
+        delimiter=delimiter,
+        quotechar=quotechar,
+        quoting=csv.QUOTE_ALL,
+        skipinitialspace=True,
     )
     return next(reader)
+
+
+def skip(iterator, n_first, n_last):
+    """
+    Skips the n first and/or n last lines of a line iterator,
+    from which blank lines have been removed
+    """
+    iterator = skip_blank(iterator)
+    if n_first > 0:
+        iterator = skip_first(iterator, n_first)
+    if n_last > 0:
+        iterator = skip_last(iterator, n_last)
+    yield from iterator
+
+
+def skip_blank(iterator):
+    for item in iterator:
+        if item:
+            yield item
+
+
+def skip_first(iterator, n):
+    yield from islice(iterator, n, None)
+
+
+def skip_last(iterator, n):
+    previous_items = deque(islice(iterator, n), n)
+    for item in iterator:
+        yield previous_items.popleft()
+        previous_items.append(item)
 
 
 def reformat_naming_for_bq(text, char="_"):

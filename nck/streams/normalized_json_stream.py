@@ -51,5 +51,6 @@ class NormalizedJSONStream(JSONStream):
             .replace("[", "_")
             .replace("]", "_")
             .replace(".", "_")
+            .replace("%", "per")
             .strip("_")
         )
