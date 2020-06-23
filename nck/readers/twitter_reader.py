@@ -38,6 +38,9 @@ from twitter_ads import API_VERSION
 from twitter_ads.http import Request
 from twitter_ads.cursor import Cursor
 
+# from twitter_ads.creative import TweetPreview
+from twitter_ads.creative import CardsFetch
+
 API_DATEFORMAT = "%Y-%m-%dT%H:%M:%SZ"
 REP_DATEFORMAT = "%Y-%m-%d"
 MAX_WAITING_SEC = 3600
@@ -442,6 +445,33 @@ class TwitterReader(Reader):
             for entity_obj in ACCOUNT_CHILD_OBJECTS[self.entity]
         ]
 
+    def get_creative_report(self):
+
+        # Step 1 - Get tweet_ids
+        tweet_ids = [
+            promoted_tweet.tweet_id for promoted_tweet in self.account.promoted_tweets()
+        ]
+
+        for chunk_tweet_ids in split_list(tweet_ids, 200):
+
+            # Step 2 - Get card_uri
+            # https://developer.twitter.com/en/docs/ads/creatives/api-reference/tweets
+            resource = f"/{API_VERSION}/accounts/{self.account.id}/tweets"
+            params = {"tweet_type": "PUBLISHED"}
+            request = Request(self.client, "get", resource, params=params)
+
+            # Step 3 - Get website_dest_url
+            for tweet in Cursor(None, request):
+                if "card_uri" in tweet:
+                    record = {
+                        "tweet_id": tweet["tweet_id"],
+                        "card_uri": tweet["card_uri"],
+                    }
+                    record["website_dest_url"] = CardsFetch.load(
+                        self.account, card_uris=[tweet["card_uri"]]
+                    ).first
+                    yield record
+
     def get_reach_report(self):
         """
         Get 'REACH' report through the 'Reach and Average Frequency' endpoint of Twitter Ads API.
@@ -502,6 +532,9 @@ class TwitterReader(Reader):
 
         elif self.report_type == "ENTITY":
             data = self.get_entity_report()
+
+        elif self.report_type == "CREATIVE":
+            data = self.get_creative_report()
 
         def result_generator():
             for record in data:

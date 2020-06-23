@@ -22,7 +22,7 @@ class JobTimeOutError(Exception):
         logging.error(message)
 
 
-REPORT_TYPES = ["ANALYTICS", "REACH", "ENTITY"]
+REPORT_TYPES = ["ANALYTICS", "REACH", "ENTITY", "CREATIVE"]
 
 ENTITY_OBJECTS = {
     "FUNDING_INSTRUMENT": FundingInstrument,
