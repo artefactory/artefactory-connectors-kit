@@ -533,14 +533,14 @@ See documentation [here](https://developers.google.com/search-ads/v2/how-tos/rep
 * **Apply for a developer account** through [this link](https://developer.twitter.com/en/apply).
 * **Create a Twitter app** on the developer portal: it will generate your authentication credentials.
 * **Apply for Twitter Ads API access** by filling out [this form](https://developer.twitter.com/en/docs/ads/general/overview/adsapi-application). Receiving Twitter approval may take up to 7 business days.
-* **Get a Campaign Analyst access to the Twitter Ads account** you wish to retrieve data for, on the @handle that you used to create your Twitter App.
+* **Get access to the Twitter Ads account** you wish to retrieve data for, on the @handle that you used to create your Twitter App. Be careful, access levels matter: with an *Ad Manager* access, you will be able to request all report types; with a *Campaign Analyst* access, you will be able to request all report types, except ENTITY reports on Card entities.
 
 #### Quickstart
 
-The Twitter Ads Reader can collect **3 types of reports**, making calls to 3 endpoints of the Twitter Ads API:
+The Twitter Ads Reader can collect **3 types of reports**, making calls to 4 endpoints of the Twitter Ads API:
 * **ANALYTICS reports**, making calls to the [Asynchronous Analytics endpoint](https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous). These reports return performance data for a wide range of metrics, that **can be aggregated over time**. Output data **can be splitted by day** when requested over a larger time period.
 * **REACH reports**, making calls to the [Reach and Average Frequency endpoint](https://developer.twitter.com/en/docs/ads/analytics/api-reference/reach). These reports return performance data with a focus on reach and frequency metrics, that **cannot be aggregated over time** (*e.g. the reach of day A and B is not equal to the reach of day A + the reach of day B, as it counts unique individuals*). Output data **cannot be splitted by day** when requested over a larger time period. These reports are available **only for the Funding Instrument and Campaign entities**.
-* **ENTITY reports**, making calls to [Campaign Management endpoints](https://developer.twitter.com/en/docs/ads/campaign-management/api-reference). These reports return details on entity configuration since the creation of the Twitter Ads account.
+* **ENTITY reports**, making calls to [Campaign Management endpoints](https://developer.twitter.com/en/docs/ads/campaign-management/api-reference) if the selected entity is Funding Instrument, Campaign, Line Item, Media Creative or Promoted Tweet, and to the [Creative endpoint](https://developer.twitter.com/en/docs/ads/creatives/api-reference/) if the selected entity is Card. These reports return details on entity configuration since the creation of the Twitter Ads account.
 
 *Call example for ANALYTICS reports*: this call will collect engagement metrics for Line Item entities, splitting the results by day, from 2020-01-01 to 2020-01-03:
 ```
@@ -569,8 +569,8 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |`--twitter-access-token-secret`|Access token secret, available in the 'Keys and tokens' section of your Twitter Developer App.|
 |`--twitter-account-id`|Specifies the Twitter Account ID for which the data should be returned.|
 |`--twitter-report-type`|Specifies the type of report to collect. *Possible values: ANALYTICS, REACH, ENTITY.*|
-|`--twitter-entity`|Specifies the entity type to retrieve data for. *Possible values: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET.*|
-|`--twitter-entity-attribute`|Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned.|
+|`--twitter-entity`|Specifies the entity type to retrieve data for. *Possible values: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET, CARD.*|
+|`--twitter-entity-attribute`|Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned. *To get possible values, print the ENTITY_ATTRIBUTES variable on nck/helpers/twitter_helper.py*|
 |`--twitter-granularity`|Specific to ANALYTICS reports. Specifies how granular the retrieved data should be. *Possible values: TOTAL (default), DAY.*|
 |`--twitter-metric-group`|Specific to ANALYTICS reports. Specifies the list of metrics (as a group) that should be returned. *Possible values can be found [here](https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation).* |
 |`--twitter-placement`|Specific to ANALYTICS reports. Scopes the retrieved data to a particular placement. *Possible values: ALL_ON_TWITTER (default), PUBLISHER_NETWORK.*|
@@ -581,7 +581,7 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |`--twitter-end-date`|End date of the period to request (format: YYYY-MM-DD).|
 |`--twitter-add-request-date-to-report`|If set to *True* (default: *False*), the date on which the request is made will appear on each report record.|
 
-If you need any further information, the documentation of Twitter Ads API can be found [here](https://developer.twitter.com/en/docs/ads/general/overview).
+If you need any further information, the documentation of Twitter Ads API can be found [here](https://developer.twitter.com/en/docs/ads/general/overview). To get a better understanding of **Twitter Ads Hierrarchy and Terminology**, we advise you to have a look at [this page](https://developer.twitter.com/en/docs/tutorials/ads-api-hierarchy-terminology).
 
 ## Yandex Readers
 

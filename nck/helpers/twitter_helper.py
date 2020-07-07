@@ -13,7 +13,7 @@
 import logging
 
 from twitter_ads.campaign import FundingInstrument, Campaign, LineItem
-from twitter_ads.creative import MediaCreative, PromotedTweet
+from twitter_ads.creative import MediaCreative, PromotedTweet, CardsFetch
 
 
 class JobTimeOutError(Exception):
@@ -22,7 +22,7 @@ class JobTimeOutError(Exception):
         logging.error(message)
 
 
-REPORT_TYPES = ["ANALYTICS", "REACH", "ENTITY", "CREATIVE"]
+REPORT_TYPES = ["ANALYTICS", "REACH", "ENTITY"]
 
 ENTITY_OBJECTS = {
     "FUNDING_INSTRUMENT": FundingInstrument,
@@ -33,8 +33,11 @@ ENTITY_OBJECTS = {
 }
 
 ENTITY_ATTRIBUTES = {
-    entity: list(ENTITY_OBJECTS[entity].__dict__["PROPERTIES"].keys())
-    for entity in ENTITY_OBJECTS
+    **{
+        entity: list(ENTITY_OBJECTS[entity].__dict__["PROPERTIES"].keys())
+        for entity in ENTITY_OBJECTS
+    },
+    "CARD": list(CardsFetch.__dict__["PROPERTIES"].keys()),
 }
 
 GRANULARITIES = ["DAY", "TOTAL"]
