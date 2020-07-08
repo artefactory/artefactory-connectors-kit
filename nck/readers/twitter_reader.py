@@ -464,26 +464,21 @@ class TwitterReader(Reader):
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/
         """
 
-        tweet_ids = [
-            promoted_tweet.tweet_id for promoted_tweet in self.account.promoted_tweets()
-        ]
+        for tweet in self.get_published_tweets():
+            if "card_uri" in tweet:
+                card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
+                card_attributes = {
+                    attr: getattr(card_fetch, attr, None)
+                    for attr in self.entity_attributes
+                }
+                record = {
+                    "tweet_id": tweet["tweet_id"],
+                    "card_uri": tweet["card_uri"],
+                    **card_attributes,
+                }
+                yield record
 
-        for chunk_tweet_ids in split_list(tweet_ids, 200):
-            for tweet in self.get_tweets():
-                if "card_uri" in tweet:
-                    card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
-                    card_attributes = {
-                        attr: getattr(card_fetch, attr, None)
-                        for attr in self.entity_attributes
-                    }
-                    record = {
-                        "tweet_id": tweet["tweet_id"],
-                        "card_uri": tweet["card_uri"],
-                        **card_attributes,
-                    }
-                    yield record
-
-    def get_tweets(self):
+    def get_published_tweets(self):
         """
         Step 1 of 'ENTITY - CARD' report generation process:
         Returns details on 'PUBLISHED' tweets, as a generator of dictionnaries
