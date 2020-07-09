@@ -1,0 +1,7 @@
+**/.github
+**/tests
+**/.env
+**/.flake8
+**/.gitignore
+**/CONTRIBUTING.md
+**/README.md
