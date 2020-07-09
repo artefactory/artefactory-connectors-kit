@@ -3,5 +3,12 @@
 **/.env
 **/.flake8
 **/.gitignore
-**/CONTRIBUTING.md
-**/README.md
+**/.git
+CONTRIBUTING.md
+README.md
+**/__pycache__
+**/*.pyc
+**/.settings
+**/.vscode
+**/Dockerfile*
+**/requirements-dev.txt
