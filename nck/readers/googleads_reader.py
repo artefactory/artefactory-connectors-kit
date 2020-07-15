@@ -26,6 +26,7 @@ from io import StringIO
 from click import ClickException
 from googleads import adwords
 from googleads.oauth2 import GoogleRefreshTokenClient
+from googleads.errors import AdWordsReportBadRequestError
 
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
@@ -172,24 +173,30 @@ class GoogleAdsReader(Reader):
     def fetch_report_from_gads_client_customer_obj(
         self, report_definition, client_customer_id
     ):
-        if self.valid_client_customer_id(client_customer_id):
-            adwords_client = self.init_adwords_client(client_customer_id)
-            report_downloader = adwords_client.GetReportDownloader()
-            customer_report = report_downloader.DownloadReportAsStream(
-                report_definition,
-                client_customer_id=client_customer_id,
-                include_zero_impressions=self.include_zero_impressions,
-                skip_report_header=True,
-                skip_column_header=True,
-                skip_report_summary=True,
+        if not self.valid_client_customer_id(client_customer_id):
+            raise ClickException(
+                f"Wrong format: {client_customer_id}. Client customer ID should be in the form 123-456-7890."
             )
         else:
-            raise ClickException(
-                "Wrong format: "
-                + client_customer_id
-                + ". Client customer ID should be in the form 123-456-7890"
-            )
-        return customer_report
+            try:
+                adwords_client = self.init_adwords_client(client_customer_id)
+                report_downloader = adwords_client.GetReportDownloader()
+                customer_report = report_downloader.DownloadReportAsStream(
+                    report_definition,
+                    client_customer_id=client_customer_id,
+                    include_zero_impressions=self.include_zero_impressions,
+                    skip_report_header=True,
+                    skip_column_header=True,
+                    skip_report_summary=True,
+                )
+                return customer_report
+            except AdWordsReportBadRequestError as e:
+                if e.type == "AuthorizationError.CUSTOMER_NOT_ACTIVE":
+                    logging.info(
+                        f"Skipping clientCustomerId {client_customer_id} (inactive)."
+                    )
+                else:
+                    raise Exception(f"Wrong request. Error type: {e.type}")
 
     def get_customer_ids(self, manager_id):
         """Retrieves all CustomerIds in the account hierarchy.
@@ -214,7 +221,7 @@ class GoogleAdsReader(Reader):
         selector = {
             "fields": ["CustomerId"],
             "predicates": [
-                {"field": "CanManageClients", "operator": "EQUALS", "values": [False]}
+                {"field": "CanManageClients", "operator": "EQUALS", "values": [False]},
             ],
             "paging": {"startIndex": str(offset), "numberResults": str(PAGE_SIZE)},
         }
@@ -346,19 +353,18 @@ class GoogleAdsReader(Reader):
             customer_report = self.fetch_report_from_gads_client_customer_obj(
                 report_definition, googleads_account_id
             )
-            customer_report = stream_reader(customer_report)
-
-            for row in customer_report:
-                reader = csv.DictReader(StringIO(row), self.fields)
-                for row in reader:
-                    if self.include_client_customer_id:
-                        row['AccountId'] = googleads_account_id
-
-                    if self.filter_on_video_campaigns:
-                        if row['CampaignId'] in video_campaign_ids:
+            if customer_report:
+                customer_report = stream_reader(customer_report)
+                for row in customer_report:
+                    reader = csv.DictReader(StringIO(row), self.fields)
+                    for row in reader:
+                        if self.include_client_customer_id:
+                            row["AccountId"] = googleads_account_id
+                        if self.filter_on_video_campaigns:
+                            if row["CampaignId"] in video_campaign_ids:
+                                yield row
+                        else:
                             yield row
-                    else:
-                        yield row
 
     def read(self):
         if self.manager_id:
