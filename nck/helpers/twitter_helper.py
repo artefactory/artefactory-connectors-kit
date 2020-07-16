@@ -10,16 +10,8 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
-
 from twitter_ads.campaign import FundingInstrument, Campaign, LineItem
 from twitter_ads.creative import MediaCreative, PromotedTweet, CardsFetch
-
-
-class JobTimeOutError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logging.error(message)
 
 
 REPORT_TYPES = ["ANALYTICS", "REACH", "ENTITY"]

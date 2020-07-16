@@ -13,9 +13,9 @@
 import logging
 import click
 from click import ClickException
-from time import sleep
 from itertools import chain
 from datetime import datetime, timedelta
+from tenacity import retry, wait_exponential, stop_after_delay
 
 from nck.utils.args import extract_args
 from nck.commands.command import processor
@@ -29,7 +29,6 @@ from nck.helpers.twitter_helper import (
     METRIC_GROUPS,
     PLACEMENTS,
     SEGMENTATION_TYPES,
-    JobTimeOutError,
 )
 
 from twitter_ads.client import Client
@@ -302,17 +301,18 @@ class TwitterReader(Reader):
 
             logging.info(f"Processing job_id: {job_id}")
 
-            job_result = self.get_job_result(job_id)
-            waiting_sec = 2
+            # job_result = self.get_job_result(job_id)
+            # waiting_sec = 2
 
-            while job_result.status == "PROCESSING":
-                logging.info(f"Waiting {waiting_sec} seconds for job to be completed")
-                sleep(waiting_sec)
-                if waiting_sec > MAX_WAITING_SEC:
-                    raise JobTimeOutError("Waited too long for job to be completed")
-                waiting_sec *= 2
-                job_result = self.get_job_result(job_id)
+            # while job_result.status == "PROCESSING":
+            #     logging.info(f"Waiting {waiting_sec} seconds for job to be completed")
+            #     sleep(waiting_sec)
+            #     if waiting_sec > MAX_WAITING_SEC:
+            #         raise JobTimeOutError("Waited too long for job to be completed")
+            #     waiting_sec *= 2
+            #     job_result = self.get_job_result(job_id)
 
+            job_result = self._waiting_for_job_to_complete(job_id)
             raw_analytics_response = self.get_raw_analytics_response(job_result)
             all_responses.append(self.parse(raw_analytics_response))
 
@@ -354,6 +354,20 @@ class TwitterReader(Reader):
             .id
             for chunk_entity_ids in split_list(entity_ids, MAX_ENTITY_IDS_PER_JOB)
         ]
+
+    @retry(
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(36000),
+    )
+    def _waiting_for_job_to_complete(self, job_id):
+        """
+        Retrying to get job_result until job status is 'COMPLETED'.
+        """
+        job_result = self.get_job_result(job_id)
+        if job_result.status == "PROCESSING":
+            raise Exception(f"Job {job_id} is still running.")
+        else:
+            return job_result
 
     def get_job_result(self, job_id):
         """
