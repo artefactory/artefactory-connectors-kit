@@ -192,7 +192,7 @@ class GoogleAdsReader(Reader):
                 return customer_report
             except AdWordsReportBadRequestError as e:
                 if e.type == "AuthorizationError.CUSTOMER_NOT_ACTIVE":
-                    logging.info(
+                    logging.warning(
                         f"Skipping clientCustomerId {client_customer_id} (inactive)."
                     )
                 else:
