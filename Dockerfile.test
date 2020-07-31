@@ -1,0 +1,11 @@
+FROM python:3.7
+
+ADD requirements* /nautilus-connectors-kit/
+
+WORKDIR /nautilus-connectors-kit
+
+RUN pip install -r requirements-dev.txt
+
+ADD . /nautilus-connectors-kit
+
+CMD [ "pytest", "tests/integration"]
