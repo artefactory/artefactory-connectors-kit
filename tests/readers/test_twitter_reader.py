@@ -110,6 +110,15 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
+    def test_validate_analytics_entity(self):
+        temp_kwargs = self.kwargs.copy()
+        params = {"report_type": "ANALYTICS", "entity": "CARD"}
+        temp_kwargs.update(params)
+        with self.assertRaises(ClickException):
+            TwitterReader(**temp_kwargs)
+
+    @mock.patch.object(Client, "__init__", lambda *args: None)
+    @mock.patch.object(Client, "accounts", lambda *args: None)
     def test_validate_reach_entity(self):
         temp_kwargs = self.kwargs.copy()
         params = {"report_type": "REACH", "entity": "LINE_ITEM"}

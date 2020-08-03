@@ -13,9 +13,9 @@
 import logging
 import click
 from click import ClickException
-from time import sleep
 from itertools import chain
 from datetime import datetime, timedelta
+from tenacity import retry, wait_exponential, stop_after_delay
 
 from nck.utils.args import extract_args
 from nck.commands.command import processor
@@ -29,7 +29,6 @@ from nck.helpers.twitter_helper import (
     METRIC_GROUPS,
     PLACEMENTS,
     SEGMENTATION_TYPES,
-    JobTimeOutError,
 )
 
 from twitter_ads.client import Client
@@ -37,6 +36,9 @@ from twitter_ads.utils import split_list
 from twitter_ads import API_VERSION
 from twitter_ads.http import Request
 from twitter_ads.cursor import Cursor
+
+# from twitter_ads.creative import TweetPreview
+from twitter_ads.creative import CardsFetch
 
 API_DATEFORMAT = "%Y-%m-%dT%H:%M:%SZ"
 REP_DATEFORMAT = "%Y-%m-%d"
@@ -83,13 +85,14 @@ MAX_CONCURRENT_JOBS = 100
 @click.option(
     "--twitter-entity",
     required=True,
-    type=click.Choice(list(ENTITY_OBJECTS.keys())),
+    type=click.Choice(list(ENTITY_ATTRIBUTES.keys())),
     help="Specifies the entity type to retrieve data for.",
 )
 @click.option(
     "--twitter-entity-attribute",
     multiple=True,
-    help="Specific to 'ENTITY' reports. Specifies the entity attribute (a.k.a. dimension) that should be returned.",
+    help="Specific to 'ENTITY' reports. "
+    "Specifies the entity attribute (a.k.a. dimension) that should be returned.",
 )
 @click.option(
     "--twitter-granularity",
@@ -206,6 +209,7 @@ class TwitterReader(Reader):
         self.validate_dates()
         self.validate_analytics_segmentation()
         self.validate_analytics_metric_groups()
+        self.validate_analytics_entity()
         self.validate_reach_entity()
         self.validate_entity_attributes()
 
@@ -253,13 +257,22 @@ class TwitterReader(Reader):
                     "'MOBILE_CONVERSION' data should be requested separately."
                 )
 
+    def validate_analytics_entity(self):
+
+        if self.report_type == "ANALYTICS":
+
+            if self.entity == "CARD":
+                raise ClickException(
+                    f"'ANALYTICS' reports only accept following entities: {list(ENTITY_OBJECTS.keys())}."
+                )
+
     def validate_reach_entity(self):
 
         if self.report_type == "REACH":
 
             if self.entity not in ["CAMPAIGN", "FUNDING_INSTRUMENT"]:
                 raise ClickException(
-                    "'REACH' reports only accept the 'CAMPAIGN' and 'FUNDING_INSTRUMENT' entities."
+                    "'REACH' reports only accept the following entities: CAMPAIGN, FUNDING_INSTRUMENT."
                 )
 
     def validate_entity_attributes(self):
@@ -276,14 +289,34 @@ class TwitterReader(Reader):
                     f"Available attributes for '{self.entity}' are: {ENTITY_ATTRIBUTES[self.entity]}"
                 )
 
-    def get_daily_period_items(self):
+    def get_analytics_report(self, job_ids):
         """
-        Returns a list of datetime instances representing each date contained
-        in the requested period. Useful when granularity is set to 'DAY'.
+        Get 'ANALYTICS' report through the 'Asynchronous Analytics' endpoint of Twitter Ads API.
+        Documentation: https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous
         """
 
-        delta = self.end_date - self.start_date
-        return [self.start_date + timedelta(days=i) for i in range(delta.days)]
+        all_responses = []
+
+        for job_id in job_ids:
+
+            logging.info(f"Processing job_id: {job_id}")
+
+            # job_result = self.get_job_result(job_id)
+            # waiting_sec = 2
+
+            # while job_result.status == "PROCESSING":
+            #     logging.info(f"Waiting {waiting_sec} seconds for job to be completed")
+            #     sleep(waiting_sec)
+            #     if waiting_sec > MAX_WAITING_SEC:
+            #         raise JobTimeOutError("Waited too long for job to be completed")
+            #     waiting_sec *= 2
+            #     job_result = self.get_job_result(job_id)
+
+            job_result = self._waiting_for_job_to_complete(job_id)
+            raw_analytics_response = self.get_raw_analytics_response(job_result)
+            all_responses.append(self.parse(raw_analytics_response))
+
+        return chain(*all_responses)
 
     def get_active_entity_ids(self):
         """
@@ -321,6 +354,20 @@ class TwitterReader(Reader):
             .id
             for chunk_entity_ids in split_list(entity_ids, MAX_ENTITY_IDS_PER_JOB)
         ]
+
+    @retry(
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(36000),
+    )
+    def _waiting_for_job_to_complete(self, job_id):
+        """
+        Retrying to get job_result until job status is 'COMPLETED'.
+        """
+        job_result = self.get_job_result(job_id)
+        if job_result.status == "PROCESSING":
+            raise Exception(f"Job {job_id} is still running.")
+        else:
+            return job_result
 
     def get_job_result(self, job_id):
         """
@@ -382,6 +429,15 @@ class TwitterReader(Reader):
             ]
         return entity_records
 
+    def get_daily_period_items(self):
+        """
+        Returns a list of datetime instances representing each date contained
+        in the requested period. Useful when granularity is set to 'DAY'.
+        """
+
+        delta = self.end_date - self.start_date
+        return [self.start_date + timedelta(days=i) for i in range(delta.days)]
+
     def add_segment(self, entity_records, entity_data):
         """
         Add segment to a list of records, if a segmentation_type is requested.
@@ -395,37 +451,10 @@ class TwitterReader(Reader):
             ]
         return entity_records
 
-    def get_analytics_report(self, job_ids):
-        """
-        Get 'ANALYTICS' report through the 'Asynchronous Analytics' endpoint of Twitter Ads API.
-        Documentation: https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous
-        """
-
-        all_responses = []
-
-        for job_id in job_ids:
-
-            logging.info(f"Processing job_id: {job_id}")
-
-            job_result = self.get_job_result(job_id)
-            waiting_sec = 2
-
-            while job_result.status == "PROCESSING":
-                logging.info(f"Waiting {waiting_sec} seconds for job to be completed")
-                sleep(waiting_sec)
-                if waiting_sec > MAX_WAITING_SEC:
-                    raise JobTimeOutError("Waited too long for job to be completed")
-                waiting_sec *= 2
-                job_result = self.get_job_result(job_id)
-
-            raw_analytics_response = self.get_raw_analytics_response(job_result)
-            all_responses.append(self.parse(raw_analytics_response))
-
-        return chain(*all_responses)
-
-    def get_entity_report(self):
+    def get_campaign_management_report(self):
         """
         Get 'ENTITY' report through 'Campaign Management' endpoints of Twitter Ads API.
+        Supported entities: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET
         Documentation: https://developer.twitter.com/en/docs/ads/campaign-management/api-reference
         """
 
@@ -441,6 +470,49 @@ class TwitterReader(Reader):
             {attr: getattr(entity_obj, attr, None) for attr in self.entity_attributes}
             for entity_obj in ACCOUNT_CHILD_OBJECTS[self.entity]
         ]
+
+    def get_cards_report(self):
+        """
+        Get 'ENTITY' report through the 'Creatives' endpoint of Twitter Ads API.
+        Supported entities: CARD
+        Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/
+        """
+
+        for tweet in self.get_published_tweets():
+            if "card_uri" in tweet:
+                card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
+                card_attributes = {
+                    attr: getattr(card_fetch, attr, None)
+                    for attr in self.entity_attributes
+                }
+                record = {
+                    "tweet_id": tweet["tweet_id"],
+                    "card_uri": tweet["card_uri"],
+                    **card_attributes,
+                }
+                yield record
+
+    def get_published_tweets(self):
+        """
+        Step 1 of 'ENTITY - CARD' report generation process:
+        Returns details on 'PUBLISHED' tweets, as a generator of dictionnaries
+        Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/tweets
+        """
+
+        resource = f"/{API_VERSION}/accounts/{self.account.id}/tweets"
+        params = {"tweet_type": "PUBLISHED"}
+        request = Request(self.client, "get", resource, params=params)
+
+        yield from Cursor(None, request)
+
+    def get_card_fetch(self, card_uri):
+        """
+        Step 2 of 'ENTITY - CARD' report generation process:
+        Returns the CartFetch object associated with a specific card_uri
+        Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/cards-fetch
+        """
+
+        return CardsFetch.load(self.account, card_uris=[card_uri]).first
 
     def get_reach_report(self):
         """
@@ -501,7 +573,10 @@ class TwitterReader(Reader):
             data = self.get_reach_report()
 
         elif self.report_type == "ENTITY":
-            data = self.get_entity_report()
+            if self.entity == "CARD":
+                data = self.get_cards_report()
+            else:
+                data = self.get_campaign_management_report()
 
         def result_generator():
             for record in data:

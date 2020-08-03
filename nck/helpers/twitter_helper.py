@@ -10,16 +10,8 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
-
 from twitter_ads.campaign import FundingInstrument, Campaign, LineItem
-from twitter_ads.creative import MediaCreative, PromotedTweet
-
-
-class JobTimeOutError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logging.error(message)
+from twitter_ads.creative import MediaCreative, PromotedTweet, CardsFetch
 
 
 REPORT_TYPES = ["ANALYTICS", "REACH", "ENTITY"]
@@ -33,8 +25,11 @@ ENTITY_OBJECTS = {
 }
 
 ENTITY_ATTRIBUTES = {
-    entity: list(ENTITY_OBJECTS[entity].__dict__["PROPERTIES"].keys())
-    for entity in ENTITY_OBJECTS
+    **{
+        entity: list(ENTITY_OBJECTS[entity].__dict__["PROPERTIES"].keys())
+        for entity in ENTITY_OBJECTS
+    },
+    "CARD": list(CardsFetch.__dict__["PROPERTIES"].keys()),
 }
 
 GRANULARITIES = ["DAY", "TOTAL"]
