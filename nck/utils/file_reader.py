@@ -19,8 +19,13 @@ from enum import Enum
 import csv
 import codecs
 import gzip
+import zipfile
 import json
 
+
+def unzip(input_file, output_path):
+    with zipfile.ZipFile(input_file, 'r') as zip_ref:
+        zip_ref.extractall(output_path)
 
 def format_csv_delimiter(csv_delimiter):
     _csv_delimiter = csv_delimiter.encode().decode("unicode_escape")
