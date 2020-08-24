@@ -103,7 +103,6 @@ class TheTradeDeskReader(Reader):
         )
         if response.ok:
             if response.content:
-                print(response.json())
                 return response.json()
         else:
             response.raise_for_status()
@@ -123,15 +122,14 @@ class TheTradeDeskReader(Reader):
                 Please specify the exact name of the ReportTemplate you wish to retrieve."""
             )
         else:
-            report_template_id = json_response["Result"][0]["ReportTemplateId"]
-            logging.info(f"Retrieved ReportTemplateId: {report_template_id}")
-            return report_template_id
+            self.report_template_id = json_response["Result"][0]["ReportTemplateId"]
+            logging.info(f"Retrieved ReportTemplateId: {self.report_template_id}")
 
-    def create_report_schedule(self, report_template_id):
+    def create_report_schedule(self):
         method, endpoint = API_ENDPOINTS["create_report_schedule"]
         payload = {
             "ReportScheduleName": self.report_schedule_name,
-            "ReportTemplateId": report_template_id,
+            "ReportTemplateId": self.report_template_id,
             "AdvertiserFilters": self.advertiser_ids,
             "ReportStartDateInclusive": self.start_date.isoformat(),
             "ReportEndDateExclusive": self.end_date.isoformat(),
@@ -139,33 +137,33 @@ class TheTradeDeskReader(Reader):
         }
         logging.info(f"Creating ReportSchedule: {payload}")
         json_response = self.make_api_call(method, endpoint, payload)
-        report_schedule_id = json_response["ReportScheduleId"]
-        return report_schedule_id
+        self.report_schedule_id = json_response["ReportScheduleId"]
 
     @retry(
         wait=wait_exponential(multiplier=1, min=60, max=3600),
         stop=stop_after_delay(36000),
     )
-    def _wait_for_download_url(self, report_schedule_id):
-        report_execution_details = self.get_report_execution_details(report_schedule_id)
+    def _wait_for_download_url(self):
+        report_execution_details = self.get_report_execution_details()
         if report_execution_details["ReportExecutionState"] == "Pending":
-            raise Exception(f"ReportSchedule '{report_schedule_id}' is still running.")
+            raise Exception(
+                f"ReportSchedule '{self.report_schedule_id}' is still running."
+            )
         else:
             # As the ReportSchedule that we just created runs only once,
             # the API response will include only one ReportDelivery (so we can get index "[0]")
-            download_url = report_execution_details["ReportDeliveries"][0][
+            self.download_url = report_execution_details["ReportDeliveries"][0][
                 "DownloadURL"
             ]
             logging.info(
-                f"ReportScheduleId '{report_schedule_id}' is ready. DownloadURL: {download_url}"
+                f"ReportScheduleId '{self.report_schedule_id}' is ready. DownloadURL: {self.download_url}"
             )
-            return download_url
 
-    def get_report_execution_details(self, report_schedule_id):
+    def get_report_execution_details(self):
         method, endpoint = API_ENDPOINTS["get_report_execution_details"]
         payload = {
             "AdvertiserIds": self.advertiser_ids,
-            "ReportScheduleIds": [report_schedule_id],
+            "ReportScheduleIds": [self.report_schedule_id],
             **DEFAULT_PAGING_ARGS,
         }
         json_response = self.make_api_call(method, endpoint, payload)
@@ -174,20 +172,20 @@ class TheTradeDeskReader(Reader):
         report_execution_details = json_response["Result"][0]
         return report_execution_details
 
-    def download_report(self, download_url):
-        report = requests.get(url=download_url, headers=self.headers, stream=True)
+    def download_report(self):
+        report = requests.get(url=self.download_url, headers=self.headers, stream=True)
         return get_report_generator_from_flat_file(report.iter_lines())
 
-    def delete_report_schedule(self, report_schedule_id):
-        logging.info(f"Deleting ReportScheduleId '{report_schedule_id}'")
+    def delete_report_schedule(self):
+        logging.info(f"Deleting ReportScheduleId '{self.report_schedule_id}'")
         method, endpoint = API_ENDPOINTS["delete_report_schedule"]
-        self.make_api_call(method, f"{endpoint}/{report_schedule_id}")
+        self.make_api_call(method, f"{endpoint}/{self.report_schedule_id}")
 
     def read(self):
-        report_template_id = self.get_report_template_id()
-        report_schedule_id = self.create_report_schedule(report_template_id)
-        download_url = self._wait_for_download_url(report_schedule_id)
-        data = self.download_report(download_url)
+        self.get_report_template_id()
+        self.create_report_schedule()
+        self._wait_for_download_url()
+        data = self.download_report()
 
         def result_generator():
             for record in data:
@@ -199,4 +197,4 @@ class TheTradeDeskReader(Reader):
             "results_" + "_".join(self.advertiser_ids), result_generator()
         )
 
-        self.delete_report_schedule(report_schedule_id)
+        self.delete_report_schedule()

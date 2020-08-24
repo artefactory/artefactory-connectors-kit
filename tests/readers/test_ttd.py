@@ -63,9 +63,8 @@ class TheTradeDeskReaderTest(TestCase):
         self, mock_build_headers, mock_api_call
     ):
         reader = TheTradeDeskReader(**self.kwargs)
-        output = reader.get_report_template_id()
-        expected = 1234
-        self.assertEqual(output, expected)
+        reader.get_report_template_id()
+        self.assertEqual(reader.report_template_id, 1234)
 
     @mock.patch("nck.readers.ttd_reader.build_headers", return_value={})
     @mock.patch(
@@ -117,9 +116,9 @@ class TheTradeDeskReaderTest(TestCase):
     )
     def test_create_report_schedule(self, mock_build_headers, mock_api_call):
         reader = TheTradeDeskReader(**self.kwargs)
-        output = reader.create_report_schedule(report_template_id=1234)
-        expected = 5678
-        self.assertEqual(output, expected)
+        reader.report_template_id = 1234
+        reader.create_report_schedule()
+        self.assertEqual(reader.report_schedule_id, 5678)
 
     @mock.patch("nck.readers.ttd_reader.build_headers", return_value={})
     @mock.patch("tenacity.BaseRetrying.wait", side_effect=lambda *args, **kwargs: 0)
@@ -154,19 +153,15 @@ class TheTradeDeskReaderTest(TestCase):
     )
     def test_wait_for_download_url(self, mock_build_headers, mock_retry, mock_api_call):
         reader = TheTradeDeskReader(**self.kwargs)
-        output = reader._wait_for_download_url(report_schedule_id=5678)
-        expected = "https://download.url"
-        self.assertEqual(output, expected)
+        reader.report_schedule_id = 5678
+        reader._wait_for_download_url()
+        self.assertEqual(reader.download_url, "https://download.url")
 
     @mock.patch("nck.readers.ttd_reader.build_headers", return_value={})
     @mock.patch("tenacity.BaseRetrying.wait", side_effect=lambda *args, **kwargs: 0)
-    @mock.patch.object(TheTradeDeskReader, "get_report_template_id", lambda *args: 1234)
-    @mock.patch.object(TheTradeDeskReader, "create_report_schedule", lambda *args: 5678)
-    @mock.patch.object(
-        TheTradeDeskReader,
-        "_wait_for_download_url",
-        lambda *args: "https://download.url",
-    )
+    @mock.patch.object(TheTradeDeskReader, "get_report_template_id", lambda *args: None)
+    @mock.patch.object(TheTradeDeskReader, "create_report_schedule", lambda *args: None)
+    @mock.patch.object(TheTradeDeskReader, "_wait_for_download_url", lambda *args: None)
     @mock.patch(
         "nck.readers.ttd_reader.TheTradeDeskReader.download_report",
         return_value=iter(
@@ -191,6 +186,9 @@ class TheTradeDeskReaderTest(TestCase):
     )
     def test_read(self, mock_build_headers, mock_retry, mock_download_report):
         reader = TheTradeDeskReader(**self.kwargs)
+        reader.report_template_id = 1234
+        reader.report_schedule_id = 5678
+        reader.download_url = "https://download.url"
         output = next(reader.read())
         expected = [
             {"Date": "2020-01-01", "Advertiser_ID": "XXXXX", "Impressions": 10},
