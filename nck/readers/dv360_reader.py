@@ -76,25 +76,30 @@ class DV360Reader(Reader):
         self.file_names = self.get_file_names()
 
     def _get_file_type(self) -> Tuple[str]:
-        # file_type : dictates the resource type that populates the sdf file.
-        #             https://developers.google.com/display-video/api/reference/rest/v1/sdfdownloadtasks/create#filetype
-        #             Required: One can provide several file types.
+        """
+        file_type : dictates the resource type that populates the sdf file.
+                    https://developers.google.com/display-video/api/reference/rest/v1/sdfdownloadtasks/create#filetype
+                    Required: One can provide several file types.
+        """
         return self.kwargs.get("file_type")
 
     def _get_filter_type(self) -> str:
-        # filter_type : specifies the type of resource to filter.
-        #               Required: Only one filter_type allowed.
+        """
+        filter_type : specifies the type of resource to filter.
+                      Required: Only one filter_type allowed.
+        """
         return self.kwargs.get("filter_type")
 
     def _get_advertiser_id(self) -> str:
         return self.kwargs.get("advertiser_id")
 
     def get_file_names(self) -> List[str]:
-        # DV360 api creates one file per file_type.
-        # map file_type with the name of the generated file.
+        """
+        DV360 api creates one file per file_type.
+        map file_type with the name of the generated file.
+        """
         return [f"SDF-{FILE_NAMES[file_type]}" for file_type in self._get_file_type()]
 
-    # make sure to implement the appropriate retry policy.
     @retry(
         wait=wait_exponential(multiplier=1, min=60, max=3600),
         stop=stop_after_delay(36000),
@@ -168,13 +173,11 @@ class DV360Reader(Reader):
 
     def get_sdf_objects(self):
         body = self.get_sdf_body()
-        # create sdf task
         init_operation = self.create_sdf_task(body=body)
-        # wait for the task to be ready or raise Error
         created_operation = self._wait_sdf_download_request(init_operation)
-        # download and unzip the sdf file(s) archive.
         self.download_sdf(created_operation)
         unzip(f"{self.BASE}/{self.ARCHIVE_NAME}.zip", output_path=self.BASE)
+
         # We chain operation if many file_types were to be provided.
         return chain(
             *[
