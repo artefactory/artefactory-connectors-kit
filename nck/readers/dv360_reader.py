@@ -5,7 +5,7 @@ import io
 import httplib2
 
 from itertools import chain
-from typing import List, Tuple
+from typing import List
 
 from googleapiclient import discovery
 from googleapiclient.http import MediaIoBaseDownload
@@ -75,30 +75,12 @@ class DV360Reader(Reader):
         self.kwargs = kwargs
         self.file_names = self.get_file_names()
 
-    def _get_file_type(self) -> Tuple[str]:
-        """
-        file_type : dictates the resource type that populates the sdf file.
-                    https://developers.google.com/display-video/api/reference/rest/v1/sdfdownloadtasks/create#filetype
-                    Required: One can provide several file types.
-        """
-        return self.kwargs.get("file_type")
-
-    def _get_filter_type(self) -> str:
-        """
-        filter_type : specifies the type of resource to filter.
-                      Required: Only one filter_type allowed.
-        """
-        return self.kwargs.get("filter_type")
-
-    def _get_advertiser_id(self) -> str:
-        return self.kwargs.get("advertiser_id")
-
     def get_file_names(self) -> List[str]:
         """
         DV360 api creates one file per file_type.
         map file_type with the name of the generated file.
         """
-        return [f"SDF-{FILE_NAMES[file_type]}" for file_type in self._get_file_type()]
+        return [f"SDF-{FILE_NAMES[file_type]}" for file_type in self.kwargs.get("file_type")]
 
     @retry(
         wait=wait_exponential(multiplier=1, min=60, max=3600),
@@ -146,7 +128,7 @@ class DV360Reader(Reader):
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            logging.info(f"Download {int(status.progress() * 100)}.")
+            logging.info(f"Download {int(status.progress() * 100)}%.")
 
     @staticmethod
     def sdf_to_njson_generator(path_to_file):
@@ -157,19 +139,14 @@ class DV360Reader(Reader):
                 yield line
 
     def get_sdf_body(self):
-        # exctract request body from parameters
-        file_type = self._get_file_type()
-        filter_type = self._get_filter_type()
-        advertiser_id = self._get_advertiser_id()
-        body = {
+        return {
             "parentEntityFilter": {
-                "fileType": file_type,
-                "filterType": filter_type
+                "fileType": self.kwargs.get("file_type"),
+                "filterType": self.kwargs.get("filter_type")
             },
             "version": self.SDF_VERSION,
-            "advertiserId": advertiser_id
+            "advertiserId": self.kwargs.get("advertiser_id")
         }
-        return body
 
     def get_sdf_objects(self):
         body = self.get_sdf_body()
