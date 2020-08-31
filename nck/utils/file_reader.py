@@ -28,6 +28,14 @@ def unzip(input_file, output_path):
         zip_ref.extractall(output_path)
 
 
+def sdf_to_njson_generator(path_to_file):
+    csv_reader = CSVReader(csv_delimiter=",", csv_fieldnames=None)
+    with open(path_to_file, "rb") as fd:
+        dict_reader = csv_reader.read_csv(fd)
+        for line in dict_reader:
+            yield line
+
+
 def format_csv_delimiter(csv_delimiter):
     _csv_delimiter = csv_delimiter.encode().decode("unicode_escape")
     if csv_delimiter == "newline":

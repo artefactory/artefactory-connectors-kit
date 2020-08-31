@@ -1,4 +1,20 @@
-
+# GNU Lesser General Public License v3.0 only
+# Copyright (C) 2020 Artefact
+# licence-information@artefact.com
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 import logging
 import io
@@ -13,9 +29,10 @@ from oauth2client import client, GOOGLE_REVOKE_URI
 from tenacity import retry, wait_exponential, stop_after_delay
 
 from nck.helpers.dv360_helper import FILE_NAMES, FILE_TYPES, FILTER_TYPES
+from nck.utils.exceptions import RetryTimeoutError, SdfOperationError
 from nck.commands.command import processor
 from nck.readers.reader import Reader
-from nck.utils.file_reader import CSVReader, unzip
+from nck.utils.file_reader import sdf_to_njson_generator, unzip
 from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
 
@@ -100,11 +117,7 @@ class DV360Reader(Reader):
         get_request = self._client.sdfdownloadtasks().operations().get(name=operation["name"])
         operation = get_request.execute()
         if "done" not in operation:
-            raise Exception("The operation has exceed the time limit treshold.\n")
-        if "error" in operation:
-            raise Exception("The operation finished in error with code %s: %s" % (
-                  operation["error"]["code"],
-                  operation["error"]["message"]))
+            raise RetryTimeoutError("The operation has taken more than 10 hours to complete.\n")
         return operation
 
     def create_sdf_task(self, body):
@@ -130,14 +143,6 @@ class DV360Reader(Reader):
             status, done = downloader.next_chunk()
             logging.info(f"Download {int(status.progress() * 100)}%.")
 
-    @staticmethod
-    def sdf_to_njson_generator(path_to_file):
-        csv_reader = CSVReader(csv_delimiter=",", csv_fieldnames=None)
-        with open(path_to_file, "rb") as fd:
-            dict_reader = csv_reader.read_csv(fd)
-            for line in dict_reader:
-                yield line
-
     def get_sdf_body(self):
         return {
             "parentEntityFilter": {
@@ -152,13 +157,17 @@ class DV360Reader(Reader):
         body = self.get_sdf_body()
         init_operation = self.create_sdf_task(body=body)
         created_operation = self._wait_sdf_download_request(init_operation)
+        if "error" in created_operation:
+            raise SdfOperationError("The operation finished in error with code %s: %s" % (
+                  created_operation["error"]["code"],
+                  created_operation["error"]["message"]))
         self.download_sdf(created_operation)
         unzip(f"{self.BASE}/{self.ARCHIVE_NAME}.zip", output_path=self.BASE)
 
         # We chain operation if many file_types were to be provided.
         return chain(
             *[
-                self.sdf_to_njson_generator(f"{self.BASE}/{file_name}.csv")
+                sdf_to_njson_generator(f"{self.BASE}/{file_name}.csv")
                 for file_name in self.file_names
             ]
         )
