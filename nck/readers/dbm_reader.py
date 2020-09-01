@@ -49,7 +49,7 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-client-secret", required=True)
 @click.option("--dbm-query-metric", multiple=True)
 @click.option("--dbm-query-dimension", multiple=True)
-@click.option("--dbm-request-type", type=click.Choice(POSSIBLE_REQUEST_TYPES))
+@click.option("--dbm-request-type", type=click.Choice(POSSIBLE_REQUEST_TYPES), required=True)
 @click.option("--dbm-query-id")
 @click.option("--dbm-query-title")
 @click.option("--dbm-query-frequency", default="ONE_TIME")
@@ -65,7 +65,7 @@ default_end_date = datetime.date.today()
         "If this option is set to True, this range will be added."
     ),
 )
-@click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
+@click.option("--dbm-filter", type=click.Tuple([str, str]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
 @click.option(
     "--dbm-date-format",
@@ -158,8 +158,11 @@ class DbmReader(Reader):
     def _wait_for_query(self, query_id):
         logging.info("waiting for query of id : {} to complete running".format(query_id))
         query_infos = self.get_query(query_id)
-        if query_infos["metadata"]["running"]:
-            raise Exception("Query still running.")
+        if query_infos["metadata"]["running"] or (
+            "googleCloudStoragePathForLatestReport" not in query_infos["metadata"].keys()
+            and "googleDrivePathForLatestReport" not in query_infos["metadata"].keys()
+        ):
+            raise ClickException("Query still running.")
         else:
             return query_infos
 
@@ -171,7 +174,7 @@ class DbmReader(Reader):
             query_id = query_infos["queryId"]
             query_infos = self._wait_for_query(query_id)
 
-        if query_infos["metadata"]["googleCloudStoragePathForLatestReport"]:
+        if query_infos["metadata"].get("googleCloudStoragePathForLatestReport", None):
             url = query_infos["metadata"]["googleCloudStoragePathForLatestReport"]
         else:
             url = query_infos["metadata"]["googleDrivePathForLatestReport"]
@@ -230,7 +233,7 @@ class DbmReader(Reader):
         elif request_type == "lineitems_objects":
             data = self.get_lineitems_objects()
         else:
-            raise Exception("Unknown request type")
+            raise ClickException("Unknown request type")
 
         def result_generator():
             for record in data:
