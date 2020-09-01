@@ -114,7 +114,7 @@ class DbmReader(Reader):
         if query_id:
             return self._client.queries().getquery(queryId=query_id).execute()
         else:
-            raise ClickException(f"Please provide a 'query_id' in order to find your query")
+            raise ClickException("Please provide a 'query_id' in order to find your query")
 
     def get_existing_query(self):
         query_id = self.kwargs.get("query_id", None)
