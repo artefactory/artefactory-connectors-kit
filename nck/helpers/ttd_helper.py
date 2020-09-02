@@ -12,6 +12,7 @@
 
 import requests
 from datetime import datetime
+import logging
 
 API_HOST = "https://api.thetradedesk.com/v3"
 
@@ -42,6 +43,18 @@ DEFAULT_PAGING_ARGS = {
 
 API_DATEFORMAT = "%Y-%m-%dT%H:%M:%S"
 BQ_DATEFORMAT = "%Y-%m-%d"
+
+
+class ReportTemplateNotFoundError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        logging.error(message)
+
+
+class ReportScheduleNotReadyError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        logging.error(message)
 
 
 def build_headers(login, password):

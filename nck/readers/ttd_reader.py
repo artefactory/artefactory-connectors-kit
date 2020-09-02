@@ -26,6 +26,8 @@ from nck.helpers.ttd_helper import (
     API_ENDPOINTS,
     DEFAULT_REPORT_SCHEDULE_ARGS,
     DEFAULT_PAGING_ARGS,
+    ReportTemplateNotFoundError,
+    ReportScheduleNotReadyError,
     build_headers,
     format_date,
 )
@@ -113,11 +115,11 @@ class TheTradeDeskReader(Reader):
         payload = {"NameContains": self.report_template_name, **DEFAULT_PAGING_ARGS}
         json_response = self.make_api_call(method, endpoint, payload)
         if json_response["ResultCount"] == 0:
-            raise Exception(
+            raise ReportTemplateNotFoundError(
                 f"No existing ReportTemplate match '{self.report_template_name}'"
             )
         if json_response["ResultCount"] > 1:
-            raise Exception(
+            raise ReportTemplateNotFoundError(
                 f"""'{self.report_template_name}' match more than one ReportTemplate.
                 Please specify the exact name of the ReportTemplate you wish to retrieve."""
             )
@@ -146,7 +148,7 @@ class TheTradeDeskReader(Reader):
     def _wait_for_download_url(self):
         report_execution_details = self.get_report_execution_details()
         if report_execution_details["ReportExecutionState"] == "Pending":
-            raise Exception(
+            raise ReportScheduleNotReadyError(
                 f"ReportSchedule '{self.report_schedule_id}' is still running."
             )
         else:
