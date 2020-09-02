@@ -22,20 +22,19 @@ import httplib2
 import requests
 import datetime
 
-from itertools import chain
-
 from googleapiclient import discovery
 from oauth2client import client, GOOGLE_REVOKE_URI
 from tenacity import retry, wait_exponential, stop_after_delay
+from click import ClickException
 
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
 
-from nck.utils.text import get_generator_dict_from_str_csv, add_column_value_to_csv_line_iterator
+from nck.utils.text import get_generator_dict_from_str_csv
 
-from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES, FILE_TYPES_DICT
+from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 
@@ -50,7 +49,7 @@ default_end_date = datetime.date.today()
 @click.option("--dbm-client-secret", required=True)
 @click.option("--dbm-query-metric", multiple=True)
 @click.option("--dbm-query-dimension", multiple=True)
-@click.option("--dbm-request-type", type=click.Choice(POSSIBLE_REQUEST_TYPES))
+@click.option("--dbm-request-type", type=click.Choice(POSSIBLE_REQUEST_TYPES), required=True)
 @click.option("--dbm-query-id")
 @click.option("--dbm-query-title")
 @click.option("--dbm-query-frequency", default="ONE_TIME")
@@ -64,9 +63,9 @@ default_end_date = datetime.date.today()
     help=(
         "Sometimes the date range on which metrics are computed is missing from the report. "
         "If this option is set to True, this range will be added."
-    )
+    ),
 )
-@click.option("--dbm-filter", type=click.Tuple([str, int]), multiple=True)
+@click.option("--dbm-filter", type=click.Tuple([str, str]), multiple=True)
 @click.option("--dbm-file-type", multiple=True)
 @click.option(
     "--dbm-date-format",
@@ -78,7 +77,9 @@ default_end_date = datetime.date.today()
     "--dbm-day-range",
     required=True,
     default="LAST_7_DAYS",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK"]),
+    type=click.Choice(
+        ["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK"]
+    ),
 )
 @processor("dbm_access_token", "dbm_refresh_token", "dbm_client_secret")
 def dbm(**kwargs):
@@ -88,7 +89,7 @@ def dbm(**kwargs):
 
 class DbmReader(Reader):
     API_NAME = "doubleclickbidmanager"
-    API_VERSION = "v1"
+    API_VERSION = "v1.1"
 
     def __init__(self, access_token, refresh_token, client_secret, client_id, **kwargs):
         credentials = client.GoogleCredentials(
@@ -105,29 +106,23 @@ class DbmReader(Reader):
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
 
-        # API_SCOPES = ['https://www.googleapis.com/auth/doubleclickbidmanager']
         self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
         self.kwargs = kwargs
 
-    def get_query(self, query_id, query_title):
-        response = self._client.queries().listqueries().execute()
-        if "queries" in response:
-            for q in response["queries"]:
-                if q["queryId"] == query_id or q["metadata"]["title"] == query_title:
-                    return q
+    def get_query(self, query_id):
+        if query_id:
+            return self._client.queries().getquery(queryId=query_id).execute()
         else:
-            logging.info("No query found with the id {} or the title {}".format(query_id, query_title))
-            return None
+            raise ClickException("Please provide a 'query_id' in order to find your query")
 
     def get_existing_query(self):
         query_id = self.kwargs.get("query_id", None)
-        query_title = self.kwargs.get("query_title", None)
-        query = self.get_query(query_id, query_id)
+        query = self.get_query(query_id)
         if query:
             return query
         else:
-            raise Exception("No query found with the id {} or the title {}".format(query_id, query_title))
+            raise ClickException(f"No query found with the id {query_id}")
 
     def get_query_body(self):
         body_q = {
@@ -159,16 +154,14 @@ class DbmReader(Reader):
         query = self._client.queries().createquery(body=body_query).execute()
         return query
 
-    @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600),
-        stop=stop_after_delay(36000),
-    )
+    @retry(wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000))
     def _wait_for_query(self, query_id):
-        logging.info(
-            "waiting for query of id : {} to complete running".format(query_id)
-        )
-        query_infos = self.get_query(query_id, None)
-        if query_infos["metadata"]["running"]:
+        logging.info("waiting for query of id : {} to complete running".format(query_id))
+        query_infos = self.get_query(query_id)
+        if query_infos["metadata"]["running"] or (
+            "googleCloudStoragePathForLatestReport" not in query_infos["metadata"]
+            and "googleDrivePathForLatestReport" not in query_infos["metadata"]
+        ):
             raise Exception("Query still running.")
         else:
             return query_infos
@@ -181,7 +174,10 @@ class DbmReader(Reader):
             query_id = query_infos["queryId"]
             query_infos = self._wait_for_query(query_id)
 
-        if query_infos["metadata"]["googleCloudStoragePathForLatestReport"]:
+        if (
+            "googleCloudStoragePathForLatestReport" in query_infos["metadata"]
+            and len(query_infos["metadata"]["googleCloudStoragePathForLatestReport"]) > 0
+        ):
             url = query_infos["metadata"]["googleCloudStoragePathForLatestReport"]
         else:
             url = query_infos["metadata"]["googleDrivePathForLatestReport"]
@@ -191,13 +187,12 @@ class DbmReader(Reader):
     def get_query_report(self, existing_query=True):
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
-        if self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY" \
-           and self.kwargs["add_date_to_report"]:
+        if self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY" and self.kwargs["add_date_to_report"]:
             return get_generator_dict_from_str_csv(
                 report.iter_lines(),
                 add_date=True,
                 day_range=self.kwargs["day_range"],
-                date_format=self.kwargs.get("date_format")
+                date_format=self.kwargs.get("date_format"),
             )
         else:
             return get_generator_dict_from_str_csv(report.iter_lines())
@@ -226,35 +221,7 @@ class DbmReader(Reader):
         lines = lineitems.split("\n")
         return get_generator_dict_from_str_csv(lines)
 
-    def get_sdf_body(self):
-        filter_types = [filt[0] for filt in self.kwargs.get("filter")]
-        assert (
-            len([filter_types[0] == filt for filt in filter_types if filter_types[0] == filt]) == 1
-        ), "sdf accept just one filter type, multiple filter types detected"
-        filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
-
-        file_types = self.kwargs.get("file_type")
-        body_sdf = {"version": "5.1", "filterIds": filter_ids, "filterType": filter_types, "fileTypes": file_types}
-        return body_sdf
-
-    def get_sdf_objects(self):
-        body_sdf = self.get_sdf_body()
-        file_types = body_sdf["fileTypes"]
-        response = self._client.sdf().download(body=body_sdf).execute()
-
-        return chain(
-            *[
-                get_generator_dict_from_str_csv(
-                    add_column_value_to_csv_line_iterator(
-                        response[FILE_TYPES_DICT[file_type]].split("\n"), "file_type", file_type
-                    )
-                )
-                for file_type in file_types
-            ]
-        )
-
     def read(self):
-        # request existing query
         request_type = self.kwargs.get("request_type")
         if request_type == "existing_query":
             data = [self.get_existing_query()]
@@ -268,19 +235,10 @@ class DbmReader(Reader):
             data = self.list_query_reports()
         elif request_type == "lineitems_objects":
             data = self.get_lineitems_objects()
-        elif request_type == "sdf_objects":
-            data = self.get_sdf_objects()
-        else:
-            raise Exception("Unknown request type")
 
         def result_generator():
             for record in data:
                 yield record
 
         # should replace results later by a good identifier
-        yield FormatDateStream(
-            "results",
-            result_generator(),
-            keys=["Date"],
-            date_format=self.kwargs.get("date_format"),
-        )
+        yield FormatDateStream("results", result_generator(), keys=["Date"], date_format=self.kwargs.get("date_format"))

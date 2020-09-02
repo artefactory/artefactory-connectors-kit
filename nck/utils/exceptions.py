@@ -15,11 +15,15 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
 class RetryTimeoutError(Exception):
-    """Raised when a query exceeds it's time limit treshold."""
+    """Raised when a query exceeds it's time limit threshold."""
+
     pass
 
 
 class SdfOperationError(Exception):
     """Raised when a sdf operation has failed."""
+
     pass
