@@ -55,7 +55,7 @@ class S3Writer(Writer):
     @retry
     def write(self, stream):
 
-        logging.info("Writing file to S3")
+        logging.info("Start writing file to S3 ...")
         bucket = self._s3_resource.Bucket(self._bucket_name)
 
         if bucket not in self._s3_resource.buckets.all():
@@ -86,5 +86,5 @@ class S3Writer(Writer):
             Params={"Bucket": self._bucket_name, "Key": stream.name},
             ExpiresIn=3600,
         )
-
+        logging.info(f"file written at location {url_file}")
         return url_file, bucket
