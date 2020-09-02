@@ -162,7 +162,7 @@ class DbmReader(Reader):
             "googleCloudStoragePathForLatestReport" not in query_infos["metadata"].keys()
             and "googleDrivePathForLatestReport" not in query_infos["metadata"].keys()
         ):
-            raise ClickException("Query still running.")
+            raise Exception("Query still running.")
         else:
             return query_infos
 
@@ -232,8 +232,6 @@ class DbmReader(Reader):
             data = self.list_query_reports()
         elif request_type == "lineitems_objects":
             data = self.get_lineitems_objects()
-        else:
-            raise ClickException("Unknown request type")
 
         def result_generator():
             for record in data:
