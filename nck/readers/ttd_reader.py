@@ -20,6 +20,7 @@ from tenacity import retry, wait_exponential, stop_after_delay
 from nck.utils.args import extract_args
 from nck.commands.command import processor
 from nck.readers.reader import Reader
+from nck.streams.json_stream import JSONStream
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.helpers.ttd_helper import (
     API_HOST,
@@ -66,6 +67,13 @@ from nck.utils.text import get_report_generator_from_flat_file
     type=click.DateTime(),
     help="End date of the period to request (format: YYYY-MM-DD)",
 )
+@click.option(
+    "--ttd-normalize-stream",
+    type=click.BOOL,
+    default=False,
+    help="If set to True, yields a NormalizedJSONStream (spaces and special "
+    "characters replaced by '_' in field names, which is useful for BigQuery)",
+)
 @processor("ttd_login", "ttd_password")
 def the_trade_desk(**kwargs):
     return TheTradeDeskReader(**extract_args("ttd_", kwargs))
@@ -81,6 +89,7 @@ class TheTradeDeskReader(Reader):
         report_schedule_name,
         start_date,
         end_date,
+        normalize_stream
     ):
         self.headers = build_headers(login, password)
         self.advertiser_ids = list(advertiser_id)
@@ -89,6 +98,7 @@ class TheTradeDeskReader(Reader):
         self.start_date = start_date
         # Report end date is exclusive: to become inclusive, it should be incremented by 1 day
         self.end_date = end_date + timedelta(days=1)
+        self.normalize_stream = normalize_stream
 
         self.validate_dates()
 
@@ -195,8 +205,13 @@ class TheTradeDeskReader(Reader):
                     k: format_date(v) if k == "Date" else v for k, v in record.items()
                 }
 
-        yield NormalizedJSONStream(
-            "results_" + "_".join(self.advertiser_ids), result_generator()
-        )
+        if self.normalize_stream:
+            yield NormalizedJSONStream(
+                "results_" + "_".join(self.advertiser_ids), result_generator()
+            )
+        else:
+            yield JSONStream(
+                "results_" + "_".join(self.advertiser_ids), result_generator()
+            )
 
         self.delete_report_schedule()
