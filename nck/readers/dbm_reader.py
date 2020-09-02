@@ -159,8 +159,8 @@ class DbmReader(Reader):
         logging.info("waiting for query of id : {} to complete running".format(query_id))
         query_infos = self.get_query(query_id)
         if query_infos["metadata"]["running"] or (
-            "googleCloudStoragePathForLatestReport" not in query_infos["metadata"].keys()
-            and "googleDrivePathForLatestReport" not in query_infos["metadata"].keys()
+            "googleCloudStoragePathForLatestReport" not in query_infos["metadata"]
+            and "googleDrivePathForLatestReport" not in query_infos["metadata"]
         ):
             raise Exception("Query still running.")
         else:
@@ -174,7 +174,10 @@ class DbmReader(Reader):
             query_id = query_infos["queryId"]
             query_infos = self._wait_for_query(query_id)
 
-        if query_infos["metadata"].get("googleCloudStoragePathForLatestReport", None):
+        if (
+            "googleCloudStoragePathForLatestReport" in query_infos["metadata"]
+            and len(query_infos["metadata"]["googleCloudStoragePathForLatestReport"]) > 0
+        ):
             url = query_infos["metadata"]["googleCloudStoragePathForLatestReport"]
         else:
             url = query_infos["metadata"]["googleDrivePathForLatestReport"]
