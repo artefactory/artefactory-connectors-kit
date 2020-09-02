@@ -10,9 +10,8 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import requests
-from datetime import datetime
 import logging
+from datetime import datetime
 
 API_HOST = "https://api.thetradedesk.com/v3"
 
@@ -55,26 +54,6 @@ class ReportScheduleNotReadyError(Exception):
     def __init__(self, message):
         super().__init__(message)
         logging.error(message)
-
-
-def build_headers(login, password):
-    access_token = get_access_token(login, password)
-    return {"Content-Type": "application/json", "TTD-Auth": access_token}
-
-
-def get_access_token(login, password):
-    url = f"{API_HOST}/authentication"
-    headers = {"Content-Type": "application/json"}
-    payload = {
-        "Login": login,
-        "Password": password,
-        "TokenExpirationInMinutes": 1440,
-    }
-    response = requests.post(url=url, headers=headers, json=payload)
-    if response.ok:
-        return response.json()["Token"]
-    else:
-        response.raise_for_status()
 
 
 def format_date(date_string):

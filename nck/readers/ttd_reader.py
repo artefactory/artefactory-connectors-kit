@@ -29,7 +29,6 @@ from nck.helpers.ttd_helper import (
     DEFAULT_PAGING_ARGS,
     ReportTemplateNotFoundError,
     ReportScheduleNotReadyError,
-    build_headers,
     format_date,
 )
 from nck.utils.text import get_report_generator_from_flat_file
@@ -72,7 +71,8 @@ from nck.utils.text import get_report_generator_from_flat_file
     type=click.BOOL,
     default=False,
     help="If set to True, yields a NormalizedJSONStream (spaces and special "
-    "characters replaced by '_' in field names, which is useful for BigQuery)",
+    "characters replaced by '_' in field names, which is useful for BigQuery). "
+    "Else, yields a standard JSONStream.",
 )
 @processor("ttd_login", "ttd_password")
 def the_trade_desk(**kwargs):
@@ -91,7 +91,8 @@ class TheTradeDeskReader(Reader):
         end_date,
         normalize_stream
     ):
-        self.headers = build_headers(login, password)
+        self.login = login
+        self.password = password
         self.advertiser_ids = list(advertiser_id)
         self.report_template_name = report_template_name
         self.report_schedule_name = report_schedule_name
@@ -107,6 +108,23 @@ class TheTradeDeskReader(Reader):
             raise ClickException(
                 "Report end date should be equal or ulterior to report start date."
             )
+
+    def get_access_token(self):
+        url = f"{API_HOST}/authentication"
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "Login": self.login,
+            "Password": self.password,
+            "TokenExpirationInMinutes": 1440,
+        }
+        response = requests.post(url=url, headers=headers, json=payload)
+        if response.ok:
+            return response.json()["Token"]
+        else:
+            response.raise_for_status()
+
+    def build_headers(self):
+        self.headers = {"Content-Type": "application/json", "TTD-Auth": self.get_access_token()}
 
     def make_api_call(self, method, endpoint, payload={}):
         url = f"{API_HOST}/{endpoint}"
@@ -194,6 +212,7 @@ class TheTradeDeskReader(Reader):
         self.make_api_call(method, f"{endpoint}/{self.report_schedule_id}")
 
     def read(self):
+        self.build_headers()
         self.get_report_template_id()
         self.create_report_schedule()
         self._wait_for_download_url()
