@@ -22,6 +22,7 @@ Nautilus connectors kit is a tool which aim is getting raw data from different s
 - MySQL
 - Radarly
 - SalesForce
+- The Trade Desk
 - Twitter Ads
 - Yandex Campaign
 - Yandex Statistics

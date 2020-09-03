@@ -20,6 +20,7 @@ Each reader role is to read data from external source and transform it into a St
 - MySQL
 - Radarly
 - SalesForce
+- The Trade Desk
 - Twitter Ads
 - Yandex Campaign
 - Yandex Statistics
@@ -521,6 +522,44 @@ See documentation [here](https://developers.google.com/search-ads/v2/how-tos/rep
 ## Salesforce Reader
 
 *Not documented yet.*
+
+## The Trade Desk Reader
+
+#### How to obtain credentials
+
+- Ask your Account Representative to **give you access to The Trade Desk API and UI**
+- He will generally provide you with **two distinct accounts**:  an **API account**, allowing you to make API calls (*Login: ttd_api_{XXXXX}@client.com*), and a **UI account**, allowing you to navigate on The Trade Desk UI to create Report Templates (*Login: your professional e-mail address*)
+- Pass **the Login and Password of your API account** to The Trade Desk connector
+
+#### Quickstart
+
+To request dimensions and metrics to The Trade Desk API, you should first **create a Report Template in The Trade Desk UI**, by following the below process:
+
+- Connect to [The Trade Desk UI](https://desk.thetradedesk.com/) using the Login and Password of your UI account
+- Navigate to *Reports* > *My Reports* to land on the *Report Templates* section
+- Clone an existing Report Template, edit it to keep only the dimensions and metrics that you want to collect, and save it: it will appear under the *Mine* section
+- Provide the exact name of the Report Template you have just created under the CLI option `--ttd-report-template-name` of The Trade Desk connector: the connector will "schedule" a report instance (which may take a few minutes to run), and fetch data to the location of your choice
+
+The following command retrieves the data associated to the Report template named "*adgroup_performance_report*" between 2020-01-01 and 2020-01-03, filtered on the PartnerId <PARTNER_ID>:
+```
+python nck/entrypoint.py read_ttd --ttd-login <LOGIN> --ttd-password <PASSWORD> --ttd-partner-id <PARTNER_ID> --ttd-report-template-name adgroup_performance_report --ttd-start-date 2020-01-01  --ttd-end-date 2020-01-03 write_console
+```
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+|CLI option|Documentation|
+|--|--|
+|`--ttd-login`|Login of your API account|
+|`--ttd-password`|Password of your API account|
+|`--ttd-advertiser-id`|Advertiser Ids for which report data should be fetched|
+|`--ttd-report-template-name`|Exact name of the Report Template to request. Existing Report Templates can be found within the [MyReports section](https://desk.thetradedesk.com/MyReports) of The Trade Desk UI.|
+|`--ttd-report-schedule-name`|Name of the Report Schedule to create|
+|`--ttd-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
+|`--ttd-end-date`|End date of the period to request (format: YYYY-MM-DD)|
+|`--ttd-normalize-stream`|If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by '_' in field names, which is useful for BigQuery). Else (*default*), yields a standard JSONStream.|
+
+If you need any further information, the documentation of The Trade Desk API can be found [here](https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview).
 
 ## Twitter Ads Reader
 

@@ -23,7 +23,7 @@ from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.clients.sa360_client import SA360Client
 from nck.helpers.sa360_helper import REPORT_TYPES
 from nck.utils.args import extract_args
-from nck.utils.text import get_generator_dict_from_str_csv
+from nck.utils.text import get_report_generator_from_flat_file
 
 DATEFORMAT = "%Y-%m-%d"
 ENCODING = "utf-8"
@@ -42,9 +42,14 @@ ENCODING = "utf-8"
     help="If empty, all advertisers from agency will be requested",
 )
 @click.option("--sa360-report-name", default="SA360 Report")
-@click.option("--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
-    "--sa360-column", "sa360_columns", multiple=True, help="https://developers.google.com/search-ads/v2/report-types"
+    "--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0]
+)
+@click.option(
+    "--sa360-column",
+    "sa360_columns",
+    multiple=True,
+    help="https://developers.google.com/search-ads/v2/report-types",
 )
 @click.option(
     "--sa360-saved-column",
@@ -75,7 +80,9 @@ class SA360Reader(Reader):
         start_date,
         end_date,
     ):
-        self.sa360_client = SA360Client(access_token, client_id, client_secret, refresh_token)
+        self.sa360_client = SA360Client(
+            access_token, client_id, client_secret, refresh_token
+        )
         self.agency_id = agency_id
         self.advertiser_ids = list(advertiser_ids)
         self.report_name = report_name
@@ -102,11 +109,17 @@ class SA360Reader(Reader):
 
             report_data = self.sa360_client.assert_report_file_ready(report_id)
 
-            for report_generator in self.sa360_client.download_report_files(report_data, report_id):
-                yield from get_generator_dict_from_str_csv(report_generator, skip_last_row=False)
+            for line_iterator in self.sa360_client.download_report_files(
+                report_data, report_id
+            ):
+                yield from get_report_generator_from_flat_file(line_iterator)
 
     def read(self):
         if not self.advertiser_ids:
-            self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(self.agency_id)
+            self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(
+                self.agency_id
+            )
 
-        yield NormalizedJSONStream("results" + "_".join(self.advertiser_ids), self.result_generator())
+        yield NormalizedJSONStream(
+            "results" + "_".join(self.advertiser_ids), self.result_generator()
+        )
