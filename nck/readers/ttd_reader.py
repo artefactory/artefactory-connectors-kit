@@ -93,6 +93,7 @@ class TheTradeDeskReader(Reader):
     ):
         self.login = login
         self.password = password
+        self._build_headers()
         self.advertiser_ids = list(advertiser_id)
         self.report_template_name = report_template_name
         self.report_schedule_name = report_schedule_name
@@ -212,7 +213,6 @@ class TheTradeDeskReader(Reader):
         self._make_api_call(method, f"{endpoint}/{self.report_schedule_id}")
 
     def read(self):
-        self._build_headers()
         self._get_report_template_id()
         self._create_report_schedule()
         self._wait_for_download_url()
