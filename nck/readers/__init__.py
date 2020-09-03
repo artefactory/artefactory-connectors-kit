@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from nck.readers.dv360_reader import dv360
 from nck.readers.reader import Reader
 
 from nck.readers.mysql_reader import mysql
@@ -50,6 +51,7 @@ readers = [
     the_trade_desk,
     twitter,
     oracle,
+    dv360,
     dbm,
     dcm,
     ga,

@@ -19,7 +19,21 @@ from enum import Enum
 import csv
 import codecs
 import gzip
+import zipfile
 import json
+
+
+def unzip(input_file, output_path):
+    with zipfile.ZipFile(input_file, 'r') as zip_ref:
+        zip_ref.extractall(output_path)
+
+
+def sdf_to_njson_generator(path_to_file):
+    csv_reader = CSVReader(csv_delimiter=",", csv_fieldnames=None)
+    with open(path_to_file, "rb") as fd:
+        dict_reader = csv_reader.read_csv(fd)
+        for line in dict_reader:
+            yield line
 
 
 def format_csv_delimiter(csv_delimiter):
@@ -32,9 +46,7 @@ def format_csv_delimiter(csv_delimiter):
 
 
 def format_csv_fieldnames(csv_fieldnames):
-    if csv_fieldnames is None:
-        _csv_fieldnames = csv_fieldnames
-    elif isinstance(csv_fieldnames, list):
+    if isinstance(csv_fieldnames, list):
         _csv_fieldnames = csv_fieldnames
     elif isinstance(csv_fieldnames, (str, bytes)):
         _csv_fieldnames = json.loads(csv_fieldnames)
@@ -49,8 +61,7 @@ def format_csv_fieldnames(csv_fieldnames):
 class CSVReader(object):
     def __init__(self, csv_delimiter, csv_fieldnames, **kwargs):
         self.csv_delimiter = format_csv_delimiter(csv_delimiter)
-        self.csv_fieldnames = format_csv_fieldnames(csv_fieldnames)
-
+        self.csv_fieldnames = format_csv_fieldnames(csv_fieldnames) if csv_fieldnames is not None else None
         self.csv_reader = lambda fd: self.read_csv(fd, **kwargs)
 
     def read_csv(self, fd, **kwargs):

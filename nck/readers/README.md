@@ -384,7 +384,7 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |`--dcm-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
 |`--dcm-end-date`|End date of the period to request (format: YYYY-MM-DD)|
 
-### Google Display & Video 360 Reader
+### Google DoubleClick Manager Reader (DBM)
 
 #### Source API
 

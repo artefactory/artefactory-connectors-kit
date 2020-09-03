@@ -1,0 +1,14 @@
+**/.github
+**/tests
+**/.env
+**/.flake8
+**/.gitignore
+**/.git
+CONTRIBUTING.md
+README.md
+**/__pycache__
+**/*.pyc
+**/.settings
+**/.vscode
+**/Dockerfile*
+**/requirements-dev.txt
