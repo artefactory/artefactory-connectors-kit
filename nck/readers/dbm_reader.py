@@ -90,7 +90,7 @@ def dbm(**kwargs):
 
 class DbmReader(Reader):
     API_NAME = "doubleclickbidmanager"
-    API_VERSION = "v1.1"
+    API_VERSION = "v1"
 
     def __init__(self, access_token, refresh_token, client_secret, client_id, **kwargs):
         credentials = client.GoogleCredentials(
@@ -127,6 +127,7 @@ class DbmReader(Reader):
 
     def get_query_body(self):
         body_q = {
+            "kind": "doubleclickbidmanager#query",
             "metadata": {
                 "format": "CSV",
                 "title": self.kwargs.get("query_title", "NO_TITLE_GIVEN"),
@@ -134,19 +135,13 @@ class DbmReader(Reader):
             },
             "params": {
                 "type": self.kwargs.get("query_param_type", "TYPE_TRUEVIEW"),
-                "groupBys": self.kwargs.get("query_dimension"),
-                "metrics": self.kwargs.get("query_metric"),
-                "filters": [
-                    {"type": filt[0], "value": str(filt[1])}
-                    for filt in self.kwargs.get("filter")
-                ],
+                "groupBys": list(self.kwargs.get("query_dimension", [])),
+                "metrics": list(self.kwargs.get("query_metric", [])),
+                "filters": [{"type": filt[0], "value": str(filt[1])} for filt in self.kwargs.get("filter")],
             },
             "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
         }
-        if (
-            self.kwargs.get("start_date") is not None
-            and self.kwargs.get("end_date") is not None
-        ):
+        if self.kwargs.get("start_date") is not None and self.kwargs.get("end_date") is not None:
             body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
             body_q["reportDataStartTimeMs"] = 1000 * int(
                 (self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()
@@ -194,34 +189,20 @@ class DbmReader(Reader):
     def get_query_report(self, existing_query=True):
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
-        if (
-            self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY"
-            and self.kwargs["add_date_to_report"]
-        ):
-            start, stop = get_date_start_and_date_stop_from_range(
-                self.kwargs["day_range"]
-            )
+        if self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY" and self.kwargs["add_date_to_report"]:
+            start, stop = get_date_start_and_date_stop_from_range(self.kwargs["day_range"])
             column_dict = {
                 "date_start": start.strftime(self.kwargs.get("date_format")),
                 "date_stop": stop.strftime(self.kwargs.get("date_format")),
             }
             return get_report_generator_from_flat_file(
-                report.iter_lines(),
-                skip_n_last=1,
-                add_column=True,
-                column_dict=column_dict,
+                report.iter_lines(), skip_n_last=1, add_column=True, column_dict=column_dict
             )
         else:
-            return get_report_generator_from_flat_file(
-                report.iter_lines(), skip_n_last=1
-            )
+            return get_report_generator_from_flat_file(report.iter_lines(), skip_n_last=1)
 
     def list_query_reports(self):
-        reports_infos = (
-            self._client.reports()
-            .listreports(queryId=self.kwargs.get("query_id"))
-            .execute()
-        )
+        reports_infos = self._client.reports().listreports(queryId=self.kwargs.get("query_id")).execute()
         for report in reports_infos["reports"]:
             yield report
 
@@ -229,31 +210,17 @@ class DbmReader(Reader):
         if len(self.kwargs.get("filter")) > 0:
             filter_types = [filt[0] for filt in self.kwargs.get("filter")]
             assert (
-                len(
-                    [
-                        filter_types[0] == filt
-                        for filt in filter_types
-                        if filter_types[0] == filt
-                    ]
-                )
-                == 1
+                len([filter_types[0] == filt for filt in filter_types if filter_types[0] == filt]) == 1
             ), "Lineitems accept just one filter type, multiple filter types detected"
             filter_ids = [str(filt[1]) for filt in self.kwargs.get("filter")]
 
-            return {
-                "filterType": filter_types[0],
-                "filterIds": filter_ids,
-                "format": "CSV",
-                "fileSpec": "EWF",
-            }
+            return {"filterType": filter_types[0], "filterIds": filter_ids, "format": "CSV", "fileSpec": "EWF"}
         else:
             return {}
 
     def get_lineitems_objects(self):
         body_lineitems = self.get_lineitems_body()
-        response = (
-            self._client.lineitems().downloadlineitems(body=body_lineitems).execute()
-        )
+        response = self._client.lineitems().downloadlineitems(body=body_lineitems).execute()
         lineitems = response["lineItems"]
         lines = lineitems.split("\n")
         return get_report_generator_from_flat_file(lines, skip_n_last=1)
