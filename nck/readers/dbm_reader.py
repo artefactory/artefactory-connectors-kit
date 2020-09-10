@@ -227,13 +227,6 @@ class DbmReader(Reader):
         lines = lineitems.split("\n")
         return get_report_generator_from_flat_file(lines, skip_n_last=1)
 
-    @staticmethod
-    def _remove_totals_record(generator):
-        current = next(generator)
-        for i in generator:
-            yield current
-            current = i
-
     def read(self):
         request_type = self.kwargs.get("request_type")
         if request_type == "existing_query":
