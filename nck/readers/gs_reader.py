@@ -22,36 +22,40 @@ def google_sheets(**kwargs):
 
 
 class GSheetsReader(Reader):
-    _scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/spreadsheets',
-               "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+    _scopes = [
+        "https://www.googleapis.com/auth/spreadsheets.readonly",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/drive",
+    ]
 
     def __init__(
-            self,
-            project_id: str,
-            private_key_id: str,
-            private_key_path: str,
-            client_email: str,
-            client_id: str,
-            client_cert: str,
-            sheet_name: str):
+        self,
+        project_id: str,
+        private_key_id: str,
+        private_key_path: str,
+        client_email: str,
+        client_id: str,
+        client_cert: str,
+        sheet_name: str,
+    ):
         self._sheet_name = sheet_name
-        private_key_txt = open(private_key_path, 'r').read().replace("\\n", "\n")
+        private_key_txt = open(private_key_path, "r").read().replace("\\n", "\n")
         self._keyfile_dict = {
-            'type': 'service_account',
-            'project_id': project_id,
-            'private_key_id': private_key_id,
-            'private_key': private_key_txt,
-            'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs',
-            'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
-            'client_email': client_email,
-            'client_id': client_id,
-            'client_x509_cert_url': client_cert,
-            'token_uri': 'https://accounts.google.com/o/oauth2/token',
+            "type": "service_account",
+            "project_id": project_id,
+            "private_key_id": private_key_id,
+            "private_key": private_key_txt,
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "client_email": client_email,
+            "client_id": client_id,
+            "client_x509_cert_url": client_cert,
+            "token_uri": "https://accounts.google.com/o/oauth2/token",
         }
         self._credentials = service_account.Credentials.from_service_account_info(info=self._keyfile_dict)
         self._scoped_credentials = self._credentials.with_scopes(
-            ['https://spreadsheets.google.com/feeds',
-             'https://www.googleapis.com/auth/drive']
+            ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
         )
         gc = gspread.Client(auth=self._scoped_credentials)
         gc.session = AuthorizedSession(self._scoped_credentials)
