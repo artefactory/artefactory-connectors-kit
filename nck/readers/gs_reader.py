@@ -7,6 +7,8 @@ from nck.readers.reader import Reader
 from google.auth.transport.requests import AuthorizedSession
 import click
 import json
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+
 
 
 @click.command(name="read_gs")
@@ -66,7 +68,11 @@ class GSheetsReader(Reader):
         gc.session = AuthorizedSession(self._scoped_credentials)    
         sheet = gc.open(self._sheet_name).sheet1
         list_of_hashes = sheet.get_all_records()
-        print(list_of_hashes)
+        def result_generator():
+                for record in list_of_hashes:
+                    yield record
+
+        yield NormalizedJSONStream(sheet, result_generator())
         
         
 # import google.oauth2.credentials
