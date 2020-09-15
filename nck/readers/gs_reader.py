@@ -12,16 +12,16 @@ from nck.streams.normalized_json_stream import NormalizedJSONStream
 
 
 @click.command(name="read_gs")
-@click.option("--gs-project_id", default=None, required=True)
-@click.option("--gs-private_key_id", required=True)#
-@click.option("--gs-private_key_path", required=True)#
-@click.option("--gs-client_email", required=True)
-@click.option("--gs-client_id",required=True)#
+@click.option("--gs-project-id", default=None, required=True)
+@click.option("--gs-private-key-id", required=True)#
+@click.option("--gs-private-key-path", required=True)#
+@click.option("--gs-client-email", required=True)
+@click.option("--gs-client-id",required=True)#
 #@click.option("--gs-auth_uri",required=True)
 #@click.option("--gs-token-uri", required=True)
 #@click.option("--gs-auth_provider", required=True)
-@click.option("--gs-client_cert", required=True)#
-@click.option("--gs-sheet_name", default=None, required=True)
+@click.option("--gs-client-cert", required=True)#
+@click.option("--gs-sheet-name", default=None, required=True)
 
 @processor("gs_private_key_id", "gs_private_key_path", "gs_client_id","gs_client_cert")
 def google_sheets(**kwargs):
