@@ -63,8 +63,14 @@ from nck.streams.json_stream import JSONStream
     help="Client certificate given by Google services once you have added credentials \
                   to the project. You can retrieve it in the JSON credential file",
 )
-@click.option("--gs-sheet-name", required=True, help="The name you have given to your google sheet")
-@click.option("--gs-page-number", default=0, type=click.INT, help="The page number you want to access")
+@click.option("--gs-file-name", required=True, help="The name you have given to your google sheet file")
+@click.option(
+    "--gs-page-number",
+    default=0,
+    type=click.INT,
+    help="The page number you want to access.\
+    The number pages starts at 0",
+)
 @processor("gs_private_key_id", "gs_private_key_path", "gs_client_id", "gs_client_cert")
 def google_sheets(**kwargs):
     return GSheetsReader(**extract_args("gs_", kwargs))
@@ -86,10 +92,10 @@ class GSheetsReader(Reader):
         client_email: str,
         client_id: str,
         client_cert: str,
-        sheet_name: str,
+        file_name: str,
         page_number: int,
     ):
-        self._sheet_name = sheet_name
+        self._file_name = file_name
         self._page_number = page_number
         private_key_txt = open(private_key_path, "r").read().replace("\\n", "\n")
         keyfile_dict = {
@@ -110,7 +116,7 @@ class GSheetsReader(Reader):
         self._gc.session = AuthorizedSession(scoped_credentials)
 
     def read(self):
-        sheet = self._gc.open(self._sheet_name).get_worksheet(self._page_number)
+        sheet = self._gc.open(self._file_name).get_worksheet(self._page_number)
         list_of_hashes = sheet.get_all_records()
 
         def result_generator():
