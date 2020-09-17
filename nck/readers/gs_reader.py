@@ -71,6 +71,8 @@ from nck.streams.json_stream import JSONStream
     help="The page number you want to access.\
     The number pages starts at 0",
 )
+@click.option("--gs-sheet-name", required=True, help="The name you have given to your google sheet")
+@click.option("--gs-page-number", default=0, type=click.INT, help="The page number you want to access")
 @processor("gs_private_key_id", "gs_private_key_path", "gs_client_id", "gs_client_cert")
 def google_sheets(**kwargs):
     return GSheetsReader(**extract_args("gs_", kwargs))
@@ -96,6 +98,7 @@ class GSheetsReader(Reader):
         page_number: int,
     ):
         self._file_name = file_name
+
         self._page_number = page_number
         private_key_txt = open(private_key_path, "r").read().replace("\\n", "\n")
         keyfile_dict = {
