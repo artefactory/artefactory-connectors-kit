@@ -40,9 +40,10 @@ from nck.streams.json_stream import JSONStream
                   to the project. You can retrieve it in the JSON credential file",
 )
 @click.option(
-    "--gs-private-key-path",
+    "--gs-private-key",
     required=True,
-    help="The path to the private key that is stored in a txt file. \
+    help="The private key given by Google services once you have added credentials \
+                  to the project. \
                   You can retrieve it first in the JSON credential file",
 )
 @click.option(
@@ -71,7 +72,7 @@ from nck.streams.json_stream import JSONStream
     help="The page number you want to access.\
     The number pages starts at 0",
 )
-@processor("gs_private_key_id", "gs_private_key_path", "gs_client_id", "gs_client_cert")
+@processor("gs_private_key_id", "gs_private_key", "gs_client_id", "gs_client_cert")
 def google_sheets(**kwargs):
     return GSheetsReader(**extract_args("gs_", kwargs))
 
@@ -88,7 +89,7 @@ class GSheetsReader(Reader):
         self,
         project_id: str,
         private_key_id: str,
-        private_key_path: str,
+        private_key: str,
         client_email: str,
         client_id: str,
         client_cert: str,
@@ -98,21 +99,18 @@ class GSheetsReader(Reader):
         self._file_name = file_name
         self._page_number = page_number
         credentials = self.__init_credentials(
-            project_id, private_key_id, private_key_path, client_email, client_id, client_cert
+            project_id, private_key_id, private_key, client_email, client_id, client_cert
         )
         scoped_credentials = credentials.with_scopes(self._scopes)
         self._gc = gspread.Client(auth=scoped_credentials)
         self._gc.session = AuthorizedSession(scoped_credentials)
 
-    def __init_credentials(self, project_id, private_key_id, private_key_path, client_email, client_id, client_cert):
-
-        with open(private_key_path, "r") as f:
-            private_key = f.read().replace("\\n", "\n")
+    def __init_credentials(self, project_id, private_key_id, private_key, client_email, client_id, client_cert):
         keyfile_dict = {
             "type": "service_account",
             "project_id": project_id,
             "private_key_id": private_key_id,
-            "private_key": private_key,
+            "private_key": private_key.replace("\\n", "\n"),
             "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
             "client_email": client_email,
