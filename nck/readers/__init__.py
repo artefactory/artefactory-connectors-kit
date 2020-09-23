@@ -38,6 +38,7 @@ from nck.readers.adobe_reader_2_0 import adobe_2_0
 from nck.readers.radarly_reader import radarly
 from nck.readers.yandex_campaign_reader import yandex_campaigns
 from nck.readers.yandex_statistics_reader import yandex_statistics
+from nck.readers.gs_reader import google_sheets
 
 readers = [
     mysql,
@@ -61,6 +62,7 @@ readers = [
     radarly,
     yandex_campaigns,
     yandex_statistics,
+    google_sheets
 ]
 
 

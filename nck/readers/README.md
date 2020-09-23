@@ -505,7 +505,42 @@ See documentation [here](https://developers.google.com/search-ads/v2/how-tos/rep
 
 ### Google Sheets Reader
 
-*Not documented yet.*
+
+#### Source API
+
+[Google Sheets API](https://developers.google.com/sheets/api)
+
+#### Quickstart
+
+This command allows you to retrieve the desired information from the google sheet row by row in a dict format. For example, given 3 columns a, b, c and 2 rows with respectively the values d,e,f and g, h, i, we would obtain such a dict :
+
+```
+{"a": "d", "b": "e", "c": "f"}
+{"a": "g", "b": "h", "c": "i"}
+```
+
+#### Parameters
+
+|CLI option|Documentation|
+|--| -|
+|`--gs-project-id`|Project ID that is given by Google services once you have created your project in the google cloud console. You can retrieve it in the JSON credential file|
+|`--gs-private-key-id`|Private key ID given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
+|`--gs-private-key-path`|The path to the private key that is stored in a txt file. You can retrieve it first in the JSON credential file|
+|`--gs-client-email`|Client e-mail given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
+|`--gs-client-id`|Client ID given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
+|`--gs-client-cert`|Client certificate given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
+|`--gs-file-name`|The name you have given to your google sheet file|
+|`--gs-page-number`|The page number you want to access.The number pages starts at 0|
+
+#### How to obtain credentials
+
+To use the nck google_sheets you must first retrieve your credentials. In order to do so head to console.cloud.google.com. In the header, chose your project or create a new one. Next step is to enable some APIs, namely google drive and google sheets api in the API Library. You’ll find it in the « APIs & Services » tab. Now that your google drive API is enabled, click on the « create credentials » button on the upper right corner and enter these informations :
+
+![alt text](https://github.com/artefactory/nautilus-connectors-kit/blob/upgrade-gs/documentation_images/credentials_gs.png)
+
+Click on "what credentials do I need" and complete the form.
+You will find the credentials you need in the JSON file that will start downloading automatically right after.
+
 
 ## Oracle Reader
 
