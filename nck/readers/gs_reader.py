@@ -64,7 +64,7 @@ from nck.streams.json_stream import JSONStream
     help="Client certificate given by Google services once you have added credentials \
                   to the project. You can retrieve it in the JSON credential file",
 )
-@click.option("--gs-file-name", required=True, help="The name you have given to your google sheet file")
+@click.option("--gs-sheet-key", required=True, help="Google spreadsheet key that is availbale in the url")
 @click.option(
     "--gs-page-number",
     default=0,
@@ -93,10 +93,10 @@ class GSheetsReader(Reader):
         client_email: str,
         client_id: str,
         client_cert: str,
-        file_name: str,
+        sheet_key: str,
         page_number: int,
     ):
-        self._file_name = file_name
+        self._sheet_key = sheet_key
         self._page_number = page_number
         credentials = self.__init_credentials(
             project_id, private_key_id, private_key, client_email, client_id, client_cert
@@ -121,7 +121,7 @@ class GSheetsReader(Reader):
         return service_account.Credentials.from_service_account_info(info=keyfile_dict)
 
     def read(self):
-        sheet = self._gc.open(self._file_name).get_worksheet(self._page_number)
+        sheet = self._gc.open_by_key(self._sheet_key).get_worksheet(self._page_number)
         list_of_hashes = sheet.get_all_records()
 
         def result_generator():
