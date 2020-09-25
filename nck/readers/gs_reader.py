@@ -128,4 +128,4 @@ class GSheetsReader(Reader):
             for record in list_of_hashes:
                 yield record
 
-        yield JSONStream(sheet, result_generator())
+        yield JSONStream("gsheet", result_generator())
