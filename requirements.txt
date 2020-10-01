@@ -64,4 +64,4 @@ googleads==22.0.0
 twitter-ads==7.0.1
 pyjwt==1.7.1
 cryptography==2.9
-bs4==4.9.1
+bs4==0.0.1
