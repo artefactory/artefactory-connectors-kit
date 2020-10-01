@@ -64,7 +64,7 @@ readers = [
     yandex_campaigns,
     yandex_statistics,
     google_sheets,
-    confluence
+    confluence,
 ]
 
 

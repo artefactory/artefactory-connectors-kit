@@ -22,38 +22,36 @@ from click import ClickException
 from nck.readers.confluence_reader import ConfluenceReader
 
 KEY1_RAW_RESPONSE_PAGE0 = {
-    "results":
-    [
+    "results": [
         {
             "title": "Making API requests with NCK",
             "space": {"name": "How To Guides"},
-            "metadata": {"labels": {"results": [{"name": "api"}]}}
+            "metadata": {"labels": {"results": [{"name": "api"}]}},
         },
         {
             "title": "Writting a Client Case",
             "space": {"name": "How To Guides"},
-            "metadata": {"labels": {"results": [{"name": "confluence"}]}}
-        }
+            "metadata": {"labels": {"results": [{"name": "confluence"}]}},
+        },
     ],
-    "_links": {"next": "link_to_next_request_page"}
+    "_links": {"next": "link_to_next_request_page"},
 }
 
 KEY1_RAW_RESPONSE_PAGE1 = {
-    "results":
-    [
+    "results": [
         {
             "title": "Developping with Github",
             "space": {"name": "How To Guides"},
-            "metadata": {"labels": {"results": [{"name": "git"}]}}
+            "metadata": {"labels": {"results": [{"name": "git"}]}},
         }
     ],
-    "_links": {}
+    "_links": {},
 }
 
 KEY1_FINAL_RECORDS = [
     {"title": "Making API requests with NCK", "space.name": "How To Guides", "label_names": "api"},
     {"title": "Writting a Client Case", "space.name": "How To Guides", "label_names": "confluence"},
-    {"title": "Developping with Github", "space.name": "How To Guides", "label_names": "git"}
+    {"title": "Developping with Github", "space.name": "How To Guides", "label_names": "git"},
 ]
 
 KEY2_FINAL_RECORDS = [
@@ -72,7 +70,7 @@ class ConfluenceReaderTest(TestCase):
         "content_type": "page",
         "spacekey": [],
         "field": ["title", "space.name", "label_names"],
-        "normalize_stream": False
+        "normalize_stream": False,
     }
 
     @mock.patch(
@@ -80,8 +78,8 @@ class ConfluenceReaderTest(TestCase):
         {
             "custom_field_A": {"specific_to_spacekeys": ["KEY1"]},
             "custom_field_B": {"specific_to_spacekeys": ["KEY1", "KEY2"]},
-            "custom_field_C": {}
-        }
+            "custom_field_C": {},
+        },
     )
     def test__validate_spacekeys(self):
         temp_kwargs = self.kwargs.copy()
@@ -93,7 +91,7 @@ class ConfluenceReaderTest(TestCase):
         output = ConfluenceReader(**self.kwargs).headers
         expected = {
             "Authorization": "Basic Zmlyc3RuYW1lLm5hbWVAeW91ci1kb21haW4uY29tOmFBYkJjQ2REZUUxMmZGZ0doSGlJakozNA==",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         self.assertDictEqual(output, expected)
 
@@ -103,9 +101,7 @@ class ConfluenceReaderTest(TestCase):
         self.assertDictEqual(output, expected)
 
     @mock.patch.object(
-        ConfluenceReader,
-        "get_raw_response",
-        side_effect=[KEY1_RAW_RESPONSE_PAGE0, KEY1_RAW_RESPONSE_PAGE1]
+        ConfluenceReader, "get_raw_response", side_effect=[KEY1_RAW_RESPONSE_PAGE0, KEY1_RAW_RESPONSE_PAGE1]
     )
     def test__get_report_generator(self, mock_get_raw_response):
         temp_kwargs = self.kwargs.copy()
@@ -116,9 +112,7 @@ class ConfluenceReaderTest(TestCase):
             self.assertEqual(output_record, expected_record)
 
     @mock.patch.object(
-        ConfluenceReader,
-        "get_report_generator",
-        side_effect=[iter(KEY1_FINAL_RECORDS), iter(KEY2_FINAL_RECORDS)]
+        ConfluenceReader, "get_report_generator", side_effect=[iter(KEY1_FINAL_RECORDS), iter(KEY2_FINAL_RECORDS)]
     )
     def test__get_aggregated_report_generator(self, mock_get_report_generator):
         temp_kwargs = self.kwargs.copy()
