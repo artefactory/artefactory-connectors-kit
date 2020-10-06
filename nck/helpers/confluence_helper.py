@@ -145,10 +145,10 @@ CUSTOM_FIELDS = {
         "format_function_kwargs": {"key": "name"},
         "formatted_object_type": str,
     },
-    "children_page_titles": {
+    "children_page_id": {
         "source_field": "children.page.results",
         "format_function": _get_key_values_from_list_of_dct,
-        "format_function_kwargs": {"key": "title"},
+        "format_function_kwargs": {"key": "id"},
         "formatted_object_type": str,
     },
     "client_properties": {
