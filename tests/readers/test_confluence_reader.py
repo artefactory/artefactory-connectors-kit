@@ -96,28 +96,28 @@ class ConfluenceReaderTest(TestCase):
         self.assertDictEqual(output, expected)
 
     def test__build_params(self):
-        output = ConfluenceReader(**self.kwargs).build_params()
+        output = ConfluenceReader(**self.kwargs)._build_params()
         expected = {"type": "page", "expand": "title,space.name,metadata.labels.results"}
         self.assertDictEqual(output, expected)
 
     @mock.patch.object(
-        ConfluenceReader, "get_raw_response", side_effect=[KEY1_RAW_RESPONSE_PAGE0, KEY1_RAW_RESPONSE_PAGE1]
+        ConfluenceReader, "_get_raw_response", side_effect=[KEY1_RAW_RESPONSE_PAGE0, KEY1_RAW_RESPONSE_PAGE1]
     )
     def test__get_report_generator(self, mock_get_raw_response):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"spacekey": ["KEY1"]})
-        output = ConfluenceReader(**self.kwargs).get_report_generator()
+        output = ConfluenceReader(**self.kwargs)._get_report_generator()
         expected = iter(KEY1_FINAL_RECORDS)
         for output_record, expected_record in zip(output, expected):
             self.assertEqual(output_record, expected_record)
 
     @mock.patch.object(
-        ConfluenceReader, "get_report_generator", side_effect=[iter(KEY1_FINAL_RECORDS), iter(KEY2_FINAL_RECORDS)]
+        ConfluenceReader, "_get_report_generator", side_effect=[iter(KEY1_FINAL_RECORDS), iter(KEY2_FINAL_RECORDS)]
     )
     def test__get_aggregated_report_generator(self, mock_get_report_generator):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"spacekey": ["KEY1", "KEY2"]})
-        output = ConfluenceReader(**self.kwargs).get_aggregated_report_generator()
+        output = ConfluenceReader(**self.kwargs)._get_aggregated_report_generator()
         expected = iter(KEY1_FINAL_RECORDS + KEY2_FINAL_RECORDS)
         for output_record, expected_record in zip(output, expected):
             self.assertEqual(output_record, expected_record)
