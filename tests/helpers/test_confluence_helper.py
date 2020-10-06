@@ -115,15 +115,19 @@ class CustomFieldsTest(TestCase):
         output = _get_section_by_title(html_soup, searched_title)
         self.assertEqual(str(output), expected)
 
-    def test__clean_dct(self):
-        from nck.helpers.confluence_helper import _clean_dct
 
-        dct = {"CLIENT COMPANY": "Michelin", "SCOPE": "France", "TEAM_SIZE": 10}
-        expected_keys = ["CLIENT COMPANY", "SCOPE", "AMOUNT SOLD"]
+class DictToCleanTest(TestCase):
+    def test__clean(self):
+        from nck.helpers.confluence_helper import DictToClean
+
+        dct = {"CLIENT COMPANY": "Michelin", "SCOPE": "France", "TEAM SIZE": 10}
+        expected_keys = ["CLIENT COMPANY", "AMOUNT SOLD", "SCOPE"]
         default_value = ""
         prefix = "prefix_"
-        expected = {"prefix_CLIENT COMPANY": "Michelin", "prefix_SCOPE": "France", "prefix_AMOUNT SOLD": ""}
-        self.assertDictEqual(_clean_dct(dct, expected_keys, default_value, prefix), expected)
+
+        expected = {"prefix_CLIENT COMPANY": "Michelin", "prefix_AMOUNT SOLD": "", "prefix_SCOPE": "France"}
+        output = DictToClean(dct, expected_keys, default_value, prefix).clean()
+        self.assertDictEqual(output, expected)
 
 
 class ParseResponseTest(TestCase):

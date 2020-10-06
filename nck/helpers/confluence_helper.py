@@ -114,7 +114,7 @@ def _get_client_properties(field_value: str) -> Optional[Dict[str, str]]:
                 else:
                     client_properties_dct[key] = text
 
-    return _clean_dct(client_properties_dct, DEFAULT_PROPERTIES, "", "client_property_")
+    return DictToClean(client_properties_dct, DEFAULT_PROPERTIES, 0, "client_property_").clean()
 
 
 def _get_client_completion(field_value: str) -> Optional[Dict[str, int]]:
@@ -129,7 +129,7 @@ def _get_client_completion(field_value: str) -> Optional[Dict[str, int]]:
             section_is_completed = len(text) > DEFAULT_SECTIONS_LENGTH[required_title]
             client_completion_dct[required_title] = int(section_is_completed)
 
-    return _clean_dct(client_completion_dct, DEFAULT_SECTIONS_LENGTH.keys(), 0, "client_completion_")
+    return DictToClean(client_completion_dct, DEFAULT_SECTIONS_LENGTH.keys(), "", "client_completion_").clean()
 
 
 CUSTOM_FIELDS = {
@@ -183,24 +183,20 @@ def _get_section_by_title(html_soup: BeautifulSoup, searched_title: str) -> Tag:
                 return section
 
 
-def _clean_dct(dct, expected_keys, default_value, prefix):
-    cleaned_dct = _remove_optional_keys(dct, expected_keys)
-    cleaned_dct = _add_missing_keys(cleaned_dct, expected_keys, default_value)
-    cleaned_dct = _add_prefix(cleaned_dct, prefix)
-    return cleaned_dct
+class DictToClean:
+    def __init__(self, dct, expected_keys, default_value, prefix):
+        self.dct = dct
+        self.expected_keys = expected_keys
+        self.default_value = default_value
+        self.prefix = prefix
 
+    def clean(self):
+        self._keep_expected_keys_only()
+        self._add_prefix()
+        return self.dct
 
-def _remove_optional_keys(dct, expected_keys):
-    return {key: value for key, value in dct.items() if key in expected_keys}
+    def _keep_expected_keys_only(self):
+        self.dct = {key: self.dct[key] if key in self.dct else self.default_value for key in self.expected_keys}
 
-
-def _add_missing_keys(dct, expected_keys, default_value):
-    missing_keys = expected_keys - dct.keys()
-    if len(missing_keys) > 0:
-        for key in missing_keys:
-            dct[key] = default_value
-    return dct
-
-
-def _add_prefix(dct, prefix):
-    return {f"{prefix}{key}": value for key, value in dct.items()}
+    def _add_prefix(self):
+        self.dct = {f"{self.prefix}{key}": value for key, value in self.dct.items()}
