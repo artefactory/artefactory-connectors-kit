@@ -1,4 +1,6 @@
+from typing import Optional, List, Dict
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from unidecode import unidecode
 import re
 
@@ -15,6 +17,7 @@ def parse_response(raw_response, fields):
 
 
 # PARSE RESPONSE: Helpers
+
 
 def _get_field_path(field):
     if field in CUSTOM_FIELDS:
@@ -58,24 +61,34 @@ def _decode(raw_value):
 
 # CUSTOM FIELDS: format functions
 
-def _get_tiny_link(field_value):
+
+def _get_tiny_link(field_value: str) -> str:
     atlassian_domain = field_value["self"].split("/wiki")[0]
     shortened_path = field_value["tinyui"]
     return f"{atlassian_domain}/wiki{shortened_path}"
 
 
-def _get_key_values_from_list_of_dct(list_of_dct, key):
-    key_values = [dct.get(key, "") for dct in list_of_dct]
+def _get_key_values_from_list_of_dct(field_value: List[dict], key: str) -> str:
+    key_values = [dct.get(key, "") for dct in field_value]
     return "|".join(key_values)
 
 
-def _get_client_properties(field_value):
+def _get_client_properties(field_value: str) -> Optional[Dict[str, str]]:
     client_properties_dct = {}
     html_soup = BeautifulSoup(field_value, "lxml")
     DEFAULT_PROPERTIES = [
-        "CONFIDENTIALITY", "ARTICLE STATUS", "INDUSTRY", "CLIENT COMPANY", "SCOPE",
-        "MISSION START DATE", "MISSION END DATE", "AMOUNT SOLD", "MISSION TOPIC",
-        "COMMERCIAL PROPOSAL", "ONE PAGER", "ARCHITECTURE"
+        "CONFIDENTIALITY",
+        "ARTICLE STATUS",
+        "INDUSTRY",
+        "CLIENT COMPANY",
+        "SCOPE",
+        "MISSION START DATE",
+        "MISSION END DATE",
+        "AMOUNT SOLD",
+        "MISSION TOPIC",
+        "COMMERCIAL PROPOSAL",
+        "ONE PAGER",
+        "ARCHITECTURE",
     ]
 
     properties_section = _get_section_by_title(html_soup, "CASE ID CARD")
@@ -104,7 +117,7 @@ def _get_client_properties(field_value):
     return _clean_dct(client_properties_dct, DEFAULT_PROPERTIES, "", "client_property_")
 
 
-def _get_client_completion(field_value):
+def _get_client_completion(field_value: str) -> Optional[Dict[str, int]]:
     client_completion_dct = {}
     html_soup = BeautifulSoup(field_value, "lxml")
     DEFAULT_SECTIONS_LENGTH = {"KEY LEARNINGS": 195, "CONTEXT": 117, "APPROACH": 232, "CONCLUSION": 83}
@@ -113,7 +126,7 @@ def _get_client_completion(field_value):
         section = _get_section_by_title(html_soup, required_title)
         if section is not None:
             text = _decode(section.text)
-            section_is_completed = (len(text) > DEFAULT_SECTIONS_LENGTH[required_title])
+            section_is_completed = len(text) > DEFAULT_SECTIONS_LENGTH[required_title]
             client_completion_dct[required_title] = int(section_is_completed)
 
     return _clean_dct(client_completion_dct, DEFAULT_SECTIONS_LENGTH.keys(), 0, "client_completion_")
@@ -124,40 +137,41 @@ CUSTOM_FIELDS = {
         "source_field": "_links",
         "format_function": _get_tiny_link,
         "format_function_kwargs": {},
-        "formatted_object_type": str
+        "formatted_object_type": str,
     },
     "label_names": {
         "source_field": "metadata.labels.results",
         "format_function": _get_key_values_from_list_of_dct,
         "format_function_kwargs": {"key": "name"},
-        "formatted_object_type": str
+        "formatted_object_type": str,
     },
     "children_page_titles": {
         "source_field": "children.page.results",
         "format_function": _get_key_values_from_list_of_dct,
         "format_function_kwargs": {"key": "title"},
-        "formatted_object_type": str
+        "formatted_object_type": str,
     },
     "client_properties": {
         "source_field": "body.storage.value",
         "format_function": _get_client_properties,
         "format_function_kwargs": {},
         "formatted_object_type": dict,
-        "specific_to_spacekeys": ["KA"]
+        "specific_to_spacekeys": ["KA"],
     },
     "client_completion": {
         "source_field": "body.storage.value",
         "format_function": _get_client_completion,
         "format_function_kwargs": {},
         "formatted_object_type": dict,
-        "specific_to_spacekeys": ["KA"]
-    }
+        "specific_to_spacekeys": ["KA"],
+    },
 }
 
 
 # CUSTOM FIELDS: helpers
 
-def _get_section_by_title(html_soup, searched_title):
+
+def _get_section_by_title(html_soup: BeautifulSoup, searched_title: str) -> Tag:
     for section in html_soup.find_all("ac:layout-section"):
 
         h1_elements = [_decode(h1.text).upper() for h1 in section.find_all("h1")]
