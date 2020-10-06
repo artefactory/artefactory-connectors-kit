@@ -114,7 +114,7 @@ def _get_client_properties(field_value: str) -> Optional[Dict[str, str]]:
                 else:
                     client_properties_dct[key] = text
 
-    return DictToClean(client_properties_dct, DEFAULT_PROPERTIES, 0, "client_property_").clean()
+    return DictToClean(client_properties_dct, DEFAULT_PROPERTIES, "", "client_property_").clean()
 
 
 def _get_client_completion(field_value: str) -> Optional[Dict[str, int]]:
@@ -129,7 +129,7 @@ def _get_client_completion(field_value: str) -> Optional[Dict[str, int]]:
             section_is_completed = len(text) > DEFAULT_SECTIONS_LENGTH[required_title]
             client_completion_dct[required_title] = int(section_is_completed)
 
-    return DictToClean(client_completion_dct, DEFAULT_SECTIONS_LENGTH.keys(), "", "client_completion_").clean()
+    return DictToClean(client_completion_dct, DEFAULT_SECTIONS_LENGTH.keys(), 0, "client_completion_").clean()
 
 
 CUSTOM_FIELDS = {
