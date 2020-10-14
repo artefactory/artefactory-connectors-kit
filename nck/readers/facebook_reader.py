@@ -44,6 +44,7 @@ from facebook_business.adobjects.campaign import Campaign
 from facebook_business.adobjects.adset import AdSet
 from facebook_business.adobjects.ad import Ad
 from facebook_business.adobjects.adcreative import AdCreative
+from facebook_business.adobjects.adspixel import AdsPixel
 
 DATEFORMAT = "%Y-%m-%d"
 
@@ -53,13 +54,14 @@ OBJECT_CREATION_MAPPING = {
     "adset": AdSet,
     "ad": Ad,
     "creative": AdCreative,
+    "pixel": AdsPixel
 }
 
 EDGE_MAPPING = {
-    "account": ["campaign", "adset", "ad", "creative"],
+    "account": ["campaign", "adset", "ad", "creative", "pixel"],
     "campaign": ["adset", "ad"],
     "adset": ["ad", "creative"],
-    "ad": ["creative"],
+    "ad": ["creative"]
 }
 
 EDGE_QUERY_MAPPING = {
@@ -67,6 +69,7 @@ EDGE_QUERY_MAPPING = {
     "adset": lambda obj: obj.get_ad_sets(),
     "ad": lambda obj: obj.get_ads(),
     "creative": lambda obj: obj.get_ad_creatives(),
+    "pixel": lambda obj: obj.get_ads_pixels()
 }
 
 BATCH_SIZE_LIMIT = 50

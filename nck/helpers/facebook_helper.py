@@ -22,7 +22,7 @@ from time import sleep
 
 from facebook_business.adobjects.adsinsights import AdsInsights
 
-FACEBOOK_OBJECTS = ["creative", "ad", "adset", "campaign", "account"]
+FACEBOOK_OBJECTS = ["pixel", "creative", "ad", "adset", "campaign", "account"]
 
 DATE_PRESETS = [
     v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")
