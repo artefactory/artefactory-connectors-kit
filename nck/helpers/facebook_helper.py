@@ -142,23 +142,28 @@ def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
     visited.append(path_item)
 
     if path_item in resp_obj:
+        current_obj = resp_obj[path_item]
         if remaining_path_items == 0:
-            if isinstance(resp_obj[path_item], str):
-                return {format_field_path(visited): resp_obj[path_item]}
-            if isinstance(resp_obj[path_item], list):
-                return get_all_action_breakdown_values(
-                    resp_obj[path_item], visited, action_breakdowns
-                )
+            if (
+                isinstance(current_obj, list)
+                and all(isinstance(elt, str) for elt in current_obj)
+            ):
+                return {format_field_path(visited): "|".join(map(str, current_obj))}
+            elif (
+                isinstance(current_obj, list)
+                and all(isinstance(elt, dict) for elt in current_obj)
+                and all(any(key.startswith("action_") for key in elt.keys()) for elt in current_obj)
+            ):
+                return get_all_action_breakdown_values(current_obj, visited, action_breakdowns)
+            else:
+                # For exploration purposes
+                return {format_field_path(visited): str(current_obj)}
         else:
-            return get_field_values(
-                resp_obj[path_item], field_path[1:], action_breakdowns, visited
-            )
+            return get_field_values(current_obj, field_path[1:], action_breakdowns, visited)
     else:
         if all(":" in f for f in field_path):
             filters = get_action_breakdown_filters(field_path)
-            return get_all_action_breakdown_values(
-                resp_obj, visited[:-1], action_breakdowns, filters
-            )
+            return get_all_action_breakdown_values(resp_obj, visited[:-1], action_breakdowns, filters)
 
 
 def generate_batches(iterable, batch_size):

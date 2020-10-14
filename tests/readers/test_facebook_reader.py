@@ -244,6 +244,22 @@ class FacebookReaderTest(TestCase):
                 {"impressions": "1"},
                 {"impressions": "1"},
             ),
+            (
+                "various_field_formats",
+                {"field": ["string_field", "int_field", "float_field", "list_of_strings_field"]},
+                {
+                    "string_field": "Artefact",
+                    "int_field": 1,
+                    "float_field": 10.95,
+                    "list_of_strings_field": ["STRING_1", "STRING_2"]
+                },
+                {
+                    "string_field": "Artefact",
+                    "int_field": "1",
+                    "float_field": "10.95",
+                    "list_of_strings_field": "STRING_1|STRING_2"
+                }
+            )
         ]
     )
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
