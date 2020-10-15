@@ -156,9 +156,9 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-access-token`|Facebook App Access Token.|
-|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Possible values: creative (available only for Ad Management requests), ad, adset, campaign, account (default).*|
+|`--facebook-object-type`|Nature of the root Facebook Object used to make the request. *Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad, adset, campaign, account (default).*|
 |`--facebook-object-id`|ID of the root Facebook Object used to make the request.|
-|`--facebook-level`|Granularity of the response. *Possible values: creative (available only for Ad Management requests), ad (default), adset, campaign, account.*|
+|`--facebook-level`|Granularity of the response. *Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad (default), adset, campaign, account.*|
 |`--facebook-ad-insights`|*True* (default) if *Ad Insights* request, *False* if *Ad Management* request.|
 |`--facebook-field`|Fields to be retrieved.|
 |`--facebook-start-date`|Start date of the period to request (format: YYYY-MM-DD). *This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.*|
@@ -175,18 +175,19 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 
 |If Facebook Object Type is...|Facebook Level can be...|
 |:--|:--|
-|`account`|account, campaign, adset, ad, creative|
+|`account`|account, campaign, adset, ad, creative, pixel|
 |`campaign`|campaign, adset, ad|
 |`adset`|adset, ad, creative|
 |`ad`|ad, creative|
 |`creative`|creative|
+|`pixel`|pixel|
 
 **2. Format Facebook Marketing Reader response using `--facebook-fields`**
 
 2.1. The list of **applicable fields** can be found on the links below:
 
 - **Ad Insights Request**: [all fields](https://developers.facebook.com/docs/marketing-api/insights/parameters/v7.0)
-- **Ad Management Request**: [Account-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-account), [Campaign-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group), [Adset-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign), [Ad-level fields](https://developers.facebook.com/docs/marketing-api/reference/adgroup), [Creative-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)
+- **Ad Management Request**: [Account-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-account), [Campaign-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group), [Adset-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign), [Ad-level fields](https://developers.facebook.com/docs/marketing-api/reference/adgroup), [Creative-level fields](https://developers.facebook.com/docs/marketing-api/reference/ad-creative), [Pixel-level fields](https://developers.facebook.com/docs/marketing-api/reference/ads-pixel/)
 
 2.2. If you want to select **a nested field value**,  simply indicate the path to this value within the request field.
 
