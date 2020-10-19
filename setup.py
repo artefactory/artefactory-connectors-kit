@@ -19,8 +19,6 @@
 
 from setuptools import setup, find_packages
 
-with open('README.md') as readme_file:
-    readme = readme_file.read()
 
 with open('requirements.txt') as requirements_file:
     requirements = [el.strip() for el in requirements_file.readlines()]
@@ -47,9 +45,7 @@ setup(
         ],
     },
     install_requires=requirements,
-    #  long_description=readme + '\n\n' + history,
     include_package_data=True,
-    # keywords='nautilus_connectors',
     name='nck',
     packages=find_packages(),
     setup_requires=setup_requirements,

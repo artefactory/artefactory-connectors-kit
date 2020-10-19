@@ -59,7 +59,6 @@ def run(processors, state_service_name, state_service_host, state_service_port, 
         raise click.BadParameter("You must specify at least one writer")
 
     reader = _readers[0]
-
     # A stream should represent a full file!
     for stream in reader.read():
         for writer in _writers:

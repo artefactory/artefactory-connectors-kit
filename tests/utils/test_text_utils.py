@@ -17,292 +17,209 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging
 from unittest import TestCase
-from datetime import date
-from unittest.mock import patch
 
-from parameterized import parameterized
-
-from nck.utils.text import get_generator_dict_from_str_csv, get_generator_dict_from_str_tsv, parse_decoded_line
+from nck.utils.text import parse_decoded_line, get_report_generator_from_flat_file
 
 
 class TestTextUtilsMethod(TestCase):
-    def test_multiple_encodings(self):
-        test_string_to_encode = (
-            "BR,test_partner,123,Active,test_advertiser,123,"
-            "0,,test_io,123,Active,,test_line_item"
-            ',123,0,,"",0.00,41'
-        )
+    def test_get_report_generator__multiple_encodings(self):
+        test_string_to_encode = "2020-01-01,France,1234,10"
         lines = [
-            (
-                b"Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
-                b" ID,Advertiser Status,Advertiser Integration Code,Insertion"
-                b" Order,Insertion Order ID,Insertion Order Status,Insertion"
-                b" Order Integration Code,Line Item,Line Item ID,Line Item"
-                b" Status,Line Item Integration Code,Targeted Data Providers,"
-                b"Cookie Reach: Average Impression Frequency,Cookie Reach: "
-                b"Impression Reach"
-            ),
+            b"Date,Country,AdvertiserId,Impressions",
             test_string_to_encode.encode("utf-8"),
             test_string_to_encode.encode("ascii"),
             test_string_to_encode.encode("windows-1252"),
             test_string_to_encode.encode("latin_1"),
         ]
-        line_iterator_multiple_encodings = (line for line in lines)
-        expected_dict = {
-            "Country": "BR",
-            "Partner": "test_partner",
-            "Partner ID": "123",
-            "Partner Status": "Active",
-            "Advertiser": "test_advertiser",
-            "Advertiser ID": "123",
-            "Advertiser Status": "0",
-            "Advertiser Integration Code": "",
-            "Insertion Order": "test_io",
-            "Insertion Order ID": "123",
-            "Insertion Order Status": "Active",
-            "Insertion Order Integration Code": "",
-            "Line Item": "test_line_item",
-            "Line Item ID": "123",
-            "Line Item Status": "0",
-            "Line Item Integration Code": "",
-            "Targeted Data Providers": "",
-            "Cookie Reach: Average Impression Frequency": "0.00",
-            "Cookie Reach: Impression Reach": "41",
+        line_iterator = iter(lines)
+        expected = {
+            "Date": "2020-01-01",
+            "Country": "France",
+            "AdvertiserId": "1234",
+            "Impressions": "10",
         }
-        for yielded_dict in get_generator_dict_from_str_csv(line_iterator_multiple_encodings):
-            self.assertDictEqual(yielded_dict, expected_dict)
+        for output in get_report_generator_from_flat_file(line_iterator):
+            self.assertDictEqual(output, expected)
 
-    def test_blank_line(self):
+    def test_get_report_generator__invalid_byte(self):
         lines = [
-            (
-                b"Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
-                b" ID,Advertiser Status,Advertiser Integration Code,Insertion"
-                b" Order,Insertion Order ID,Insertion Order Status,Insertion"
-                b" Order Integration Code,Line Item,Line Item ID,Line Item"
-                b" Status,Line Item Integration Code,Targeted Data Providers,"
-                b"Cookie Reach: Average Impression Frequency,Cookie Reach: "
-                b"Impression Reach"
-            ),
-            b"(Not desired last line) Total line: ,,,,,,,,,,100,100,100,100,100",
-            "",
+            b"Date,Country,AdvertiserId,Impressions",
+            b'2020-01-01,"   \x91\xea\xd0$",1234,10',
         ]
-        line_iterator_with_blank_line = (line for line in lines)
-        self.assertTrue(get_generator_dict_from_str_csv(line_iterator_with_blank_line))
-
-        lines.insert(
-            1,
-            (
-                b"BR,test_partner,123,Active,test_advertiser,123,"
-                b"0,,test_io,123,Active,,test_line_item"
-                b',123,0,,"",0.00,41'
-            ),
-        )
-        expected_dict = {
-            "Country": "BR",
-            "Partner": "test_partner",
-            "Partner ID": "123",
-            "Partner Status": "Active",
-            "Advertiser": "test_advertiser",
-            "Advertiser ID": "123",
-            "Advertiser Status": "0",
-            "Advertiser Integration Code": "",
-            "Insertion Order": "test_io",
-            "Insertion Order ID": "123",
-            "Insertion Order Status": "Active",
-            "Insertion Order Integration Code": "",
-            "Line Item": "test_line_item",
-            "Line Item ID": "123",
-            "Line Item Status": "0",
-            "Line Item Integration Code": "",
-            "Targeted Data Providers": "",
-            "Cookie Reach: Average Impression Frequency": "0.00",
-            "Cookie Reach: Impression Reach": "41",
+        line_iterator = iter(lines)
+        expected = {
+            "Date": "2020-01-01",
+            "Country": "   $",
+            "AdvertiserId": "1234",
+            "Impressions": "10",
         }
-        line_iterator_with_blank_line = (line for line in lines)
-        for dic in get_generator_dict_from_str_csv(line_iterator_with_blank_line):
-            self.assertDictEqual(dic, expected_dict)
-
-        lines.append("This is something that should not be here.")
-        line_iterator_with_blank_line = (line for line in lines)
-        test_result = get_generator_dict_from_str_csv(line_iterator_with_blank_line)
-        self.assertEqual(len(list(test_result)), 1)
-        for dic in test_result:
-            self.assertEqual(dic, expected_dict)
-
-    def test_invalid_byte(self):
-        lines = [
-            (
-                b"Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
-                b" ID,Advertiser Status,Advertiser Integration Code,Insertion"
-                b" Order,Insertion Order ID,Insertion Order Status,Insertion"
-                b" Order Integration Code,Line Item,Line Item ID,Line Item"
-                b" Status,Line Item Integration Code,Targeted Data Providers,"
-                b"Cookie Reach: Average Impression Frequency,Cookie Reach: "
-                b"Impression Reach"
-            ),
-            (
-                b"BR,test_partner,123,Active,test_advertiser,123,"
-                b"0,,test_io,123,Active,,test_line_item"
-                b',123,0,,"   \x91\xea\xd0$",0.00,41'
-            ),
-        ]
-        line_iterator_invalid_byte = (line for line in lines)
-        expected_dict = {
-            "Country": "BR",
-            "Partner": "test_partner",
-            "Partner ID": "123",
-            "Partner Status": "Active",
-            "Advertiser": "test_advertiser",
-            "Advertiser ID": "123",
-            "Advertiser Status": "0",
-            "Advertiser Integration Code": "",
-            "Insertion Order": "test_io",
-            "Insertion Order ID": "123",
-            "Insertion Order Status": "Active",
-            "Insertion Order Integration Code": "",
-            "Line Item": "test_line_item",
-            "Line Item ID": "123",
-            "Line Item Status": "0",
-            "Line Item Integration Code": "",
-            "Targeted Data Providers": "   $",
-            "Cookie Reach: Average Impression Frequency": "0.00",
-            "Cookie Reach: Impression Reach": "41",
-        }
-        with self.assertLogs(level=logging.INFO) as cm:
-            for yielded_dict in get_generator_dict_from_str_csv(line_iterator_invalid_byte):
-                self.assertDictEqual(yielded_dict, expected_dict)
+        with self.assertLogs(level=logging.INFO) as log:
+            for output in get_report_generator_from_flat_file(line_iterator):
+                self.assertDictEqual(output, expected)
         self.assertEqual(
-            cm.output,
+            log.output,
             [
-                "WARNING:root:An error has occurred while parsing the file. "
+                "WARNING:root:An error has occurred while parsing the file."
                 "The line could not be decoded in utf-8."
                 "Invalid input that the codec failed on: b'\\x91'"
             ],
         )
 
-    def test_response_not_binary(self):
-        lines = [
-            (
-                "Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
-                " ID,Advertiser Status,Advertiser Integration Code,Insertion"
-                " Order,Insertion Order ID,Insertion Order Status,Insertion"
-                " Order Integration Code,Line Item,Line Item ID,Line Item"
-                " Status,Line Item Integration Code,Targeted Data Providers,"
-                "Cookie Reach: Average Impression Frequency,Cookie Reach: "
-                "Impression Reach"
-            ),
-            (
-                "BR,test_partner,123,Active,test_advertiser,123,"
-                "0,,test_io,123,Active,,test_line_item"
-                ',123,0,,"",0.00,41'
-            ),
-        ]
-        expected_dict = {
-            "Country": "BR",
-            "Partner": "test_partner",
-            "Partner ID": "123",
-            "Partner Status": "Active",
-            "Advertiser": "test_advertiser",
-            "Advertiser ID": "123",
-            "Advertiser Status": "0",
-            "Advertiser Integration Code": "",
-            "Insertion Order": "test_io",
-            "Insertion Order ID": "123",
-            "Insertion Order Status": "Active",
-            "Insertion Order Integration Code": "",
-            "Line Item": "test_line_item",
-            "Line Item ID": "123",
-            "Line Item Status": "0",
-            "Line Item Integration Code": "",
-            "Targeted Data Providers": "",
-            "Cookie Reach: Average Impression Frequency": "0.00",
-            "Cookie Reach: Impression Reach": "41",
+    def test_get_report_generator__no_bytes(self):
+        lines = ["Date,Country,AdvertiserId,Impressions", "2020-01-01,France,1234,10"]
+        line_iterator = iter(lines)
+        expected = {
+            "Date": "2020-01-01",
+            "Country": "France",
+            "AdvertiserId": "1234",
+            "Impressions": "10",
         }
-        line_iterator_with_blank_line = (line for line in lines)
-        for dic in get_generator_dict_from_str_csv(line_iterator_with_blank_line):
-            self.assertEqual(dic, expected_dict)
+        for output in get_report_generator_from_flat_file(line_iterator):
+            self.assertDictEqual(output, expected)
 
-    def test_line_parsing(self):
-        input_lines = ['abc, 1, 0.0, 4, "a,b,c", abc', '"abc", 1, 0.0, 4, "a,b,c", abc', "abc, 1, 0.0, 4, abc, abc"]
-        expected_outputs = [
+    def test_parse_decoded_line(self):
+        lines = [
+            'abc, 1, 0.0, 4, "a,b,c", abc',
+            '"abc", 1, 0.0, 4, "a,b,c", abc',
+            "abc, 1, 0.0, 4, abc, abc",
+        ]
+        expected_lines = [
             ["abc", "1", "0.0", "4", "a,b,c", "abc"],
             ["abc", "1", "0.0", "4", "a,b,c", "abc"],
             ["abc", "1", "0.0", "4", "abc", "abc"],
         ]
-        for index in range(len(input_lines)):
-            self.assertEqual(parse_decoded_line(input_lines[index]), expected_outputs[index])
 
-    def test_response_not_binary_with_date(self):
+        for line, expected_line in zip(lines, expected_lines):
+            output_line = parse_decoded_line(line)
+            self.assertEqual(output_line, expected_line)
+
+    def test_get_report_generator__add_column(self):
         lines = [
-            (
-                "Country,Partner,Partner ID,Partner Status,Advertiser,Advertiser"
-                " ID,Advertiser Status,Advertiser Integration Code,Insertion"
-                " Order,Insertion Order ID,Insertion Order Status,Insertion"
-                " Order Integration Code,Line Item,Line Item ID,Line Item"
-                " Status,Line Item Integration Code,Targeted Data Providers,"
-                "Cookie Reach: Average Impression Frequency,Cookie Reach: "
-                "Impression Reach"
-            ),
-            (
-                "BR,test_partner,123,Active,test_advertiser,123,"
-                "0,,test_io,123,Active,,test_line_item"
-                ',123,0,,"",0.00,41'
-            ),
+            b"Date,AdvertiserId,Reach",
+            b"2020-01-01,1234,1000",
+            b"2020-01-01,5678,2000",
         ]
-        expected_dict = {
-            "Country": "BR",
-            "Partner": "test_partner",
-            "Partner ID": "123",
-            "Partner Status": "Active",
-            "Advertiser": "test_advertiser",
-            "Advertiser ID": "123",
-            "Advertiser Status": "0",
-            "Advertiser Integration Code": "",
-            "Insertion Order": "test_io",
-            "Insertion Order ID": "123",
-            "Insertion Order Status": "Active",
-            "Insertion Order Integration Code": "",
-            "Line Item": "test_line_item",
-            "Line Item ID": "123",
-            "Line Item Status": "0",
-            "Line Item Integration Code": "",
-            "Targeted Data Providers": "",
-            "Cookie Reach: Average Impression Frequency": "0.00",
-            "Cookie Reach: Impression Reach": "41",
-            "date_start": "2020/01/01",
-            "date_stop": "2020/01/31",
-        }
-        line_iterator_with_blank_line = (line for line in lines)
-        with patch("nck.utils.date_handler.date") as mock_date:
-            mock_date.today.return_value = date(2020, 2, 1)
-            mock_date.side_effect = lambda *args, **kw: date(*args, **kw)
-            for dic in get_generator_dict_from_str_csv(
-                line_iterator_with_blank_line, add_date=True, day_range="PREVIOUS_MONTH", date_format="%Y/%m/%d"
-            ):
-                self.assertEqual(dic, expected_dict)
+        expected = [
+            {
+                "Date": "2020-01-01",
+                "AdvertiserId": "1234",
+                "Reach": "1000",
+                "Campaign": "XMas Sale",
+                "Country": "France",
+            },
+            {
+                "Date": "2020-01-01",
+                "AdvertiserId": "5678",
+                "Reach": "2000",
+                "Campaign": "XMas Sale",
+                "Country": "France",
+            },
+        ]
+        line_iterator = iter(lines)
+        output = get_report_generator_from_flat_file(
+            line_iterator,
+            add_column=True,
+            column_dict={"Campaign": "XMas Sale", "Country": "France"},
+        )
+        for output_record, expected_record in zip(output, expected):
+            self.assertEqual(output_record, expected_record)
 
-    def test_csv_with_headers_only(self):
-        input_report = (row for row in [b"Just,Headers,in,this,empty,report"])
+    def test_get_report_generator__file_with_headers_only(self):
+        lines = [b"Just,Headers,in,this,empty,report"]
+        line_iterator = iter(lines)
         self.assertFalse(
-            next(get_generator_dict_from_str_csv(input_report, skip_last_row=False), False), "Data is not empty"
+            next(get_report_generator_from_flat_file(line_iterator), False),
+            "Data is not empty",
         )
 
-    @parameterized.expand(
-        [
-            (
-                True,
-                [
-                    b'"Perf report (2017-03-01 - 2020-03-25)"',
-                    b"AdFormat\tAdGroupId\tAdGroupName",
-                    b"IMAGE\t123\tAdGroup",
-                    b"IMAGE\t123\tAdGroup",
-                ],
-            ),
-            (False, [b"AdFormat\tAdGroupId\tAdGroupName", b"IMAGE\t123\tAdGroup", b"IMAGE\t123\tAdGroup"]),
+    def test_get_report_generator__skip_when_no_match_with_headers_length(self):
+        lines = [
+            b"Date,AdvertiserId,Impressions",
+            b"2020-01-01,1234,10",
+            b"2020-01-01,5678,20",
+            b"Copyrigth: report downloaded from Artefact.com",
         ]
-    )
-    def test_parse_tsv_with_first_row_skipped(self, skip_first_row, lines):
-        expected_dict = {"AdFormat": "IMAGE", "AdGroupId": "123", "AdGroupName": "AdGroup"}
-        line_iterator = (line for line in lines)
-        for dic in get_generator_dict_from_str_tsv(line_iterator, skip_first_row=skip_first_row):
-            self.assertEqual(dic, expected_dict)
+        line_iterator = iter(lines)
+        output = get_report_generator_from_flat_file(
+            line_iterator, skip_n_first=0, skip_n_last=0
+        )
+        expected = [
+            {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
+            {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
+        ]
+        for output_record, expected_record in zip(output, expected):
+            self.assertEqual(output_record, expected_record)
+
+    def test_get_report_generator__skip_blank(self):
+        lines = [
+            b"Date,AdvertiserId,Impressions",
+            b"2020-01-01,1234,10",
+            b"",
+            b"2020-01-01,5678,20",
+        ]
+        line_iterator = iter(lines)
+        output = get_report_generator_from_flat_file(
+            line_iterator, skip_n_first=0, skip_n_last=0
+        )
+        expected = [
+            {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
+            {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
+        ]
+        for output_record, expected_record in zip(output, expected):
+            self.assertEqual(output_record, expected_record)
+
+    def test_get_report_generator__skip_first_and_last(self):
+        lines = [
+            b"(Not desired first line)",
+            b"(Not desired second line)",
+            b"Date,AdvertiserId,Impressions",
+            b"2020-01-01,1234,10",
+            b"2020-01-01,5678,20",
+            b"(Not desired last line)",
+        ]
+        line_iterator = iter(lines)
+        output = get_report_generator_from_flat_file(
+            line_iterator, skip_n_first=2, skip_n_last=1
+        )
+        expected = [
+            {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
+            {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
+        ]
+        for output_record, expected_record in zip(output, expected):
+            self.assertEqual(output_record, expected_record)
+
+    def test_get_report_generator__skip_last_with_blank_at_end_of_file(self):
+        lines = [
+            b"Date,AdvertiserId,Impressions",
+            b"2020-01-01,1234,10",
+            b"2020-01-01,5678,20",
+            b"(Not desired last line)",
+            b"",
+        ]
+        line_iterator = iter(lines)
+        output = get_report_generator_from_flat_file(
+            line_iterator, skip_n_first=0, skip_n_last=1
+        )
+        expected = [
+            {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
+            {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
+        ]
+        for output_record, expected_record in zip(output, expected):
+            self.assertEqual(output_record, expected_record)
+
+    def test_get_report_generator__skip_no_first_nor_last(self):
+        lines = [
+            b"Date,AdvertiserId,Impressions",
+            b"2020-01-01,1234,10",
+            b"2020-01-01,5678,20",
+        ]
+        line_iterator = iter(lines)
+        output = get_report_generator_from_flat_file(
+            line_iterator, skip_n_first=0, skip_n_last=0
+        )
+        expected = [
+            {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
+            {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
+        ]
+        for output_record, expected_record in zip(output, expected):
+            self.assertEqual(output_record, expected_record)

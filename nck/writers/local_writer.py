@@ -36,7 +36,7 @@ class LocalWriter(Writer):
 
     def write(self, stream):
         """
-            Write file to console, mainly used for debugging
+            Write file to disk at location given as parameter.
         """
 
         path = os.path.join(self._local_directory, stream.name)

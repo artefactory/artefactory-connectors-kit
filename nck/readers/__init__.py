@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from nck.readers.dv360_reader import dv360
 from nck.readers.reader import Reader
 
 from nck.readers.mysql_reader import mysql
@@ -26,6 +27,8 @@ from nck.readers.oracle_reader import oracle
 from nck.readers.gsheets_reader import gsheets
 from nck.readers.salesforce_reader import salesforce
 from nck.readers.facebook_reader import facebook
+from nck.readers.ttd_reader import the_trade_desk
+from nck.readers.twitter_reader import twitter
 from nck.readers.dbm_reader import dbm
 from nck.readers.dcm_reader import dcm
 from nck.readers.ga_reader import ga
@@ -35,6 +38,7 @@ from nck.readers.adobe_reader_2_0 import adobe_2_0
 from nck.readers.radarly_reader import radarly
 from nck.readers.yandex_campaign_reader import yandex_campaigns
 from nck.readers.yandex_statistics_reader import yandex_statistics
+from nck.readers.gs_reader import google_sheets
 
 readers = [
     mysql,
@@ -45,7 +49,10 @@ readers = [
     s3,
     sa360_reader,
     facebook,
+    the_trade_desk,
+    twitter,
     oracle,
+    dv360,
     dbm,
     dcm,
     ga,
@@ -54,7 +61,8 @@ readers = [
     adobe_2_0,
     radarly,
     yandex_campaigns,
-    yandex_statistics
+    yandex_statistics,
+    google_sheets
 ]
 
 
