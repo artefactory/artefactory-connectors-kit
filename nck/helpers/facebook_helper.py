@@ -73,7 +73,19 @@ def format_field_path(field_path):
         return "".join([field_path[0]] + [f"[{element}]" for element in field_path[1:]])
 
 
-def check_if_obj_meets_action_breakdown_filters(obj, filters):
+def obj_follows_action_breakdown_pattern(obj):
+    """
+    Checks wether obj is a list of dictionnaries, in which
+    each dictionnary has at least one key starting with 'action_'
+    """
+    return (
+        isinstance(obj, list)
+        and all(isinstance(elt, dict) for elt in obj)
+        and all(any(key.startswith("action_") for key in elt.keys()) for elt in obj)
+    )
+
+
+def obj_meets_action_breakdown_filters(obj, filters):
     """
     Checks if a nested action breakdown object
     meets the conditions defined by action breakdown filters.
@@ -120,7 +132,7 @@ def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filter
     action_breakdown_values = {}
     for obj in resp_obj:
         if filters != {}:
-            if check_if_obj_meets_action_breakdown_filters(obj, filters):
+            if obj_meets_action_breakdown_filters(obj, filters):
                 action_breakdown_values.update(
                     get_action_breakdown_value(obj, visited, action_breakdowns)
                 )
@@ -129,6 +141,14 @@ def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filter
                 get_action_breakdown_value(obj, visited, action_breakdowns)
             )
     return action_breakdown_values
+
+
+def get_obj_data(obj):
+    """
+    If obj is a Facebook Object: returns associated data
+    If obj is a standard Python object: returns obj itself
+    """
+    return obj._data if hasattr(obj, "_data") else obj
 
 
 def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
@@ -142,21 +162,11 @@ def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
     visited.append(path_item)
 
     if path_item in resp_obj:
-        current_obj = resp_obj[path_item]
+        current_obj = get_obj_data(resp_obj[path_item])
         if remaining_path_items == 0:
-            if (
-                isinstance(current_obj, list)
-                and all(isinstance(elt, str) for elt in current_obj)
-            ):
-                return {format_field_path(visited): "|".join(map(str, current_obj))}
-            elif (
-                isinstance(current_obj, list)
-                and all(isinstance(elt, dict) for elt in current_obj)
-                and all(any(key.startswith("action_") for key in elt.keys()) for elt in current_obj)
-            ):
+            if obj_follows_action_breakdown_pattern(current_obj):
                 return get_all_action_breakdown_values(current_obj, visited, action_breakdowns)
             else:
-                # For exploration purposes
                 return {format_field_path(visited): str(current_obj)}
         else:
             return get_field_values(current_obj, field_path[1:], action_breakdowns, visited)

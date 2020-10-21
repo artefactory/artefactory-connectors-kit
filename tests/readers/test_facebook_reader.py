@@ -27,6 +27,12 @@ from facebook_business.adobjects.adsinsights import AdsInsights
 from facebook_business.adobjects.ad import Ad
 
 
+def mock_facebook_obj(data):
+    mocked_facebook_obj = mock.MagicMock()
+    mocked_facebook_obj._data = data
+    return mocked_facebook_obj
+
+
 class FacebookReaderTest(TestCase):
 
     DATEFORMAT = "%Y-%m-%d"
@@ -246,18 +252,18 @@ class FacebookReaderTest(TestCase):
             ),
             (
                 "various_field_formats",
-                {"field": ["string_field", "int_field", "float_field", "list_of_strings_field"]},
+                {"field": ["f_string", "f_numeric", "f_python_obj", "f_facebook_obj"]},
                 {
-                    "string_field": "Artefact",
-                    "int_field": 1,
-                    "float_field": 10.95,
-                    "list_of_strings_field": ["STRING_1", "STRING_2"]
+                    "f_string": "Artefact",
+                    "f_numeric": 10.95,
+                    "f_python_obj": [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}],
+                    "f_facebook_obj": mock_facebook_obj({"id": "123456789", "display_name": "my_object_name"})
                 },
                 {
-                    "string_field": "Artefact",
-                    "int_field": "1",
-                    "float_field": "10.95",
-                    "list_of_strings_field": "STRING_1|STRING_2"
+                    "f_string": str("Artefact"),
+                    "f_numeric": str(10.95),
+                    "f_python_obj": str([{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}]),
+                    "f_facebook_obj": str({"id": "123456789", "display_name": "my_object_name"})
                 }
             )
         ]
