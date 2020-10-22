@@ -275,3 +275,29 @@ class FacebookReaderTest(TestCase):
         self.assertEqual(
             next(FacebookReader(**temp_kwargs).format_and_yield(record)), expected
         )
+
+    @parameterized.expand(
+        [
+            (
+                "simple_list_of_dicts",
+                [
+                    {"event": "CLICK_THROUGH", "days": 28},
+                    {"event": "VIEW_THROUGH", "days": 1}
+                ],
+                False
+            ),
+            (
+                "action_breakdown_list_of_dicts",
+                [
+                    {"action_type": "link_click", "action_device": "iphone", "value": "0"},
+                    {"action_type": "post_engagement", "action_device": "iphone", "value": "1"}
+                ],
+                True
+            )
+        ]
+    )
+    def test_obj_follows_action_breakdown_pattern(self, name, obj, expected):
+        from nck.helpers.facebook_helper import obj_follows_action_breakdown_pattern
+
+        output = obj_follows_action_breakdown_pattern(obj)
+        self.assertEqual(output, expected)
