@@ -7,6 +7,7 @@ Each reader role is to read data from external source and transform it into a St
 - Adobe Analytics 1.4
 - Adobe Analytics 2.0
 - Amazon S3
+- Confluence
 - Facebook Marketing
 - Google Ads
 - Google Analytics
@@ -126,6 +127,78 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 ## Amazon S3 Reader
 
 *Not documented yet.*
+
+## Confluence Reader
+
+#### Source API
+
+[Confluence Cloud REST API](https://developer.atlassian.com/cloud/confluence/rest/intro/)
+
+#### Quickstart
+
+The Confluence Reader handles calls to the **Get Content endpoint** of Confluence Cloud REST API.
+
+The following command retrieves the titles, space names, tiny links and label names of all pages located under the Atlassian domain <ATLASSIAN_DOMAIN>, filtered on the spacekeys <KEY_1> and <KEY_2>, thanks to your <USER_LOGIN> and <API_TOKEN>.
+
+```
+python nck/entrypoint.py read_confluence --confluence-user-login <USER_LOGIN> --confluence-api-token <API_TOKEN> --confluence-atlassian-domain <ATLASSIAN_DOMAIN> --confluence-content-type "page" --confluence-field "title" --confluence-field "space.name" --confluence-field "tiny_link" --confluence-field "label_names" --confluence-spacekey <KEY_1> --confluence-spacekey <KEY_2> write_console
+```
+
+Didn't work? See [troubleshooting](#troubleshooting) section.
+
+#### Parameters
+
+|CLI option|Documentation|
+|:--|:--|
+|`--confluence-user-login`|User login associated with your Atlassian account|
+|`--confluence-api-token`|API token associated with your Atlassian account (can be generated on [this page](https://id.atlassian.com/manage-profile/security/api-tokens))|
+|`--confluence-atlassian-domain`|Atlassian domain under which the content to request is located|
+|`--confluence-content-type`|Type of content on which the report should be filtered. *Possible values: page (default), blog_post.*|
+|`--confluence-spacekey`|(Optional) Space keys on which the report should be filtered|
+|`--confluence-field`|Fields that should be included in the report (path.to.field.value or custom_field)|
+|`--confluence-normalize-stream`|If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by '_' in field names, which is useful for BigQuery). Else (*default*), yields a standard JSONStream.|
+
+Please visit the following two pages for a better understanding of the [Authentification method](https://developer.atlassian.com/cloud/confluence/basic-auth-for-rest-apis/), and of the parameters used in the [Get Content endpoint](https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get).
+
+#### Additional information
+
+The Confluence Reader supports two types of fields:
+
+ ***Standard fields*** - You specify the path to the value that you you wish to retrieve in the raw API response (each path item being separated by dots).
+
+*Example* - The standard field `space.name` will retrieve the value `"How To Guides"` for the first item, and the value  `"Clients"` for the second item.
+
+```
+RAW_API_RESPONSE = {"results":
+	[
+		{
+			"title": "Making API requests with NCK",
+			"space": {"name": "How To Guides"},
+			"metadata": {"labels": {"results": [{"name": "nck"}, {"name": "api"}]}}
+		},
+		{
+			"title": "Samsung - Precision Marketing",
+			"space": {"name": "Clients"},
+			"metadata": {"labels": {"results": [{"name": "pm"}]}}
+		}
+	]
+}
+```
+
+***Custom fields*** - If the format of the raw API response does not match your needs, you can define a custom field. Available custom fields are described in the CUSTOM_FIELDS variable of the `nck.helpers.confluence_helper` module.
+
+*Example* - The custom field `label_names` transforms the value of the source field `metadata.labels.results` using the function `_get_key_values_from_list_of_dct`. In other words, using the first record of the previous example, it will format `[{"name": "nck"}, {"name": "api"}]` into `"nck|api"`.
+
+```
+CUSTOM_FIELDS = {
+	"label_names": {
+	"source_field": "metadata.labels.results",
+	"format_function": _get_key_values_from_list_of_dct,
+	"format_function_kwargs": {"key": "name"},
+	"formatted_object_type": str
+	}
+}
+```
 
 ## Facebook Marketing Reader
 
