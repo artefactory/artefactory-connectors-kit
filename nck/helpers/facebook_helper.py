@@ -85,6 +85,16 @@ def obj_follows_action_breakdown_pattern(obj):
     )
 
 
+def obj_is_list_of_single_values(obj):
+    """
+    Checks wether obj is a list of strings, integers or floats.
+    """
+    return (
+        isinstance(obj, list)
+        and all(isinstance(elt, (str, int, float)) for elt in obj)
+    )
+
+
 def obj_meets_action_breakdown_filters(obj, filters):
     """
     Checks if a nested action breakdown object
@@ -166,6 +176,8 @@ def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
         if remaining_path_items == 0:
             if obj_follows_action_breakdown_pattern(current_obj):
                 return get_all_action_breakdown_values(current_obj, visited, action_breakdowns)
+            elif obj_is_list_of_single_values(current_obj):
+                return {format_field_path(visited): ", ".join(map(str, current_obj))}
             else:
                 return {format_field_path(visited): str(current_obj)}
         else:

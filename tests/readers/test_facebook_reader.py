@@ -252,18 +252,20 @@ class FacebookReaderTest(TestCase):
             ),
             (
                 "various_field_formats",
-                {"field": ["f_string", "f_numeric", "f_python_obj", "f_facebook_obj"]},
+                {"field": ["f_string", "f_numeric", "f_list_of_single_values", "f_python_obj", "f_facebook_obj"]},
                 {
-                    "f_string": "Artefact",
+                    "f_string": "CAMPAIGN_PAUSED",
                     "f_numeric": 10.95,
-                    "f_python_obj": [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}],
-                    "f_facebook_obj": mock_facebook_obj({"id": "123456789", "display_name": "my_object_name"})
+                    "f_list_of_single_values": ["CAMPAIGN_PAUSED", 1, 10.95],
+                    "f_python_obj": [{'event': 'CLICK_THROUGH', 'days': 28}, {'event': 'VIEW_THROUGH', 'days': 1}],
+                    "f_facebook_obj": mock_facebook_obj({'id': '123456789', 'display_name': 'my_object_name'})
                 },
                 {
-                    "f_string": str("Artefact"),
-                    "f_numeric": str(10.95),
-                    "f_python_obj": str([{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}]),
-                    "f_facebook_obj": str({"id": "123456789", "display_name": "my_object_name"})
+                    "f_string": "CAMPAIGN_PAUSED",
+                    "f_numeric": "10.95",
+                    "f_list_of_single_values": "CAMPAIGN_PAUSED, 1, 10.95",
+                    "f_python_obj": "[{'event': 'CLICK_THROUGH', 'days': 28}, {'event': 'VIEW_THROUGH', 'days': 1}]",
+                    "f_facebook_obj": "{'id': '123456789', 'display_name': 'my_object_name'}"
                 }
             )
         ]
@@ -300,4 +302,24 @@ class FacebookReaderTest(TestCase):
         from nck.helpers.facebook_helper import obj_follows_action_breakdown_pattern
 
         output = obj_follows_action_breakdown_pattern(obj)
+        self.assertEqual(output, expected)
+
+    @parameterized.expand(
+        [
+            (
+                "list_of_dicts",
+                [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}],
+                False
+            ),
+            (
+                "list_of_single_values",
+                ["CAMPAIGN_PAUSED", 1, 10.95],
+                True
+            ),
+        ]
+    )
+    def test_obj_is_list_of_single_values(self, name, obj, expected):
+        from nck.helpers.facebook_helper import obj_is_list_of_single_values
+
+        output = obj_is_list_of_single_values(obj)
         self.assertEqual(output, expected)
