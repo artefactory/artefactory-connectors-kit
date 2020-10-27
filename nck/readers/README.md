@@ -614,6 +614,46 @@ To use the nck google_sheets you must first retrieve your credentials. In order 
 Click on "what credentials do I need" and complete the form.
 You will find the credentials you need in the JSON file that will start downloading automatically right after.
 
+### Google DV360
+
+#### Source API
+
+[DV360 API](https://developers.google.com/display-video/api/guides/getting-started/overview)
+
+#### How to obtain credentials
+
+As for DBM, the DV360 API uses OAuth 2.0 for authentication. There is not a single way to generate credentials but one is descrived below:
+
+1. Enable DV360 API in a GCP project
+2. Generate a client id / client secret pair
+3. Log in with the user that can access DV360
+4. Go to the [OAuth 2.0 Playground](https://developers.google.com/oauthplayground/)
+    1. Go to the OAuth 2.0 configuration (the wheel in the upper right corner) and put your client id and client secret
+    2. Select the DV360 API
+    3. Exchange authorization codes for tokens. This is where you may have to log in with the account that can access DV360
+
+You should now have an access token and a refresh token. Save them carefully. 
+
+#### Quickstart
+
+Say you want to get a SDF file for all campaigns of a specific advertiser. You can run:
+
+```bash
+python nck/entrypoint.py read_dv360 --dv360-client-id <CLIENT_ID> --dv360-client-secret <CLIENT_SECRET> --dv360-refresh-token <REFRESH_TOKEN> --dv360-access-token <ACCESS_TOKEN> --dv360-advertiser-id <ADVERTISER_ID> --dv360-filter-type 'FILTER_TYPE_NONE' --dv360-file-type 'FILE_TYPE_CAMPAIGN' write_console
+```
+
+#### Parameters
+
+|CLI option|Documentation|
+|--| -|
+|`--dv360-access-token`|Access token you during the process of getting tokens|
+|`--dv360-refresh-token`|Refresh token you during the process of getting tokens|
+|`--dv360-client-id`|Client ID you generated in the GCP environment|
+|`--dv360-client-secret`|Client secret you generated in the GCP environment|
+|`--dv360-advertiser-id`|One of the advertiser IDs you have access to|
+|`--dv360-request-type`|Request type. Choose among 'sdf_request' and 'creative_request'|
+|`--dv360-file-type`|SDF level|
+|`--dv360-filter-type`|SDF filter. Depends on the level.|
 
 ## Oracle Reader
 
