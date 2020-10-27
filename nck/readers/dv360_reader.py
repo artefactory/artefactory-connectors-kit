@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from nck.streams.json_stream import JSONStream
 import click
 import logging
 import io
@@ -28,7 +29,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from oauth2client import client, GOOGLE_REVOKE_URI
 from tenacity import retry, wait_exponential, stop_after_delay
 
-from nck.helpers.dv360_helper import FILE_NAMES, FILE_TYPES, FILTER_TYPES
+from nck.helpers.dv360_helper import FILE_NAMES, FILE_TYPES, FILTER_TYPES, REQUEST_TYPES
 from nck.utils.exceptions import RetryTimeoutError, SdfOperationError
 from nck.commands.command import processor
 from nck.readers.reader import Reader
@@ -43,8 +44,9 @@ from nck.streams.format_date_stream import FormatDateStream
 @click.option("--dv360-client-id", required=True)
 @click.option("--dv360-client-secret", required=True)
 @click.option("--dv360-advertiser-id", required=True)
-@click.option("--dv360-file-type", type=click.Choice(FILE_TYPES), multiple=True, required=True)
-@click.option("--dv360-filter-type", type=click.Choice(FILTER_TYPES), required=True)
+@click.option("--dv360-request-type", type=click.Choice(REQUEST_TYPES), required=True)
+@click.option("--dv360-file-type", type=click.Choice(FILE_TYPES), multiple=True)
+@click.option("--dv360-filter-type", type=click.Choice(FILTER_TYPES))
 @processor("dbm_access_token", "dbm_refresh_token", "dbm_client_secret")
 def dv360(**kwargs):
     return DV360Reader(**extract_args("dv360_", kwargs))
@@ -63,14 +65,7 @@ class DV360Reader(Reader):
     # if more than one file type where to be provided.
     ARCHIVE_NAME = "sdf"
 
-    def __init__(
-        self,
-        access_token: str,
-        refresh_token: str,
-        client_id: str,
-        client_secret: str,
-        **kwargs
-    ):
+    def __init__(self, access_token: str, refresh_token: str, client_id: str, client_secret: str, **kwargs):
 
         credentials = client.GoogleCredentials(
             access_token,
@@ -80,14 +75,12 @@ class DV360Reader(Reader):
             token_expiry=None,
             token_uri="https://www.googleapis.com/oauth2/v4/token",
             user_agent=None,
-            revoke_uri=GOOGLE_REVOKE_URI
+            revoke_uri=GOOGLE_REVOKE_URI,
         )
         http = credentials.authorize(httplib2.Http())
         credentials.refresh(http)
 
-        self._client = discovery.build(
-            self.API_NAME , self.API_VERSION, http=http, cache_discovery=False
-        )
+        self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
         self.kwargs = kwargs
         self.file_names = self.get_file_names()
@@ -111,9 +104,7 @@ class DV360Reader(Reader):
             Returns:
                 operation (dict): task metadata updated with resource location.
         """
-        logging.info(
-            f"waiting for SDF operation: {operation['name']} to complete running."
-        )
+        logging.info(f"waiting for SDF operation: {operation['name']} to complete running.")
         get_request = self._client.sdfdownloadtasks().operations().get(name=operation["name"])
         operation = get_request.execute()
         if "done" not in operation:
@@ -147,10 +138,10 @@ class DV360Reader(Reader):
         return {
             "parentEntityFilter": {
                 "fileType": self.kwargs.get("file_type"),
-                "filterType": self.kwargs.get("filter_type")
+                "filterType": self.kwargs.get("filter_type"),
             },
             "version": self.SDF_VERSION,
-            "advertiserId": self.kwargs.get("advertiser_id")
+            "advertiserId": self.kwargs.get("advertiser_id"),
         }
 
     def get_sdf_objects(self):
@@ -158,24 +149,42 @@ class DV360Reader(Reader):
         init_operation = self.create_sdf_task(body=body)
         created_operation = self._wait_sdf_download_request(init_operation)
         if "error" in created_operation:
-            raise SdfOperationError("The operation finished in error with code %s: %s" % (
-                  created_operation["error"]["code"],
-                  created_operation["error"]["message"]))
+            raise SdfOperationError(
+                "The operation finished in error with code %s: %s"
+                % (created_operation["error"]["code"], created_operation["error"]["message"])
+            )
         self.download_sdf(created_operation)
         unzip(f"{self.BASE}/{self.ARCHIVE_NAME}.zip", output_path=self.BASE)
 
         # We chain operation if many file_types were to be provided.
-        return chain(
-            *[
-                sdf_to_njson_generator(f"{self.BASE}/{file_name}.csv")
-                for file_name in self.file_names
-            ]
-        )
+        return chain(*[sdf_to_njson_generator(f"{self.BASE}/{file_name}.csv") for file_name in self.file_names])
+
+    def __get_creatives(self):
+        response = self._client.advertisers().creatives().list(advertiserId=self.kwargs.get("advertiser_id")).execute()
+        if len(response.keys()) == 0:  # no data returned
+            return {}
+        else:
+            all_creatives = response["creatives"]
+            while "nextPageToken" in response:
+                token = response["nextPageToken"]
+                logging.info("Query a new page of creatives. Page id: %s", token)
+                response = (
+                    self._client.advertisers()
+                    .creatives()
+                    .list(advertiserId=self.kwargs.get("advertiser_id"), pageToken=token)
+                    .execute()
+                )
+                all_creatives.extend(response["creatives"])
+        yield from all_creatives
 
     def read(self):
-        yield FormatDateStream(
-            "sdf",
-            self.get_sdf_objects(),
-            keys=["Date"],
-            date_format=self.kwargs.get("date_format"),
-        )
+        request_type = self.kwargs.get("request_type")
+        if request_type == "sdf_request":
+            yield FormatDateStream(
+                "sdf",
+                self.get_sdf_objects(),
+                keys=["Date"],
+                date_format=self.kwargs.get("date_format"),
+            )
+        elif request_type == "creative_request":
+            yield JSONStream("advertiser_creatives", self.__get_creatives())

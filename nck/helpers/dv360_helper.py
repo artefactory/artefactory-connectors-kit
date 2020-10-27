@@ -35,3 +35,5 @@ FILTER_TYPES = [
     "FILTER_TYPE_INSERTION_ORDER_ID",
     "FILTER_TYPE_LINE_ITEM_ID",
 ]
+
+REQUEST_TYPES = ["sdf_request", "creative_request"]
