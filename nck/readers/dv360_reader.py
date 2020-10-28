@@ -83,9 +83,9 @@ class DV360Reader(Reader):
         self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
         self.kwargs = kwargs
-        self.file_names = self.get_file_names()
+        self.file_names = self.__get_file_names()
 
-    def get_file_names(self) -> List[str]:
+    def __get_file_names(self) -> List[str]:
         """
         DV360 api creates one file per file_type.
         map file_type with the name of the generated file.
@@ -96,7 +96,7 @@ class DV360Reader(Reader):
         wait=wait_exponential(multiplier=1, min=60, max=3600),
         stop=stop_after_delay(36000),
     )
-    def _wait_sdf_download_request(self, operation):
+    def __wait_sdf_download_request(self, operation):
         """
         Wait for a sdf task to be completed. ie. (file ready for download)
             Args:
@@ -111,7 +111,7 @@ class DV360Reader(Reader):
             raise RetryTimeoutError("The operation has taken more than 10 hours to complete.\n")
         return operation
 
-    def create_sdf_task(self, body):
+    def __create_sdf_task(self, body):
         """
         Create a sdf asynchronous task of type googleapiclient.discovery.Resource
             Args:
@@ -124,7 +124,7 @@ class DV360Reader(Reader):
         logging.info("Operation %s was created." % operation["name"])
         return operation
 
-    def download_sdf(self, operation):
+    def __download_sdf(self, operation):
         request = self._client.media().download(resourceName=operation["response"]["resourceName"])
         request.uri = request.uri.replace("?alt=json", "?alt=media")
         sdf = io.FileIO(f"{self.BASE}/{self.ARCHIVE_NAME}.zip", mode="wb")
@@ -134,7 +134,7 @@ class DV360Reader(Reader):
             status, done = downloader.next_chunk()
             logging.info(f"Download {int(status.progress() * 100)}%.")
 
-    def get_sdf_body(self):
+    def __get_sdf_body(self):
         return {
             "parentEntityFilter": {
                 "fileType": self.kwargs.get("file_type"),
@@ -144,16 +144,16 @@ class DV360Reader(Reader):
             "advertiserId": self.kwargs.get("advertiser_id"),
         }
 
-    def get_sdf_objects(self):
-        body = self.get_sdf_body()
-        init_operation = self.create_sdf_task(body=body)
-        created_operation = self._wait_sdf_download_request(init_operation)
+    def __get_sdf_objects(self):
+        body = self.__get_sdf_body()
+        init_operation = self.__create_sdf_task(body=body)
+        created_operation = self.__wait_sdf_download_request(init_operation)
         if "error" in created_operation:
             raise SdfOperationError(
                 "The operation finished in error with code %s: %s"
                 % (created_operation["error"]["code"], created_operation["error"]["message"])
             )
-        self.download_sdf(created_operation)
+        self.__download_sdf(created_operation)
         unzip(f"{self.BASE}/{self.ARCHIVE_NAME}.zip", output_path=self.BASE)
 
         # We chain operation if many file_types were to be provided.
@@ -182,7 +182,7 @@ class DV360Reader(Reader):
         if request_type == "sdf_request":
             yield FormatDateStream(
                 "sdf",
-                self.get_sdf_objects(),
+                self.__get_sdf_objects(),
                 keys=["Date"],
                 date_format=self.kwargs.get("date_format"),
             )
