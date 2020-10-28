@@ -2,37 +2,93 @@
 
 Each reader role is to read data from external source and transform it into a Stream understable format to be written on GCS and BQ thanks to the corresponding writers.
 
-## List of Readers
-
-- Adobe Analytics 1.4
-- Adobe Analytics 2.0
-- Amazon S3
-- Confluence
-- Facebook Marketing
-- Google Ads
-- Google Analytics
-- Google Cloud Storage
-- Google Campaign Manager
-- Google Display & Video 360
-- Google Search Ads 360
-- Google Search Console
-- Google Sheets
-- Oracle
-- MySQL
-- Radarly
-- SalesForce
-- The Trade Desk
-- Twitter Ads
-- Yandex Campaign
-- Yandex Statistics
-
-## Step to create a new Reader
-
-1. Create python module following naming nomenclature ``` [command]_reader.py ```
-2. Implement `read` method
-3. Create click command with required options
-4. Reference click command into [commands list](./__init__.py)
-5. Update current README.md
+- [NCK Readers](#nck-readers)
+  - [Adobe Analytics Readers](#adobe-analytics-readers)
+      - [How to obtain credentials](#how-to-obtain-credentials)
+    - [Adobe Analytics Reader 1.4](#adobe-analytics-reader-14)
+      - [Source API](#source-api)
+      - [Quickstart](#quickstart)
+      - [Parameters](#parameters)
+      - [Addtional information](#addtional-information)
+    - [Adobe Analytics Reader 2.0](#adobe-analytics-reader-20)
+      - [Source API](#source-api-1)
+      - [Quickstart](#quickstart-1)
+      - [Parameters](#parameters-1)
+      - [Additional information](#additional-information)
+  - [Amazon S3 Reader](#amazon-s3-reader)
+  - [Confluence Reader](#confluence-reader)
+      - [Source API](#source-api-2)
+      - [Quickstart](#quickstart-2)
+      - [Parameters](#parameters-2)
+      - [Additional information](#additional-information-1)
+  - [Facebook Marketing Reader](#facebook-marketing-reader)
+      - [Source API](#source-api-3)
+      - [Quickstart](#quickstart-3)
+      - [Parameters](#parameters-3)
+      - [Additional information](#additional-information-2)
+  - [Google Readers](#google-readers)
+    - [Authentication](#authentication)
+    - [Google Ads Reader](#google-ads-reader)
+      - [Source API](#source-api-4)
+      - [How to obtain credentials](#how-to-obtain-credentials-1)
+      - [Quickstart](#quickstart-4)
+      - [Parameters](#parameters-4)
+    - [Google Analytics Reader](#google-analytics-reader)
+      - [Source API](#source-api-5)
+      - [Quickstart](#quickstart-5)
+      - [Parameters](#parameters-5)
+    - [Google Cloud Storage Reader](#google-cloud-storage-reader)
+    - [Google Campaign Manager Reader](#google-campaign-manager-reader)
+      - [Source API](#source-api-6)
+      - [Quickstart](#quickstart-6)
+        - [Parameters](#parameters-6)
+    - [Google DoubleClick Manager Reader (DBM)](#google-doubleclick-manager-reader-dbm)
+      - [Source API](#source-api-7)
+      - [Quickstart](#quickstart-7)
+      - [Parameters](#parameters-7)
+    - [Google DV360](#google-dv360)
+      - [Source API](#source-api-8)
+      - [How to obtain credentials](#how-to-obtain-credentials-2)
+      - [Quickstart](#quickstart-8)
+      - [Parameters](#parameters-8)
+    - [Google Search Console Reader](#google-search-console-reader)
+      - [Source API](#source-api-9)
+      - [How to obtain credentials](#how-to-obtain-credentials-3)
+      - [Quickstart](#quickstart-9)
+      - [Parameters](#parameters-9)
+    - [Google Search Ads 360 Reader](#google-search-ads-360-reader)
+      - [Source API](#source-api-10)
+      - [How to obtain credentials](#how-to-obtain-credentials-4)
+      - [Quickstart](#quickstart-10)
+      - [Parameters](#parameters-10)
+    - [Google Sheets Reader](#google-sheets-reader)
+      - [Source API](#source-api-11)
+      - [Quickstart](#quickstart-11)
+      - [Parameters](#parameters-11)
+      - [How to obtain credentials](#how-to-obtain-credentials-5)
+  - [Oracle Reader](#oracle-reader)
+  - [MySQL Reader](#mysql-reader)
+  - [Radarly Reader](#radarly-reader)
+  - [Salesforce Reader](#salesforce-reader)
+  - [The Trade Desk Reader](#the-trade-desk-reader)
+      - [How to obtain credentials](#how-to-obtain-credentials-6)
+      - [Quickstart](#quickstart-12)
+      - [Parameters](#parameters-12)
+  - [Twitter Ads Reader](#twitter-ads-reader)
+      - [Source API](#source-api-12)
+      - [How to obtain credentials](#how-to-obtain-credentials-7)
+      - [Quickstart](#quickstart-13)
+      - [Parameters](#parameters-13)
+  - [Yandex Readers](#yandex-readers)
+      - [Source API](#source-api-13)
+      - [How to obtain credentials](#how-to-obtain-credentials-8)
+    - [Yandex Campaign Reader](#yandex-campaign-reader)
+      - [Quickstart](#quickstart-14)
+      - [Parameters](#parameters-14)
+    - [Yandex Statistics Reader](#yandex-statistics-reader)
+      - [Quickstart](#quickstart-15)
+      - [Parameters](#parameters-15)
+  - [Troubleshooting](#troubleshooting)
 
 ## Adobe Analytics Readers
 
@@ -493,6 +549,47 @@ Didn't work? See [troubleshooting](#troubleshooting) section.
 |`--dbm-start-date`|Start date of the period to request (format: YYYY-MM-DD)|
 |`--dbm-end-date`|End date of the period to request (format: YYYY-MM-DD)|
 
+### Google DV360
+
+#### Source API
+
+[DV360 API](https://developers.google.com/display-video/api/guides/getting-started/overview)
+
+#### How to obtain credentials
+
+As for DBM, the DV360 API uses OAuth 2.0 for authentication. There is not a single way to generate credentials but one is descrived below:
+
+1. Enable DV360 API in a GCP project
+2. Generate a client id / client secret pair
+3. Log in with the user that can access DV360
+4. Go to the [OAuth 2.0 Playground](https://developers.google.com/oauthplayground/)
+    1. Go to the OAuth 2.0 configuration (the wheel in the upper right corner) and put your client id and client secret
+    2. Select the DV360 API
+    3. Exchange authorization codes for tokens. This is where you may have to log in with the account that can access DV360
+
+You should now have an access token and a refresh token. Save them carefully. 
+
+#### Quickstart
+
+Say you want to get a SDF file for all campaigns of a specific advertiser. You can run:
+
+```bash
+python nck/entrypoint.py read_dv360 --dv360-client-id <CLIENT_ID> --dv360-client-secret <CLIENT_SECRET> --dv360-refresh-token <REFRESH_TOKEN> --dv360-access-token <ACCESS_TOKEN> --dv360-advertiser-id <ADVERTISER_ID> --dv360-filter-type 'FILTER_TYPE_NONE' --dv360-file-type 'FILE_TYPE_CAMPAIGN' write_console
+```
+
+#### Parameters
+
+|CLI option|Documentation|
+|--| -|
+|`--dv360-access-token`|Access token you during the process of getting tokens|
+|`--dv360-refresh-token`|Refresh token you during the process of getting tokens|
+|`--dv360-client-id`|Client ID you generated in the GCP environment|
+|`--dv360-client-secret`|Client secret you generated in the GCP environment|
+|`--dv360-advertiser-id`|One of the advertiser IDs you have access to|
+|`--dv360-request-type`|Request type. Choose among 'sdf_request' and 'creative_request'|
+|`--dv360-file-type`|SDF level|
+|`--dv360-filter-type`|SDF filter. Depends on the level.|
+
 ### Google Search Console Reader
 
 #### Source API
@@ -614,7 +711,6 @@ To use the nck google_sheets you must first retrieve your credentials. In order 
 
 Click on "what credentials do I need" and complete the form.
 You will find the credentials you need in the JSON file that will start downloading automatically right after.
-
 
 ## Oracle Reader
 
