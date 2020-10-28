@@ -38,6 +38,14 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 
 People *love* thorough bug reports. I'm not even kidding.
 
+## Step to create a new Reader
+
+1. Create python module following naming nomenclature ``` [command]_reader.py ```
+2. Implement `read` method
+3. Create click command with required options
+4. Reference click command into [commands list](./__init__.py)
+5. Update current README.md
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under its GNU LESSER GENERAL PUBLIC LICENSE.
