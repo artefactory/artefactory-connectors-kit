@@ -22,7 +22,7 @@ from time import sleep
 
 from facebook_business.adobjects.adsinsights import AdsInsights
 
-FACEBOOK_OBJECTS = ["creative", "ad", "adset", "campaign", "account"]
+FACEBOOK_OBJECTS = ["pixel", "creative", "ad", "adset", "campaign", "account"]
 
 DATE_PRESETS = [
     v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")
@@ -73,7 +73,29 @@ def format_field_path(field_path):
         return "".join([field_path[0]] + [f"[{element}]" for element in field_path[1:]])
 
 
-def check_if_obj_meets_action_breakdown_filters(obj, filters):
+def obj_follows_action_breakdown_pattern(obj):
+    """
+    Checks wether obj is a list of dictionnaries, in which
+    each dictionnary has at least one key starting with 'action_'
+    """
+    return (
+        isinstance(obj, list)
+        and all(isinstance(elt, dict) for elt in obj)
+        and all(any(key.startswith("action_") for key in elt.keys()) for elt in obj)
+    )
+
+
+def obj_is_list_of_single_values(obj):
+    """
+    Checks wether obj is a list of strings, integers or floats.
+    """
+    return (
+        isinstance(obj, list)
+        and all(isinstance(elt, (str, int, float)) for elt in obj)
+    )
+
+
+def obj_meets_action_breakdown_filters(obj, filters):
     """
     Checks if a nested action breakdown object
     meets the conditions defined by action breakdown filters.
@@ -120,7 +142,7 @@ def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filter
     action_breakdown_values = {}
     for obj in resp_obj:
         if filters != {}:
-            if check_if_obj_meets_action_breakdown_filters(obj, filters):
+            if obj_meets_action_breakdown_filters(obj, filters):
                 action_breakdown_values.update(
                     get_action_breakdown_value(obj, visited, action_breakdowns)
                 )
@@ -129,6 +151,14 @@ def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filter
                 get_action_breakdown_value(obj, visited, action_breakdowns)
             )
     return action_breakdown_values
+
+
+def get_obj_data(obj):
+    """
+    If obj is a Facebook Object: returns associated data
+    If obj is a standard Python object: returns obj itself
+    """
+    return obj._data if hasattr(obj, "_data") else obj
 
 
 def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
@@ -142,23 +172,20 @@ def get_field_values(resp_obj, field_path, action_breakdowns, visited=[]):
     visited.append(path_item)
 
     if path_item in resp_obj:
+        current_obj = get_obj_data(resp_obj[path_item])
         if remaining_path_items == 0:
-            if isinstance(resp_obj[path_item], str):
-                return {format_field_path(visited): resp_obj[path_item]}
-            if isinstance(resp_obj[path_item], list):
-                return get_all_action_breakdown_values(
-                    resp_obj[path_item], visited, action_breakdowns
-                )
+            if obj_follows_action_breakdown_pattern(current_obj):
+                return get_all_action_breakdown_values(current_obj, visited, action_breakdowns)
+            elif obj_is_list_of_single_values(current_obj):
+                return {format_field_path(visited): ", ".join(map(str, current_obj))}
+            else:
+                return {format_field_path(visited): str(current_obj)}
         else:
-            return get_field_values(
-                resp_obj[path_item], field_path[1:], action_breakdowns, visited
-            )
+            return get_field_values(current_obj, field_path[1:], action_breakdowns, visited)
     else:
         if all(":" in f for f in field_path):
             filters = get_action_breakdown_filters(field_path)
-            return get_all_action_breakdown_values(
-                resp_obj, visited[:-1], action_breakdowns, filters
-            )
+            return get_all_action_breakdown_values(resp_obj, visited[:-1], action_breakdowns, filters)
 
 
 def generate_batches(iterable, batch_size):

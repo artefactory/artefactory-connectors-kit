@@ -284,4 +284,4 @@ class TestYandexStatisticsReader(unittest.TestCase):
         )
         with self.assertRaises(click.ClickException) as click_exception:
             reader._add_custom_dates_if_set()
-        self.assertEquals(click_exception.exception.message, error_message_expected)
+        self.assertEqual(click_exception.exception.message, error_message_expected)

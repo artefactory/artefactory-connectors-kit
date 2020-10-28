@@ -48,7 +48,7 @@ class ApiClientHelperTest(unittest.TestCase):
         ("t_e_s_t", "TEST")
     ])
     def test_to_pascal_key(self, key, pascal_key):
-        self.assertEquals(to_pascal_key(key), pascal_key)
+        self.assertEqual(to_pascal_key(key), pascal_key)
 
     def test_unknown_case(self):
         with self.assertLogs() as cm:

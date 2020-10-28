@@ -27,6 +27,12 @@ from facebook_business.adobjects.adsinsights import AdsInsights
 from facebook_business.adobjects.ad import Ad
 
 
+def mock_facebook_obj(data):
+    mocked_facebook_obj = mock.MagicMock()
+    mocked_facebook_obj._data = data
+    return mocked_facebook_obj
+
+
 class FacebookReaderTest(TestCase):
 
     DATEFORMAT = "%Y-%m-%d"
@@ -244,6 +250,24 @@ class FacebookReaderTest(TestCase):
                 {"impressions": "1"},
                 {"impressions": "1"},
             ),
+            (
+                "various_field_formats",
+                {"field": ["f_string", "f_numeric", "f_list_of_single_values", "f_python_obj", "f_facebook_obj"]},
+                {
+                    "f_string": "CAMPAIGN_PAUSED",
+                    "f_numeric": 10.95,
+                    "f_list_of_single_values": ["CAMPAIGN_PAUSED", 1, 10.95],
+                    "f_python_obj": [{'event': 'CLICK_THROUGH', 'days': 28}, {'event': 'VIEW_THROUGH', 'days': 1}],
+                    "f_facebook_obj": mock_facebook_obj({'id': '123456789', 'display_name': 'my_object_name'})
+                },
+                {
+                    "f_string": "CAMPAIGN_PAUSED",
+                    "f_numeric": "10.95",
+                    "f_list_of_single_values": "CAMPAIGN_PAUSED, 1, 10.95",
+                    "f_python_obj": "[{'event': 'CLICK_THROUGH', 'days': 28}, {'event': 'VIEW_THROUGH', 'days': 1}]",
+                    "f_facebook_obj": "{'id': '123456789', 'display_name': 'my_object_name'}"
+                }
+            )
         ]
     )
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
@@ -253,3 +277,49 @@ class FacebookReaderTest(TestCase):
         self.assertEqual(
             next(FacebookReader(**temp_kwargs).format_and_yield(record)), expected
         )
+
+    @parameterized.expand(
+        [
+            (
+                "simple_list_of_dicts",
+                [
+                    {"event": "CLICK_THROUGH", "days": 28},
+                    {"event": "VIEW_THROUGH", "days": 1}
+                ],
+                False
+            ),
+            (
+                "action_breakdown_list_of_dicts",
+                [
+                    {"action_type": "link_click", "action_device": "iphone", "value": "0"},
+                    {"action_type": "post_engagement", "action_device": "iphone", "value": "1"}
+                ],
+                True
+            )
+        ]
+    )
+    def test_obj_follows_action_breakdown_pattern(self, name, obj, expected):
+        from nck.helpers.facebook_helper import obj_follows_action_breakdown_pattern
+
+        output = obj_follows_action_breakdown_pattern(obj)
+        self.assertEqual(output, expected)
+
+    @parameterized.expand(
+        [
+            (
+                "list_of_dicts",
+                [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}],
+                False
+            ),
+            (
+                "list_of_single_values",
+                ["CAMPAIGN_PAUSED", 1, 10.95],
+                True
+            ),
+        ]
+    )
+    def test_obj_is_list_of_single_values(self, name, obj, expected):
+        from nck.helpers.facebook_helper import obj_is_list_of_single_values
+
+        output = obj_is_list_of_single_values(obj)
+        self.assertEqual(output, expected)
