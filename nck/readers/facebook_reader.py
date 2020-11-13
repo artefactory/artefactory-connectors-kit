@@ -22,6 +22,7 @@ import re
 from math import ceil
 from click import ClickException
 from datetime import datetime
+from tenacity import retry, wait_none, wait_exponential, stop_after_delay, stop_after_attempt
 
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
@@ -45,6 +46,7 @@ from facebook_business.adobjects.adset import AdSet
 from facebook_business.adobjects.ad import Ad
 from facebook_business.adobjects.adcreative import AdCreative
 from facebook_business.adobjects.adspixel import AdsPixel
+from facebook_business.adobjects.adreportrun import AdReportRun
 
 DATEFORMAT = "%Y-%m-%d"
 
@@ -328,15 +330,40 @@ class FacebookReader(Reader):
         https://developers.facebook.com/docs/marketing-api/insights
         """
 
-        logging.info(
-            f"Running Facebook Ad Insights query on {self.object_type}_id: {object_id}"
-        )
+        logging.info(f"Running Facebook Ad Insights query on {self.object_type}_id: {object_id}")
 
         # Step 1 - Create Facebook object
         obj = self.create_object(object_id)
-
         # Step 2 - Run Ad Insights query on Facebook object
-        yield from obj.get_insights(fields=fields, params=params)
+        report_job = self._get_report(obj, fields, params)
+
+        yield from report_job.get_result()
+
+    @retry(wait=wait_none(), stop=stop_after_attempt(3))
+    def _get_report(self, obj, fields, params):
+        async_job = obj.get_insights(fields=fields, params=params, is_async=True)
+        self._wait_for_100_percent_completion(async_job)
+        self._wait_for_complete_report(async_job)
+        return async_job
+
+    @retry(wait=wait_exponential(multiplier=60, max=300), stop=stop_after_delay(2400))
+    def _wait_for_100_percent_completion(self, async_job):
+        async_job.api_get()
+        percent_completion = async_job[AdReportRun.Field.async_percent_completion]
+        status = async_job[AdReportRun.Field.async_status]
+        logging.info(f"{status}: {percent_completion}%")
+        if status == "Job Failed":
+            logging.info(status)
+        elif percent_completion < 100:
+            raise Exception(f"{status}: {percent_completion}")
+
+    @retry(wait=wait_exponential(multiplier=10, max=60), stop=stop_after_delay(300))
+    def _wait_for_complete_report(self, async_job):
+        async_job.api_get()
+        status = async_job[AdReportRun.Field.async_status]
+        if status == "Job Running":
+            raise Exception(status)
+        logging.info(status)
 
     def query_ad_management(self, fields, params, object_id):
         """
@@ -403,7 +430,7 @@ class FacebookReader(Reader):
 
     def format_and_yield(self, record):
         """
-        Parse a single record into an {item: value} dictionnary.
+        Parse a single record into an {item: value} dictionary.
         """
         report = {}
 
@@ -421,7 +448,7 @@ class FacebookReader(Reader):
 
     def result_generator(self, data):
         """
-        Parse all records into an {item: value} dictionnary.
+        Parse all records into an {item: value} dictionary.
         """
         for record in data:
             yield from self.format_and_yield(record)
