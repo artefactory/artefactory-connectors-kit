@@ -24,24 +24,26 @@ from nck.commands.command import processor
 
 
 @click.command(name="write_local")
-@click.option("--local-directory", required=True)
+@click.option("--local-directory", "-d", required=True, help="Destination directory")
+@click.option("--file-name", "-n", help="Destination file name")
 @processor()
 def local(**kwargs):
     return LocalWriter(**kwargs)
 
 
 class LocalWriter(Writer):
-    def __init__(self, local_directory):
+    def __init__(self, local_directory, file_name):
         self._local_directory = local_directory
+        self._file_name = file_name
 
     def write(self, stream):
         """
             Write file to disk at location given as parameter.
         """
+        file_name = self._file_name or stream.name
+        path = os.path.join(self._local_directory, file_name)
 
-        path = os.path.join(self._local_directory, stream.name)
-
-        logging.info("Writing stream %s to %s", stream.name, path)
+        logging.info("Writing stream %s to %s", file_name, path)
         file = stream.as_file()
         with open(path, "wb") as h:
             while True:
