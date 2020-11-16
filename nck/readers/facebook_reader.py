@@ -314,7 +314,7 @@ class FacebookReader(Reader):
         self._wait_for_complete_report(async_job)
         return async_job
 
-    @retry(wait=wait_exponential(multiplier=60, max=300), stop=stop_after_delay(2400))
+    @retry(wait=wait_exponential(multiplier=5, max=300), stop=stop_after_delay(2400))
     def _wait_for_100_percent_completion(self, async_job):
         async_job.api_get()
         percent_completion = async_job[AdReportRun.Field.async_percent_completion]
