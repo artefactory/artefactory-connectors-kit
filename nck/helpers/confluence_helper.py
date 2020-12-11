@@ -77,6 +77,7 @@ def _get_client_properties(field_value: str) -> Optional[Dict[str, str]]:
     client_properties_dct = {}
     html_soup = BeautifulSoup(field_value, "lxml")
     DEFAULT_PROPERTIES = [
+        "SALESFORCE ID",
         "CONFIDENTIALITY",
         "ARTICLE STATUS",
         "INDUSTRY",

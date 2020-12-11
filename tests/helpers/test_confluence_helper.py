@@ -12,6 +12,7 @@ HTML_BODY = (
     "<ac:layout-section>"
     "<h1>Case ID card</h1>"
     "<table>"
+    "<tr><th>Salesforce ID</th><td>0061t000003WEJ3AAO</td></tr>"
     "<tr><th>Confidentiality</th><td>GreenPublic</td></tr>"
     "<tr><th>Article status</th><td>YellowIn progress</td></tr>"
     "<tr><th>Industry</th><td>Automotive</td></tr>"
@@ -43,6 +44,7 @@ CONTENT_DCT = {
 }
 
 EXPECTED_CLIENT_PROPERTIES = {
+    "client_property_SALESFORCE ID": "0061t000003WEJ3AAO",
     "client_property_CONFIDENTIALITY": "PUBLIC",
     "client_property_ARTICLE STATUS": "IN PROGRESS",
     "client_property_INDUSTRY": "Automotive",
