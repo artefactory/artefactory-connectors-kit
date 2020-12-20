@@ -1,94 +1,113 @@
 # NCK Readers
 
-Each reader role is to read data from external source and transform it into a Stream understable format to be written on GCS and BQ thanks to the corresponding writers.
+**Readers are reading data from an API source, and transform it into a stream object.**
 
-- [NCK Readers](#nck-readers)
-  - [Adobe Analytics Readers](#adobe-analytics-readers)
-      - [How to obtain credentials](#how-to-obtain-credentials)
-    - [Adobe Analytics Reader 1.4](#adobe-analytics-reader-14)
-      - [Source API](#source-api)
-      - [Quickstart](#quickstart)
-      - [Parameters](#parameters)
-      - [Addtional information](#addtional-information)
-    - [Adobe Analytics Reader 2.0](#adobe-analytics-reader-20)
-      - [Source API](#source-api-1)
-      - [Quickstart](#quickstart-1)
-      - [Parameters](#parameters-1)
-      - [Additional information](#additional-information)
-  - [Amazon S3 Reader](#amazon-s3-reader)
-  - [Confluence Reader](#confluence-reader)
-      - [Source API](#source-api-2)
-      - [Quickstart](#quickstart-2)
-      - [Parameters](#parameters-2)
-      - [Additional information](#additional-information-1)
-  - [Facebook Marketing Reader](#facebook-marketing-reader)
-      - [Source API](#source-api-3)
-      - [Quickstart](#quickstart-3)
-      - [Parameters](#parameters-3)
-      - [Additional information](#additional-information-2)
-  - [Google Readers](#google-readers)
-    - [Authentication](#authentication)
-    - [Google Ads Reader](#google-ads-reader)
-      - [Source API](#source-api-4)
-      - [How to obtain credentials](#how-to-obtain-credentials-1)
-      - [Quickstart](#quickstart-4)
-      - [Parameters](#parameters-4)
-    - [Google Analytics Reader](#google-analytics-reader)
-      - [Source API](#source-api-5)
-      - [Quickstart](#quickstart-5)
-      - [Parameters](#parameters-5)
-    - [Google Cloud Storage Reader](#google-cloud-storage-reader)
-    - [Google Campaign Manager Reader](#google-campaign-manager-reader)
-      - [Source API](#source-api-6)
-      - [Quickstart](#quickstart-6)
-        - [Parameters](#parameters-6)
-    - [Google DoubleClick Manager Reader (DBM)](#google-doubleclick-manager-reader-dbm)
-      - [Source API](#source-api-7)
-      - [Quickstart](#quickstart-7)
-      - [Parameters](#parameters-7)
-    - [Google DV360](#google-dv360)
-      - [Source API](#source-api-8)
-      - [How to obtain credentials](#how-to-obtain-credentials-2)
-      - [Quickstart](#quickstart-8)
-      - [Parameters](#parameters-8)
-    - [Google Search Console Reader](#google-search-console-reader)
-      - [Source API](#source-api-9)
-      - [How to obtain credentials](#how-to-obtain-credentials-3)
-      - [Quickstart](#quickstart-9)
-      - [Parameters](#parameters-9)
-    - [Google Search Ads 360 Reader](#google-search-ads-360-reader)
-      - [Source API](#source-api-10)
-      - [How to obtain credentials](#how-to-obtain-credentials-4)
-      - [Quickstart](#quickstart-10)
-      - [Parameters](#parameters-10)
-    - [Google Sheets Reader](#google-sheets-reader)
-      - [Source API](#source-api-11)
-      - [Quickstart](#quickstart-11)
-      - [Parameters](#parameters-11)
-      - [How to obtain credentials](#how-to-obtain-credentials-5)
-  - [Oracle Reader](#oracle-reader)
-  - [MySQL Reader](#mysql-reader)
-  - [Radarly Reader](#radarly-reader)
-  - [Salesforce Reader](#salesforce-reader)
-  - [The Trade Desk Reader](#the-trade-desk-reader)
-      - [How to obtain credentials](#how-to-obtain-credentials-6)
-      - [Quickstart](#quickstart-12)
-      - [Parameters](#parameters-12)
-  - [Twitter Ads Reader](#twitter-ads-reader)
-      - [Source API](#source-api-12)
-      - [How to obtain credentials](#how-to-obtain-credentials-7)
-      - [Quickstart](#quickstart-13)
-      - [Parameters](#parameters-13)
-  - [Yandex Readers](#yandex-readers)
-      - [Source API](#source-api-13)
-      - [How to obtain credentials](#how-to-obtain-credentials-8)
-    - [Yandex Campaign Reader](#yandex-campaign-reader)
-      - [Quickstart](#quickstart-14)
-      - [Parameters](#parameters-14)
-    - [Yandex Statistics Reader](#yandex-statistics-reader)
-      - [Quickstart](#quickstart-15)
-      - [Parameters](#parameters-15)
-  - [Troubleshooting](#troubleshooting)
+*About to develop a new reader?* Find helpful documentation [here](https://github.com/artefactory/nautilus-connectors-kit/blob/dev/README.md).
+
+*Just want to use an existing reader?* This page provides you with documentation on available commands:
+
+- [Adobe Analytics Readers](#adobe-analytics-readers)
+  - [How to obtain credentials](#how-to-obtain-credentials)
+  - [Adobe Analytics Reader 1.4](#adobe-analytics-reader-14)
+    - [Source API](#source-api)
+    - [Quickstart](#quickstart)
+    - [Command name](#command-name)
+    - [Command options](#command-options)
+    - [Addtional information](#addtional-information)
+  - [Adobe Analytics Reader 2.0](#adobe-analytics-reader-20)
+    - [Source API](#source-api-1)
+    - [Quickstart](#quickstart-1)
+    - [Command name](#command-name-1)
+    - [Command options](#command-options-1)
+    - [Additional information](#additional-information)
+- [Amazon S3 Reader](#amazon-s3-reader)
+- [Confluence Reader](#confluence-reader)
+    - [Source API](#source-api-2)
+    - [Quickstart](#quickstart-2)
+    - [Command name](#command-name-2)
+    - [Command options](#command-options-2)
+    - [Additional information](#additional-information-1)
+- [Facebook Marketing Reader](#facebook-marketing-reader)
+    - [Source API](#source-api-3)
+    - [Quickstart](#quickstart-3)
+    - [Command name](#command-name-3)
+    - [Command options](#command-options-3)
+    - [Additional information](#additional-information-2)
+- [Google Readers](#google-readers)
+  - [Authentication](#authentication)
+  - [Google Ads Reader](#google-ads-reader)
+    - [Source API](#source-api-4)
+    - [How to obtain credentials](#how-to-obtain-credentials-1)
+    - [Quickstart](#quickstart-4)
+    - [Command name](#command-name-4)
+    - [Command options](#command-options-4)
+  - [Google Analytics Reader](#google-analytics-reader)
+    - [Source API](#source-api-5)
+    - [Quickstart](#quickstart-5)
+    - [Command name](#command-name-5)
+    - [Command options](#command-options-5)
+  - [Google Cloud Storage Reader](#google-cloud-storage-reader)
+  - [Google Campaign Manager Reader](#google-campaign-manager-reader)
+    - [Source API](#source-api-6)
+    - [Quickstart](#quickstart-6)
+    - [Command name](#command-name-6)
+    - [Command options](#command-options-6)
+  - [Google DoubleClick Manager Reader (DBM)](#google-doubleclick-manager-reader-dbm)
+    - [Source API](#source-api-7)
+    - [Quickstart](#quickstart-7)
+    - [Command name](#command-name-7)
+    - [Command options](#command-options-7)
+  - [Google DV360](#google-dv360)
+    - [Source API](#source-api-8)
+    - [How to obtain credentials](#how-to-obtain-credentials-2)
+    - [Quickstart](#quickstart-8)
+    - [Command name](#command-name-8)
+    - [Command options](#command-options-8)
+  - [Google Search Console Reader](#google-search-console-reader)
+    - [Source API](#source-api-9)
+    - [How to obtain credentials](#how-to-obtain-credentials-3)
+    - [Quickstart](#quickstart-9)
+    - [Command name](#command-name-9)
+    - [Command options](#command-options-9)
+  - [Google Search Ads 360 Reader](#google-search-ads-360-reader)
+    - [Source API](#source-api-10)
+    - [How to obtain credentials](#how-to-obtain-credentials-4)
+    - [Quickstart](#quickstart-10)
+    - [Command name](#command-name-10)
+    - [Command options](#command-options-10)
+  - [Google Sheets Reader](#google-sheets-reader)
+    - [Source API](#source-api-11)
+    - [Quickstart](#quickstart-11)
+    - [Command name](#command-name-11)
+    - [Command options](#command-options-11)
+    - [How to obtain credentials](#how-to-obtain-credentials-5)
+- [Oracle Reader](#oracle-reader)
+- [MySQL Reader](#mysql-reader)
+- [Radarly Reader](#radarly-reader)
+- [Salesforce Reader](#salesforce-reader)
+- [The Trade Desk Reader](#the-trade-desk-reader)
+    - [How to obtain credentials](#how-to-obtain-credentials-6)
+    - [Quickstart](#quickstart-12)
+    - [Command name](#command-name-12)
+    - [Command options](#command-options-12)
+- [Twitter Ads Reader](#twitter-ads-reader)
+    - [Source API](#source-api-12)
+    - [How to obtain credentials](#how-to-obtain-credentials-7)
+    - [Quickstart](#quickstart-13)
+    - [Command name](#command-name-13)
+    - [Command options](#command-options-13)
+- [Yandex Readers](#yandex-readers)
+    - [Source API](#source-api-13)
+    - [How to obtain credentials](#how-to-obtain-credentials-8)
+  - [Yandex Campaign Reader](#yandex-campaign-reader)
+    - [Quickstart](#quickstart-14)
+    - [Command name](#command-name-14)
+    - [Command options](#command-options-14)
+  - [Yandex Statistics Reader](#yandex-statistics-reader)
+    - [Quickstart](#quickstart-15)
+    - [Command name](#command-name-15)
+    - [Command options](#command-options-15)
+- [Troubleshooting](#troubleshooting)
 
 ## Adobe Analytics Readers
 
@@ -115,12 +134,16 @@ Call example to Adobe Analytics Reader 1.4, getting the number of visits per day
 python nck/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_adobe`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--adobe-client-id`|Client ID, that you can find on Adobe Developer Console|
 |`--adobe-client-secret`|Client Secret, that you can find on Adobe Developer Console|
 |`--adobe-tech-account-id`|Technical Account ID, that you can find on Adobe Developer Console|
@@ -155,12 +178,16 @@ Call example to Adobe Analytics Reader 2.0, getting the number of visits per day
 python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adobe-2-0-client-secret <CLIENT_SECRET> --adobe-2-0-tech-account-id <TECH_ACCOUNT_ID> --adobe-2-0-org-id <ORG_ID> --adobe-2-0-private-key <PRIVATE_KEY> --adobe-2-0-global-company-id <GLOBAL_COMPANY_ID> --adobe-2-0-report-suite-id <REPORT_SUITE_ID> --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date 2020-01-01 --adobe-2-0-end-date 2020-01-31 --adobe-2-0-metric visits write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_adobe_2_0`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--adobe-2-0-client-id`|Client ID, that you can find on Adobe Developer Console|
 |`--adobe-2-0-client-secret`|Client Secret, that you can find on Adobe Developer Console|
 |`--adobe-2-0-tech-account-id`|Technical Account ID, that you can find on Adobe Developer Console|
@@ -200,11 +227,15 @@ The following command retrieves the titles, space names, tiny links and label na
 python nck/entrypoint.py read_confluence --confluence-user-login <USER_LOGIN> --confluence-api-token <API_TOKEN> --confluence-atlassian-domain <ATLASSIAN_DOMAIN> --confluence-content-type "page" --confluence-field "title" --confluence-field "space.name" --confluence-field "tiny_link" --confluence-field "label_names" --confluence-spacekey <KEY_1> --confluence-spacekey <KEY_2> write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
+`read_confluence`
+
+#### Command options
+
+|Options|Documentation|
 |:--|:--|
 |`--confluence-user-login`|User login associated with your Atlassian account|
 |`--confluence-api-token`|API token associated with your Atlassian account (can be generated on [this page](https://id.atlassian.com/manage-profile/security/api-tokens))|
@@ -276,11 +307,15 @@ python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --
 python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID>  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative[id] --facebook-add-date-to-report True --facebook-start-date 2020-01-01 --facebook-end-date 2019-01-01 write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
+`read_facebook`
+
+#### Command options
+
+|Options|Documentation|
 |:--|:--|
 |`--facebook-app-id`|Facebook App ID. *Not mandatory if Facebook Access Token is provided.*|
 |`--facebook-app-secret`|Facebook App Secret. *Not mandatory if Facebook Access Token is provided.*|
@@ -412,12 +447,16 @@ The following command retrieves insights about the Ads of *my_first_campaign* an
 python nck/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter "{'field':'CampaignName','operator':'IN','values':['my_first_campaign','my_second_campaign']}"
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_googleads`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--googleads-developer-token`|Company Developer token for Google Ads API|
 |`--googleads-client-id`|OAuth2 ID|
 |`--googleads-client-secret`|OAuth2 secret|
@@ -453,12 +492,16 @@ The following command retrieves sessions, pageviews and bounces volumes by date 
 python nck/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_ga`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--ga-client-id`|OAuth2 ID|
 |`--ga-client-secret`|OAuth2 secret|
 |`--ga-access-token`|(Optional) Access token for OAuth2|
@@ -495,12 +538,16 @@ The following command retrieves impressions, clicks and cost volumes from 2020-0
 python nck/entrypoint.py read_dcm --dcm-client-id <CLIENT_ID> --dcm-client-secret <CLIENT_SECRET> --dcm-refresh-token <REFRESH_TOKEN> --dcm-profile-id <PROFILE_ID> --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date 2020-01-01 --dcm-end-date 2020-01-03 write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-##### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_dcm`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--dcm-client-id`|OAuth2 ID|
 |`--dcm-client-secret`|OAuth2 secret|
 |`--dcm-access-token`|(Optional) Access token for OAuth2|
@@ -528,12 +575,16 @@ The following command retrieves impressions, clicks and cost volumes filtered on
 python nck/entrypoint.py read_dbm --dbm-client-id <CLIENT_ID> --dbm-client-secret <CLIENT_SECRET> —dbm-refresh-token <REFRESH_TOKEN> —dbm-filter FILTER_ADVERTISER <ADVERTISER_ID> --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date 2020-01-01 --dbm-end-date 2020-01-03 write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_dbm`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--dbm-client-id`|OAuth2 ID|
 |`--dbm-client-secret`|OAuth2 secret|
 |`--dbm-access-token`|(Optional) Access token for OAuth2|
@@ -573,14 +624,18 @@ You should now have an access token and a refresh token. Save them carefully.
 
 Say you want to get a SDF file for all campaigns of a specific advertiser. You can run:
 
-```bash
+```
 python nck/entrypoint.py read_dv360 --dv360-client-id <CLIENT_ID> --dv360-client-secret <CLIENT_SECRET> --dv360-refresh-token <REFRESH_TOKEN> --dv360-access-token <ACCESS_TOKEN> --dv360-advertiser-id <ADVERTISER_ID> --dv360-filter-type 'FILTER_TYPE_NONE' --dv360-file-type 'FILE_TYPE_CAMPAIGN' write_console
 ```
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--| -|
+`read_dv360`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--dv360-access-token`|Access token you during the process of getting tokens|
 |`--dv360-refresh-token`|Refresh token you during the process of getting tokens|
 |`--dv360-client-id`|Client ID you generated in the GCP environment|
@@ -611,12 +666,16 @@ The following command retrieves insights about the URL <SITE_URL> from 2020-01-0
 python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_ID> --search-console-refresh-token <REFRESH_TOKEN> --search-console-site-url <SITE_URL> --search-console-dimensions country --search-console-dimensions device --search-console-start-date 2020-01-01 --search-console-end-date 2020-01-03 write_console 
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_search_console`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--search-console-client-id`|OAuth2 ID|
 |`--search-console-client-secret`|OAuth2 secret|
 |`--search-console-access-token`|Access token for OAuth2|
@@ -653,12 +712,16 @@ The following command retrieves insights about the Ads in the Search Ads 360 Acc
 python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_sa360`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--sa360-client-id`|OAuth2 ID|
 |`--sa360-client-secret`|OAuth2 secret|
 |`--sa360-access-token`|(Optional) Access token|
@@ -681,36 +744,39 @@ See documentation [here](https://developers.google.com/search-ads/v2/how-tos/rep
 
 [Google Sheets API](https://developers.google.com/sheets/api)
 
+#### How to obtain credentials
+
+To use the Google Sheets Reader you must first retrieve your credentials. In order to do so, head to console.cloud.google.com. In the header, chose your project or create a new one. Next step is to enable the Google Drive and Google Sheets APIs in the API Library. You’ll find it in the *APIs & Services* tab. Now that Google Drive API is enabled, click on the *Create credentials* button on the upper-right corner and enter these informations :
+
+![alt text](https://github.com/artefactory/nautilus-connectors-kit/blob/dev/documentation_images/credentials_gs.png)
+
+Click on *What credentials do I need* and complete the form. You will find the credentials you need in the .json file that will start downloading automatically right after.
+
 #### Quickstart
 
-This command allows you to retrieve the desired information from the google sheet row by row in a dict format. For example, given 3 columns a, b, c and 2 rows with respectively the values d,e,f and g, h, i, we would obtain such a dict :
+This command allows you to retrieve the desired information from a Google Sheet file row-by-row in a dictionary format. For example, given 3 columns a, b, c and 2 rows with respectively the values d, e, f and g, h, i, we would obtain such a dictionary :
 
 ```
 {"a": "d", "b": "e", "c": "f"}
 {"a": "g", "b": "h", "c": "i"}
 ```
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--| -|
-|`--gs-project-id`|Project ID that is given by Google services once you have created your project in the google cloud console. You can retrieve it in the JSON credential file|
-|`--gs-private-key-id`|Private key ID given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
-|`--gs-private-key-path`|The path to the private key that is stored in a txt file. You can retrieve it first in the JSON credential file|
-|`--gs-client-email`|Client e-mail given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
-|`--gs-client-id`|Client ID given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
-|`--gs-client-cert`|Client certificate given by Google services once you have added credentials to the project. You can retrieve it in the JSON credential file|
-|`--gs-file-name`|The name you have given to your google sheet file|
-|`--gs-page-number`|The page number you want to access.The number pages starts at 0|
+`read_gs`
 
-#### How to obtain credentials
+#### Command options
 
-To use the nck google_sheets you must first retrieve your credentials. In order to do so head to console.cloud.google.com. In the header, chose your project or create a new one. Next step is to enable some APIs, namely google drive and google sheets api in the API Library. You’ll find it in the « APIs & Services » tab. Now that your google drive API is enabled, click on the « create credentials » button on the upper right corner and enter these informations :
-
-![alt text](https://github.com/artefactory/nautilus-connectors-kit/blob/upgrade-gs/documentation_images/credentials_gs.png)
-
-Click on "what credentials do I need" and complete the form.
-You will find the credentials you need in the JSON file that will start downloading automatically right after.
+|Options|Documentation|
+|:--|:--|
+|`--gs-project-id`|Project ID that is given by Google services once you have created your project in the Google Cloud Console. You can retrieve it in the .json credential file.|
+|`--gs-private-key-id`|Private key ID given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.|
+|`--gs-private-key-path`|The path to the private key that is stored in a txt file. You can retrieve it first in the .json credential file.|
+|`--gs-client-email`|Client e-mail given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.|
+|`--gs-client-id`|Client ID given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.|
+|`--gs-client-cert`|Client certificate given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.|
+|`--gs-file-name`|The name you have given to your Google Sheet file|
+|`--gs-page-number`|The page number you want to access. The number pages starts at 0.|
 
 ## Oracle Reader
 
@@ -749,12 +815,16 @@ The following command retrieves the data associated to the Report template named
 ```
 python nck/entrypoint.py read_ttd --ttd-login <LOGIN> --ttd-password <PASSWORD> --ttd-partner-id <PARTNER_ID> --ttd-report-template-name adgroup_performance_report --ttd-start-date 2020-01-01  --ttd-end-date 2020-01-03 write_console
 ```
-Didn't work? See [troubleshooting](#troubleshooting) section.
+Didn't work? See [troubleshooting](#troubleshooting) sectio*n.
 
-#### Parameters
+#### Com*mand the name
 
-|CLI option|Documentation|
-|--|--|
+`read_ttd`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--ttd-login`|Login of your API account|
 |`--ttd-password`|Password of your API account|
 |`--ttd-advertiser-id`|Advertiser Ids for which report data should be fetched|
@@ -801,12 +871,16 @@ python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter
 python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--|--|
+`read_twitter`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--twitter-consumer-key`|API key, available in the 'Keys and tokens' section of your Twitter Developer App.|
 |`--twitter-consumer-secret`|API secret key, available in the 'Keys and tokens' section of your Twitter Developer App.|
 |`--twitter-access-token`|Access token, available in the 'Keys and tokens' section of your Twitter Developer App.|
@@ -857,12 +931,16 @@ The following command retrieves the daily budget of all your campaigns, since yo
 python nck/entrypoint.py read_yandex_campaigns --yandex-token <TOKEN> --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
 
-|CLI option|Documentation|
-|--| -|
+`read_yandex_campaigns`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
 |`--yandex-token`|Bear token that allows you to authenticate to the API|
 |`--yandex-campaign-id`|(Optional) Selects campaigns with the specified IDs.|
 |`--yandex-campaign-state`|(Optional) Selects campaigns with the specified states. *Possible values can be found [here](https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status).*|
@@ -882,14 +960,18 @@ The following command retrieves a performance report for all your campaigns, sin
 python nck/entrypoint.py read_yandex_statistics --yandex-token <TOKEN> --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
 ```
 
-Didn't work? See [troubleshooting](#troubleshooting) section.
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
-#### Parameters
+#### Command name
+
+`read_yandex_statistics`
+
+#### Command options
 
 Detailed version [here](https://tech.yandex.com/direct/doc/reports/spec-docpage/).
 
-|CLI option|Documentation|
-|--|--|
+|Options|Documentation|
+|:--|:--|
 |`--yandex-token`|Bear token that allows you to authenticate to the API|
 |`--yandex-report-language`|(Optional) Language of the report. *Possible values can be found [here](https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language).*|
 |`--yandex-filter`|(Optional) Filters on a particular field.|
