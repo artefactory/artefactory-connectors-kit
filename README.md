@@ -9,8 +9,8 @@
     - [Linting](#linting)
     - [Pre-commit hooks](#pre-commit-hooks)
     - [TDD (Test-Driven Development)](#tdd-(test-driven-development))
-- [Quickstart: launch your first NCK command](#quickstart:-launch-your-first-nck-command)
-- [Contribute: we need you!](#contribute:-we-need-you)
+- [Launch your first NCK command](#launch-your-first-nck-command)
+- [Contribute](#contribute)
     - [How to develop a new reader](#how-to-develop-a-new-reader)
     - [How to develop a new stream](#how-to-develop-a-new-stream)
     - [How to develop a new writer](#how-to-develop-a-new-writer)
@@ -68,7 +68,7 @@ To start using NCK and/or contributing, first clone the `dev` branch of this rep
 ```
 git clone git@github.com:artefactory/nautilus-connectors-kit.git -b dev
 ```
-#### Virtual environment
+### Virtual environment
 
 Create a virtual environment at the root of your local repository:
 ```
@@ -80,13 +80,13 @@ Install dependencies:
 pip install -r requirements.txt
 pip install -r requirements-dev.text
 ```
-#### Linting
+### Linting
 
 We are using [black](https://pypi.org/project/black/) and [Flake8](https://flake8.pycqa.org/en/latest/) for code linting.
 
 The black and Flake8 packages have already been installed in your virtual environment with dependencies. Also, a Flake8 configuration file (`.flake8`) and a black configuration file (`pyproject.toml`) are available at the root at this repository.
 
-#### Pre-commit hooks
+### Pre-commit hooks
 
 We are using [pre-commit](https://pre-commit.com/) hooks to point out linting issues in our code before submission to code review.
 
@@ -95,14 +95,14 @@ The pre-commit package has already been installed in your virtual environment wi
 To finalize the installation and install git hooks scripts, execute: `pre-commit install`
 For now on, the `pre-commit` command will run automatically on every `git commit`.
 
-#### TDD (*Test-Driven Development*)
+### TDD (*Test-Driven Development*)
 
 We are running tests using [nose](https://nose.readthedocs.io/en/latest/usage.html), an extension of the Python [unittest](https://docs.python.org/fr/3/library/unittest.html) framework.
 
 The nose package has already been installed in your virtual environment with dependencies.
 To run existing tests, execute: `nosetests`
 
-## Quickstart: launch your first NCK command
+## Launch your first NCK command
 
 Once this preliminary set-up is finalized, you can start using the application.
 
@@ -132,7 +132,7 @@ You can now execute it into your terminal.
 
 **Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available [reader commands](https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/readers) and [writer commands](https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/writers).**
 
-## Contribute: we need you!
+## Contribute
 
 NCK is an open-source application initially developed by Artefact team: feel free to contribute!
 You can find open issues on [this page](https://github.com/artefactory/nautilus-connectors-kit/issues).  If you identify additional enhancements/fixes that could be beneficial to the application, don't hesitate to add them to the list.
@@ -205,7 +205,7 @@ This module should implement 2 components:
 
 ## To go further
 
-#### Build a Docker image of the application and push it to GCP Container Registry
+### Build a Docker image of the application and push it to GCP Container Registry
 
 Update the values of the context variables featured in the .env module:
 - `PROJECT_ID`: GCP Project ID
@@ -216,7 +216,7 @@ Update the values of the context variables featured in the .env module:
 Build NCK image: `make build_base_image`
 Push NCK image to GCP Container Registry: `make publish_base_image`
 
-#### Package the application to use it as a binary or library
+### Package the application to use it as a binary or library
 
 Build a wheel  for the NCK package (creates a `/dist` directory storing a <NCK_WHEEL>.whl file):
 ```

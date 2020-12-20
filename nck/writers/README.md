@@ -32,7 +32,7 @@
 #### Quickstart
 
 The following command would allow you to:
-- create a blob `google_analytics_report_2020-01-01.njson`
+- write output stream records to a blob named `google_analytics_report_2020-01-01.njson`
 - under the Amazon S3 bucket `nck_extracts`
 - organized according to the following path: `nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson`
 
@@ -47,7 +47,7 @@ write_s3 --s3-bucket-name nck_extracts --s3-prefix FR/google_analytics --s3-file
 #### Command options
 |Options|Documentation|
 |:--|:--|
-|`--s3-bucket-name`|Amazon S3 bucket name|
+|`--s3-bucket-name`|S3 bucket name|
 |`--s3-prefix`|S3 blob prefix|
 |`--s3-filename`|S3 blob name|
 |`--s3-bucket-region`|S3 bucket region|
@@ -84,7 +84,7 @@ write bq --bq-dataset nck --bq-table google_analytics --bq-bucket nck-extracts
 #### Quickstart
 
 The following command would allow you to:
-- create a blob `google_analytics_report_2020-01-01.njson`
+- write output stream records to a blob named `google_analytics_report_2020-01-01.njson`
 - under the Cloud Storage bucket `nck_extracts`
 - organized according to the following path: `nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson`
 
@@ -130,7 +130,7 @@ write_local --local-directory ~/Desktop/ --file-name google_analytics_report_202
 
 The following command would allow you to write stream output records directly into your terminal, which is very convenient for debugging:
 ```
-write_local
+write_console
 ```
 
 #### Command name
