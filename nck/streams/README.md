@@ -1,8 +1,5 @@
 # NCK Streams
 
-Streams are an object that can be read by writers.
-Each stream must implement the following methods:
+**Streams are local objects used by writers to process individual records collected from the source.**
 
-1. `readlines`: yield each element of a stream, one by one.
-
-Streams need a name and a content object to be created.
+*About to develop a new stream?* Find helpful documentation [here](https://github.com/artefactory/nautilus-connectors-kit/blob/dev/README.md).
