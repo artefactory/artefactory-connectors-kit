@@ -21,92 +21,118 @@
     - [Command options](#command-options-1)
     - [Additional information](#additional-information)
 - [Amazon S3 Reader](#amazon-s3-reader)
+  - [Source API](#source-api-2)
+  - [Quickstart](#quickstart-2)
+  - [Command name](#command-name-2)
+  - [Command options](#command-options-2)
 - [Confluence Reader](#confluence-reader)
-    - [Source API](#source-api-2)
-    - [Quickstart](#quickstart-2)
-    - [Command name](#command-name-2)
-    - [Command options](#command-options-2)
-    - [Additional information](#additional-information-1)
-- [Facebook Marketing Reader](#facebook-marketing-reader)
     - [Source API](#source-api-3)
     - [Quickstart](#quickstart-3)
     - [Command name](#command-name-3)
     - [Command options](#command-options-3)
+    - [Additional information](#additional-information-1)
+- [Facebook Marketing Reader](#facebook-marketing-reader)
+    - [Source API](#source-api-4)
+    - [Quickstart](#quickstart-4)
+    - [Command name](#command-name-4)
+    - [Command options](#command-options-4)
     - [Additional information](#additional-information-2)
 - [Google Readers](#google-readers)
   - [Authentication](#authentication)
   - [Google Ads Reader](#google-ads-reader)
-    - [Source API](#source-api-4)
-    - [How to obtain credentials](#how-to-obtain-credentials-1)
-    - [Quickstart](#quickstart-4)
-    - [Command name](#command-name-4)
-    - [Command options](#command-options-4)
-  - [Google Analytics Reader](#google-analytics-reader)
     - [Source API](#source-api-5)
+    - [How to obtain credentials](#how-to-obtain-credentials-1)
     - [Quickstart](#quickstart-5)
     - [Command name](#command-name-5)
     - [Command options](#command-options-5)
-  - [Google Cloud Storage Reader](#google-cloud-storage-reader)
-  - [Google Campaign Manager Reader](#google-campaign-manager-reader)
+  - [Google Analytics Reader](#google-analytics-reader)
     - [Source API](#source-api-6)
     - [Quickstart](#quickstart-6)
     - [Command name](#command-name-6)
     - [Command options](#command-options-6)
-  - [Google DoubleClick Manager Reader (DBM)](#google-doubleclick-manager-reader-dbm)
+  - [Google Cloud Storage Reader](#google-cloud-storage-reader)
     - [Source API](#source-api-7)
     - [Quickstart](#quickstart-7)
     - [Command name](#command-name-7)
     - [Command options](#command-options-7)
-  - [Google DV360](#google-dv360)
+  - [Google Campaign Manager Reader](#google-campaign-manager-reader)
     - [Source API](#source-api-8)
-    - [How to obtain credentials](#how-to-obtain-credentials-2)
     - [Quickstart](#quickstart-8)
     - [Command name](#command-name-8)
     - [Command options](#command-options-8)
-  - [Google Search Console Reader](#google-search-console-reader)
+  - [Google DoubleClick Manager Reader (DBM)](#google-doubleclick-manager-reader-dbm)
     - [Source API](#source-api-9)
-    - [How to obtain credentials](#how-to-obtain-credentials-3)
     - [Quickstart](#quickstart-9)
     - [Command name](#command-name-9)
     - [Command options](#command-options-9)
-  - [Google Search Ads 360 Reader](#google-search-ads-360-reader)
+  - [Google DV360](#google-dv360)
     - [Source API](#source-api-10)
-    - [How to obtain credentials](#how-to-obtain-credentials-4)
+    - [How to obtain credentials](#how-to-obtain-credentials-2)
     - [Quickstart](#quickstart-10)
     - [Command name](#command-name-10)
     - [Command options](#command-options-10)
-  - [Google Sheets Reader](#google-sheets-reader)
+  - [Google Search Console Reader](#google-search-console-reader)
     - [Source API](#source-api-11)
+    - [How to obtain credentials](#how-to-obtain-credentials-3)
     - [Quickstart](#quickstart-11)
     - [Command name](#command-name-11)
     - [Command options](#command-options-11)
-    - [How to obtain credentials](#how-to-obtain-credentials-5)
-- [Oracle Reader](#oracle-reader)
-- [MySQL Reader](#mysql-reader)
-- [Radarly Reader](#radarly-reader)
-- [Salesforce Reader](#salesforce-reader)
-- [The Trade Desk Reader](#the-trade-desk-reader)
-    - [How to obtain credentials](#how-to-obtain-credentials-6)
+  - [Google Search Ads 360 Reader](#google-search-ads-360-reader)
+    - [Source API](#source-api-12)
+    - [How to obtain credentials](#how-to-obtain-credentials-4)
     - [Quickstart](#quickstart-12)
     - [Command name](#command-name-12)
     - [Command options](#command-options-12)
-- [Twitter Ads Reader](#twitter-ads-reader)
-    - [Source API](#source-api-12)
-    - [How to obtain credentials](#how-to-obtain-credentials-7)
+  - [Google Sheets Reader](#google-sheets-reader)
+    - [Source API](#source-api-13)
     - [Quickstart](#quickstart-13)
     - [Command name](#command-name-13)
     - [Command options](#command-options-13)
+    - [How to obtain credentials](#how-to-obtain-credentials-5)
+- [Oracle Reader](#oracle-reader)
+  - [Source ORM](#source-orm)
+  - [Quickstart](#quickstart-14)
+  - [Command name](#command-name-14)
+  - [Command options](#command-options-14)
+- [MySQL Reader](#mysql-reader)
+  - [Source ORM](#source-orm-1)
+  - [Quickstart](#quickstart-15)
+  - [Command name](#command-name-15)
+  - [Command options](#command-options-15)
+- [Radarly Reader](#radarly-reader)
+  - [Source API](#source-api-16)
+  - [Quickstart](#quickstart-16)
+  - [Command name](#command-name-16)
+  - [Command options](#command-options-16)
+- [Salesforce Reader](#salesforce-reader)
+  - [Source API](#source-api-17)
+  - [How to obtain credentials](#how-to-obtain-credentials-6)
+  - [Quickstart](#quickstart-17)
+  - [Command name](#command-name-17)
+  - [Command options](#command-options-17)
+- [The Trade Desk Reader](#the-trade-desk-reader)
+  - [Source API](#source-api-18)
+  - [How to obtain credentials](#how-to-obtain-credentials-7)
+  - [Quickstart](#quickstart-18)
+  - [Command name](#command-name-18)
+  - [Command options](#command-options-18)
+- [Twitter Ads Reader](#twitter-ads-reader)
+  - [Source API](#source-api-19)
+  - [How to obtain credentials](#how-to-obtain-credentials-8)
+  - [Quickstart](#quickstart-19)
+  - [Command name](#command-name-19)
+  - [Command options](#command-options-19)
 - [Yandex Readers](#yandex-readers)
-    - [Source API](#source-api-13)
+    - [Source API](#source-api-20)
     - [How to obtain credentials](#how-to-obtain-credentials-8)
   - [Yandex Campaign Reader](#yandex-campaign-reader)
-    - [Quickstart](#quickstart-14)
-    - [Command name](#command-name-14)
-    - [Command options](#command-options-14)
+    - [Quickstart](#quickstart-20)
+    - [Command name](#command-name-20)
+    - [Command options](#command-options-20)
   - [Yandex Statistics Reader](#yandex-statistics-reader)
-    - [Quickstart](#quickstart-15)
-    - [Command name](#command-name-15)
-    - [Command options](#command-options-15)
+    - [Quickstart](#quickstart-21)
+    - [Command name](#command-name-21)
+    - [Command options](#command-options-21)
 - [Troubleshooting](#troubleshooting)
 
 ## Adobe Analytics Readers
@@ -209,7 +235,42 @@ python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adob
 
 ## Amazon S3 Reader
 
-*Not documented yet.*
+#### Source API
+
+[AWS SDK for Python (Boto3)](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+
+#### Quickstart
+
+Execute the following commands to set your credentials:
+
+```
+export REGION_NAME=<S3 bucket region>
+export AWS_ACCESS_KEY_ID=<S3 access key ID>
+export AWS_SECRET_ACCESS_KEY=<S3 access key secret>
+```
+
+Once done, launch your S3 reader command. The following command retrieves the blobs located under the Amazon S3 bucket `daily_reports` and the blob prefix `FR/offline_sales/`.
+
+```
+python nck/entrypoint.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offline_sales --s3-format csv write_console
+```
+
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
+
+#### Command name
+
+`read_s3`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
+|`--s3-bucket`|S3 bucket name|
+|`--s3-prefix`|S3 blob prefix. Several prefixes can be provided in a single command.|
+|`--s3-format`|S3 blob format. *Possible values: csv, gz*|
+|`--s3-dest-key-split`|Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. *Default: -1 (split on all occurences)*|
+|`--s3-csv-delimiter`|Delimiter that should be used to read the .csv file. *Default: ,*|
+|`--s3-csv-fieldnames`|List of field names. If set to *None* (*default*), the values in the first row of .csv file will be used as field names.|
 
 ## Confluence Reader
 
@@ -522,7 +583,44 @@ See documentation [here](https://developers.google.com/analytics/devguides/repor
 
 ### Google Cloud Storage Reader
 
-*Not documented yet.*
+#### Source API
+
+[GCP Client Library for Cloud Storage](https://googleapis.dev/python/storage/latest/client.html)
+
+#### Quickstart
+
+Follow these steps to set your credentials:
+- In your GCP project, create a Service Account with a 'Storage Object Viewer' role
+- Create a .json key for this Service Account, and download the key file locally
+- Execute the following commands:
+
+```
+export project_id=<GCP project ID>
+export GCP_KEY_PATH=<Path to the Service Account key file>
+```
+
+Once done, launch your Google Cloud Storage reader command. The following command retrieves the blobs located under the Google Cloud Storage bucket `daily_reports` and the blob prefix `FR/offline_sales/`:
+
+```
+python nck/entrypoint.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/offline_sales --gcs-format csv write_console
+```
+
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
+
+#### Command name
+
+`read_gcs`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
+|`--gcs-bucket`|Cloud Storage bucket name|
+|`--gcs-prefix`|Cloud Storage blob prefix. Several prefixes can be provided in a single command.|
+|`--gcs-format`|Cloud Storage blob format. *Possible values: csv, gz*|
+|`--gcs-dest-key-split`|Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. *Default: -1 (split on all occurences)*|
+|`--gcs-csv-delimiter`|Delimiter that should be used to read the .csv file. *Default: ,*|
+|`--gcs-csv-fieldnames`|List of field names. If set to *None* (*default*), the values in the first row of .csv file will be used as field names.|
 
 ### Google Campaign Manager Reader
 
@@ -627,6 +725,8 @@ Say you want to get a SDF file for all campaigns of a specific advertiser. You c
 ```
 python nck/entrypoint.py read_dv360 --dv360-client-id <CLIENT_ID> --dv360-client-secret <CLIENT_SECRET> --dv360-refresh-token <REFRESH_TOKEN> --dv360-access-token <ACCESS_TOKEN> --dv360-advertiser-id <ADVERTISER_ID> --dv360-filter-type 'FILTER_TYPE_NONE' --dv360-file-type 'FILE_TYPE_CAMPAIGN' write_console
 ```
+
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
 
 #### Command name
 
@@ -754,7 +854,7 @@ Click on *What credentials do I need* and complete the form. You will find the c
 
 #### Quickstart
 
-This command allows you to retrieve the desired information from a Google Sheet file row-by-row in a dictionary format. For example, given 3 columns a, b, c and 2 rows with respectively the values d, e, f and g, h, i, we would obtain such a dictionary :
+This command allows you to retrieve the desired information from a Google Sheet file row-by-row in a dictionary format. For example, given 3 columns a, b, c and 2 rows with respectively the values d, e, f and g, h, i, we would obtain such a dictionary:
 
 ```
 {"a": "d", "b": "e", "c": "f"}
@@ -780,21 +880,154 @@ This command allows you to retrieve the desired information from a Google Sheet 
 
 ## Oracle Reader
 
-*Not documented yet.*
+#### Source ORM
+
+[SQL Alchemy](https://docs.sqlalchemy.org/en/13/) (using the `oracle+cx_oracle` engine)
+
+#### Quickstart
+
+The following command retrieves all records from the table <TABLE_NAME> (equivalent to `SELECT * FROM <TABLE_NAME>`).
+
+```
+python nck/entrypoint.py read_oracle --oracle-user <DATABASE_USER> --oracle-password <DATABASE_PASSWORD> --oracle-host <DATABASE_HOST> --oracle-port <DATABASE_PORT> --oracle-database <DATABASE_NAME> --oracle-table <TABLE_NAME> write_console
+```
+
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
+
+#### Command name
+
+`read_oracle`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
+|`--oracle-user`|Database user|
+|`--oracle-password`|Database password|
+|`--oracle-host`|Database host|
+|`--oracle-port`|Database port|
+|`--oracle-database`|Database name|
+|`--oracle-query`|SQL query (you must specify either a query or a table)|
+|`--oracle-query-name`|SQL query name (required if you specify a query)|
+|`--oracle-table`|Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)|
+|`--oracle-watermark-column`|Watermark column (required when using state management)|
+|`--oracle-watermark-init`|Initial watermark column value (required when using state management)|
 
 ## MySQL Reader
 
-*Not documented yet.*
+#### Source ORM
+
+[SQL Alchemy](https://docs.sqlalchemy.org/en/13/) (using the `mysql+pymysql` engine)
+
+#### Quickstart
+
+The following command retrieves all records from the table <TABLE_NAME> (equivalent to `SELECT * FROM <TABLE_NAME>`).
+
+```
+python nck/entrypoint.py read_mysql --mysql-user <DATABASE_USER> --mysql-password <DATABASE_PASSWORD> --mysql-host <DATABASE_HOST> --mysql-port <DATABASE_PORT> --mysql-database <DATABASE_NAME> --mysql-table <TABLE_NAME> write_console
+```
+
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
+
+#### Command name
+
+`read_mysql`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
+|`--mysql-user`|Database user|
+|`--mysql-password`|Database password|
+|`--mysql-host`|Database host|
+|`--mysql-port`|Database port|
+|`--mysql-database`|Database name|
+|`--mysql-query`|SQL query (you must specify either a query or a table)|
+|`--mysql-query-name`|SQL query name (required if you specify a query)|
+|`--mysql-table`|Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)|
+|`--mysql-watermark-column`|Watermark column (required when using state management)|
+|`--mysql-watermark-init`|Initial watermark column value (required when using state management)|
 
 ## Radarly Reader
 
-*Not documented yet.*
+#### Source API
+
+[Radarly API](https://github.com/linkfluence/radarly-py)
+
+#### Quickstart
+
+The following command retrieves data from posts located under the project `<PROJECT_ID>` and associated to the focus IDs `00001` and `00002`, from 2020-01-01 to 2020-01-03.
+
+```
+python nck/entrypoint.py read_radarly --radarly-client-id <CLIENT_ID> --radarly-client-secret <CLIENT_SECRET> --radarly-pid <PROJECT_ID> --radarly-focus-id 00001 --radarly-focus-id 00002 --radarly-start-date 2020-01-01 --radarly-end-date 2020-01-03
+```
+
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
+
+#### Command name
+
+`read_radarly`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
+|`--radarly-client-id`|Radarly Client ID|
+|`--radarly-client-secret`|Radarly Client Secret|
+|`--radarly-pid`|Radarly Project ID|
+|`--radarly-focus-id`|Focus IDs (several can be provided)|
+|`--radarly-start-date`|Start date of the period to request|
+|`--radarly-end-date`|End date of the period to request|
+|`--radarly-api-request-limit`|Max number of posts to be requested in a single API request|
+|`--radarly-api-date-period-limit`|Max number of posts to be requested in a single Search query|
+|`--radarly-api-window`|Duration of the rate limit window|
+|`--radarly-api-quaterly-posts-limit`|Max number of posts to be requested over the rate limit window|
+|`--radarly-api-throttle`|If set to *True* (*default*), forces the reader to abide by [official API rate limits](https://github.com/linkfluence/radarly-py/blob/master/docs/officialdoc/introduction/rates.rst), using the 2 above parameters.|
+|`--radarly-throttling-threshold-coefficient`|Throttling threshold coefficient|
 
 ## Salesforce Reader
 
-*Not documented yet.*
+#### Source API
+
+[Lightning Platform REST API](https://developer.salesforce.com/docs/atlas.en-us.212.0.api_rest.meta/api_rest/intro_what_is_rest_api.htm)
+
+#### Quickstart
+
+The following command retrieves name field values from all Account records.
+
+```
+python nck/entrypoint.py read_salesforce --salesforce-consumer-key <CONSUMER_KEY> --salesforce-consumer-secret <CONSUMER_SECRET> --salesforce-user <USERNAME> --salesforce-password <PASSWORD> --salesforce-query 'SELECT name FROM Account' --salesforce-query-name nck-account-name-query write_console
+```
+
+*Didn't work?* See the [troubleshooting](#troubleshooting) section.
+
+#### How to obtain credentials
+
+Create a Connected App by following the instructions detailed [on this page](https://developer.salesforce.com/docs/atlas.en-us.212.0.api_rest.meta/api_rest/quickstart_oauth.html): it will generate your authentication credentials.
+
+#### Command name
+
+`read_salesforce`
+
+#### Command options
+
+|Options|Documentation|
+|:--|:--|
+|`--salesforce-consumer-key`|Client ID of your Salesforce Connected App|
+|`--salesforce-consumer-secret`|Client Secret of your Salesforce Connected App|
+|`--salesforce-user`|Salesforce username|
+|`--salesforce-password`|Salesforce password|
+|`--salesforce-object-type`|Salesforce object type (you must specify either a Salesforce object type or a SOQL query). With this configuration, the command will retrieve the values of all the fields from the given object records (equivalent to the SOQL query: `SELECT <LIST OF ALL OBJECT FIELDS> FROM <OBJECT TYPE>`).|
+|`--salesforce-query`|SOQL query (you must specify either a Salesforce object type or a SOQL query). You can find documentation on Salesforce Object Query Language (SOQL) [here](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm).|
+|`--salesforce-query-name`|SOQL query name (required if you specify a SOQL query)|
+|`--salesforce-watermark-column`|Salesforce watermark column (required when using state management)|
+|`--salesforce-watermark-init`|Initial Salesforce watermark column value (required when using state management)|
 
 ## The Trade Desk Reader
+
+#### Source API
+
+[The Trade Desk API](https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview)
 
 #### How to obtain credentials
 
@@ -811,10 +1044,12 @@ To request dimensions and metrics to The Trade Desk API, you should first **crea
 - Clone an existing Report Template, edit it to keep only the dimensions and metrics that you want to collect, and save it: it will appear under the *Mine* section
 - Provide the exact name of the Report Template you have just created under the CLI option `--ttd-report-template-name` of The Trade Desk connector: the connector will "schedule" a report instance (which may take a few minutes to run), and fetch data to the location of your choice
 
-The following command retrieves the data associated to the Report template named "*adgroup_performance_report*" between 2020-01-01 and 2020-01-03, filtered on the PartnerId <PARTNER_ID>:
+The following command retrieves the data associated to the Report template named "*adgroup_performance_report*" between 2020-01-01 and 2020-01-03, filtered on the PartnerId <PARTNER_ID>.
+
 ```
 python nck/entrypoint.py read_ttd --ttd-login <LOGIN> --ttd-password <PASSWORD> --ttd-partner-id <PARTNER_ID> --ttd-report-template-name adgroup_performance_report --ttd-start-date 2020-01-01  --ttd-end-date 2020-01-03 write_console
 ```
+
 Didn't work? See [troubleshooting](#troubleshooting) sectio*n.
 
 #### Com*mand the name
@@ -857,16 +1092,19 @@ The Twitter Ads Reader can collect **3 types of reports**, making calls to 4 end
 * **ENTITY reports**, making calls to [Campaign Management endpoints](https://developer.twitter.com/en/docs/ads/campaign-management/api-reference) if the selected entity is Funding Instrument, Campaign, Line Item, Media Creative or Promoted Tweet, and to the [Creative endpoint](https://developer.twitter.com/en/docs/ads/creatives/api-reference/) if the selected entity is Card. These reports return details on entity configuration since the creation of the Twitter Ads account.
 
 *Call example for ANALYTICS reports*: this call will collect engagement metrics for Line Item entities, splitting the results by day, from 2020-01-01 to 2020-01-03:
+
 ```
 python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
 ```
 
 *Call example for REACH reports*: this call will collect reach metrics (*total_audience_reach, average_frequency*) for Campaign entities, from 2020-01-01 to 2020-01-03:
+
 ```
 python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
 ```
 
 *Call example for ENTITY reports*: this call collects details on the configuration of Campaign entities (id, name, total_budget_amount_local_micro, currency), since the creation of the Twitter Ads account:
+
 ```
 python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
 ```
