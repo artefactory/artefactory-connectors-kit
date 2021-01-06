@@ -60,7 +60,7 @@ The following command would allow you to:
 - store output stream records into the BigQuery table ``google_analytics``
 - located under the BigQuery dataset ``nck``
 
-As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket `nck_extracts``.
+As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket ``nck_extracts``.
 
 .. code-block:: shell
 
@@ -133,7 +133,7 @@ Local Writer
 Quickstart
 ----------
 
-The following command would allow you to write a file `google_analytics_report_2020-01-01.njson` on the `~/Desktop` directory of your local machine:
+The following command would allow you to write a file ``google_analytics_report_2020-01-01.njson`` on the ``~/Desktop`` directory of your local machine:
 
 .. code-block:: shell
 

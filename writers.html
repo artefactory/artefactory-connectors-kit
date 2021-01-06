@@ -258,7 +258,7 @@
 <li><p>store output stream records into the BigQuery table <code class="docutils literal notranslate"><span class="pre">google_analytics</span></code></p></li>
 <li><p>located under the BigQuery dataset <code class="docutils literal notranslate"><span class="pre">nck</span></code></p></li>
 </ul>
-<p>As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket <cite>nck_extracts`</cite>.</p>
+<p>As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">nck_extracts</span></code>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write bq --bq-dataset nck --bq-table google_analytics --bq-bucket nck-extracts
 </pre></div>
 </div>
@@ -356,7 +356,7 @@
 <h2>Local Writer<a class="headerlink" href="#local-writer" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id7">
 <h3>Quickstart<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p>The following command would allow you to write a file <cite>google_analytics_report_2020-01-01.njson</cite> on the <cite>~/Desktop</cite> directory of your local machine:</p>
+<p>The following command would allow you to write a file <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code> on the <code class="docutils literal notranslate"><span class="pre">~/Desktop</span></code> directory of your local machine:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_local --local-directory ~/Desktop/ --file-name google_analytics_report_2020-01-01.njson
 </pre></div>
 </div>

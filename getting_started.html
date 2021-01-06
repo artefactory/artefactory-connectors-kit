@@ -93,6 +93,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#linting">Linting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pre-commit-hooks">Pre-commit hooks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tdd-test-driven-development">TDD (<em>Test-Driven Development</em>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#launch-your-first-nck-command">Launch your first NCK command</a></li>
@@ -220,6 +221,40 @@ To run existing tests, execute:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>We are using <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> with a ReadTheDocs theme to document the application.</p>
+<p>The Sphinx package has already been installed in your virtual environment with dependencies.</p>
+<p>Sphinx documentation is available under the <code class="docutils literal notranslate"><span class="pre">docs/source/</span></code> directory of the <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev">GitHub repository</a> as .rst files (each file representing a page).
+It uses the reStructuredText (reST) syntax: to learn more about it, see the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">official documentation</a>.</p>
+<p>You can modify existing pages by editing the corresponding .rst files.</p>
+<p>If you want to create a new page, you should:</p>
+<ol class="arabic simple">
+<li><p>Create a new <code class="docutils literal notranslate"><span class="pre">&lt;YOUR_PAGE_NAME&gt;.rst</span></code> file under the <code class="docutils literal notranslate"><span class="pre">docs/source/</span></code> directory</p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">./&lt;YOUR_PAGE_NAME&gt;.rst</span></code> line in the <code class="docutils literal notranslate"><span class="pre">docs/source/index.rst</span></code> file as follows:</p></li>
+</ol>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">.. toctree:</span><span class="p p-Indicator">:</span>
+   <span class="l l-Scalar l-Scalar-Plain">:maxdepth</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
+   <span class="nt">caption</span><span class="p">:</span> <span class="nt">Contents</span><span class="p">:</span>
+
+   <span class="l l-Scalar l-Scalar-Plain">./overview.rst</span>
+   <span class="l l-Scalar l-Scalar-Plain">./getting_started.rst</span>
+   <span class="l l-Scalar l-Scalar-Plain">./readers.rst</span>
+   <span class="l l-Scalar l-Scalar-Plain">./streams.rst</span>
+   <span class="l l-Scalar l-Scalar-Plain">./writers.rst</span>
+   <span class="l l-Scalar l-Scalar-Plain">./to_go_further.rst</span>
+   <span class="l l-Scalar l-Scalar-Plain">./&lt;YOUR_PAGE_NAME&gt;.rst</span>
+</pre></div>
+</div>
+<p>To preview your changes, execute:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> docs/
+make html
+</pre></div>
+</div>
+<p>It will create the .html files corresponding to your .rst source files in the <code class="docutils literal notranslate"><span class="pre">docs/build/</span></code> directory.
+You can launch a preview of these .html files in your brower with your code editor (with VSCode: right-click on any .html file &gt; Open with Live Server).</p>
+<p>Sphinx documentation is automatically deployed on GitHub Pages (by a dedicated GitHub workflow) each time code is pushed to the ‘dev’ branch of the repository.</p>
+</div>
 </div>
 <div class="section" id="launch-your-first-nck-command">
 <h2>Launch your first NCK command<a class="headerlink" href="#launch-your-first-nck-command" title="Permalink to this headline">¶</a></h2>
@@ -250,7 +285,7 @@ To run existing tests, execute:</p>
 </pre></div>
 </div>
 <p>You can now execute it into your terminal.</p>
-<p><strong>Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/readers">reader commands</a> <strong>and</strong> <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/writers">writer commands</a>.</p>
+<p><strong>Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> and <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a>.</p>
 </div>
 <div class="section" id="contribute">
 <h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h2>
