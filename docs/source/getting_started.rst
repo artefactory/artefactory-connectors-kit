@@ -149,7 +149,7 @@ In the end, if we use ``write_console`` as a writer command, the combined NCK co
 
 You can now execute it into your terminal.
 
-**Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available** `reader commands <https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/readers>`__ **and** `writer commands <https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/writers>`__.
+**Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available** :ref:`readers:Readers` and :ref:`writers:Writers`.
 
 ==========
 Contribute
