@@ -21,7 +21,7 @@ name: Build and deploy documentation to Github pages
 on:
   push:
     branches:
-      - update-doc
+      - dev
 
 jobs:
 
