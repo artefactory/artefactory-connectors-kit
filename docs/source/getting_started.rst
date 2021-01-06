@@ -6,7 +6,7 @@ Getting started
 Set-up your developing environment
 ==================================
 
-To start using NCK and/or contributing, first clone the `dev` branch of the `GitHub repository <https://github.com/artefactory/nautilus-connectors-kit/tree/master>`__:
+To start using NCK and/or contributing, first clone the `dev` branch of the `GitHub repository <https://github.com/artefactory/nautilus-connectors-kit/tree/dev>`__:
 
 .. code-block:: shell
 
