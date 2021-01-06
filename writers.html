@@ -1,0 +1,459 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Writers &mdash; Nautilus Connectors Kit  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="To go further" href="to_go_further.html" />
+    <link rel="prev" title="Streams" href="streams.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Nautilus Connectors Kit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readers.html">Readers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="streams.html">Streams</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#amazon-s3-writer">Amazon S3 Writer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-name">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-options">Command options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#google-bigquery-writer">Google BigQuery Writer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Command options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#google-cloud-storage-writer">Google Cloud Storage Writer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Command options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#local-writer">Local Writer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Command options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#console-writer">Console Writer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Command options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="to_go_further.html">To go further</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Nautilus Connectors Kit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Writers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/writers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="writers">
+<h1>Writers<a class="headerlink" href="#writers" title="Permalink to this headline">¶</a></h1>
+<p><strong>Writers are writing output stream records to the destination of your choice.</strong></p>
+<p><em>About to develop a new writer?</em> See the <a class="reference internal" href="getting_started.html#how-to-develop-a-new-writer"><span class="std std-ref">How to develop a new writer</span></a> section.</p>
+<p><em>Just want to use an existing writer?</em> This page provides you with documentation on available commands:</p>
+<div class="section" id="amazon-s3-writer">
+<h2>Amazon S3 Writer<a class="headerlink" href="#amazon-s3-writer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="quickstart">
+<h3>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h3>
+<p>The following command would allow you to:</p>
+<ul class="simple">
+<li><p>write output stream records to a blob named <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code></p></li>
+<li><p>under the Amazon S3 bucket <code class="docutils literal notranslate"><span class="pre">nck_extracts</span></code></p></li>
+<li><p>organized according to the following path: <code class="docutils literal notranslate"><span class="pre">nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson</span></code></p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_s3 --s3-bucket-name nck_extracts --s3-prefix FR/google_analytics --s3-filename google_analytics_report_2020-01-01.njson --s3-bucket-region &lt;BUCKET_REGION&gt; --s3-access-key-id &lt;ACCESS_KEY_ID&gt; --s3-access-key-secret &lt;ACCESS_KEY_SECRET&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-name">
+<h3>Command name<a class="headerlink" href="#command-name" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">write_s3</span></code></p>
+</div>
+<div class="section" id="command-options">
+<h3>Command options<a class="headerlink" href="#command-options" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Options</p></th>
+<th class="head"><p>Definition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-bucket-name</span></code></p></td>
+<td><p>S3 bucket name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-prefix</span></code></p></td>
+<td><p>S3 blob prefix</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-filename</span></code></p></td>
+<td><p>S3 blob name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-bucket-region</span></code></p></td>
+<td><p>S3 bucket region</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-access-key-id</span></code></p></td>
+<td><p>S3 access key ID</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-access-key-secret</span></code></p></td>
+<td><p>S3 access key secret</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="google-bigquery-writer">
+<h2>Google BigQuery Writer<a class="headerlink" href="#google-bigquery-writer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Quickstart<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The following command would allow you to:</p>
+<ul class="simple">
+<li><p>store output stream records into the BigQuery table <code class="docutils literal notranslate"><span class="pre">google_analytics</span></code></p></li>
+<li><p>located under the BigQuery dataset <code class="docutils literal notranslate"><span class="pre">nck</span></code></p></li>
+</ul>
+<p>As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket <cite>nck_extracts`</cite>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write bq --bq-dataset nck --bq-table google_analytics --bq-bucket nck-extracts
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Command name<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">write_bq</span></code></p>
+</div>
+<div class="section" id="id3">
+<h3>Command options<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Options</p></th>
+<th class="head"><p>Definition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-dataset</span></code></p></td>
+<td><p>BigQuery dataset name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-table</span></code></p></td>
+<td><p>BigQuery table name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-write-disposition</span></code></p></td>
+<td><p>BigQuery write disposition. Possible values: TRUNCATE (default), APPEND</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-partition-column</span></code></p></td>
+<td><p>(Optional) Field to be used as a partition column (more information on <a class="reference external" href="https://cloud.google.com/bigquery/docs/partitioned-tables">this page</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-location</span></code></p></td>
+<td><p>BigQuery dataset location. Possible values: EU (default), US.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-bucket</span></code></p></td>
+<td><p>Cloud Storage bucket in which stream data should be written as a first step, before being uploaded into the BigQuery destination table</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-keep-files</span></code></p></td>
+<td><p>False (default) if Cloud Storage blob should be deleted once the data has been uploaded into the BigQuery destination table, True otherwise</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="google-cloud-storage-writer">
+<h2>Google Cloud Storage Writer<a class="headerlink" href="#google-cloud-storage-writer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>Quickstart<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>The following command would allow you to:</p>
+<ul class="simple">
+<li><p>write output stream records to a blob named <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code></p></li>
+<li><p>located under the Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">nck_extracts</span></code></p></li>
+<li><p>organized according to the following path: <code class="docutils literal notranslate"><span class="pre">nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson</span></code></p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_gcs --gcs-project-id &lt;GCP_PROJECT_ID&gt; --gcs-bucket nck_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>Command name<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">write_gcs</span></code></p>
+</div>
+<div class="section" id="id6">
+<h3>Command options<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Options</p></th>
+<th class="head"><p>Definition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-project-id</span></code></p></td>
+<td><p>GCP project ID</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-bucket</span></code></p></td>
+<td><p>Cloud Storage bucket name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-prefix</span></code></p></td>
+<td><p>Cloud Storage blob prefix</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-file-name</span></code></p></td>
+<td><p>Cloud Storage blob name</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="local-writer">
+<h2>Local Writer<a class="headerlink" href="#local-writer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>Quickstart<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>The following command would allow you to write a file <cite>google_analytics_report_2020-01-01.njson</cite> on the <cite>~/Desktop</cite> directory of your local machine:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_local --local-directory ~/Desktop/ --file-name google_analytics_report_2020-01-01.njson
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Command name<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">write_local</span></code></p>
+</div>
+<div class="section" id="id9">
+<h3>Command options<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Options</p></th>
+<th class="head"><p>Definition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--local-directory</span> <span class="pre">(-d)</span></code></p></td>
+<td><p>Local directory in which the destination file should be stored</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--file-name</span> <span class="pre">(-n)</span></code></p></td>
+<td><p>Destination file name</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="console-writer">
+<h2>Console Writer<a class="headerlink" href="#console-writer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3>Quickstart<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>The following command would allow you to write stream output records directly into your terminal, which is very convenient for debugging:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_console
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h3>Command name<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">write_console</span></code></p>
+</div>
+<div class="section" id="id12">
+<h3>Command options<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p><em>This writer command expects no options.</em></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="to_go_further.html" class="btn btn-neutral float-right" title="To go further" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="streams.html" class="btn btn-neutral float-left" title="Streams" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Artefact.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
