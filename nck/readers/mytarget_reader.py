@@ -23,7 +23,7 @@ from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
 import requests
-from typing import Dict
+from typing import Dict, Any, List
 from nck.utils.secret_retriever import get_secret
 from botocore.config import Config
 import logging
@@ -122,6 +122,81 @@ class MyTargetReader(Reader):
     def set_access_token(self, access_token):
         self.access_token = access_token
 
+    def create_clients_list_request(self):
+        url = 'https://target.my.com/api/v3/manager/clients.json'
+        headers = {
+            'Authorization': 'Bearer ' + self.access_token['access_token'],
+            'Host': 'target.my.com'
+        }
+        payload = dict(
+            grant_type='agency_client_credentials',
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            agency_client_name=self.mail
+        )
+        return dict(
+            url=url,
+            headers=headers,
+            data=payload
+        )
+
+    def retrieve_client_list(self):
+        rsp = requests.get(**self.create_clients_list_request())
+        return rsp.json()
+
+    def get_list_clients(rsp: Dict[str, Any]) -> List[str]:
+        return [
+            element['user']['username']
+            for element in rsp['items']
+        ]
+
+    def create_agency_token_request(self, agency_client):
+        url = 'https://target.my.com/api/v2/oauth2/token.json'
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Host': 'target.my.com'
+        }
+        payload = dict(
+            grant_type='agency_client_credentials',
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            agency_client_name=agency_client
+        )
+        return dict(
+            url=url,
+            headers=headers,
+            data=payload
+        )
+
+    def retrieve_agency_tokens(self, list_agency_client):
+        return [
+            requests.post(**self.create_agency_token_request(agency_client)).json()
+            for agency_client in list_agency_client
+        ]
+
+    def create_data_request_header(self):
+        url = "https://target.my.com/api/v2/banners.json"
+        headers = {
+            'Authorization': 'Bearer ' + self.current_client_token['access_token'],
+            'Host': 'target.my.com'
+        }
+        params = dict()
+        return dict(
+            url=url,
+            headers=headers,
+            data=params
+        )
+
+    def read(self):
+        res = self.retrieve_token()
+        self.set_access_token(res)
+        print(self.access_token)
+        res2 = self.retrieve_client_list()
+        print(res2)
+        yield JSONStream(
+            "results_", res2
+        )
+
     def create_refresh_request(self, token):
         '''
         this will return an access token with a different access_token but same refresh_token
@@ -150,74 +225,6 @@ class MyTargetReader(Reader):
     def set_refreshed_token(self, new_access_token):
         self.current_token['access_token'] = new_access_token
 
-    def create_clients_list_request(self):
-        url = 'https://target.my.com/api/v3/manager/clients.json'
-        headers = {
-            'Authorization': 'Bearer ' + self.access_token['access_token'],
-            'Host': 'target.my.com'
-        }
-        payload = dict(
-            grant_type='agency_client_credentials',
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            agency_client_name=self.mail
-        )
-        return dict(
-            url=url,
-            headers=headers,
-            data=payload
-        )
-
-    def retrieve_client_list(self):
-        rsp = requests.get(**self.create_clients_list_request())
-        return rsp.json()
-
-    def create_agency_token_request(self, agency_client):
-        url = 'https://target.my.com/api/v2/oauth2/token.json'
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Host': 'target.my.com'
-        }
-        payload = dict(
-            grant_type='agency_client_credentials',
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            agency_client_name=agency_client
-        )
-        return dict(
-            url=url,
-            headers=headers,
-            data=payload
-        )
-
-    def retrieve_agency_token(self, agency_client):
-        rsp = requests.post(**self.create_agency_token_request(agency_client))
-        return rsp.json()
-
     def refresh_agency_token(self, client_token):
         rsp = requests.post(**self.create_refresh_request(client_token))
         return rsp.json()
-        client_token['access_token'] = rsp.json()['access_token']
-
-    def create_data_request_header(self):
-        url = "https://target.my.com/api/v2/banners.json"
-        headers = {
-            'Authorization': 'Bearer ' + self.current_client_token['access_token'],
-            'Host': 'target.my.com'
-        }
-        params = dict()
-        return dict(
-            url=url,
-            headers=headers,
-            data=params
-        )
-
-    def read(self):
-        res = self.retrieve_token()
-        self.set_access_token(res)
-        print(self.access_token)
-        res2 = self.retrieve_client_list()
-        print(res2)
-        yield JSONStream(
-            "results_", res2
-        )
