@@ -282,7 +282,7 @@ python nck/entrypoint.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offlin
 
 The Confluence Reader handles calls to the **Get Content endpoint** of Confluence Cloud REST API.
 
-The following command retrieves the titles, space names, tiny links and label names of all pages located under the Atlassian domain <ATLASSIAN_DOMAIN>, filtered on the spacekeys <KEY_1> and <KEY_2>, thanks to your <USER_LOGIN> and <API_TOKEN>.
+The following command retrieves the titles, space names, tiny links and label names of all pages located under the Atlassian domain <ATLASSIAN_DOMAIN>, filtered on the spacekeys <KEY_1> and <KEY_2>.
 
 ```
 python nck/entrypoint.py read_confluence --confluence-user-login <USER_LOGIN> --confluence-api-token <API_TOKEN> --confluence-atlassian-domain <ATLASSIAN_DOMAIN> --confluence-content-type "page" --confluence-field "title" --confluence-field "space.name" --confluence-field "tiny_link" --confluence-field "label_names" --confluence-spacekey <KEY_1> --confluence-spacekey <KEY_2> write_console
@@ -502,7 +502,7 @@ See the [documentation here](https://developers.google.com/adwords/api/docs/guid
 
 #### Quickstart
 
-The following command retrieves insights about the Ads of *my_first_campaign* and *my_second_campaign* in the Google Ads Account <CLIENT_CUSTOMER_ID>, thanks to your company <DEVELOPER_TOKEN>, <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your Accounts.
+The following command retrieves insights about the Ads of *my_first_campaign* and *my_second_campaign* in the Google Ads Account <CLIENT_CUSTOMER_ID>.
 
 ```
 python nck/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter "{'field':'CampaignName','operator':'IN','values':['my_first_campaign','my_second_campaign']}"
@@ -547,7 +547,7 @@ See documentation below for a better understanding of the parameters:
 
 #### Quickstart
 
-The following command retrieves sessions, pageviews and bounces volumes by date from 2020-01-01 to 2020-01-03, for the Analytics View <VIEW_ID>, thanks your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+The following command retrieves sessions, pageviews and bounces volumes by date from 2020-01-01 to 2020-01-03, for the Analytics View <VIEW_ID>.
 
 ```
 python nck/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
@@ -630,7 +630,7 @@ python nck/entrypoint.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/off
 
 #### Quickstart
 
-The following command retrieves impressions, clicks and cost volumes from 2020-01-01 to 2020-01-03, thanks your <CLIENT_ID>, <CLIENT_SECRET>, <REFRESH_TOKEN> and <PROFILE_ID> with the necessary permissions to access your accounts.
+The following command retrieves impressions, clicks and cost volumes from 2020-01-01 to 2020-01-03.
 
 ```
 python nck/entrypoint.py read_dcm --dcm-client-id <CLIENT_ID> --dcm-client-secret <CLIENT_SECRET> --dcm-refresh-token <REFRESH_TOKEN> --dcm-profile-id <PROFILE_ID> --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date 2020-01-01 --dcm-end-date 2020-01-03 write_console
@@ -667,7 +667,7 @@ python nck/entrypoint.py read_dcm --dcm-client-id <CLIENT_ID> --dcm-client-secre
 
 #### Quickstart
 
-The following command retrieves impressions, clicks and cost volumes filtered on a specific <ADVERTISER_ID> from 2020-01-01 to 2020-01-03, thanks your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+The following command retrieves impressions, clicks and cost volumes filtered on a specific <ADVERTISER_ID> from 2020-01-01 to 2020-01-03.
 
 ```
 python nck/entrypoint.py read_dbm --dbm-client-id <CLIENT_ID> --dbm-client-secret <CLIENT_SECRET> —dbm-refresh-token <REFRESH_TOKEN> —dbm-filter FILTER_ADVERTISER <ADVERTISER_ID> --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date 2020-01-01 --dbm-end-date 2020-01-03 write_console
@@ -760,7 +760,7 @@ Using the Google Search Console API requires three main parameters:
 
 #### Quickstart
 
-The following command retrieves insights about the URL <SITE_URL> from 2020-01-01 to 2020-01-03, thanks to your <CLIENT_ID> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+The following command retrieves insights about the URL <SITE_URL> from 2020-01-01 to 2020-01-03.
 
 ```
 python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_ID> --search-console-refresh-token <REFRESH_TOKEN> --search-console-site-url <SITE_URL> --search-console-dimensions country --search-console-dimensions device --search-console-start-date 2020-01-01 --search-console-end-date 2020-01-03 write_console 
@@ -806,7 +806,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 
 #### Quickstart
 
-The following command retrieves insights about the Ads in the Search Ads 360 Account <ADVERTISER_ID> from the agency <AGENCY_ID> thanks to your <CLIENT_ID>, <CLIENT_SECRET> and <REFRESH_TOKEN> with the necessary permissions to access your accounts.
+The following command retrieves insights about the Ads in the Search Ads 360 Account <ADVERTISER_ID> from the agency <AGENCY_ID>.
 
 ```
 python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
@@ -848,7 +848,10 @@ See documentation [here](https://developers.google.com/search-ads/v2/how-tos/rep
 
 To use the Google Sheets Reader you must first retrieve your credentials. In order to do so, head to console.cloud.google.com. In the header, chose your project or create a new one. Next step is to enable the Google Drive and Google Sheets APIs in the API Library. You’ll find it in the *APIs & Services* tab. Now that Google Drive API is enabled, click on the *Create credentials* button on the upper-right corner and enter these informations :
 
-![alt text](https://github.com/artefactory/nautilus-connectors-kit/blob/dev/documentation_images/credentials_gs.png)
+- Which API are you using? > Google Drive API
+- Where will you be calling the API from? > Web server
+- What data will you be accessing? > Application data
+- Are you planning to use this API with App Engine or Compute Engine? > No, I'm not using them
 
 Click on *What credentials do I need* and complete the form. You will find the credentials you need in the .json file that will start downloading automatically right after.
 
