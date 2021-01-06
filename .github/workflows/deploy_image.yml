@@ -15,25 +15,24 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-# This workflow will build a docker container and publish it to Google Container Registry.
 
+# TO CONFIGURE THIS WORKFLOW
+# 1. Set up secrets in your workspace: 
+# - GCP_PROJECT with the name of the project
+# - GCP_EMAIL with the service account email
+# - GCP_KEY with the service account key
+# 2. Deployment infos are by now in the .env module:
+# don't forget to change the version when updating the master branch.
 
-
-# To configure this workflow:
-#
-# 1. Set up secrets in your workspace: GCP_PROJECT with the name of the project, GCP_EMAIL with the service account
-# email, GCP_KEY with the service account key.
-#
-# 2. The deployments info are by now in the .env, dont forget to change the version when updating the master.
-
-name: Build and Deploy image to GCP
+name: Build and publish Docker image to GCP Container Registry
 
 on:
   pull_request:
     types: [closed]
 
-# Environment variables available to all jobs and steps in this workflow
+# Environment variables available to all jobs and steps in this workflow:
 env:
+
   GCP_EMAIL: ${{ secrets.GCP_EMAIL }}
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   DOCKER_TAG: ${{ github.run_id }}
@@ -42,31 +41,28 @@ env:
   CLOUDSDK_PYTHON_SITEPACKAGES: 1
 
 jobs:
-  setup-build-publish:
-    if: github.event.pull_request.merged == true
-    name: Setup, Build, Publish
+
+  build-and-deploy:
+
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+
     steps:
 
-    - name: Checkout
-      uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v1
 
-    # Setup gcloud CLI
-    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-      with:
-        version: '290.0.1'
-        service_account_email: ${{ secrets.GCP_EMAIL }}
-        service_account_key: ${{ secrets.GCP_KEY }}
+      - name: Setup gcloud CLI
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          service_account_email: ${{ secrets.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_KEY }}
 
-    - name: Clean ENV
-      run: |
-        > .env
+      - name: Clean .env
+        run: |
+          > .env
 
-
-    # Build the Docker image
-    - name: Build And Publish
-      run: |
-        make publish_base_image
-
-
-
+      - name: Build and publish Docker image
+        run: |
+          make publish_base_image
