@@ -67,6 +67,50 @@ To run existing tests, execute:
 
     nosetests
 
+-------------
+Documentation
+-------------
+
+We are using `Sphinx <https://www.sphinx-doc.org/en/master/>`__ with a ReadTheDocs theme to document the application.
+
+The Sphinx package has already been installed in your virtual environment with dependencies.
+
+Sphinx documentation is available under the ``docs/source/`` directory of the `GitHub repository <https://github.com/artefactory/nautilus-connectors-kit/tree/dev>`__ as .rst files (each file representing a page).
+It uses the reStructuredText (reST) syntax: to learn more about it, see the `official documentation <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`__.
+
+You can modify existing pages by editing the corresponding .rst files.
+
+If you want to create a new page, you should:
+
+1. Create a new ``<YOUR_PAGE_NAME>.rst`` file under the ``docs/source/`` directory
+2. Add a ``./<YOUR_PAGE_NAME>.rst`` line in the ``docs/source/index.rst`` file as follows:
+
+.. code-block:: yaml
+
+    .. toctree::
+       :maxdepth: 2
+       caption: Contents:
+
+       ./overview.rst
+       ./getting_started.rst
+       ./readers.rst
+       ./streams.rst
+       ./writers.rst
+       ./to_go_further.rst
+       ./<YOUR_PAGE_NAME>.rst
+
+To preview your changes, execute:
+
+.. code-block:: shell
+
+    cd docs/
+    make html
+
+It will create the .html files corresponding to your .rst source files in the ``docs/build/`` directory.
+You can launch a preview of these .html files in your brower with your code editor (with VSCode: right-click on any .html file > Open with Live Server).
+
+Sphinx documentation is automatically deployed on GitHub Pages (by a dedicated GitHub workflow) each time code is pushed to the 'dev' branch of the repository.
+
 =============================
 Launch your first NCK command
 =============================
