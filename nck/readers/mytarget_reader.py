@@ -23,29 +23,29 @@ from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
 import requests
-from typing import Dict, Any, List
+from typing import Dict
 from nck.utils.secret_retriever import get_secret
 from botocore.config import Config
 import logging
 import json
 import boto3
+import itertools
 
 
 @click.command(name="read_mytarget")
 @click.option("--mytarget-client-id", required=True)
 @click.option("--mytarget-client-secret", required=True)
 @click.option("--mytarget-mail", required=True)
-@click.option(
-    "--mytarget-campaign-ids",
-    "mytarget_campaign_ids",
-    multiple=True
-)
+@click.option("--mytarget-agency", required=True)
 @processor("mytarget-client-id", "mytarget-client-secret")
 def mytarget(**kwargs):
     return MyTargetReader(**extract_args("mytarget_", kwargs))
 
 
-secret_keys = json.loads(get_secret('arn:aws:secretsmanager:eu-west-3:127773427021:secret:access-key-sanofi-ANrWKh', 'eu-west-3'))
+secret_keys = json.loads(get_secret(
+    'arn:aws:secretsmanager:eu-west-3:127773427021:secret:access-key-sanofi-ANrWKh',
+    'eu-west-3')
+)
 
 
 s3_resource = boto3.resource(
@@ -68,87 +68,15 @@ class MyTargetReader(Reader):
         client_id,
         client_secret,
         mail,
+        agency,
         **kwargs
     ):
         self.client_id = client_id
         self.client_secret = client_secret
         self.mail = mail
-        self.campaign_ids = list(kwargs["campaign_ids"])
+        self.agency = agency
         self.access_token = None
-
-    def create_token_request(self):
-        url = 'https://target.my.com/api/v2/oauth2/token.json'
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Host': 'target.my.com'
-        }
-        payload = dict(
-            grant_type='client_credentials',
-            client_id=self.client_id,
-            client_secret=self.client_secret
-        )
-        return dict(
-            url=url,
-            headers=headers,
-            data=payload
-        )
-
-    def get_token_response(self):
-        rsp = requests.post(**self.create_token_request())
-        return rsp.json()
-
-    def is_token_new(self, rsp):
-        return "error" not in rsp.keys()
-
-    def __write_file_s3(self, content: Dict[str, str]):
-        s3_resource.Object('token-mytarget', 'last_token.json').put(Body=json.dumps(content))
-        logging.info('The token has been uploaded to the bucket.')
-
-    def __retrieve_token_file(self) -> Dict[str, str]:
-        obj = s3_resource.Object('token-mytarget', 'last_token.json')
-        logging.info('The last token has been retrieved from the bucket.')
-        return json.loads(obj.get()['Body'].read())
-
-    def retrieve_token(self):
-        rsp = self.get_token_response()
-        if self.is_token_new(rsp):
-            logging.info("New token retrieved, going to store it to s3")
-            self.__write_file_s3(rsp)
-            return rsp
-        else:
-            logging.info("No more token available, going to retrieve the last one from s3")
-            return self.__retrieve_token_file()
-
-    def set_access_token(self, access_token):
-        self.access_token = access_token
-
-    def create_clients_list_request(self):
-        url = 'https://target.my.com/api/v3/manager/clients.json'
-        headers = {
-            'Authorization': 'Bearer ' + self.access_token['access_token'],
-            'Host': 'target.my.com'
-        }
-        payload = dict(
-            grant_type='agency_client_credentials',
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            agency_client_name=self.mail
-        )
-        return dict(
-            url=url,
-            headers=headers,
-            data=payload
-        )
-
-    def retrieve_client_list(self):
-        rsp = requests.get(**self.create_clients_list_request())
-        return rsp.json()
-
-    def get_list_clients(rsp: Dict[str, Any]) -> List[str]:
-        return [
-            element['user']['username']
-            for element in rsp['items']
-        ]
+        self.agency_client_token = None
 
     def create_agency_token_request(self, agency_client):
         url = 'https://target.my.com/api/v2/oauth2/token.json'
@@ -168,63 +96,157 @@ class MyTargetReader(Reader):
             data=payload
         )
 
-    def retrieve_agency_tokens(self, list_agency_client):
-        return [
-            requests.post(**self.create_agency_token_request(agency_client)).json()
-            for agency_client in list_agency_client
-        ]
+    def retrieve_agency_client_response(self):
+        return requests.post(**self.create_agency_token_request(self.agency)).json()
 
-    def create_data_request_header(self):
+    def is_agency_client_token_new(self, rsp):
+        return "error" not in rsp.keys()
+
+    def __write_agency_client_token_s3(self, content: Dict[str, str]):
+        s3_resource.Object('token-mytarget', f'{self.agency_client_token}_last_token.json').put(Body=json.dumps(content))
+        logging.info('The token has been uploaded to the bucket.')
+
+    def __retrieve_agency_client_token_file(self) -> Dict[str, str]:
+        obj = s3_resource.Object('token-mytarget', f'{self.agency_client_token}_last_token.json')
+        logging.info('The last token has been retrieved from the bucket.')
+        return json.loads(obj.get()['Body'].read())
+
+    def retrieve_agency_client_token(self):
+        rsp = self.retrieve_agency_client_response()
+        if self.is_agency_client_token_new(rsp):
+            logging.info("New token retrieved, going to store it to s3")
+            self.__write_agency_client_token_s3(rsp)
+            return rsp
+        else:
+            logging.info("No more token available, going to retrieve the last one from s3")
+            return self.__retrieve_agency_client_token_file()
+
+    def set_agency_client_token(self):
+        self.agency_client_token = self.retrieve_agency_client_token()
+
+    def create_campaign_id_request(self, offset: int):
         url = "https://target.my.com/api/v2/banners.json"
         headers = {
-            'Authorization': 'Bearer ' + self.current_client_token['access_token'],
+            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
             'Host': 'target.my.com'
         }
-        params = dict()
+        params = dict(offset=offset)
         return dict(
             url=url,
             headers=headers,
-            data=params
+            params=params
         )
 
-    def read(self):
-        res = self.retrieve_token()
-        self.set_access_token(res)
-        print(self.access_token)
-        res2 = self.retrieve_client_list()
-        print(res2)
-        yield JSONStream(
-            "results_", res2
-        )
+    def get_campaign_id_response(self, offset: int):
+        return requests.get(**self.create_campaign_id_request(offset)).json()
 
-    def create_refresh_request(self, token):
-        '''
-        this will return an access token with a different access_token but same refresh_token
-        '''
-        url = 'https://target.my.com/api/v2/oauth2/token.json'
+    def get_all_campaign_id_ex(self):
+        first_ids = self.get_campaign_id_response(0)
+        count = first_ids['count']
+        ids = [first_ids['items']]
+        if count > 20:
+            ids += [
+                self.get_campaign_id_response(offset)['items']
+                for offset in range(20, self.round_up_to_base(count, 20), 20)
+            ]
+        return list(itertools.chain.from_iterable(ids))
+
+    def round_up_to_base(self, x, base):
+        return base * round(x / base)
+
+    def get_campaign_name_request(self, offset: int):
+        url = "https://target.my.com/api/v2/campaigns.json"
         headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
             'Host': 'target.my.com'
         }
-        payload = dict(
-            grant_type='refresh_token',
-            refresh_token=token['refresh_token'],
-            client_id=self.client_id,
-            client_secret=self.client_secret
-        )
+        payload = dict(offset=offset)
         return dict(
             url=url,
             headers=headers,
             data=payload
         )
 
-    def refresh_token(self, token):
-        rsp = requests.post(**self.create_refresh_request(self.current_token))
-        return rsp.json()['access_token']
+    def get_campaign_name_response(self, offset: int):
+        return requests.get(**self.get_campaign_name_request(offset)).json()
 
-    def set_refreshed_token(self, new_access_token):
-        self.current_token['access_token'] = new_access_token
+    def get_all_campaign_names_ex(self):
+        first_names = self.get_campaign_name_response(0)
+        count = first_names['count']
+        names = [first_names['items']]
+        if count > 20:
+            names += [
+                self.get_campaign_name_response(offset)['items']
+                for offset in range(20, self.round_up_to_base(count, 20), 20)
+            ]
+        res = list(itertools.chain.from_iterable(names))
+        return res
 
-    def refresh_agency_token(self, client_token):
-        rsp = requests.post(**self.create_refresh_request(client_token))
-        return rsp.json()
+    def get_banner_request(self, campaign_id, offset):
+        url = "https://target.my.com/api/v2/banners.json"
+        headers = {
+            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
+            'Host': 'target.my.com'
+        }
+        params = dict(_campaign_id=campaign_id, offset=offset)
+        return dict(
+            url=url,
+            headers=headers,
+            params=params
+        )
+
+    def get_banner_response(self, campaign_id, offset):
+        return requests.get(**self.get_banner_request(campaign_id, offset)).json()
+
+    def get_all_banners_one_camp(self, campaign_id):
+        first_banners = self.get_banner_response(campaign_id, 0)
+        count = first_banners['count']
+        banners = [first_banners['items']]
+        if count > 20:
+            banners += [
+                self.get_banner_response(campaign_id, offset)['items']
+                for offset in range(20, self.round_up_to_base(count, 20), 20)
+            ]
+        all_banners = list(itertools.chain.from_iterable(banners))
+        filtered_banners = [(x['id'], x['campaign_id']) for x in all_banners if x['moderation_status'] == 'allowed']
+        return filtered_banners
+
+    def get_all_banners_all_camp(self, campaign_ids):
+        acc = []
+        for campaign_id in campaign_ids:
+            acc.extend(self.get_all_banners_one_camp(campaign_id))
+        return dict(acc)
+
+    def get_daily_banner_stat_request(self, banner_ids):
+        url = "https://target.my.com/api/v2/statistics/banners/day.json"
+        headers = {
+            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
+            'Host': 'target.my.com'
+        }
+        params = dict(
+            id=banner_ids,
+            date_from='2020-11-15',
+            date_to='2020-12-06',
+            metrics='all'
+        )
+        return dict(
+            url=url,
+            headers=headers,
+            params=params
+        )
+
+    def get_daily_banner_stat_response(self, banner_ids):
+        return requests.get(**self.get_daily_banner_stat_request(banner_ids)).json()
+
+    def read(self):
+        self.set_agency_client_token()
+        rsp_id = self.get_all_campaign_id_ex()
+        rsp_name = self.get_all_campaign_names_ex()
+
+        campaign_ids = [element['campaign_id'] for element in rsp_id]
+        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
+        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
+        print(rsp_daily_stat)
+        yield JSONStream(
+            "results_" + rsp_daily_stat
+        )
