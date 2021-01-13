@@ -67,26 +67,6 @@ class MyTargetReader(Reader):
             'refresh_token': refresh_token
         }
 
-    def read(self):
-        refreshed_token = self.get_refreshed_agency_token()
-        self.set_agency_client_token(refreshed_token)
-
-        response_id = self.get_all_campaign_ids()
-        response_name = self.get_all_campaign_names()
-
-        names_dict = self.convert_list_dicts_names_to_dict(response_name)
-        ids_dict = self.convert_list_dicts_ids_to_dict(response_id)
-        campaign_ids = [element['campaign_id'] for element in response_id]
-
-        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
-        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
-        rsp_banner_names = self.get_banner_name_response(list(rsp_banner))
-
-        complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
-        yield JSONStream(
-            "results_", self.split_content_by_date(complete_daily_content)
-        )
-
     def __get_header(self, header_type: str):
         if header_type == "content_type":
             return {
@@ -309,3 +289,23 @@ class MyTargetReader(Reader):
                 new_line = {**new_line_base, **dict_daily_stats}
                 content_by_date.append(new_line)
         yield from content_by_date
+
+    def read(self):
+        refreshed_token = self.get_refreshed_agency_token()
+        self.set_agency_client_token(refreshed_token)
+
+        response_id = self.get_all_campaign_ids()
+        response_name = self.get_all_campaign_names()
+
+        names_dict = self.convert_list_dicts_names_to_dict(response_name)
+        ids_dict = self.convert_list_dicts_ids_to_dict(response_id)
+        campaign_ids = [element['campaign_id'] for element in response_id]
+
+        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
+        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
+        rsp_banner_names = self.get_banner_name_response(list(rsp_banner))
+
+        complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
+        yield JSONStream(
+            "results_", self.split_content_by_date(complete_daily_content)
+        )
