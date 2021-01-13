@@ -16,20 +16,15 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
-import nck.helpers.api_client_helper as api_client_helper
-from nck.clients.api_client import ApiClient
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
 import requests
-from typing import Dict
-from nck.utils.secret_retriever import get_secret
-from botocore.config import Config
+from typing import Dict, List, Any
 import logging
-import json
-import boto3
 import itertools
+import time
 
 
 @click.command(name="read_mytarget")
@@ -37,28 +32,18 @@ import itertools
 @click.option("--mytarget-client-secret", required=True)
 @click.option("--mytarget-mail", required=True)
 @click.option("--mytarget-agency", required=True)
+@click.option("--mytarget-refresh-token", required=True)
+@click.option("--mytarget-start-date", type=click.DateTime())
+@click.option("--mytarget-end-date", type=click.DateTime())
+@click.option(
+    "--mytarget-date-format",
+    default="%Y-%m-%d",
+    help="And optional date format for the output stream. "
+    "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior",
+)
 @processor("mytarget-client-id", "mytarget-client-secret")
 def mytarget(**kwargs):
     return MyTargetReader(**extract_args("mytarget_", kwargs))
-
-
-secret_keys = json.loads(get_secret(
-    'arn:aws:secretsmanager:eu-west-3:127773427021:secret:access-key-sanofi-ANrWKh',
-    'eu-west-3')
-)
-
-
-s3_resource = boto3.resource(
-    's3',
-    aws_access_key_id=secret_keys.get('ACCESS_KEY'),
-    aws_secret_access_key=secret_keys.get('SECRET_KEY'),
-    region_name='eu-west-3',
-    config=Config(
-        retries={
-            'max_attempts': 10
-        }
-    )
-)
 
 
 class MyTargetReader(Reader):
@@ -69,6 +54,7 @@ class MyTargetReader(Reader):
         client_secret,
         mail,
         agency,
+        refresh_token,
         **kwargs
     ):
         self.client_id = client_id
@@ -76,71 +62,80 @@ class MyTargetReader(Reader):
         self.mail = mail
         self.agency = agency
         self.access_token = None
-        self.agency_client_token = None
-
-    def create_agency_token_request(self, agency_client):
-        url = 'https://target.my.com/api/v2/oauth2/token.json'
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Host': 'target.my.com'
+        self.agency_client_token = {
+            'access_token': None,
+            'refresh_token': refresh_token
         }
-        payload = dict(
-            grant_type='agency_client_credentials',
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            agency_client_name=agency_client
+
+    def read(self):
+        refreshed_token = self.get_refreshed_agency_token()
+        self.set_agency_client_token(refreshed_token)
+
+        response_id = self.get_all_campaign_ids()
+        response_name = self.get_all_campaign_names()
+
+        names_dict = self.convert_list_dicts_names_to_dict(response_name)
+        ids_dict = self.convert_list_dicts_ids_to_dict(response_id)
+        campaign_ids = [element['campaign_id'] for element in response_id]
+
+        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
+        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
+        rsp_banner_names = self.get_banner_name_response(list(rsp_banner))
+
+        complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
+        yield JSONStream(
+            "results_", self.split_content_by_date(complete_daily_content)
         )
-        return dict(
-            url=url,
-            headers=headers,
-            data=payload
-        )
 
-    def retrieve_agency_client_response(self):
-        return requests.post(**self.create_agency_token_request(self.agency)).json()
-
-    def is_agency_client_token_new(self, rsp):
-        return "error" not in rsp.keys()
-
-    def __write_agency_client_token_s3(self, content: Dict[str, str]):
-        s3_resource.Object('token-mytarget', f'{self.agency_client_token}_last_token.json').put(Body=json.dumps(content))
-        logging.info('The token has been uploaded to the bucket.')
-
-    def __retrieve_agency_client_token_file(self) -> Dict[str, str]:
-        obj = s3_resource.Object('token-mytarget', f'{self.agency_client_token}_last_token.json')
-        logging.info('The last token has been retrieved from the bucket.')
-        return json.loads(obj.get()['Body'].read())
-
-    def retrieve_agency_client_token(self):
-        rsp = self.retrieve_agency_client_response()
-        if self.is_agency_client_token_new(rsp):
-            logging.info("New token retrieved, going to store it to s3")
-            self.__write_agency_client_token_s3(rsp)
-            return rsp
+    def __get_header(self, header_type: str):
+        if header_type == "content_type":
+            return {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Host': 'target.my.com'
+            }
+        elif header_type == "authorization":
+            return {
+                'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
+                'Host': 'target.my.com'
+            }
         else:
-            logging.info("No more token available, going to retrieve the last one from s3")
-            return self.__retrieve_agency_client_token_file()
+            logging.ERROR("No such kind of header available")
 
-    def set_agency_client_token(self):
-        self.agency_client_token = self.retrieve_agency_client_token()
+    def create_refresh_request(self):
+        '''
+        this will return an access token with a different access_token but same refresh_token
+        '''
+        payload = {
+            'grant_type': 'refresh_token',
+            'refresh_token': self.agency_client_token['refresh_token'],
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+        return {
+            'url': 'https://target.my.com/api/v2/oauth2/token.json',
+            'headers': self.__get_header("content_type"),
+            'data': payload
+        }
+
+    def get_refreshed_agency_token(self) -> Dict[str, str]:
+        rsp = requests.post(**self.create_refresh_request())
+        return rsp.json()
+
+    def set_agency_client_token(self, agency_token):
+        self.agency_client_token = agency_token
 
     def create_campaign_id_request(self, offset: int):
-        url = "https://target.my.com/api/v2/banners.json"
-        headers = {
-            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
-            'Host': 'target.my.com'
+        params = {'offset': offset}
+        return {
+            'url': "https://target.my.com/api/v2/banners.json",
+            'headers': self.__get_header("authorization"),
+            'params': params
         }
-        params = dict(offset=offset)
-        return dict(
-            url=url,
-            headers=headers,
-            params=params
-        )
 
     def get_campaign_id_response(self, offset: int):
         return requests.get(**self.create_campaign_id_request(offset)).json()
 
-    def get_all_campaign_id_ex(self):
+    def get_all_campaign_ids(self):
         first_ids = self.get_campaign_id_response(0)
         count = first_ids['count']
         ids = [first_ids['items']]
@@ -155,22 +150,38 @@ class MyTargetReader(Reader):
         return base * round(x / base)
 
     def get_campaign_name_request(self, offset: int):
-        url = "https://target.my.com/api/v2/campaigns.json"
-        headers = {
-            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
-            'Host': 'target.my.com'
+        params = {'offset': offset}
+        return {
+            'url': "https://target.my.com/api/v2/campaigns.json",
+            'headers': self.__get_header("authorization"),
+            'params': params
         }
-        payload = dict(offset=offset)
-        return dict(
-            url=url,
-            headers=headers,
-            data=payload
-        )
 
-    def get_campaign_name_response(self, offset: int):
+    def get_campaign_name_response(
+        self,
+        offset: int
+    ) -> List[Dict[str, str]]:
         return requests.get(**self.get_campaign_name_request(offset)).json()
 
-    def get_all_campaign_names_ex(self):
+    def convert_list_dicts_names_to_dict(
+        self,
+        list_dicts_names: List[Dict[str, str]]
+    ) -> Dict[str, str]:
+        new_dict = {}
+        for dict_name_id in list_dicts_names:
+            new_dict.update({dict_name_id['id'] : dict_name_id['name']})
+        return new_dict
+
+    def convert_list_dicts_ids_to_dict(
+        self,
+        list_dicts_ids: List[Dict[str, str]]
+    ) -> Dict[str, str]:
+        new_dict = {}
+        for dict_ids in list_dicts_ids:
+            new_dict.update({dict_ids['id'] : dict_ids['campaign_id']})
+        return new_dict
+
+    def get_all_campaign_names(self):
         first_names = self.get_campaign_name_response(0)
         count = first_names['count']
         names = [first_names['items']]
@@ -183,19 +194,18 @@ class MyTargetReader(Reader):
         return res
 
     def get_banner_request(self, campaign_id, offset):
-        url = "https://target.my.com/api/v2/banners.json"
-        headers = {
-            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
-            'Host': 'target.my.com'
+        params = {'_campaign_id': campaign_id, 'offset': offset}
+        return {
+            'url': "https://target.my.com/api/v2/banners.json",
+            'headers': self.__get_header("authorization"),
+            'params': params
         }
-        params = dict(_campaign_id=campaign_id, offset=offset)
-        return dict(
-            url=url,
-            headers=headers,
-            params=params
-        )
 
-    def get_banner_response(self, campaign_id, offset):
+    def get_banner_response(
+        self,
+        campaign_id: str,
+        offset: int
+    ) -> List[Dict[str, str]]:
         return requests.get(**self.get_banner_request(campaign_id, offset)).json()
 
     def get_all_banners_one_camp(self, campaign_id):
@@ -208,7 +218,7 @@ class MyTargetReader(Reader):
                 for offset in range(20, self.round_up_to_base(count, 20), 20)
             ]
         all_banners = list(itertools.chain.from_iterable(banners))
-        filtered_banners = [(x['id'], x['campaign_id']) for x in all_banners if x['moderation_status'] == 'allowed']
+        filtered_banners = [(ban['id'], ban['campaign_id']) for ban in all_banners if ban['moderation_status'] == 'allowed']
         return filtered_banners
 
     def get_all_banners_all_camp(self, campaign_ids):
@@ -218,35 +228,84 @@ class MyTargetReader(Reader):
         return dict(acc)
 
     def get_daily_banner_stat_request(self, banner_ids):
-        url = "https://target.my.com/api/v2/statistics/banners/day.json"
-        headers = {
-            'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
-            'Host': 'target.my.com'
+        params = {
+            'id': banner_ids,
+            'date_from': '2021-01-01',
+            'date_to': '2021-01-07',
+            'metrics': 'all'
         }
-        params = dict(
-            id=banner_ids,
-            date_from='2020-11-15',
-            date_to='2020-12-06',
-            metrics='all'
-        )
-        return dict(
-            url=url,
-            headers=headers,
-            params=params
-        )
+        return {
+            'url': "https://target.my.com/api/v2/statistics/banners/day.json",
+            'headers': self.__get_header("authorization"),
+            'params': params
+        }
 
-    def get_daily_banner_stat_response(self, banner_ids):
+    def get_daily_banner_stat_response(
+        self,
+        banner_ids: Dict[str, str]
+    ) -> List[Dict[str, Any]]:
         return requests.get(**self.get_daily_banner_stat_request(banner_ids)).json()
 
-    def read(self):
-        self.set_agency_client_token()
-        rsp_id = self.get_all_campaign_id_ex()
-        rsp_name = self.get_all_campaign_names_ex()
+    def get_banner_name_request(self, banner_id):
+        params = {
+            'date_from': '2021-01-01',
+            'date_to': '2021-01-07',
+            'metrics': 'all'
+        }
+        return {
+            'url': f"https://target.my.com/api/v2/banners/{banner_id}.json?fields=id,name",
+            'headers': self.__get_header("authorization"),
+            'params': params
+        }
 
-        campaign_ids = [element['campaign_id'] for element in rsp_id]
-        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
-        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
-        print(rsp_daily_stat)
-        yield JSONStream(
-            "results_" + rsp_daily_stat
-        )
+    def get_banner_name_response(
+        self,
+        banner_ids: Dict[str, str]
+    ) -> List[Dict[str, Any]]:
+        dict_ban_name = {}
+        for ban_id in banner_ids:
+            time.sleep(1)
+            dict_ban_name[ban_id] = requests.get(**self.get_banner_name_request(ban_id)).json().get('name')
+            print(dict_ban_name[ban_id])
+        return dict_ban_name
+
+    def map_campaign_name_to_daily_stat(
+        self,
+        content: Dict[str, List[Dict[str, Any]]],
+        names: List[Dict[str, str]],
+        ids: Dict[str, str],
+        banner_names: Dict[str, str]
+    ) -> List[Dict[str, str]]:
+        """Maps the campaign name to the daily statistics
+
+        Args:
+            content (Dict[str, Dict[str, Any]]): [description]
+            names (List[Dict[str, str]]): [description]
+
+        Returns:
+            List[Dict[str, str]]: [description]
+        """
+        useful_content = content['items']
+        for i in range(len(useful_content)):
+            useful_content[i]['campaign_name'] = names[ids[useful_content[i]['id']]]
+            useful_content[i]['campaign_id'] = ids[useful_content[i]['id']]
+            useful_content[i]['banner_name'] = banner_names[useful_content[i]['id']]
+        return useful_content
+
+    def split_content_by_date(self, content):
+        content_by_date = []
+        dates = []
+        for campaign_stats in content:
+            print()
+            new_line_base = {
+                'campaign_id': campaign_stats['campaign_id'],
+                'campaign_name': campaign_stats['campaign_name'],
+                'banner_id': campaign_stats['id'],
+                'banner_name': campaign_stats['banner_name']
+            }
+            for dict_daily_stats in campaign_stats['rows']:
+                if dict_daily_stats['date'] not in dates:
+                    dates.append(dict_daily_stats['date'])
+                new_line = {**new_line_base, **dict_daily_stats}
+                content_by_date.append(new_line)
+        yield from content_by_date
