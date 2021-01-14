@@ -25,6 +25,7 @@ from typing import Dict, List, Any
 import logging
 import itertools
 import time
+from datetime import datetime
 
 
 @click.command(name="read_mytarget")
@@ -61,11 +62,84 @@ class MyTargetReader(Reader):
         self.client_secret = client_secret
         self.mail = mail
         self.agency = agency
-        self.access_token = None
         self.agency_client_token = {
             'access_token': None,
             'refresh_token': refresh_token
         }
+        self.start_date = kwargs.get('start_date')
+        self.end_date = kwargs.get('end_date')
+        self.date_format = kwargs.get('date_format')
+        self.day_range = kwargs.get('day_range')
+
+    def read(self):
+        self.__check_date_input_validity()
+
+        refreshed_token = self.get_refreshed_agency_token()
+        self.set_agency_client_token(refreshed_token)
+
+        response_id = self.get_all_campaign_ids()
+        response_name = self.get_all_campaign_names()
+
+        names_dict = self.convert_list_dicts_names_to_dict(response_name)
+        ids_dict = self.convert_list_dicts_ids_to_dict(response_id)
+        campaign_ids = [element['campaign_id'] for element in response_id]
+
+        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
+        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
+        rsp_banner_names = self.get_banner_name_response(list(rsp_banner))
+
+        complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
+
+        yield JSONStream(
+            "results_", self.split_content_by_date(complete_daily_content)
+        )
+
+    def __check_date_input_validity(self) -> bool:
+        """The goal of this function is to check the validity of the date input parameters before retrieving the data.
+        """
+
+        def __is_none(date: datetime) -> bool:
+            return date is None
+
+        def __check_validity_date(date: datetime) -> bool:
+            try:
+                datetime(date.year, date.month, date.day)
+                logging.info(f'CORRECT: Date valid {date}')
+                return True
+            except ValueError as e:
+                raise ValueError(f'The date is not valid : {e}')
+
+        def __check_date_not_in_future(end_date: datetime) -> bool:
+            if end_date <= datetime.now():
+                logging.info(f'CORRECT: end date anterior or equal to current date {datetime.now()}')
+                return True
+            else:
+                raise ValueError(f'The end date {end_date} is posterior to current date {datetime.now()}')
+
+        def __check_both_start_end_valid_or_neither(
+            start_date: datetime,
+            end_date: datetime
+        ) -> bool:
+            if bool(__is_none(start_date)) ^ bool(__is_none(end_date)):
+                raise ValueError("Either the start date or the end date is empty")
+            else:
+                logging.info('CORRECT: both dates are not empty')
+                return True
+
+        def __check_end_posterior_to_start(
+            start_date: datetime,
+            end_date: datetime
+        ) -> bool:
+            if start_date > end_date:
+                raise ValueError(f"The start date {start_date} is posterior to end date {end_date}")
+            else:
+                logging.info('CORRECT: end date is equal or posterior to start date')
+                return True
+
+        return __check_both_start_end_valid_or_neither(self.start_date, self.end_date) and \
+            __check_validity_date(self.start_date) & __check_validity_date(self.end_date) and \
+            __check_end_posterior_to_start(self.start_date, self.end_date) and \
+            __check_date_not_in_future(self.end_date)
 
     def __get_header(self, header_type: str):
         if header_type == "content_type":
@@ -79,7 +153,7 @@ class MyTargetReader(Reader):
                 'Host': 'target.my.com'
             }
         else:
-            logging.ERROR("No such kind of header available")
+            logging.error("No such kind of header available")
 
     def create_refresh_request(self):
         '''
@@ -246,7 +320,6 @@ class MyTargetReader(Reader):
         for ban_id in banner_ids:
             time.sleep(1)
             dict_ban_name[ban_id] = requests.get(**self.get_banner_name_request(ban_id)).json().get('name')
-            print(dict_ban_name[ban_id])
         return dict_ban_name
 
     def map_campaign_name_to_daily_stat(
@@ -276,7 +349,6 @@ class MyTargetReader(Reader):
         content_by_date = []
         dates = []
         for campaign_stats in content:
-            print()
             new_line_base = {
                 'campaign_id': campaign_stats['campaign_id'],
                 'campaign_name': campaign_stats['campaign_name'],
@@ -290,22 +362,4 @@ class MyTargetReader(Reader):
                 content_by_date.append(new_line)
         yield from content_by_date
 
-    def read(self):
-        refreshed_token = self.get_refreshed_agency_token()
-        self.set_agency_client_token(refreshed_token)
-
-        response_id = self.get_all_campaign_ids()
-        response_name = self.get_all_campaign_names()
-
-        names_dict = self.convert_list_dicts_names_to_dict(response_name)
-        ids_dict = self.convert_list_dicts_ids_to_dict(response_id)
-        campaign_ids = [element['campaign_id'] for element in response_id]
-
-        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
-        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
-        rsp_banner_names = self.get_banner_name_response(list(rsp_banner))
-
-        complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
-        yield JSONStream(
-            "results_", self.split_content_by_date(complete_daily_content)
-        )
+    
