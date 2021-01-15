@@ -26,6 +26,7 @@ import logging
 import itertools
 import time
 from datetime import datetime
+from nck.helpers.mytarget_helper import REQUEST_CONFIG
 
 
 @click.command(name="read_mytarget")
@@ -34,14 +35,8 @@ from datetime import datetime
 @click.option("--mytarget-mail", required=True)
 @click.option("--mytarget-agency", required=True)
 @click.option("--mytarget-refresh-token", required=True)
-@click.option("--mytarget-start-date", type=click.DateTime())
-@click.option("--mytarget-end-date", type=click.DateTime())
-@click.option(
-    "--mytarget-date-format",
-    default="%Y-%m-%d",
-    help="And optional date format for the output stream. "
-    "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior",
-)
+@click.option("--mytarget-start-date", type=click.DateTime(), required=True)
+@click.option("--mytarget-end-date", type=click.DateTime(), required=True)
 @processor("mytarget-client-id", "mytarget-client-secret")
 def mytarget(**kwargs):
     return MyTargetReader(**extract_args("mytarget_", kwargs))
@@ -62,10 +57,7 @@ class MyTargetReader(Reader):
         self.client_secret = client_secret
         self.mail = mail
         self.agency = agency
-        self.agency_client_token = {
-            'access_token': None,
-            'refresh_token': refresh_token
-        }
+        self.agency_client_token = {'refresh_token': refresh_token}
         self.start_date = kwargs.get('start_date')
         self.end_date = kwargs.get('end_date')
         self.date_format = kwargs.get('date_format')
@@ -73,20 +65,9 @@ class MyTargetReader(Reader):
 
     def read(self):
         self.__check_date_input_validity()
+        self.__retrieve_and_set_token()
 
-        refreshed_token = self.get_refreshed_agency_token()
-        self.set_agency_client_token(refreshed_token)
-
-        response_id = self.get_all_campaign_ids()
-        response_name = self.get_all_campaign_names()
-
-        names_dict = self.convert_list_dicts_names_to_dict(response_name)
-        ids_dict = self.convert_list_dicts_ids_to_dict(response_id)
-        campaign_ids = [element['campaign_id'] for element in response_id]
-
-        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
-        rsp_daily_stat = self.get_daily_banner_stat_response(rsp_banner.keys())
-        rsp_banner_names = self.get_banner_name_response(list(rsp_banner))
+        rsp_daily_stat, names_dict, ids_dict, rsp_banner_names = self.__retrieve_all_data()
 
         complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
 
@@ -104,14 +85,12 @@ class MyTargetReader(Reader):
         def __check_validity_date(date: datetime) -> bool:
             try:
                 datetime(date.year, date.month, date.day)
-                logging.info(f'CORRECT: Date valid {date}')
                 return True
             except ValueError as e:
                 raise ValueError(f'The date is not valid : {e}')
 
         def __check_date_not_in_future(end_date: datetime) -> bool:
             if end_date <= datetime.now():
-                logging.info(f'CORRECT: end date anterior or equal to current date {datetime.now()}')
                 return True
             else:
                 raise ValueError(f'The end date {end_date} is posterior to current date {datetime.now()}')
@@ -120,10 +99,9 @@ class MyTargetReader(Reader):
             start_date: datetime,
             end_date: datetime
         ) -> bool:
-            if bool(__is_none(start_date)) ^ bool(__is_none(end_date)):
+            if __is_none(start_date) or __is_none(end_date):
                 raise ValueError("Either the start date or the end date is empty")
             else:
-                logging.info('CORRECT: both dates are not empty')
                 return True
 
         def __check_end_posterior_to_start(
@@ -133,13 +111,215 @@ class MyTargetReader(Reader):
             if start_date > end_date:
                 raise ValueError(f"The start date {start_date} is posterior to end date {end_date}")
             else:
-                logging.info('CORRECT: end date is equal or posterior to start date')
                 return True
 
         return __check_both_start_end_valid_or_neither(self.start_date, self.end_date) and \
             __check_validity_date(self.start_date) & __check_validity_date(self.end_date) and \
             __check_end_posterior_to_start(self.start_date, self.end_date) and \
             __check_date_not_in_future(self.end_date)
+
+    def __retrieve_and_set_token(self):
+        parameters_refresh_token = self.__generate_params_dict('refresh_agency_token')
+        request_refresh_token = self.__create_request('refresh_agency_token', parameters_refresh_token)
+        refreshed_token = requests.post(**request_refresh_token).json()
+        self.set_agency_client_token(refreshed_token)
+
+    def __retrieve_all_data(self):
+        response_id = self.__get_all_results('get_campaign_ids')
+        response_name = self.__get_all_results('get_campaign_names')
+
+        campaign_ids = [element['campaign_id'] for element in response_id]
+
+        names_dict = self.convert_list_dicts_to_dict(response_name, 'name')
+        ids_dict = self.convert_list_dicts_to_dict(response_id, 'campaign_id')
+
+        rsp_banner = self.get_all_banners_all_camp(campaign_ids)
+
+        rsp_daily_stat = self.__get_response('get_banner_stats', rsp_banner.keys())
+        rsp_banner_names = self.get_banner_name_response('get_banner_names', list(rsp_banner))
+        return rsp_daily_stat, names_dict, ids_dict, rsp_banner_names
+
+    def __get_all_results(
+        self,
+        name_content: str,
+        offset=0,
+        campaign_id=0,
+        banner_ids=[]
+    ) -> List[Dict[str, str]]:
+        """Based on the __get_response function this function is incrementing through offsets according to the
+        number of elements given by the first response
+
+        Args:
+            name_content (str): string representing key of parameters config dict
+            offset (int, optional): potential offset of the request. Defaults to 0.
+            campaign_id (int, optional): potential campaign id of the request. Defaults to 0.
+            banner_ids (list, optional): potential banner ids list of the request. Defaults to [].
+
+        Returns:
+            List[Dict[str, Any]]: list of dicts resulting from the requests we made to the api
+        """
+        first_elements = self.__get_response(name_content, campaign_id=campaign_id, banner_ids=banner_ids)
+        count = first_elements['count']
+        elements = [first_elements['items']]
+        if count > 20:
+            elements += [
+                self.__get_response(name_content, offset=offset, campaign_id=campaign_id, banner_ids=banner_ids)['items']
+                for offset in range(20, self.round_up_to_base(count, 20), 20)
+            ]
+        return list(itertools.chain.from_iterable(elements))
+
+    def get_all_banners_all_camp(self, campaign_ids):
+        acc = []
+        for campaign_id in campaign_ids:
+            acc.extend(self.get_all_banners_one_camp(campaign_id))
+        return dict(acc)
+
+    def get_all_banners_one_camp(self, campaign_id):
+        all_banners = self.__get_all_results('get_banner_ids', campaign_id=campaign_id)
+        filtered_banners = [(ban['id'], ban['campaign_id']) for ban in all_banners if ban['moderation_status'] == 'allowed']
+        return filtered_banners
+
+    def get_banner_name_response(
+        self,
+        name_content: str,
+        banner_ids: Dict[str, str]
+    ) -> List[Dict[str, Any]]:
+        """This function is querying the API to retrieve the name linked to a banner id.
+        We neeed to add sleep time as too frequent queries lead to error results
+
+        Args:
+            name_content (str): string indicating the parameters to retrieve from config dict
+            banner_ids (Dict[str, str]): ids which need to be linked to a name
+
+        Returns:
+            List[Dict[str, Any]]: list of dict containing the id and name.
+        """
+        dict_ban_name = {}
+        for ban_id in banner_ids:
+            time.sleep(1)
+            dict_ban_name[ban_id] = self.__get_response(name_content, specific_ban_id=ban_id).get('name')
+        return dict_ban_name
+
+    def map_campaign_name_to_daily_stat(
+        self,
+        daily_stats: Dict[str, List[Dict[str, Any]]],
+        names: List[Dict[str, str]],
+        ids: Dict[str, str],
+        banner_names: Dict[str, str]
+    ) -> List[Dict[str, str]]:
+        """Maps the campaign name to the daily statistics
+
+        Args:
+            daily_stats (Dict[str, Dict[str, Any]]): daily statistics for a banner
+            names (List[Dict[str, str]]): dict of id name pair for campaigns
+            ids (Dict[str, str]): dict of banner id and campaign ids
+            banner_names (Dict[str, str]): dict of id name pair for banners
+
+        Returns:
+            List[Dict[str, str]]: list of dicts containing the info for a camp/banner association
+        """
+        useful_content = daily_stats['items']
+        for i in range(len(useful_content)):
+            useful_content[i]['campaign_name'] = names[ids[useful_content[i]['id']]]
+            useful_content[i]['campaign_id'] = ids[useful_content[i]['id']]
+            print(banner_names)
+            print(useful_content[i])
+            useful_content[i]['banner_name'] = banner_names[useful_content[i]['id']]
+        return useful_content
+
+    def split_content_by_date(self, content: List[Dict[str, Any]]):
+        """The goal of this function is to create a line for each date from the date range
+        for each banner/campaign association. This will be retrieved by the JSON reader thanks
+        to the yield from.
+
+        Args:
+            content (List[Dict[str, Any]]): List of the dicts containing all the informations
+
+        Yields:
+            [type]: the result will be retrieved line by line by the reader.
+        """
+        content_by_date = []
+        dates = []
+        for campaign_stats in content:
+            new_line_base = {
+                'campaign_id': campaign_stats['campaign_id'],
+                'campaign_name': campaign_stats['campaign_name'],
+                'banner_id': campaign_stats['id'],
+                'banner_name': campaign_stats.get('banner_name')
+            }
+            for dict_daily_stats in campaign_stats['rows']:
+                if dict_daily_stats['date'] not in dates:
+                    dates.append(dict_daily_stats['date'])
+                new_line = {**new_line_base, **dict_daily_stats}
+                content_by_date.append(new_line)
+        yield from content_by_date
+
+    def __get_response(
+        self,
+        name_content: str,
+        offset=0,
+        campaign_id=0,
+        banner_ids=[],
+        specific_ban_id=0
+    ) -> Dict[str, Any]:
+        """This function makes a request to the api after building eveything necessary to get the 
+        desired results for a specific need which is defined by name_content
+
+        Args:
+            name_content (str): string representing key of parameters config dict
+            offset (int, optional): potential offset of the request. Defaults to 0.
+            campaign_id (int, optional): potential campaign id of the request. Defaults to 0.
+            banner_ids (list, optional): potential banner ids list of the request. Defaults to [].
+            specific_ban_id (int, optional): id to parse to the url. Defaults to 0.
+
+        Returns:
+            Dict[str, Any]: dict resulting from the request we made to the api
+        """
+        parameters = self.__generate_params_dict(name_content, offset=offset, campaign_id=campaign_id, banner_ids=banner_ids)
+        request = self.__create_request(name_content, parameters, specific_ban_id=specific_ban_id)
+        return requests.get(**request).json()
+
+    def __create_request(
+        self,
+        name_content: str,
+        parameters: Dict[str, Any],
+        specific_ban_id=0
+    ) -> Dict[str, Any]:
+        """This function creates the dict with all the parameters required to query the api
+
+        Args:
+            name_content (str): string representing key of parameters config dict
+            parameters (Dict[str, Any]): dict of parameters retrieved from get_params_dict
+            specific_ban_id (int, optional): id to build the url if required. Defaults to 0.
+
+        Returns:
+            Dict[str, Any]: [description]
+        """
+        req_base = {
+            'url': self.__get_url(name_content, specific_ban_id=specific_ban_id),
+            'headers': self.__get_header(REQUEST_CONFIG[name_content]['headers_type'])
+        }
+        return {**req_base, **parameters}
+
+    def __get_url(
+        self,
+        name_content: str,
+        specific_ban_id=0
+    ) -> str:
+        """This function retrieves the url and if it is mandatory to add an id in the url
+        we fill if using substitute.
+
+        Args:
+            name_content (str): string representing key of parameters config dict
+            specific_ban_id (int, optional): id to parse to the url. Defaults to 0.
+
+        Returns:
+            str: url endpoint
+        """
+        url = REQUEST_CONFIG[name_content]['url']
+        if name_content == 'get_banner_names':
+            url = url.substitute(id=specific_ban_id)
+        return url
 
     def __get_header(self, header_type: str):
         if header_type == "content_type":
@@ -155,211 +335,72 @@ class MyTargetReader(Reader):
         else:
             logging.error("No such kind of header available")
 
-    def create_refresh_request(self):
-        '''
-        this will return an access token with a different access_token but same refresh_token
-        '''
-        payload = {
-            'grant_type': 'refresh_token',
-            'refresh_token': self.agency_client_token['refresh_token'],
-            'client_id': self.client_id,
-            'client_secret': self.client_secret
-        }
-        return {
-            'url': 'https://target.my.com/api/v2/oauth2/token.json',
-            'headers': self.__get_header("content_type"),
-            'data': payload
-        }
+    def __generate_params_dict(
+        self,
+        name_content: str,
+        offset=0,
+        campaign_id=0,
+        banner_ids=[]
+    ) -> Dict[str, Any]:
+        """This function returns a dict containing all the parameters required
+        for the request.
 
-    def get_refreshed_agency_token(self) -> Dict[str, str]:
-        rsp = requests.post(**self.create_refresh_request())
-        return rsp.json()
+        Args:
+            name_content (str): string representing key of parameters config dict
+            offset (int, optional): potential offset of the request. Defaults to 0.
+            campaign_id (int, optional): potential campaign id of the request. Defaults to 0.
+            banner_ids (list, optional): potential banner ids list of the request. Defaults to [].
+
+        Returns:
+            Dict[str, Any]: params to give to the request dict
+        """
+        dict_config = REQUEST_CONFIG[name_content]
+        params = {}
+        if name_content == 'refresh_agency_token' :
+            params['data'] = {
+                'grant_type': 'refresh_token',
+                'refresh_token': self.agency_client_token['refresh_token'],
+                'client_id': self.client_id,
+                'client_secret': self.client_secret
+            }
+        else:
+            params['params'] = {}
+            if dict_config['offset']:
+                params['params']['offset'] = offset
+            if dict_config['_campaign_id']:
+                params['params']['_campaign_id'] = campaign_id
+            if dict_config['dates_required']:
+                params['params'] = {
+                    'date_from': self.start_date.strftime('%Y-%m-%d'),
+                    'date_to': self.end_date.strftime('%Y-%m-%d'),
+                    'metrics': 'all'
+                }
+            if dict_config['ids']:
+                params['params']['id'] = banner_ids
+        return params
+
+    def convert_list_dicts_to_dict(
+        self,
+        list_dicts: List[Dict[str, str]],
+        field_name: str
+    ) -> Dict[str, str]:
+        """Transformss a list of dicts to a dict containing all the ids and the content retrieved from the
+        field_name mentionned as a parameter
+
+        Args:
+            list_dicts (List[Dict[str, str]]): List of dict containing the id and an associated value
+            field_name (str): is the string representing the associated value to the id
+
+        Returns:
+            Dict[str, str]: dict containing all the information required extracted from the original list of dicts
+        """
+        new_dict = {}
+        for dictio in list_dicts:
+            new_dict.update({dictio['id'] : dictio[field_name]})
+        return new_dict
 
     def set_agency_client_token(self, agency_token):
         self.agency_client_token = agency_token
 
-    def create_campaign_id_request(self, offset: int):
-        params = {'offset': offset}
-        return {
-            'url': "https://target.my.com/api/v2/banners.json",
-            'headers': self.__get_header("authorization"),
-            'params': params
-        }
-
-    def get_campaign_id_response(self, offset: int):
-        return requests.get(**self.create_campaign_id_request(offset)).json()
-
-    def get_all_campaign_ids(self):
-        first_ids = self.get_campaign_id_response(0)
-        count = first_ids['count']
-        ids = [first_ids['items']]
-        if count > 20:
-            ids += [
-                self.get_campaign_id_response(offset)['items']
-                for offset in range(20, self.round_up_to_base(count, 20), 20)
-            ]
-        return list(itertools.chain.from_iterable(ids))
-
     def round_up_to_base(self, x, base):
         return base * round(x / base)
-
-    def get_campaign_name_request(self, offset: int):
-        params = {'offset': offset}
-        return {
-            'url': "https://target.my.com/api/v2/campaigns.json",
-            'headers': self.__get_header("authorization"),
-            'params': params
-        }
-
-    def get_campaign_name_response(
-        self,
-        offset: int
-    ) -> List[Dict[str, str]]:
-        return requests.get(**self.get_campaign_name_request(offset)).json()
-
-    def convert_list_dicts_names_to_dict(
-        self,
-        list_dicts_names: List[Dict[str, str]]
-    ) -> Dict[str, str]:
-        new_dict = {}
-        for dict_name_id in list_dicts_names:
-            new_dict.update({dict_name_id['id'] : dict_name_id['name']})
-        return new_dict
-
-    def convert_list_dicts_ids_to_dict(
-        self,
-        list_dicts_ids: List[Dict[str, str]]
-    ) -> Dict[str, str]:
-        new_dict = {}
-        for dict_ids in list_dicts_ids:
-            new_dict.update({dict_ids['id'] : dict_ids['campaign_id']})
-        return new_dict
-
-    def get_all_campaign_names(self):
-        first_names = self.get_campaign_name_response(0)
-        count = first_names['count']
-        names = [first_names['items']]
-        if count > 20:
-            names += [
-                self.get_campaign_name_response(offset)['items']
-                for offset in range(20, self.round_up_to_base(count, 20), 20)
-            ]
-        res = list(itertools.chain.from_iterable(names))
-        return res
-
-    def get_banner_request(self, campaign_id, offset):
-        params = {'_campaign_id': campaign_id, 'offset': offset}
-        return {
-            'url': "https://target.my.com/api/v2/banners.json",
-            'headers': self.__get_header("authorization"),
-            'params': params
-        }
-
-    def get_banner_response(
-        self,
-        campaign_id: str,
-        offset: int
-    ) -> List[Dict[str, str]]:
-        return requests.get(**self.get_banner_request(campaign_id, offset)).json()
-
-    def get_all_banners_one_camp(self, campaign_id):
-        first_banners = self.get_banner_response(campaign_id, 0)
-        count = first_banners['count']
-        banners = [first_banners['items']]
-        if count > 20:
-            banners += [
-                self.get_banner_response(campaign_id, offset)['items']
-                for offset in range(20, self.round_up_to_base(count, 20), 20)
-            ]
-        all_banners = list(itertools.chain.from_iterable(banners))
-        filtered_banners = [(ban['id'], ban['campaign_id']) for ban in all_banners if ban['moderation_status'] == 'allowed']
-        return filtered_banners
-
-    def get_all_banners_all_camp(self, campaign_ids):
-        acc = []
-        for campaign_id in campaign_ids:
-            acc.extend(self.get_all_banners_one_camp(campaign_id))
-        return dict(acc)
-
-    def get_daily_banner_stat_request(self, banner_ids):
-        params = {
-            'id': banner_ids,
-            'date_from': '2021-01-01',
-            'date_to': '2021-01-07',
-            'metrics': 'all'
-        }
-        return {
-            'url': "https://target.my.com/api/v2/statistics/banners/day.json",
-            'headers': self.__get_header("authorization"),
-            'params': params
-        }
-
-    def get_daily_banner_stat_response(
-        self,
-        banner_ids: Dict[str, str]
-    ) -> List[Dict[str, Any]]:
-        return requests.get(**self.get_daily_banner_stat_request(banner_ids)).json()
-
-    def get_banner_name_request(self, banner_id):
-        params = {
-            'date_from': '2021-01-01',
-            'date_to': '2021-01-07',
-            'metrics': 'all'
-        }
-        return {
-            'url': f"https://target.my.com/api/v2/banners/{banner_id}.json?fields=id,name",
-            'headers': self.__get_header("authorization"),
-            'params': params
-        }
-
-    def get_banner_name_response(
-        self,
-        banner_ids: Dict[str, str]
-    ) -> List[Dict[str, Any]]:
-        dict_ban_name = {}
-        for ban_id in banner_ids:
-            time.sleep(1)
-            dict_ban_name[ban_id] = requests.get(**self.get_banner_name_request(ban_id)).json().get('name')
-        return dict_ban_name
-
-    def map_campaign_name_to_daily_stat(
-        self,
-        content: Dict[str, List[Dict[str, Any]]],
-        names: List[Dict[str, str]],
-        ids: Dict[str, str],
-        banner_names: Dict[str, str]
-    ) -> List[Dict[str, str]]:
-        """Maps the campaign name to the daily statistics
-
-        Args:
-            content (Dict[str, Dict[str, Any]]): [description]
-            names (List[Dict[str, str]]): [description]
-
-        Returns:
-            List[Dict[str, str]]: [description]
-        """
-        useful_content = content['items']
-        for i in range(len(useful_content)):
-            useful_content[i]['campaign_name'] = names[ids[useful_content[i]['id']]]
-            useful_content[i]['campaign_id'] = ids[useful_content[i]['id']]
-            useful_content[i]['banner_name'] = banner_names[useful_content[i]['id']]
-        return useful_content
-
-    def split_content_by_date(self, content):
-        content_by_date = []
-        dates = []
-        for campaign_stats in content:
-            new_line_base = {
-                'campaign_id': campaign_stats['campaign_id'],
-                'campaign_name': campaign_stats['campaign_name'],
-                'banner_id': campaign_stats['id'],
-                'banner_name': campaign_stats['banner_name']
-            }
-            for dict_daily_stats in campaign_stats['rows']:
-                if dict_daily_stats['date'] not in dates:
-                    dates.append(dict_daily_stats['date'])
-                new_line = {**new_line_base, **dict_daily_stats}
-                content_by_date.append(new_line)
-        yield from content_by_date
-
-    
