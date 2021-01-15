@@ -38,5 +38,14 @@ DEFAULT_DATE_RANGE_FUNCTIONS = {
 
 
 def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date, date]:
+    """Returns date start and date stop based on the date range provided
+    and the current date.
+
+    Args:
+        date_range (str): One of the default date ranges that exist
+
+    Returns:
+        Tuple[date, date]: date start and date stop that match the date range
+    """
     current_date = date.today()
     return DEFAULT_DATE_RANGE_FUNCTIONS[date_range](current_date)
