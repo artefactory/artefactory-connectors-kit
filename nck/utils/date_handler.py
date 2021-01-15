@@ -3,20 +3,6 @@ from datetime import date, timedelta
 from typing import Tuple
 
 
-def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date, date]:
-    current_date = date.today()
-    if date_range == "YESTERDAY":
-        return __get_yesterday_date(current_date)
-    elif date_range == "LAST_7_DAYS":
-        return __get_last_7d_dates(current_date)
-    elif date_range == "LAST_90_DAYS":
-        return __get_last_90d_dates(current_date)
-    elif date_range == "PREVIOUS_WEEK":
-        return __get_previous_week_dates(current_date)
-    elif date_range == "PREVIOUS_MONTH":
-        return __get_previous_month_dates(current_date)
-
-
 def __get_yesterday_date(current_date: date) -> Tuple[date, date]:
     yesterday = current_date - timedelta(days=1)
     return yesterday, yesterday
@@ -40,3 +26,17 @@ def __get_previous_month_dates(current_date: date) -> Tuple[date, date]:
     year = last_day_of_previous_month.year
     month = last_day_of_previous_month.month
     return date(year, month, 1), date(year, month, calendar.monthrange(year, month)[1])
+
+
+DEFAULT_DATE_RANGE_FUNCTIONS = {
+    "YESTERDAY": __get_yesterday_date,
+    "LAST_7_DAYS": __get_last_7d_dates,
+    "PREVIOUS_WEEK": __get_previous_week_dates,
+    "PREVIOUS_MONTH": __get_previous_month_dates,
+    "LAST_90_DAYS": __get_last_90d_dates,
+}
+
+
+def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date, date]:
+    current_date = date.today()
+    return DEFAULT_DATE_RANGE_FUNCTIONS[date_range](current_date)

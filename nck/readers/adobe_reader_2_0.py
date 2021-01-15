@@ -37,7 +37,7 @@ from nck.helpers.adobe_helper_2_0 import (
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
-from nck.utils.date_handler import get_date_start_and_date_stop_from_date_range
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, get_date_start_and_date_stop_from_date_range
 from nck.utils.retry import retry
 
 DATEFORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -120,9 +120,8 @@ def format_key_if_needed(ctx, param, value):
 )
 @click.option(
     "--adobe-2-0-date-range",
-    type=click.Choice(["LAST_7_DAYS", "YESTERDAY", "PREVIOUS_WEEK", "PREVIOUS_MONTH", "LAST_90_DAYS"]),
-    help="One of the available NCK default date ranges: YESTERDAY, LAST_7_DAYS, "
-    "PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
 @processor(
     "adobe_2_0_client_id",
