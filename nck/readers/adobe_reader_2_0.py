@@ -16,27 +16,29 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
-import click
 import json
-import requests
+import logging
 import time
-from itertools import chain
 from datetime import timedelta
+from itertools import chain
 
-from nck.utils.retry import retry
-from nck.utils.args import extract_args
-from nck.commands.command import processor
-from nck.readers.reader import Reader
+import click
+import requests
+from click.exceptions import ClickException
 from nck.clients.adobe_client import AdobeClient
-from nck.streams.json_stream import JSONStream
+from nck.commands.command import processor
 from nck.helpers.adobe_helper_2_0 import (
     APIRateLimitError,
     add_metric_container_to_report_description,
-    get_node_values_from_response,
     get_item_ids_from_nodes,
+    get_node_values_from_response,
     parse_response,
 )
+from nck.readers.reader import Reader
+from nck.streams.json_stream import JSONStream
+from nck.utils.args import extract_args
+from nck.utils.date_handler import get_date_start_and_date_stop_from_date_range
+from nck.utils.retry import retry
 
 DATEFORMAT = "%Y-%m-%dT%H:%M:%S"
 API_WINDOW_DURATION = 6
@@ -108,15 +110,19 @@ def format_key_if_needed(ctx, param, value):
 )
 @click.option(
     "--adobe-2-0-start-date",
-    required=True,
     type=click.DateTime(),
     help="Start date of the report",
 )
 @click.option(
     "--adobe-2-0-end-date",
-    required=True,
     type=click.DateTime(),
     help="End date of the report",
+)
+@click.option(
+    "--adobe-2-0-date-range",
+    type=click.Choice(["LAST_7_DAYS", "YESTERDAY", "PREVIOUS_WEEK", "PREVIOUS_MONTH", "LAST_90_DAYS"]),
+    help="One of the available NCK default date ranges: YESTERDAY, LAST_7_DAYS, "
+    "PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS",
 )
 @processor(
     "adobe_2_0_client_id",
@@ -143,21 +149,30 @@ class AdobeReader_2_0(Reader):
         metric,
         start_date,
         end_date,
+        date_range,
     ):
-        self.adobe_client = AdobeClient(
-            client_id, client_secret, tech_account_id, org_id, private_key
-        )
+        self.adobe_client = AdobeClient(client_id, client_secret, tech_account_id, org_id, private_key)
         self.global_company_id = global_company_id
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)
         self.metrics = list(metric)
         self.start_date = start_date
-        self.end_date = end_date + timedelta(days=1)
+        if end_date is not None:
+            self.end_date = end_date + timedelta(days=1)
+        else:
+            self.end_date = end_date
+        self.date_range = date_range
         self.ingestion_tracker = []
         self.node_values = {}
 
     def build_date_range(self):
-        return f"{self.start_date.strftime(DATEFORMAT)}/{self.end_date.strftime(DATEFORMAT)}"
+        if self.start_date is not None and self.end_date is not None and self.date_range is None:
+            return f"{self.start_date.strftime(DATEFORMAT)}/{self.end_date.strftime(DATEFORMAT)}"
+        elif self.start_date is None and self.end_date is None and self.date_range is not None:
+            start_date, end_date = get_date_start_and_date_stop_from_date_range(self.date_range)
+            return f"{start_date.strftime(DATEFORMAT)}/{(end_date + timedelta(days=1)).strftime(DATEFORMAT)}"
+        else:
+            raise ClickException("Dates are not defined properly. Please set start and end dates or a date range")
 
     def build_report_description(self, metrics, breakdown_item_ids=[]):
         """
@@ -169,9 +184,7 @@ class AdobeReader_2_0(Reader):
 
         rep_desc = {
             "rsid": self.report_suite_id,
-            "globalFilters": [
-                {"type": "dateRange", "dateRange": self.build_date_range()}
-            ],
+            "globalFilters": [{"type": "dateRange", "dateRange": self.build_date_range()}],
             "metricContainer": {},
             "dimension": f"variables/{self.dimensions[len(breakdown_item_ids)]}",
             "settings": {"countRepeatInstances": "true", "limit": "5000"},
@@ -193,19 +206,11 @@ class AdobeReader_2_0(Reader):
 
         current_time = time.time()
         self.ingestion_tracker.append(current_time)
-        window_ingestion_tracker = [
-            t
-            for t in self.ingestion_tracker
-            if t >= (current_time - API_WINDOW_DURATION)
-        ]
+        window_ingestion_tracker = [t for t in self.ingestion_tracker if t >= (current_time - API_WINDOW_DURATION)]
 
         if len(window_ingestion_tracker) >= API_REQUESTS_OVER_WINDOW_LIMIT:
-            sleep_time = (
-                window_ingestion_tracker[0] + API_WINDOW_DURATION - current_time
-            )
-            logging.warning(
-                f"Throttling activated: sleeping for {sleep_time} seconds..."
-            )
+            sleep_time = window_ingestion_tracker[0] + API_WINDOW_DURATION - current_time
+            logging.warning(f"Throttling activated: sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
 
     @retry
@@ -251,9 +256,7 @@ class AdobeReader_2_0(Reader):
         if first_response["totalPages"] > 1:
             for page_nb in range(1, first_response["totalPages"]):
                 next_response = self.get_report_page(rep_desc, page_nb)
-                all_responses += [
-                    parse_response(next_response, metrics, parent_dim_parsed)
-                ]
+                all_responses += [parse_response(next_response, metrics, parent_dim_parsed)]
 
         return chain(*all_responses)
 
@@ -264,17 +267,13 @@ class AdobeReader_2_0(Reader):
         For instance: {'daterangeday_1200001': 'Jan 1, 2020'}
         """
 
-        rep_desc = self.build_report_description(
-            metrics=["visits"], breakdown_item_ids=breakdown_item_ids
-        )
+        rep_desc = self.build_report_description(metrics=["visits"], breakdown_item_ids=breakdown_item_ids)
         first_response = self.get_report_page(rep_desc)
         node_values = get_node_values_from_response(first_response)
 
         if first_response["totalPages"] > 1:
             for page_nb in range(1, first_response["totalPages"]):
-                next_node_values = get_node_values_from_response(
-                    self.get_report_page(rep_desc, page_nb)
-                )
+                next_node_values = get_node_values_from_response(self.get_report_page(rep_desc, page_nb))
                 node_values.update(next_node_values)
 
         return node_values
@@ -333,13 +332,9 @@ class AdobeReader_2_0(Reader):
 
             # If no remaining node children to explore: get report
             if len(path_to_node) == len(self.dimensions) - 1:
-                parent_dim_parsed = {
-                    node.split("_")[0]: self.node_values[node] for node in path_to_node
-                }
+                parent_dim_parsed = {node.split("_")[0]: self.node_values[node] for node in path_to_node}
                 breakdown_item_ids = get_item_ids_from_nodes(path_to_node)
-                rep_desc = self.build_report_description(
-                    self.metrics, breakdown_item_ids
-                )
+                rep_desc = self.build_report_description(self.metrics, breakdown_item_ids)
                 data = self.get_parsed_report(rep_desc, self.metrics, parent_dim_parsed)
                 yield from self.result_generator(data)
 
@@ -348,9 +343,7 @@ class AdobeReader_2_0(Reader):
             visited.append(node)
 
         # Update unvisited_childs
-        unvisited_childs = [
-            child_node for child_node in graph[node] if child_node not in visited
-        ]
+        unvisited_childs = [child_node for child_node in graph[node] if child_node not in visited]
 
         # Read through child node children
         for child_node in unvisited_childs:
@@ -366,10 +359,6 @@ class AdobeReader_2_0(Reader):
     def read(self):
 
         if len(self.dimensions) == 1:
-            yield JSONStream(
-                "results_" + self.report_suite_id, self.read_one_dimension()
-            )
+            yield JSONStream("results_" + self.report_suite_id, self.read_one_dimension())
         elif len(self.dimensions) > 1:
-            yield JSONStream(
-                "results_" + self.report_suite_id, self.read_through_graph()
-            )
+            yield JSONStream("results_" + self.report_suite_id, self.read_through_graph())
