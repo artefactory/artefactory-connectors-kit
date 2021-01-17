@@ -135,11 +135,11 @@ class MyTargetReader(Reader):
         self.set_agency_client_token(refreshed_token)
 
     def __retrieve_all_data(
-        self) -> Tuple(
+        self) -> Tuple[
             Dict[str, List[Dict[str, Any]]],
             List[Dict[str, str]],
             Dict[str, str],
-            Dict[str, str]):
+            Dict[str, str]]:
         response_id = self.__get_all_results('get_campaign_ids')
         response_name = self.__get_all_results('get_campaign_names')
 
