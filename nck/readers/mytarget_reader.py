@@ -64,60 +64,71 @@ class MyTargetReader(Reader):
         self.day_range = kwargs.get('day_range')
 
     def read(self):
-        self.__check_date_input_validity()
-        self.__retrieve_and_set_token()
+        if self.__check_date_input_validity():
+            self.__retrieve_and_set_token()
 
-        rsp_daily_stat, names_dict, ids_dict, rsp_banner_names = self.__retrieve_all_data()
+            rsp_daily_stat, names_dict, ids_dict, rsp_banner_names = self.__retrieve_all_data()
 
-        complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
-        yield JSONStream(
-            "results_", self.split_content_by_date(complete_daily_content)
-        )
+            complete_daily_content = self.map_campaign_name_to_daily_stat(
+                rsp_daily_stat,
+                names_dict,
+                ids_dict,
+                rsp_banner_names
+            )
+
+            yield JSONStream(
+                "results_", self.split_content_by_date(complete_daily_content)
+            )
 
     def __check_date_input_validity(self) -> bool:
         """The goal of this function is to check the validity of the date input parameters before retrieving the data.
         """
+        return self.__check_both_start_end_valid_or_neither(self.start_date, self.end_date) and \
+            self.__check_validity_date(self.start_date) & self.__check_validity_date(self.end_date) and \
+            self.__check_end_posterior_to_start(self.start_date, self.end_date) and \
+            self.__check_date_not_in_future(self.end_date)
 
-        def __is_none(date: datetime) -> bool:
-            return date is None
+    def __is_none(self, date: datetime) -> bool:
+        return date is None
 
-        def __check_validity_date(date: datetime) -> bool:
-            try:
-                datetime(date.year, date.month, date.day)
-                return True
-            except ValueError as e:
-                raise ValueError(f'The date is not valid : {e}')
+    def __check_validity_date(self, date: datetime) -> bool:
+        try:
+            datetime(date.year, date.month, date.day)
+            return True
+        except ValueError as e:
+            raise ValueError(f'The date is not valid : {e}')
 
-        def __check_date_not_in_future(end_date: datetime) -> bool:
-            if end_date <= datetime.now():
-                return True
-            else:
-                raise ValueError(f'The end date {end_date} is posterior to current date {datetime.now()}')
+    def __check_date_not_in_future(self, end_date: datetime) -> bool:
+        if end_date <= datetime.now():
+            return True
+        else:
+            raise ValueError(f'The end date {end_date} is posterior to current date {datetime.now()}')
 
-        def __check_both_start_end_valid_or_neither(
-            start_date: datetime,
-            end_date: datetime
-        ) -> bool:
-            if __is_none(start_date) or __is_none(end_date):
-                raise ValueError("Either the start date or the end date is empty")
-            else:
-                return True
+    def __check_both_start_end_valid_or_neither(
+        self,
+        start_date: datetime,
+        end_date: datetime
+    ) -> bool:
+        if self.__is_none(start_date) or self.__is_none(end_date):
+            raise ValueError("Either the start date or the end date is empty")
+        else:
+            return True
 
-        def __check_end_posterior_to_start(
-            start_date: datetime,
-            end_date: datetime
-        ) -> bool:
-            if start_date > end_date:
-                raise ValueError(f"The start date {start_date} is posterior to end date {end_date}")
-            else:
-                return True
-
-        return __check_both_start_end_valid_or_neither(self.start_date, self.end_date) and \
-            __check_validity_date(self.start_date) & __check_validity_date(self.end_date) and \
-            __check_end_posterior_to_start(self.start_date, self.end_date) and \
-            __check_date_not_in_future(self.end_date)
+    def __check_end_posterior_to_start(
+        self,
+        start_date: datetime,
+        end_date: datetime
+    ) -> bool:
+        if start_date > end_date:
+            raise ValueError(f"The start date {start_date} is posterior to end date {end_date}")
+        else:
+            return True
 
     def __retrieve_and_set_token(self):
+        """In order to request the api, we need an active token. To do so we use the token which
+        was provided to get a new one which is going to be active for a day. Once done we set it
+        as an attribute.
+        """
         parameters_refresh_token = self.__generate_params_dict('refresh_agency_token')
         request_refresh_token = self.__create_request('refresh_agency_token', parameters_refresh_token)
         refreshed_token = requests.post(**request_refresh_token).json()
