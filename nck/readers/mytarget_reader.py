@@ -16,16 +16,16 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
-from nck.commands.command import processor
-from nck.readers.reader import Reader
-from nck.streams.json_stream import JSONStream
-from nck.utils.args import extract_args
 import requests
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 import logging
 import itertools
 import time
 from datetime import datetime
+from nck.commands.command import processor
+from nck.readers.reader import Reader
+from nck.streams.json_stream import JSONStream
+from nck.utils.args import extract_args
 from nck.helpers.mytarget_helper import REQUEST_CONFIG
 
 
@@ -70,7 +70,6 @@ class MyTargetReader(Reader):
         rsp_daily_stat, names_dict, ids_dict, rsp_banner_names = self.__retrieve_all_data()
 
         complete_daily_content = self.map_campaign_name_to_daily_stat(rsp_daily_stat, names_dict, ids_dict, rsp_banner_names)
-
         yield JSONStream(
             "results_", self.split_content_by_date(complete_daily_content)
         )
@@ -124,19 +123,24 @@ class MyTargetReader(Reader):
         refreshed_token = requests.post(**request_refresh_token).json()
         self.set_agency_client_token(refreshed_token)
 
-    def __retrieve_all_data(self):
+    def __retrieve_all_data(
+        self) -> Tuple(
+            Dict[str, List[Dict[str, Any]]],
+            List[Dict[str, str]],
+            Dict[str, str],
+            Dict[str, str]):
         response_id = self.__get_all_results('get_campaign_ids')
         response_name = self.__get_all_results('get_campaign_names')
-
-        campaign_ids = [element['campaign_id'] for element in response_id]
 
         names_dict = self.convert_list_dicts_to_dict(response_name, 'name')
         ids_dict = self.convert_list_dicts_to_dict(response_id, 'campaign_id')
 
+        campaign_ids = [element['campaign_id'] for element in response_id]
         rsp_banner = self.get_all_banners_all_camp(campaign_ids)
 
-        rsp_daily_stat = self.__get_response('get_banner_stats', rsp_banner.keys())
+        rsp_daily_stat = self.__get_response('get_banner_stats', banner_ids=rsp_banner.keys())
         rsp_banner_names = self.get_banner_name_response('get_banner_names', list(rsp_banner))
+
         return rsp_daily_stat, names_dict, ids_dict, rsp_banner_names
 
     def __get_all_results(
@@ -147,7 +151,7 @@ class MyTargetReader(Reader):
         banner_ids=[]
     ) -> List[Dict[str, str]]:
         """Based on the __get_response function this function is incrementing through offsets according to the
-        number of elements given by the first response
+        number of elements given by the first response.
 
         Args:
             name_content (str): string representing key of parameters config dict
@@ -168,14 +172,14 @@ class MyTargetReader(Reader):
             ]
         return list(itertools.chain.from_iterable(elements))
 
-    def get_all_banners_all_camp(self, campaign_ids):
-        acc = []
+    def get_all_banners_all_camp(self, campaign_ids, banner_ids=[]):
+        all_banner = []
         for campaign_id in campaign_ids:
-            acc.extend(self.get_all_banners_one_camp(campaign_id))
-        return dict(acc)
+            all_banner.extend(self.get_all_banners_one_camp(campaign_id, banner_ids=banner_ids))
+        return dict(all_banner)
 
-    def get_all_banners_one_camp(self, campaign_id):
-        all_banners = self.__get_all_results('get_banner_ids', campaign_id=campaign_id)
+    def get_all_banners_one_camp(self, campaign_id, banner_ids=[]):
+        all_banners = self.__get_all_results('get_banner_ids', campaign_id=campaign_id, banner_ids=banner_ids)
         filtered_banners = [(ban['id'], ban['campaign_id']) for ban in all_banners if ban['moderation_status'] == 'allowed']
         return filtered_banners
 
@@ -185,7 +189,7 @@ class MyTargetReader(Reader):
         banner_ids: Dict[str, str]
     ) -> List[Dict[str, Any]]:
         """This function is querying the API to retrieve the name linked to a banner id.
-        We neeed to add sleep time as too frequent queries lead to error results
+        We neeed to add sleep time as too frequent queries lead to error results.
 
         Args:
             name_content (str): string indicating the parameters to retrieve from config dict
@@ -207,23 +211,10 @@ class MyTargetReader(Reader):
         ids: Dict[str, str],
         banner_names: Dict[str, str]
     ) -> List[Dict[str, str]]:
-        """Maps the campaign name to the daily statistics
-
-        Args:
-            daily_stats (Dict[str, Dict[str, Any]]): daily statistics for a banner
-            names (List[Dict[str, str]]): dict of id name pair for campaigns
-            ids (Dict[str, str]): dict of banner id and campaign ids
-            banner_names (Dict[str, str]): dict of id name pair for banners
-
-        Returns:
-            List[Dict[str, str]]: list of dicts containing the info for a camp/banner association
-        """
         useful_content = daily_stats['items']
         for i in range(len(useful_content)):
             useful_content[i]['campaign_name'] = names[ids[useful_content[i]['id']]]
             useful_content[i]['campaign_id'] = ids[useful_content[i]['id']]
-            print(banner_names)
-            print(useful_content[i])
             useful_content[i]['banner_name'] = banner_names[useful_content[i]['id']]
         return useful_content
 
@@ -262,8 +253,8 @@ class MyTargetReader(Reader):
         banner_ids=[],
         specific_ban_id=0
     ) -> Dict[str, Any]:
-        """This function makes a request to the api after building eveything necessary to get the 
-        desired results for a specific need which is defined by name_content
+        """This function makes a request to the api after building eveything necessary to get the
+        desired results for a specific need which is defined by name_content.
 
         Args:
             name_content (str): string representing key of parameters config dict
@@ -293,7 +284,7 @@ class MyTargetReader(Reader):
             specific_ban_id (int, optional): id to build the url if required. Defaults to 0.
 
         Returns:
-            Dict[str, Any]: [description]
+            Dict[str, Any]: dict used to make a request to the api
         """
         req_base = {
             'url': self.__get_url(name_content, specific_ban_id=specific_ban_id),
@@ -385,7 +376,7 @@ class MyTargetReader(Reader):
         field_name: str
     ) -> Dict[str, str]:
         """Transformss a list of dicts to a dict containing all the ids and the content retrieved from the
-        field_name mentionned as a parameter
+        field_name mentionned as a parameter.
 
         Args:
             list_dicts (List[Dict[str, str]]): List of dict containing the id and an associated value
