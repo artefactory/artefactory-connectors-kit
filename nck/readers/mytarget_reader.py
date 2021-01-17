@@ -83,7 +83,7 @@ class MyTargetReader(Reader):
     def __check_date_input_validity(self) -> bool:
         """The goal of this function is to check the validity of the date input parameters before retrieving the data.
         """
-        return self.__check_both_start_end_valid_or_neither(self.start_date, self.end_date) and \
+        return self.__check_both_start_end_valid(self.start_date, self.end_date) and \
             self.__check_validity_date(self.start_date) & self.__check_validity_date(self.end_date) and \
             self.__check_end_posterior_to_start(self.start_date, self.end_date) and \
             self.__check_date_not_in_future(self.end_date)
@@ -104,7 +104,7 @@ class MyTargetReader(Reader):
         else:
             raise ValueError(f'The end date {end_date} is posterior to current date {datetime.now()}')
 
-    def __check_both_start_end_valid_or_neither(
+    def __check_both_start_end_valid(
         self,
         start_date: datetime,
         end_date: datetime
