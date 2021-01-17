@@ -31,7 +31,7 @@ REQUEST_CONFIG = {
         'offset': True,
         '_campaign_id': True,
         'dates_required': False,
-        'ids': True
+        'ids': False
     },
     'get_banner_stats': {
         'url': 'https://target.my.com/api/v2/statistics/banners/day.json',
