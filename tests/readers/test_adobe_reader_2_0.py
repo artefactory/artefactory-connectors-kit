@@ -36,6 +36,7 @@ class AdobeReaderTest_2_0(TestCase):
         "metric": [],
         "start_date": datetime.date(2020, 1, 1),
         "end_date": datetime.date(2020, 1, 2),
+        "date_range": None,
     }
 
     @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
@@ -78,9 +79,7 @@ class AdobeReaderTest_2_0(TestCase):
         metrics = ["visits", "bounces"]
         breakdown_item_ids = ["000000000", "111111111"]
 
-        output = AdobeReader_2_0(**temp_kwargs).build_report_description(
-            metrics, breakdown_item_ids
-        )
+        output = AdobeReader_2_0(**temp_kwargs).build_report_description(metrics, breakdown_item_ids)
         expected = {
             "rsid": "XXXXXXXXX",
             "globalFilters": [
@@ -163,9 +162,7 @@ class AdobeReaderTest_2_0(TestCase):
         )
         metrics = ["visits", "bounces"]
 
-        output = AdobeReader_2_0(**temp_kwargs).get_parsed_report(
-            {"dimension": "variables/daterangeday"}, metrics
-        )
+        output = AdobeReader_2_0(**temp_kwargs).get_parsed_report({"dimension": "variables/daterangeday"}, metrics)
         expected = [
             {"daterangeday": "2020-01-01", "visits": 11, "bounces": 21},
             {"daterangeday": "2020-01-02", "visits": 12, "bounces": 22},
@@ -192,9 +189,7 @@ class AdobeReaderTest_2_0(TestCase):
         node = "daterangeday_1200201"
         path_to_node = ["daterangeday_1200201"]
 
-        output = AdobeReader_2_0(**self.kwargs).add_child_nodes_to_graph(
-            graph, node, path_to_node
-        )
+        output = AdobeReader_2_0(**self.kwargs).add_child_nodes_to_graph(graph, node, path_to_node)
         expected = {
             "root": ["daterangeday_1200201", "daterangeday_1200202"],
             "daterangeday_1200201": ["lasttouchchannel_1", "lasttouchchannel_2"],
@@ -212,13 +207,9 @@ class AdobeReaderTest_2_0(TestCase):
             {"daterangeday": "2020-01-02", "visits": 12, "bounces": 22},
         ],
     )
-    def test_read_one_dimension_reports(
-        self, mock_adobe_client, mock_get_parsed_report
-    ):
+    def test_read_one_dimension_reports(self, mock_adobe_client, mock_get_parsed_report):
         temp_kwargs = self.kwargs.copy()
-        temp_kwargs.update(
-            {"dimension": ["daterangeday"], "metric": ["visits", "bounces"]}
-        )
+        temp_kwargs.update({"dimension": ["daterangeday"], "metric": ["visits", "bounces"]})
 
         output = next(AdobeReader_2_0(**temp_kwargs).read())
         expected = [
@@ -289,9 +280,7 @@ class AdobeReaderTest_2_0(TestCase):
             ],
         ],
     )
-    def test_read_multiple_dimension_reports(
-        self, mock_adobe_client, mock_add_child_nodes_to_graph, mock_get_parsed_report
-    ):
+    def test_read_multiple_dimension_reports(self, mock_adobe_client, mock_add_child_nodes_to_graph, mock_get_parsed_report):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(
             {
