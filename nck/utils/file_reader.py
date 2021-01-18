@@ -22,6 +22,8 @@ import gzip
 import zipfile
 import json
 
+csv.field_size_limit(1000000)
+
 
 def unzip(input_file, output_path):
     with zipfile.ZipFile(input_file, 'r') as zip_ref:
