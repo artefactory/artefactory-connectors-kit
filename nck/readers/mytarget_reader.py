@@ -18,7 +18,6 @@
 import click
 import requests
 from typing import Dict, List, Any, Tuple
-import logging
 import itertools
 import time
 from datetime import datetime
@@ -42,6 +41,9 @@ def mytarget(**kwargs):
     return MyTargetReader(**extract_args("mytarget_", kwargs))
 
 
+LIMIT_REQUEST_MYTARGET = 20
+
+
 class MyTargetReader(Reader):
 
     def __init__(
@@ -62,11 +64,11 @@ class MyTargetReader(Reader):
         self.end_date = kwargs.get('end_date')
         self.date_format = kwargs.get('date_format')
         self.day_range = kwargs.get('day_range')
+        self.date_are_valid = self.__check_date_input_validity()
+        self.__retrieve_and_set_token()
 
     def read(self):
-        if self.__check_date_input_validity():
-            self.__retrieve_and_set_token()
-
+        if self.date_are_valid:
             rsp_daily_stat, names_dict, ids_dict, rsp_banner_names = self.__retrieve_all_data()
 
             complete_daily_content = self.map_campaign_name_to_daily_stat(
@@ -83,36 +85,14 @@ class MyTargetReader(Reader):
     def __check_date_input_validity(self) -> bool:
         """The goal of this function is to check the validity of the date input parameters before retrieving the data.
         """
-        return self.__check_both_start_end_valid(self.start_date, self.end_date) and \
-            self.__check_validity_date(self.start_date) & self.__check_validity_date(self.end_date) and \
-            self.__check_end_posterior_to_start(self.start_date, self.end_date) and \
+        return self.__check_end_posterior_to_start(self.start_date, self.end_date) and \
             self.__check_date_not_in_future(self.end_date)
-
-    def __is_none(self, date: datetime) -> bool:
-        return date is None
-
-    def __check_validity_date(self, date: datetime) -> bool:
-        try:
-            datetime(date.year, date.month, date.day)
-            return True
-        except ValueError as e:
-            raise ValueError(f'The date is not valid : {e}')
 
     def __check_date_not_in_future(self, end_date: datetime) -> bool:
         if end_date <= datetime.now():
             return True
         else:
             raise ValueError(f'The end date {end_date} is posterior to current date {datetime.now()}')
-
-    def __check_both_start_end_valid(
-        self,
-        start_date: datetime,
-        end_date: datetime
-    ) -> bool:
-        if self.__is_none(start_date) or self.__is_none(end_date):
-            raise ValueError("Either the start date or the end date is empty")
-        else:
-            return True
 
     def __check_end_posterior_to_start(
         self,
@@ -176,10 +156,13 @@ class MyTargetReader(Reader):
         first_elements = self.__get_response(name_content, campaign_id=campaign_id, banner_ids=banner_ids)
         count = first_elements['count']
         elements = [first_elements['items']]
-        if count > 20:
+        if count > LIMIT_REQUEST_MYTARGET:
             elements += [
                 self.__get_response(name_content, offset=offset, campaign_id=campaign_id, banner_ids=banner_ids)['items']
-                for offset in range(20, self.round_up_to_base(count, 20), 20)
+                for offset in range(
+                    LIMIT_REQUEST_MYTARGET,
+                    self.round_up_to_base(count, LIMIT_REQUEST_MYTARGET),
+                    LIMIT_REQUEST_MYTARGET)
             ]
         return list(itertools.chain.from_iterable(elements))
 
@@ -334,8 +317,6 @@ class MyTargetReader(Reader):
                 'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
                 'Host': 'target.my.com'
             }
-        else:
-            logging.error("No such kind of header available")
 
     def __generate_params_dict(
         self,
