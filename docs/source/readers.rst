@@ -128,7 +128,7 @@ Options                             Definition
 ``--adobe-2-0-metric``              Metric to include in the report
 ``--adobe-2-0-start-date``          Start date of the period to request (format: YYYY-MM-DD)
 ``--adobe-2-0-end-date``            Start date of the period to request (format: YYYY-MM-DD)
-``--adobe-2-0-date-range``          Date range. By default, not available in Adobe, so choose among NCK default values.
+``--adobe-2-0-date-range``          Date range. By default, not available in Adobe, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
 ==================================  =================================================================================================================================================================================
 
 ----------------------
