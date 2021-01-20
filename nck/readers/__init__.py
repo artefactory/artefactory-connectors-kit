@@ -40,6 +40,7 @@ from nck.readers.yandex_campaign_reader import yandex_campaigns
 from nck.readers.yandex_statistics_reader import yandex_statistics
 from nck.readers.gs_reader import google_sheets
 from nck.readers.confluence_reader import confluence
+from nck.readers.mytarget_reader import mytarget
 
 readers = [
     mysql,
@@ -65,6 +66,7 @@ readers = [
     yandex_statistics,
     google_sheets,
     confluence,
+    mytarget
 ]
 
 
