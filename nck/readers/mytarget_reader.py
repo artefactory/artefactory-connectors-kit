@@ -31,8 +31,6 @@ from nck.helpers.mytarget_helper import REQUEST_CONFIG
 @click.command(name="read_mytarget")
 @click.option("--mytarget-client-id", required=True)
 @click.option("--mytarget-client-secret", required=True)
-@click.option("--mytarget-mail", required=True)
-@click.option("--mytarget-agency", required=True)
 @click.option("--mytarget-refresh-token", required=True)
 @click.option("--mytarget-start-date", type=click.DateTime(), required=True)
 @click.option("--mytarget-end-date", type=click.DateTime(), required=True)
@@ -50,20 +48,17 @@ class MyTargetReader(Reader):
         self,
         client_id,
         client_secret,
-        mail,
-        agency,
         refresh_token,
+        start_date,
+        end_date,
         **kwargs
     ):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.mail = mail
-        self.agency = agency
         self.agency_client_token = {'refresh_token': refresh_token}
-        self.start_date = kwargs.get('start_date')
-        self.end_date = kwargs.get('end_date')
+        self.start_date = start_date
+        self.end_date = end_date
         self.date_format = kwargs.get('date_format')
-        self.day_range = kwargs.get('day_range')
         self.date_are_valid = self.__check_date_input_validity()
         self.__retrieve_and_set_token()
 
