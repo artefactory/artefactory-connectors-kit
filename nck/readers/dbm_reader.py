@@ -33,7 +33,7 @@ from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
 
 from nck.utils.text import get_report_generator_from_flat_file, skip_last
-from nck.utils.date_handler import get_date_start_and_date_stop_from_range
+from nck.utils.date_handler import get_date_start_and_date_stop_from_date_range
 
 from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES
 
@@ -78,9 +78,7 @@ default_end_date = datetime.date.today()
     "--dbm-day-range",
     required=True,
     default="LAST_7_DAYS",
-    type=click.Choice(
-        ["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK"]
-    ),
+    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK"]),
 )
 @processor("dbm_access_token", "dbm_refresh_token", "dbm_client_secret")
 def dbm(**kwargs):
@@ -146,9 +144,7 @@ class DbmReader(Reader):
             body_q["reportDataStartTimeMs"] = 1000 * int(
                 (self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()
             )
-            body_q["reportDataEndTimeMs"] = 1000 * int(
-                (self.kwargs.get("end_date") + datetime.timedelta(days=1)).timestamp()
-            )
+            body_q["reportDataEndTimeMs"] = 1000 * int((self.kwargs.get("end_date") + datetime.timedelta(days=1)).timestamp())
         return body_q
 
     def create_and_get_query(self):
@@ -190,14 +186,12 @@ class DbmReader(Reader):
         url = self.get_query_report_url(existing_query)
         report = requests.get(url, stream=True)
         if self.kwargs["query_param_type"] == "TYPE_REACH_AND_FREQUENCY" and self.kwargs["add_date_to_report"]:
-            start, stop = get_date_start_and_date_stop_from_range(self.kwargs["day_range"])
+            start, stop = get_date_start_and_date_stop_from_date_range(self.kwargs["day_range"])
             column_dict = {
                 "date_start": start.strftime(self.kwargs.get("date_format")),
                 "date_stop": stop.strftime(self.kwargs.get("date_format")),
             }
-            report_gen = get_report_generator_from_flat_file(
-                report.iter_lines(), add_column=True, column_dict=column_dict
-            )
+            report_gen = get_report_generator_from_flat_file(report.iter_lines(), add_column=True, column_dict=column_dict)
             return skip_last(report_gen, 1)
         else:
             report_gen = get_report_generator_from_flat_file(report.iter_lines())
