@@ -956,6 +956,60 @@ Options                         Definition
 ``--gs-page-number``            The page number you want to access. The number pages starts at 0.
 ==============================  ==============================================================================================================================================================
 
+
+===================
+MyTarget Reader
+===================
+
+----------
+Source API
+----------
+
+`Mytarget API <https://target.my.com/help/advertisers/api_arrangement/en>`__
+
+-------------------------
+How to obtain credentials
+-------------------------
+
+The mytarget API uses the OAuth2 protocol. There is not a single way to generate credentials, you can find the 3 ways to retrieve your credentials below :
+
+`Get your mytarget credentials <https://target.my.com/help/advertisers/api_authorization/en>`__
+
+You should now have an access token and a refresh token. Save them carefully. 
+
+----------
+Quickstart
+----------
+
+Say you want to retrieve for all campaigns and its associated banners of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:
+
+.. code-block:: shell
+    
+    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+
+*Didn't work?* See the `Troubleshooting`_ section.
+
+------------
+Command name
+------------
+
+``read_mytarget``
+
+---------------
+Command options
+---------------
+
+==============================  ===============================================================
+Options                         Definition
+==============================  ===============================================================
+``--mytarget-client-id``        Client ID you generated
+``--mytarget-client-secret``    Client secret you generated. 
+``--mytarget-refresh-token``    Secret token you retrieved during the process of getting tokens
+``--mytarget-start-date``       Start date of the period to request (format: YYYY-MM-DD)
+``--mytarget-end-date``         End date of the period to request (format: YYYY-MM-DD)
+==============================  ===============================================================
+
+
 =============
 Oracle Reader
 =============

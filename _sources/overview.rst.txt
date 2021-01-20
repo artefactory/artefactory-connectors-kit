@@ -35,8 +35,9 @@ As of now, the application is offering:
 - Google Search Ads 360
 - Google Search Console
 - Google Sheets
-- Oracle
 - MySQL
+- MyTarget
+- Oracle
 - Radarly
 - SalesForce
 - The Trade Desk
