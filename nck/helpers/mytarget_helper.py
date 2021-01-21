@@ -1,5 +1,7 @@
 from string import Template
 
+REQUEST_TYPES = ["general", "budget"]
+
 REQUEST_CONFIG = {
     'refresh_agency_token': {
         'url': 'https://target.my.com/api/v2/oauth2/token.json',
@@ -45,6 +47,14 @@ REQUEST_CONFIG = {
         'url': Template('https://target.my.com/api/v2/banners/$id.json?fields=id,name'),
         'headers_type': 'authorization',
         "offset": False,
+        '_campaign_id': False,
+        'dates_required': False,
+        'ids': False
+    },
+    'get_campaign_budgets': {
+        'url': "https://target.my.com/api/v2/campaigns.json?fields=id,name,budget_limit,budget_limit_day",
+        'headers_type': "authorization",
+        "offset": True,
         '_campaign_id': False,
         'dates_required': False,
         'ids': False

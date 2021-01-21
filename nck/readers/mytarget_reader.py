@@ -25,13 +25,14 @@ from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
-from nck.helpers.mytarget_helper import REQUEST_CONFIG
+from nck.helpers.mytarget_helper import REQUEST_CONFIG, REQUEST_TYPES
 
 
 @click.command(name="read_mytarget")
 @click.option("--mytarget-client-id", required=True)
 @click.option("--mytarget-client-secret", required=True)
 @click.option("--mytarget-refresh-token", required=True)
+@click.option("--mytarget-request-type", type=click.Choice(REQUEST_TYPES), required=True)
 @click.option("--mytarget-start-date", type=click.DateTime(), required=True)
 @click.option("--mytarget-end-date", type=click.DateTime(), required=True)
 @processor("mytarget-client-id", "mytarget-client-secret")
@@ -49,6 +50,7 @@ class MyTargetReader(Reader):
         client_id,
         client_secret,
         refresh_token,
+        request_type,
         start_date,
         end_date,
         **kwargs
@@ -56,6 +58,7 @@ class MyTargetReader(Reader):
         self.client_id = client_id
         self.client_secret = client_secret
         self.agency_client_token = {'refresh_token': refresh_token}
+        self.request_type = request_type
         self.start_date = start_date
         self.end_date = end_date
         self.date_format = kwargs.get('date_format')
@@ -64,18 +67,25 @@ class MyTargetReader(Reader):
 
     def read(self):
         if self.date_are_valid:
-            rsp_daily_stat, names_dict, ids_dict, rsp_banner_names = self.__retrieve_all_data()
+            if self.request_type == 'general':
+                rsp_daily_stat, names_dict, ids_dict, rsp_banner_names = self.__retrieve_all_data()
 
-            complete_daily_content = self.map_campaign_name_to_daily_stat(
-                rsp_daily_stat,
-                names_dict,
-                ids_dict,
-                rsp_banner_names
-            )
+                complete_daily_content = self.map_campaign_name_to_daily_stat(
+                    rsp_daily_stat,
+                    names_dict,
+                    ids_dict,
+                    rsp_banner_names
+                )
 
-            yield JSONStream(
-                "results_", self.split_content_by_date(complete_daily_content)
-            )
+                yield JSONStream(
+                    "mytarget_general_", self.split_content_by_date(complete_daily_content)
+                )
+            if self.request_type == 'budget':
+                res_budgets = self.__get_all_results('get_campaign_budgets')
+
+                yield JSONStream(
+                    "mytarget_budget_", self.__yield_from_list(res_budgets)
+                )
 
     def __check_date_input_validity(self) -> bool:
         """The goal of this function is to check the validity of the date input parameters before retrieving the data.
@@ -108,6 +118,9 @@ class MyTargetReader(Reader):
         request_refresh_token = self.__create_request('refresh_agency_token', parameters_refresh_token)
         refreshed_token = requests.post(**request_refresh_token).json()
         self.set_agency_client_token(refreshed_token)
+
+    def __yield_from_list(self, content: List[Dict[str, str]]):
+        yield from content
 
     def __retrieve_all_data(
         self) -> Tuple[
