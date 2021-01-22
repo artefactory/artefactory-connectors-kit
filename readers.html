@@ -1567,8 +1567,12 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </div>
 <div class="section" id="id60">
 <h3>Quickstart<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
-<p>Say you want to retrieve for all campaigns and its associated banners of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
+<p>Say you want to retrieve for all campaigns and its associated banners and stats of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;general&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
+</pre></div>
+</div>
+<p>If you just want to get the budget instead of the general statistics of each campaign you can try the following:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;budget&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1599,10 +1603,13 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-refresh-token</span></code></p></td>
 <td><p>Secret token you retrieved during the process of getting tokens</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-start-date</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-request-type</span></code></p></td>
+<td><p>Type of report you want to retrieve: performance or budgets.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-start-date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-end-date</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 </tbody>
