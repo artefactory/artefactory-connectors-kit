@@ -1,5 +1,5 @@
 
-REQUEST_TYPES = ["general", "budget"]
+REQUEST_TYPES = ["performance", "budget"]
 
 REQUEST_CONFIG = {
     'refresh_agency_token': {

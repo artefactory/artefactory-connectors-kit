@@ -1013,7 +1013,7 @@ Options                         Definition
 ``--mytarget-client-id``        Client ID you generated
 ``--mytarget-client-secret``    Client secret you generated. 
 ``--mytarget-refresh-token``    Secret token you retrieved during the process of getting tokens
-``--mytarget-request-type``     Type of report you want to retrieve: general stats or budgets.
+``--mytarget-request-type``     Type of report you want to retrieve: performance or budgets.
 ``--mytarget-start-date``       Start date of the period to request (format: YYYY-MM-DD)
 ``--mytarget-end-date``         End date of the period to request (format: YYYY-MM-DD)
 ==============================  ===============================================================

@@ -66,14 +66,14 @@ class MyTargetReader(Reader):
 
     def read(self):
         if self.date_are_valid:
-            if self.request_type == 'general':
+            if self.request_type == 'performance':
                 dict_stat, dict_camp, dict_banner = self.__retrieve_all_data()
 
                 complete_daily_content = self.map_campaign_name_to_daily_stat(
                     dict_stat, dict_camp, dict_banner
                 )
                 yield JSONStream(
-                    "mytarget_general_", self.split_content_by_date(complete_daily_content)
+                    "mytarget_performance_", self.split_content_by_date(complete_daily_content)
                 )
             if self.request_type == 'budget':
                 res_budgets = self.__get_all_results('get_campaign_budgets')
