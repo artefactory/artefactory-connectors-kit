@@ -1,4 +1,5 @@
-from string import Template
+
+REQUEST_TYPES = ["performance", "budget"]
 
 REQUEST_CONFIG = {
     'refresh_agency_token': {
@@ -9,27 +10,19 @@ REQUEST_CONFIG = {
         'dates_required': False,
         'ids': False
     },
-    'get_campaign_ids': {
-        'url': 'https://target.my.com/api/v2/banners.json',
+    'get_campaign_ids_names': {
+        'url': 'https://target.my.com/api/v2/campaigns.json?fields=id,name',
         'headers_type': "authorization",
         "offset": True,
         '_campaign_id': False,
         'dates_required': False,
         'ids': False
     },
-    'get_campaign_names': {
-        'url': 'https://target.my.com/api/v2/campaigns.json',
-        'headers_type': "authorization",
-        "offset": True,
-        '_campaign_id': False,
-        'dates_required': False,
-        'ids': False
-    },
-    'get_banner_ids': {
-        'url': 'https://target.my.com/api/v2/banners.json',
+    'get_banner_ids_names': {
+        'url': 'https://target.my.com/api/v2/banners.json?fields=id,name,campaign_id',
         'headers_type': "authorization",
         'offset': True,
-        '_campaign_id': True,
+        '_campaign_id': False,
         'dates_required': False,
         'ids': False
     },
@@ -39,12 +32,12 @@ REQUEST_CONFIG = {
         'offset': False,
         '_campaign_id': False,
         'dates_required': True,
-        'ids': True
+        'ids': False
     },
-    'get_banner_names': {
-        'url': Template('https://target.my.com/api/v2/banners/$id.json?fields=id,name'),
-        'headers_type': 'authorization',
-        "offset": False,
+    'get_campaign_budgets': {
+        'url': "https://target.my.com/api/v2/campaigns.json?fields=id,name,budget_limit,budget_limit_day",
+        'headers_type': "authorization",
+        "offset": True,
         '_campaign_id': False,
         'dates_required': False,
         'ids': False

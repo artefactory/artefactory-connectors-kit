@@ -981,11 +981,19 @@ You should now have an access token and a refresh token. Save them carefully.
 Quickstart
 ----------
 
-Say you want to retrieve for all campaigns and its associated banners of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:
+Say you want to retrieve for all campaigns and its associated banners and stats of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:
 
 .. code-block:: shell
     
-    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'general' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+
+
+If you just want to get the budget instead of the general statistics of each campaign you can try the following:
+
+.. code-block:: shell
+    
+    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'budget' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -1005,6 +1013,7 @@ Options                         Definition
 ``--mytarget-client-id``        Client ID you generated
 ``--mytarget-client-secret``    Client secret you generated. 
 ``--mytarget-refresh-token``    Secret token you retrieved during the process of getting tokens
+``--mytarget-request-type``     Type of report you want to retrieve: performance or budgets.
 ``--mytarget-start-date``       Start date of the period to request (format: YYYY-MM-DD)
 ``--mytarget-end-date``         End date of the period to request (format: YYYY-MM-DD)
 ==============================  ===============================================================
