@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
-
 from nck.commands.command import processor
 from nck.readers.sql_reader import SQLReader, validate_sql_arguments
 from nck.utils.args import extract_args
@@ -26,7 +25,7 @@ from nck.utils.args import extract_args
 @click.option("--oracle-user", required=True)
 @click.option("--oracle-password", required=True)
 @click.option("--oracle-host", required=True)
-@click.option("--oracle-port", required=False, default=2380)
+@click.option("--oracle-port", default=2380)
 @click.option("--oracle-database", required=True)
 @click.option("--oracle-schema", required=True)
 @click.option("--oracle-watermark-column")
@@ -34,6 +33,9 @@ from nck.utils.args import extract_args
 @click.option("--oracle-query")
 @click.option("--oracle-query-name")
 @click.option("--oracle-table")
+@click.option("--oracle-redis-state-service-name")
+@click.option("--oracle-redis-state-service-host")
+@click.option("--oracle-redis-state-service-port", default=6379)
 @processor("oracle_password")
 def oracle(**kwargs):
     validate_sql_arguments(OracleReader, "oracle", kwargs)

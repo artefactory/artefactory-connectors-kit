@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
-
 from nck.commands.command import processor
 from nck.readers.sql_reader import SQLReader, validate_sql_arguments
 from nck.utils.args import extract_args
@@ -26,13 +25,16 @@ from nck.utils.args import extract_args
 @click.option("--mysql-user", required=True)
 @click.option("--mysql-password", required=True)
 @click.option("--mysql-host", required=True)
-@click.option("--mysql-port", required=False, default=3306)
+@click.option("--mysql-port", default=3306)
 @click.option("--mysql-database", required=True)
 @click.option("--mysql-watermark-column")
 @click.option("--mysql-watermark-init")
 @click.option("--mysql-query")
 @click.option("--mysql-query-name")
 @click.option("--mysql-table")
+@click.option("--mysql-redis-state-service-name")
+@click.option("--mysql-redis-state-service-host")
+@click.option("--mysql-redis-state-service-port", default=6379)
 @processor("mysql_password")
 def mysql(**kwargs):
     validate_sql_arguments(MySQLReader, "mysql", kwargs)

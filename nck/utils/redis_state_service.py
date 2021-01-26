@@ -15,35 +15,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import redis
 import logging
 import pickle
 
-_state_service = None
+import redis
 
 
-def state():
-    global _state_service
-    if not _state_service:
-        raise Exception("State Service has not been configured")
-
-    return _state_service
-
-
-def configure(name, host, port):
-    global _state_service
-    if _state_service:
-        raise Exception("State Service already configured")
-
-    _state_service = StateService(name, host, port)
-
-
-class StateService(object):
+class RedisStateService:
     def __init__(self, name, host, port=6379):
-
         if host:
-            logging.info("Using checkpointing service: %s:%d (%s)", host, port, name)
-
+            logging.info(f"Using checkpointing service: {host}:{port} ({name})")
             self._enabled = True
             self._name = name
             self._host = host
@@ -53,21 +34,10 @@ class StateService(object):
             self._enabled = False
             logging.info("No checkpointing")
 
-    def get(self, key, default=None):
-        if not self.enabled:
-            return default
-
-        if not self._client.hexists(self._name, key):
-            return default
-
-        return pickle.loads(self._client.hget(self._name, key))
+    def get(self, key):
+        if self._enabled and self._client.hexists(self._name, key):
+            return pickle.loads(self._client.hget(self._name, key))
 
     def set(self, key, value):
-        if not self.enabled:
-            return
-
-        self._client.hset(self._name, key, pickle.dumps(value))
-
-    @property
-    def enabled(self):
-        return self._enabled
+        if self._enabled:
+            self._client.hset(self._name, key, pickle.dumps(value))

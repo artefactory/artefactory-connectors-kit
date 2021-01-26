@@ -16,62 +16,49 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging
-import sqlalchemy
+
 import click
-
+import sqlalchemy
 from nck.readers.reader import Reader
-from nck.utils.sql import build_table_query, build_custom_query
-
-from nck.utils.retry import retry
-
 from nck.streams.normalized_json_stream import NormalizedJSONStream
-from nck.state_service import state
 from nck.utils.args import has_arg, hasnt_arg
+from nck.utils.redis_state_service import RedisStateService
+from nck.utils.retry import retry
+from nck.utils.sql import build_custom_query, build_table_query
 
 
 def validate_sql_arguments(reader, prefix, kwargs):
-    query_key = "{}_query".format(prefix)
-    query_name_key = "{}_query_name".format(prefix)
-    table_key = "{}_table".format(prefix)
-    watermark_column_key = "{}_watermark_column".format(prefix)
-    watermark_init_key = "{}_watermark_init".format(prefix)
+    query_key = f"{prefix}_query"
+    query_name_key = f"{prefix}_query_name"
+    table_key = f"{prefix}_table"
+    watermark_column_key = f"{prefix}_watermark_column"
+    watermark_init_key = f"{prefix}_watermark_init"
+    redis_state_service_keys = [
+        f"{prefix}_redis_state_service_name",
+        f"{prefix}_redis_state_service_host",
+        f"{prefix}_redis_state_service_port",
+    ]
 
     if hasnt_arg(query_key, kwargs) and hasnt_arg(table_key, kwargs):
-        raise click.BadParameter(
-            "Must specify either a table or a query for {} reader".format(
-                reader.connector_name()
-            )
-        )
+        raise click.BadParameter(f"Must specify either a table or a query for {reader.connector_name()} reader")
 
     if has_arg(query_key, kwargs) and has_arg(table_key, kwargs):
         raise click.BadParameter("Cannot specify both a query and a table")
 
     if has_arg(query_key, kwargs) and hasnt_arg(query_name_key, kwargs):
-        raise click.BadParameter(
-            "Must specify a query name when running a {} query".format(
-                reader.connector_name()
-            )
-        )
+        raise click.BadParameter(f"Must specify a query name when running a {reader.connector_name()} query")
 
-    if has_arg(watermark_column_key, kwargs) and not state().enabled:
-        raise click.BadParameter(
-            "You must activate state management to use {} watermarks".format(
-                reader.connector_name()
-            )
-        )
+    redis_state_service_enabled = all([has_arg(key, kwargs) for key in redis_state_service_keys])
 
-    if hasnt_arg(watermark_column_key, kwargs) and state().enabled:
-        raise click.BadParameter(
-            "You must specify a {} watermark when using state management".format(
-                reader.connector_name()
-            )
-        )
+    if has_arg(watermark_column_key, kwargs) and not redis_state_service_enabled:
+        raise click.BadParameter(f"You must configure state management to use {reader.connector_name()} watermarks")
 
-    if hasnt_arg(watermark_init_key, kwargs) and state().enabled:
+    if hasnt_arg(watermark_column_key, kwargs) and redis_state_service_enabled:
+        raise click.BadParameter(f"You must specify a {reader.connector_name()} watermark when using state management")
+
+    if hasnt_arg(watermark_init_key, kwargs) and redis_state_service_enabled:
         raise click.BadParameter(
-            "You must specify a {} watermark init value when using state management".format(
-                reader.connector_name()
-            )
+            f"You must specify an initial {reader.connector_name()} watermark value when using state management"
         )
 
 
@@ -99,31 +86,32 @@ class SQLReader(Reader):
         host,
         port,
         database,
-        watermark_column=None,
-        watermark_init=None,
-        query=None,
-        query_name=None,
-        table=None,
-        schema=None,
+        watermark_column,
+        watermark_init,
+        query,
+        query_name,
+        table,
+        schema,
+        redis_state_service_name,
+        redis_state_service_host,
+        redis_state_service_port,
     ):
 
         self._engine = self._create_engine(host, port, user, password, database)
         self._name = table if table else query_name
         self._schema = schema
-
         self._watermark_column = watermark_column
+        self._redis_state_service = RedisStateService(
+            redis_state_service_name, redis_state_service_host, redis_state_service_port
+        )
 
         if watermark_column:
-            self._watermark_value = self.state.get(self._name) or watermark_init
+            self._watermark_value = self._redis_state_service.get(self._name) or watermark_init
 
         if table:
-            self._query = build_table_query(
-                self._engine, schema, table, watermark_column, self._watermark_value
-            )
+            self._query = build_table_query(self._engine, schema, table, watermark_column, self._watermark_value)
         else:
-            self._query = build_custom_query(
-                self._engine, schema, query, watermark_column, self._watermark_value
-            )
+            self._query = build_custom_query(self._engine, schema, query, watermark_column, self._watermark_value)
 
     @staticmethod
     def connector_adaptor():
@@ -131,13 +119,7 @@ class SQLReader(Reader):
 
     @classmethod
     def _create_engine(cls, host, port, user, password, database):
-        logging.info(
-            "Connecting to %s Database %s on %s:%s",
-            cls.connector_name(),
-            database,
-            host,
-            port,
-        )
+        logging.info(f"Connecting to {cls.connector_name()} Database {database} on {host}:{port}")
 
         url = sqlalchemy.engine.url.URL(
             **{
@@ -160,13 +142,11 @@ class SQLReader(Reader):
 
     @retry
     def _run_query(self):
-        logging.info("Running %s query %s", self.connector_name(), self._query)
+        logging.info(f"Running {self.connector_name()} query {self._query}")
 
         rows = self._engine.execute(self._query)
 
-        logging.info(
-            "%s result set contains %d rows", self.connector_name(), rows.rowcount
-        )
+        logging.info(f"{self.connector_name()} result set contains {rows.rowcount} rows")
 
         def result_generator():
             row = rows.fetchone()
@@ -174,7 +154,7 @@ class SQLReader(Reader):
                 yield dict(row.items())
 
                 if self._watermark_column:
-                    self.state.set(self._name, row[self._watermark_column])
+                    self._redis_state_service.set(self._name, row[self._watermark_column])
 
                 row = rows.fetchone()
             rows.close()
@@ -182,5 +162,5 @@ class SQLReader(Reader):
         return NormalizedJSONStream(self._name, result_generator())
 
     def close(self):
-        logging.info("Closing %s connection", self.connector_name())
+        logging.info(f"Closing {self.connector_name()} connection")
         self._engine.dispose()

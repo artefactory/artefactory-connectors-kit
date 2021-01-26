@@ -17,33 +17,25 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 
-from nck.writers import writers, Writer
-from nck.readers import readers, Reader
-import nck.state_service as state
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.readers import Reader, readers
 from nck.streams.json_stream import JSONStream
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.writers import Writer, writers
 
 
 @click.group(chain=True)
-@click.option("--state-service-name")
-@click.option("--state-service-host", help="Redis server IP address")
-@click.option("--state-service-port", help="Redis server port", default=6379)
-@click.option("--normalize-keys", default=False,
-              help="(Optional) If set to true, will normalize the output files keys, removing "
-                   "white spaces and special characters.", type=bool)
-def app(state_service_name, state_service_host, state_service_port, normalize_keys):
-    if (state_service_name or state_service_host) and not (
-            state_service_name and state_service_host
-    ):
-        raise click.BadParameter(
-            "You must specify both a name and a host for the state service"
-        )
+@click.option(
+    "--normalize-keys",
+    default=False,
+    help="(Optional) If set to true, will normalize output keys, removing white spaces and special characters.",
+    type=bool,
+)
+def app(normalize_keys):
+    pass
 
 
 @app.resultcallback()
-def run(processors, state_service_name, state_service_host, state_service_port, normalize_keys):
-    state.configure(state_service_name, state_service_host, state_service_port)
-
+def run(processors, normalize_keys):
     processor_instances = [p() for p in processors]
 
     _readers = list(filter(lambda o: isinstance(o, Reader), processor_instances))

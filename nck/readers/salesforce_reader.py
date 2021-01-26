@@ -16,18 +16,16 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import collections
-import urllib
-
 import logging
+import urllib
 
 import click
 import requests
-
-from nck.readers.reader import Reader
 from nck.commands.command import processor
-from nck.state_service import state
+from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args, has_arg, hasnt_arg
+from nck.utils.redis_state_service import RedisStateService
 from nck.utils.retry import retry
 
 SALESFORCE_LOGIN_ENDPOINT = "https://login.salesforce.com/services/oauth2/token"
@@ -47,50 +45,46 @@ SALESFORCE_DESCRIBE_ENDPOINT = "/services/data/v42.0/sobjects/{obj}/describe"
 @click.option("--salesforce-query-name")
 @click.option("--salesforce-watermark-column")
 @click.option("--salesforce-watermark-init")
-@processor(
-    "salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_password"
-)
+@click.option("--salesforce-redis-state-service-name")
+@click.option("--salesforce-redis-state-service-host")
+@click.option("--salesforce-redis-state-service-port", default=6379)
+@processor("salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_password")
 def salesforce(**kwargs):
     query_key = "salesforce_query"
     query_name_key = "salesforce_query_name"
     object_type_key = "salesforce_object_type"
     watermark_column_key = "salesforce_watermark_column"
     watermark_init_key = "salesforce_watermark_init"
+    redis_state_service_keys = [
+        "salesforce_redis_state_service_name",
+        "salesforce_redis_state_service_host",
+        "salesforce_redis_state_service_port",
+    ]
 
     if hasnt_arg(query_key, kwargs) and hasnt_arg(object_type_key, kwargs):
-        raise click.BadParameter(
-            "Must specify either an object type or a query for Salesforce"
-        )
+        raise click.BadParameter("Must specify either an object type or a query for Salesforce")
 
     if has_arg(query_key, kwargs) and has_arg(object_type_key, kwargs):
-        raise click.BadParameter(
-            "Cannot specify both a query and an object type for Salesforce"
-        )
+        raise click.BadParameter("Cannot specify both a query and an object type for Salesforce")
 
     if has_arg(query_key, kwargs) and hasnt_arg(query_name_key, kwargs):
-        raise click.BadParameter(
-            "Must specify a query name when running a Salesforce query"
-        )
+        raise click.BadParameter("Must specify a query name when running a Salesforce query")
 
-    if has_arg(watermark_column_key, kwargs) and not state().enabled:
-        raise click.BadParameter(
-            "You must activate state management to use Salesforce watermarks"
-        )
+    redis_state_service_enabled = all([has_arg(key, kwargs) for key in redis_state_service_keys])
 
-    if hasnt_arg(watermark_column_key, kwargs) and state().enabled:
-        raise click.BadParameter(
-            "You must specify a Salesforce watermark when using state management"
-        )
+    if has_arg(watermark_column_key, kwargs) and not redis_state_service_enabled:
+        raise click.BadParameter("You must configure state management to use Salesforce watermarks")
 
-    if hasnt_arg(watermark_init_key, kwargs) and state().enabled:
-        raise click.BadParameter(
-            "You must specify an initial Salesforce watermark value when using state management"
-        )
+    if hasnt_arg(watermark_column_key, kwargs) and redis_state_service_enabled:
+        raise click.BadParameter("You must specify a Salesforce watermark when using state management")
+
+    if hasnt_arg(watermark_init_key, kwargs) and redis_state_service_enabled:
+        raise click.BadParameter("You must specify an initial Salesforce watermark value when using state management")
 
     return SalesforceReader(**extract_args("salesforce_", kwargs))
 
 
-class SalesforceClient(object):
+class SalesforceClient:
     def __init__(self, user, password, consumer_key, consumer_secret):
         self._user = user
         self._password = password
@@ -148,9 +142,7 @@ class SalesforceClient(object):
     def _request_data(self, path, params=None):
 
         endpoint = urllib.parse.urljoin(self.instance_url, path)
-        response = requests.get(
-            endpoint, headers=self.headers, params=params, timeout=30
-        )
+        response = requests.get(endpoint, headers=self.headers, params=params, timeout=30)
 
         response.raise_for_status()
 
@@ -192,6 +184,9 @@ class SalesforceReader(Reader):
         object_type,
         watermark_column,
         watermark_init,
+        redis_state_service_name,
+        redis_state_service_host,
+        redis_state_service_port,
     ):
         self._name = query_name or object_type
         self._client = SalesforceClient(user, password, consumer_key, consumer_secret)
@@ -199,15 +194,16 @@ class SalesforceReader(Reader):
         self._watermark_init = watermark_init
         self._object_type = object_type
         self._query = query
+        self._redis_state_service = RedisStateService(
+            redis_state_service_name, redis_state_service_host, redis_state_service_port
+        )
 
     def build_object_type_query(self, object_type, watermark_column):
         description = self._client.describe(object_type)
         fields = [f["name"] for f in description["fields"]]
 
         field_projection = ", ".join(fields)
-        query = "SELECT {fields} FROM {object_type}".format(
-            fields=field_projection, object_type=object_type
-        )
+        query = "SELECT {fields} FROM {object_type}".format(fields=field_projection, object_type=object_type)
 
         if watermark_column:
             query = "{base} WHERE {watermark_column} > {{{watermark_column}}}".format(
@@ -223,17 +219,13 @@ class SalesforceReader(Reader):
             watermark_value = None
 
             if self._watermark_column:
-                watermark_value = self.state.get(self._name) or self._watermark_init
+                watermark_value = self._redis_state_service.get(self._name) or self._watermark_init
 
             if self._object_type:
-                self._query = self.build_object_type_query(
-                    self._object_type, self._watermark_column
-                )
+                self._query = self.build_object_type_query(self._object_type, self._watermark_column)
 
             if self._watermark_column:
-                self._query = self._query.format(
-                    **{self._watermark_column: watermark_value}
-                )
+                self._query = self._query.format(**{self._watermark_column: watermark_value})
 
             records = self._client.query(self._query)
 
@@ -242,7 +234,7 @@ class SalesforceReader(Reader):
                 yield row
 
                 if self._watermark_column:
-                    self.state.set(self._name, row[self._watermark_column])
+                    self._redis_state_service.set(self._name, row[self._watermark_column])
 
         yield NormalizedJSONStream(self._name, result_generator())
 
@@ -258,11 +250,7 @@ class SalesforceReader(Reader):
 
         if isinstance(record, dict):
             strip_keys = ["attributes", "totalSize", "done"]
-            return {
-                k: cls._delete_metadata_from_record(v)
-                for k, v in record.items()
-                if k not in strip_keys
-            }
+            return {k: cls._delete_metadata_from_record(v) for k, v in record.items() if k not in strip_keys}
         elif isinstance(record, list):
             return [cls._delete_metadata_from_record(i) for i in record]
         else:
