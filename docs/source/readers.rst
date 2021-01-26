@@ -128,6 +128,7 @@ Options                             Definition
 ``--adobe-2-0-metric``              Metric to include in the report
 ``--adobe-2-0-start-date``          Start date of the period to request (format: YYYY-MM-DD)
 ``--adobe-2-0-end-date``            Start date of the period to request (format: YYYY-MM-DD)
+``--adobe-2-0-date-range``          Date range. By default, not available in Adobe, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
 ==================================  =================================================================================================================================================================================
 
 ----------------------
@@ -954,6 +955,69 @@ Options                         Definition
 ``--gs-file-name``              The name you have given to your Google Sheet file
 ``--gs-page-number``            The page number you want to access. The number pages starts at 0.
 ==============================  ==============================================================================================================================================================
+
+
+===================
+MyTarget Reader
+===================
+
+----------
+Source API
+----------
+
+`Mytarget API <https://target.my.com/help/advertisers/api_arrangement/en>`__
+
+-------------------------
+How to obtain credentials
+-------------------------
+
+The mytarget API uses the OAuth2 protocol. There is not a single way to generate credentials, you can find the 3 ways to retrieve your credentials below :
+
+`Get your mytarget credentials <https://target.my.com/help/advertisers/api_authorization/en>`__
+
+You should now have an access token and a refresh token. Save them carefully. 
+
+----------
+Quickstart
+----------
+
+Say you want to retrieve for all campaigns and its associated banners and stats of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:
+
+.. code-block:: shell
+    
+    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'general' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+
+
+If you just want to get the budget instead of the general statistics of each campaign you can try the following:
+
+.. code-block:: shell
+    
+    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'budget' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+
+
+*Didn't work?* See the `Troubleshooting`_ section.
+
+------------
+Command name
+------------
+
+``read_mytarget``
+
+---------------
+Command options
+---------------
+
+==============================  ===============================================================
+Options                         Definition
+==============================  ===============================================================
+``--mytarget-client-id``        Client ID you generated
+``--mytarget-client-secret``    Client secret you generated. 
+``--mytarget-refresh-token``    Secret token you retrieved during the process of getting tokens
+``--mytarget-request-type``     Type of report you want to retrieve: performance or budgets.
+``--mytarget-start-date``       Start date of the period to request (format: YYYY-MM-DD)
+``--mytarget-end-date``         End date of the period to request (format: YYYY-MM-DD)
+==============================  ===============================================================
+
 
 =============
 Oracle Reader
