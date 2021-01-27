@@ -22,7 +22,7 @@ import sqlalchemy
 from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import has_arg, hasnt_arg
-from nck.utils.redis_state_service import RedisStateService
+from nck.utils.redis import RedisStateService
 from nck.utils.retry import retry
 from nck.utils.sql import build_custom_query, build_table_query
 
