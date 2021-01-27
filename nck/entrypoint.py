@@ -18,24 +18,17 @@
 import click
 
 from nck.readers import Reader, readers
-from nck.streams.json_stream import JSONStream
-from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.writers import Writer, writers
 
 
 @click.group(chain=True)
-@click.option(
-    "--normalize-keys",
-    default=False,
-    help="(Optional) If set to true, will normalize output keys, removing white spaces and special characters.",
-    type=bool,
-)
-def app(normalize_keys):
+@click.option()
+def app():
     pass
 
 
 @app.resultcallback()
-def run(processors, normalize_keys):
+def run(processors):
     processor_instances = [p() for p in processors]
 
     _readers = list(filter(lambda o: isinstance(o, Reader), processor_instances))
@@ -54,10 +47,7 @@ def run(processors, normalize_keys):
     # A stream should represent a full file!
     for stream in reader.read():
         for writer in _writers:
-            if normalize_keys and issubclass(stream.__class__, JSONStream):
-                writer.write(NormalizedJSONStream.create_from_stream(stream))
-            else:
-                writer.write(stream)
+            writer.write(stream)
 
 
 def cli_entrypoint():
