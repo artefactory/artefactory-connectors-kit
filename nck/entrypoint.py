@@ -17,52 +17,42 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 
-from nck.readers import Reader, readers
-from nck.writers import Writer, writers
+from nck.writers import writers, Writer
+from nck.readers import readers, Reader
 
 
 @click.group(chain=True)
-@click.option()
-def app():
+def cli():
     pass
 
 
-@app.resultcallback()
-def run(processors):
-    processor_instances = [p() for p in processors]
+def build_commands(cli, available_commands):
+    for cmd in available_commands:
+        cli.add_command(cmd)
 
-    _readers = list(filter(lambda o: isinstance(o, Reader), processor_instances))
-    _writers = list(filter(lambda o: isinstance(o, Writer), processor_instances))
 
-    if len(_readers) < 1:
+@cli.resultcallback()
+def process_command_pipeline(provided_commands):
+    provided_readers = [cmd for cmd in provided_commands if isinstance(cmd(), Reader)]
+    provided_writers = [cmd for cmd in provided_commands if isinstance(cmd(), Writer)]
+    _validate_provided_commands(provided_readers, provided_writers)
+
+    reader = provided_readers[0]
+    for stream in reader().read():
+        for writer in provided_writers:
+            writer().write(stream)
+
+
+def _validate_provided_commands(provided_readers, provided_writers):
+    if len(provided_readers) < 1:
         raise click.BadParameter("You must specify a reader")
-
-    if len(_readers) > 1:
+    if len(provided_readers) > 1:
         raise click.BadParameter("You cannot specify multiple readers")
-
-    if len(_writers) < 1:
+    if len(provided_writers) < 1:
         raise click.BadParameter("You must specify at least one writer")
-
-    reader = _readers[0]
-    # A stream should represent a full file!
-    for stream in reader.read():
-        for writer in _writers:
-            writer.write(stream)
-
-
-def cli_entrypoint():
-    build_commands()
-    app()
-
-
-def build_commands():
-    for writer in writers:
-        app.add_command(writer)
-
-    for reader in readers:
-        app.add_command(reader)
 
 
 if __name__ == "__main__":
-    build_commands()
-    app()
+    available_commands = readers + writers
+    build_commands(cli, available_commands)
+    cli()
