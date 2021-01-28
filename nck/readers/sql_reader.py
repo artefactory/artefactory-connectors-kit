@@ -122,7 +122,7 @@ class SQLReader(Reader):
             )
         else:
             self._query = build_custom_query(
-                self._engine, schema, query, watermark_column, self._watermark_value
+                self._engine, query, watermark_column, self._watermark_value
             )
 
     @staticmethod
