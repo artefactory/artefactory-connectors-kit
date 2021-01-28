@@ -10,7 +10,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+from nck.config import logger
 from datetime import datetime
 
 API_HOST = "https://api.thetradedesk.com/v3"
@@ -18,10 +18,7 @@ API_HOST = "https://api.thetradedesk.com/v3"
 API_ENDPOINTS = {
     "get_report_template_id": ("POST", "myreports/reporttemplateheader/query"),
     "create_report_schedule": ("POST", "myreports/reportschedule"),
-    "get_report_execution_details": (
-        "POST",
-        "myreports/reportexecution/query/advertisers",
-    ),
+    "get_report_execution_details": ("POST", "myreports/reportexecution/query/advertisers",),
     "delete_report_schedule": ("DELETE", "/myreports/reportschedule"),
 }
 
@@ -47,13 +44,13 @@ BQ_DATEFORMAT = "%Y-%m-%d"
 class ReportTemplateNotFoundError(Exception):
     def __init__(self, message):
         super().__init__(message)
-        logging.error(message)
+        logger.error(message)
 
 
 class ReportScheduleNotReadyError(Exception):
     def __init__(self, message):
         super().__init__(message)
-        logging.error(message)
+        logger.error(message)
 
 
 def format_date(date_string):

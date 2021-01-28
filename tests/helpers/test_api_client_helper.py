@@ -16,45 +16,32 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import unittest
-import logging
 
 from parameterized import parameterized
 
-from nck.helpers.api_client_helper import (get_dict_with_keys_converted_to_new_string_format,
-                                           to_pascal_key)
+from nck.helpers.api_client_helper import get_dict_with_keys_converted_to_new_string_format, to_pascal_key
 
 
 class ApiClientHelperTest(unittest.TestCase):
-
     def test_string_conversion_to_camel_case(self):
         self.assertDictEqual(
-            get_dict_with_keys_converted_to_new_string_format(
-                abc_de=1,
-                abc="abc",
-                abc_de_fg=2
-            ),
-            {
-                "AbcDe": 1,
-                "Abc": "abc",
-                "AbcDeFg": 2
-            }
+            get_dict_with_keys_converted_to_new_string_format(abc_de=1, abc="abc", abc_de_fg=2),
+            {"AbcDe": 1, "Abc": "abc", "AbcDeFg": 2},
         )
 
-    @parameterized.expand([
-        ("test", "Test"),
-        ("test_test", "TestTest"),
-        ("test_test_test", "TestTestTest"),
-        ("tEST", "Test"),
-        ("t_e_s_t", "TEST")
-    ])
+    @parameterized.expand(
+        [
+            ("test", "Test"),
+            ("test_test", "TestTest"),
+            ("test_test_test", "TestTestTest"),
+            ("tEST", "Test"),
+            ("t_e_s_t", "TEST"),
+        ]
+    )
     def test_to_pascal_key(self, key, pascal_key):
         self.assertEqual(to_pascal_key(key), pascal_key)
 
     def test_unknown_case(self):
         with self.assertLogs() as cm:
-            logging.getLogger("ApiClient")
             get_dict_with_keys_converted_to_new_string_format("UnknownCase")
-            self.assertEqual(
-                cm.output,
-                ["ERROR:root:Unable to convert to new string format. Format not in ['PascalCase']"]
-            )
+            self.assertEqual(cm.output, ["ERROR:root:Unable to convert to new string format. Format not in ['PascalCase']"])

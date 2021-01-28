@@ -16,19 +16,17 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+from nck.config import logger
 from datetime import datetime
 
 
 class APIRateLimitError(Exception):
     def __init__(self, message):
         super().__init__(message)
-        logging.error(message)
+        logger.error(message)
 
 
-def add_metric_container_to_report_description(
-    rep_desc, dimensions, metrics, breakdown_item_ids
-):
+def add_metric_container_to_report_description(rep_desc, dimensions, metrics, breakdown_item_ids):
     """
     Filling the metricContainer section of a report description:
     - Creates 1 filter per dimension breakdown x metric
@@ -50,10 +48,7 @@ def add_metric_container_to_report_description(
     ]
 
     rep_desc["metricContainer"]["metrics"] = [
-        {
-            "id": f"metrics/{metrics[j]}",
-            "filters": [i + j * nb_breakdowns for i in range(nb_breakdowns)],
-        }
+        {"id": f"metrics/{metrics[j]}", "filters": [i + j * nb_breakdowns for i in range(nb_breakdowns)]}
         for j in range(nb_metrics)
     ]
 
@@ -106,8 +101,5 @@ def parse_response(response, metrics, parent_dim_parsed):
             dimension: row["value"],
             **parsed_row_metrics,
         }
-        parsed_row = {
-            k: (format_date(v) if k == "daterangeday" else v)
-            for k, v in parsed_row.items()
-        }
+        parsed_row = {k: (format_date(v) if k == "daterangeday" else v) for k, v in parsed_row.items()}
         yield parsed_row

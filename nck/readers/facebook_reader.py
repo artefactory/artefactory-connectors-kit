@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+from nck.config import logger
 import click
 import re
 from math import ceil
@@ -87,9 +87,7 @@ def check_object_id(ctx, param, values):
 
 @click.command(name="read_facebook")
 @click.option("--facebook-app-id", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
-@click.option(
-    "--facebook-app-secret", default="", help="Not mandatory for AdsInsights reporting if access-token provided"
-)
+@click.option("--facebook-app-secret", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
 @click.option("--facebook-access-token", required=True)
 @click.option("--facebook-object-id", required=True, multiple=True, callback=check_object_id)
 @click.option("--facebook-object-type", type=click.Choice(FACEBOOK_OBJECTS), default="account")
@@ -206,9 +204,7 @@ class FacebookReader(Reader):
     def validate_ad_insights_breakdowns(self):
 
         if self.ad_insights:
-            missing_breakdowns = {
-                f[0] for f in self._field_paths if (f[0] in BREAKDOWNS) and (f[0] not in self.breakdowns)
-            }
+            missing_breakdowns = {f[0] for f in self._field_paths if (f[0] in BREAKDOWNS) and (f[0] not in self.breakdowns)}
             if missing_breakdowns != set():
                 raise ClickException(f"Wrong query. Please add to Breakdowns: {missing_breakdowns}")
 
@@ -216,10 +212,7 @@ class FacebookReader(Reader):
 
         if self.ad_insights:
             missing_action_breakdowns = {
-                flt
-                for f in self._field_paths
-                for flt in get_action_breakdown_filters(f)
-                if flt not in self.action_breakdowns
+                flt for f in self._field_paths for flt in get_action_breakdown_filters(f) if flt not in self.action_breakdowns
             }
             if missing_action_breakdowns != set():
                 raise ClickException(f"Wrong query. Please add to Action Breakdowns: {missing_action_breakdowns}")
@@ -228,9 +221,7 @@ class FacebookReader(Reader):
 
         if not self.ad_insights:
             if self.breakdowns != [] or self.action_breakdowns != []:
-                raise ClickException(
-                    "Wrong query. Ad Management queries do not accept Breakdowns nor Action Breakdowns."
-                )
+                raise ClickException("Wrong query. Ad Management queries do not accept Breakdowns nor Action Breakdowns.")
 
             if self.time_increment:
                 raise ClickException("Wrong query. Ad Management queries do not accept the time_increment parameter.")
@@ -268,16 +259,14 @@ class FacebookReader(Reader):
 
         if self.ad_insights or self.level in ["campaign", "adset", "ad"]:
             if self.start_date and self.end_date:
-                logging.info("Date format used for request: start_date and end_date")
+                logger.info("Date format used for request: start_date and end_date")
                 params["time_range"] = self.create_time_range()
             elif self.date_preset:
-                logging.info("Date format used for request: date_preset")
+                logger.info("Date format used for request: date_preset")
                 params["date_preset"] = self.date_preset
             else:
-                logging.warning("No date range provided - Last 30 days by default")
-                logging.warning(
-                    "https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters"
-                )
+                logger.warning("No date range provided - Last 30 days by default")
+                logger.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
 
     def create_time_range(self):
         return {"since": self.start_date.strftime(DATEFORMAT), "until": self.end_date.strftime(DATEFORMAT)}
@@ -298,7 +287,7 @@ class FacebookReader(Reader):
         https://developers.facebook.com/docs/marketing-api/insights
         """
 
-        logging.info(f"Running Facebook Ad Insights query on {self.object_type}_id: {object_id}")
+        logger.info(f"Running Facebook Ad Insights query on {self.object_type}_id: {object_id}")
 
         # Step 1 - Create Facebook object
         obj = self.create_object(object_id)
@@ -319,9 +308,9 @@ class FacebookReader(Reader):
         async_job.api_get()
         percent_completion = async_job[AdReportRun.Field.async_percent_completion]
         status = async_job[AdReportRun.Field.async_status]
-        logging.info(f"{status}: {percent_completion}%")
+        logger.info(f"{status}: {percent_completion}%")
         if status == "Job Failed":
-            logging.info(status)
+            logger.info(status)
         elif percent_completion < 100:
             raise Exception(f"{status}: {percent_completion}")
 
@@ -331,7 +320,7 @@ class FacebookReader(Reader):
         status = async_job[AdReportRun.Field.async_status]
         if status == "Job Running":
             raise Exception(status)
-        logging.info(status)
+        logger.info(status)
 
     def query_ad_management(self, fields, params, object_id):
         """
@@ -340,7 +329,7 @@ class FacebookReader(Reader):
         Supported object nodes: AdAccount, Campaign, AdSet, Ad and AdCreative
         """
 
-        logging.info(f"Running Ad Management query on {self.object_type}_id: {object_id}")
+        logger.info(f"Running Ad Management query on {self.object_type}_id: {object_id}")
 
         # Step 1 - Create Facebook object
         obj = self.create_object(object_id)
@@ -361,7 +350,7 @@ class FacebookReader(Reader):
 
         total_edge_objs = edge_objs._total_count
         total_batches = ceil(total_edge_objs / BATCH_SIZE_LIMIT)
-        logging.info(f"Making {total_batches} batch requests on a total of {total_edge_objs} {self.level}s")
+        logger.info(f"Making {total_batches} batch requests on a total of {total_edge_objs} {self.level}s")
 
         for batch in generate_batches(edge_objs, BATCH_SIZE_LIMIT):
 
@@ -379,9 +368,7 @@ class FacebookReader(Reader):
                 def callback_failure(response):
                     raise response.error()
 
-                obj.api_get(
-                    fields=fields, params=params, batch=api_batch, success=callback_success, failure=callback_failure
-                )
+                obj.api_get(fields=fields, params=params, batch=api_batch, success=callback_success, failure=callback_failure)
 
             # Execute batch
             api_batch.execute()

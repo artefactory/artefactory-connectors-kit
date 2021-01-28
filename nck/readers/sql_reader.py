@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import logging
+from nck.config import logger
 
 import click
 import sqlalchemy
@@ -119,7 +119,7 @@ class SQLReader(Reader):
 
     @classmethod
     def _create_engine(cls, host, port, user, password, database):
-        logging.info(f"Connecting to {cls.connector_name()} Database {database} on {host}:{port}")
+        logger.info(f"Connecting to {cls.connector_name()} Database {database} on {host}:{port}")
 
         url = sqlalchemy.engine.url.URL(
             **{
@@ -142,11 +142,11 @@ class SQLReader(Reader):
 
     @retry
     def _run_query(self):
-        logging.info(f"Running {self.connector_name()} query {self._query}")
+        logger.info(f"Running {self.connector_name()} query {self._query}")
 
         rows = self._engine.execute(self._query)
 
-        logging.info(f"{self.connector_name()} result set contains {rows.rowcount} rows")
+        logger.info(f"{self.connector_name()} result set contains {rows.rowcount} rows")
 
         def result_generator():
             row = rows.fetchone()
@@ -162,5 +162,5 @@ class SQLReader(Reader):
         return NormalizedJSONStream(self._name, result_generator())
 
     def close(self):
-        logging.info(f"Closing {self.connector_name()} connection")
+        logger.info(f"Closing {self.connector_name()} connection")
         self._engine.dispose()

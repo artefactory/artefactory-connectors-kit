@@ -16,23 +16,16 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from typing import Dict
-import logging
-
-logging.getLogger("ApiClient")
+from nck.config import logger
 
 POSSIBLE_STRING_FORMATS = ["PascalCase"]
 
 
-def get_dict_with_keys_converted_to_new_string_format(
-    str_format: str = "PascalCase", **kwargs
-) -> Dict:
+def get_dict_with_keys_converted_to_new_string_format(str_format: str = "PascalCase", **kwargs) -> Dict:
     if str_format in POSSIBLE_STRING_FORMATS and str_format == "PascalCase":
         return {to_pascal_key(key): value for key, value in kwargs.items()}
     else:
-        logging.error((
-            "Unable to convert to new string format. "
-            "Format not in %s"
-        ) % POSSIBLE_STRING_FORMATS)
+        logger.error(f"Unable to convert to new string format. Format not in {POSSIBLE_STRING_FORMATS}")
     return None
 
 

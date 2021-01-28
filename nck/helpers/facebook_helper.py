@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+from nck.config import logger
 import json
 from time import sleep
 
@@ -24,19 +24,11 @@ from facebook_business.adobjects.adsinsights import AdsInsights
 
 FACEBOOK_OBJECTS = ["pixel", "creative", "ad", "adset", "campaign", "account"]
 
-DATE_PRESETS = [
-    v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")
-]
+DATE_PRESETS = [v for k, v in AdsInsights.DatePreset.__dict__.items() if not k.startswith("__")]
 
-BREAKDOWNS = [
-    v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")
-]
+BREAKDOWNS = [v for k, v in AdsInsights.Breakdowns.__dict__.items() if not k.startswith("__")]
 
-ACTION_BREAKDOWNS = [
-    v
-    for k, v in AdsInsights.ActionBreakdowns.__dict__.items()
-    if not k.startswith("__")
-]
+ACTION_BREAKDOWNS = [v for k, v in AdsInsights.ActionBreakdowns.__dict__.items() if not k.startswith("__")]
 
 
 def get_action_breakdown_filters(field_path):
@@ -89,10 +81,7 @@ def obj_is_list_of_single_values(obj):
     """
     Checks wether obj is a list of strings, integers or floats.
     """
-    return (
-        isinstance(obj, list)
-        and all(isinstance(elt, (str, int, float)) for elt in obj)
-    )
+    return isinstance(obj, list) and all(isinstance(elt, (str, int, float)) for elt in obj)
 
 
 def obj_meets_action_breakdown_filters(obj, filters):
@@ -127,9 +116,7 @@ def get_action_breakdown_value(obj, visited, action_breakdowns):
         {'actions[action_type:video_view][action_device:iphone]': '12'}
     """
     obj_action_breakdown = [
-        f"{action_breakdown}:{obj[action_breakdown]}"
-        for action_breakdown in action_breakdowns
-        if action_breakdown in obj
+        f"{action_breakdown}:{obj[action_breakdown]}" for action_breakdown in action_breakdowns if action_breakdown in obj
     ]
     return {format_field_path(visited + obj_action_breakdown): obj["value"]}
 
@@ -143,13 +130,9 @@ def get_all_action_breakdown_values(resp_obj, visited, action_breakdowns, filter
     for obj in resp_obj:
         if filters != {}:
             if obj_meets_action_breakdown_filters(obj, filters):
-                action_breakdown_values.update(
-                    get_action_breakdown_value(obj, visited, action_breakdowns)
-                )
+                action_breakdown_values.update(get_action_breakdown_value(obj, visited, action_breakdowns))
         else:
-            action_breakdown_values.update(
-                get_action_breakdown_value(obj, visited, action_breakdowns)
-            )
+            action_breakdown_values.update(get_action_breakdown_value(obj, visited, action_breakdowns))
     return action_breakdown_values
 
 
@@ -217,12 +200,8 @@ def monitor_usage(response):
         if header["name"] == "X-Business-Use-Case-Usage":
             usage_header = json.loads(header["value"])
             usage_header_values = list(usage_header.values())[0][0]
-            usage_rates = [
-                v
-                for k, v in usage_header_values.items()
-                if k in ["call_count", "total_cputime", "total_time"]
-            ]
+            usage_rates = [v for k, v in usage_header_values.items() if k in ["call_count", "total_cputime", "total_time"]]
 
     if max(usage_rates) > 75:
-        logging.info("75% rate limit reached. Sleeping for 5 minutes...")
+        logger.info("75% rate limit reached. Sleeping for 5 minutes...")
         sleep(300)

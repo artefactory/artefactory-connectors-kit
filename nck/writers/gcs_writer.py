@@ -15,16 +15,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import config
-import logging
 import os
-from nck.helpers.google_base import GoogleBaseClass
-import click
 
-from nck.writers.writer import Writer
-from nck.commands.command import processor
-from nck.utils.args import extract_args
+import click
 from google.cloud import storage
+from nck import config
+from nck.commands.command import processor
+from nck.config import logger
+from nck.helpers.google_base import GoogleBaseClass
+from nck.utils.args import extract_args
+from nck.writers.writer import Writer
 
 
 @click.command(name="write_gcs")
@@ -32,8 +32,7 @@ from google.cloud import storage
 @click.option("--gcs-prefix", help="GCS path to write the file.")
 @click.option("--gcs-project-id", help="GCS Project Id")
 @click.option(
-    "--gcs-file-name",
-    help="Override the default name of the file (don't add the extension)",
+    "--gcs-file-name", help="Override the default name of the file (don't add the extension)",
 )
 @processor()
 def gcs(**kwargs):
@@ -45,9 +44,7 @@ class GCSWriter(Writer, GoogleBaseClass):
 
     def __init__(self, bucket, project_id, prefix=None, file_name=None):
         project_id = self.get_project_id(project_id)
-        self._client = storage.Client(
-            credentials=self._get_credentials(), project=project_id
-        )
+        self._client = storage.Client(credentials=self._get_credentials(), project=project_id)
         self._bucket = self._client.bucket(bucket)
         self._prefix = prefix
         self._file_name = file_name
@@ -61,18 +58,14 @@ class GCSWriter(Writer, GoogleBaseClass):
             return:
                 gcs_path (str): Path to file {bucket}/{prefix}{file_name}
         """
-        logging.info("Writing file to GCS")
+        logger.info("Writing file to GCS")
         _, extension = self._extract_extension(stream.name)
-        file_name = (
-            self._extract_extension(self._file_name)[0] + extension
-            if self._file_name is not None
-            else stream.name
-        )
+        file_name = self._extract_extension(self._file_name)[0] + extension if self._file_name is not None else stream.name
         blob = self.create_blob(file_name)
         blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
         uri = self.uri_for_name(file_name)
 
-        logging.info("Uploaded file to {}".format(uri))
+        logger.info("Uploaded file to {}".format(uri))
 
         return uri, blob
 
@@ -101,7 +94,6 @@ class GCSWriter(Writer, GoogleBaseClass):
                 return config.PROJECT_ID
             except Exception:
                 raise click.exceptions.MissingParameter(
-                    "Please provide a project id in ENV var or params.",
-                    param_type="--gcs-project-id",
+                    "Please provide a project id in ENV var or params.", param_type="--gcs-project-id",
                 )
         return project_id

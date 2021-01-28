@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+from nck.config import logger
 from datetime import datetime, timedelta
 import requests
 import jwt
@@ -24,9 +24,6 @@ from tenacity import retry, wait_exponential, stop_after_delay
 
 IMS_HOST = "ims-na1.adobelogin.com"
 IMS_EXCHANGE = "https://ims-na1.adobelogin.com/ims/exchange/jwt"
-
-logging.basicConfig(level="INFO")
-logger = logging.getLogger()
 
 
 class AdobeClient:
@@ -45,7 +42,7 @@ class AdobeClient:
         self.private_key = private_key
 
         # Creating jwt_token attribute
-        logging.info("Getting jwt_token.")
+        logger.info("Getting jwt_token.")
         self.jwt_token = jwt.encode(
             {
                 "exp": datetime.utcnow() + timedelta(seconds=30),
@@ -59,7 +56,7 @@ class AdobeClient:
         )
 
         # Creating access_token attribute
-        logging.info("Getting access_token.")
+        logger.info("Getting access_token.")
         self.access_token = self.get_access_token()
 
     @retry(wait=wait_exponential(multiplier=60, min=60, max=1200), stop=stop_after_delay(3600))

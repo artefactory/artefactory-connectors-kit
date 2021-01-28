@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import collections
-import logging
+from nck.config import logger
 import urllib
 
 import click
@@ -118,7 +118,7 @@ class SalesforceClient:
         return self._instance_url
 
     def _load_access_info(self):
-        logging.info("Retrieving Salesforce access token")
+        logger.info("Retrieving Salesforce access token")
 
         res = requests.post(SALESFORCE_LOGIN_ENDPOINT, params=self._get_login_params())
 
@@ -154,7 +154,7 @@ class SalesforceClient:
 
     def query(self, query):
 
-        logging.info("Running Salesforce query: %s", query)
+        logger.info("Running Salesforce query: %s", query)
 
         response = self._request_data(SALESFORCE_QUERY_ENDPOINT, {"q": query})
 
@@ -166,7 +166,7 @@ class SalesforceClient:
                 yield rec
 
             if "nextRecordsUrl" in response:
-                logging.info("Fetching next page of Salesforce results")
+                logger.info("Fetching next page of Salesforce results")
                 response = self._request_data(response["nextRecordsUrl"])
             else:
                 generating = False

@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import logging
+from nck.config import logger
 import pickle
 
 import redis
@@ -24,7 +24,7 @@ import redis
 class RedisStateService:
     def __init__(self, name, host, port=6379):
         if host:
-            logging.info(f"Using checkpointing service: {host}:{port} ({name})")
+            logger.info(f"Using checkpointing service: {host}:{port} ({name})")
             self._enabled = True
             self._name = name
             self._host = host
@@ -32,7 +32,7 @@ class RedisStateService:
             self._client = redis.Redis(host=host, port=port)
         else:
             self._enabled = False
-            logging.info("No checkpointing")
+            logger.info("No checkpointing")
 
     def get(self, key):
         if self._enabled and self._client.hexists(self._name, key):
