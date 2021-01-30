@@ -11,23 +11,6 @@ RUN apt-get update && apt-get install -y \
     libaio-dev \
     && mkdir -p /opt/data/api
 
-# Oracle Dependencies
-ADD ./vendor /opt/vendor
-
-WORKDIR /opt/vendor
-
-ENV ORACLE_HOME=/opt/oracle/instantclient
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME
-
-ENV OCI_HOME=/opt/oracle/instantclient
-ENV OCI_LIB_DIR=/opt/oracle/instantclient
-ENV OCI_INCLUDE_DIR=/opt/oracle/instantclient/sdk/include
-
-# Install Oracle
-RUN mkdir /opt/oracle
-RUN chmod +x /opt/vendor/install.sh
-RUN /opt/vendor/install.sh
-
 RUN mkdir /app
 
 # Copy code
