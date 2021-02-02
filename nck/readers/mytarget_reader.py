@@ -19,12 +19,13 @@ import click
 import requests
 from typing import Dict, List, Any, Tuple
 import itertools
-from datetime import datetime
+from datetime import datetime, date
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
 from nck.helpers.mytarget_helper import REQUEST_CONFIG, REQUEST_TYPES
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, get_date_start_and_date_stop_from_date_range
 
 
 @click.command(name="read_mytarget")
@@ -32,8 +33,13 @@ from nck.helpers.mytarget_helper import REQUEST_CONFIG, REQUEST_TYPES
 @click.option("--mytarget-client-secret", required=True)
 @click.option("--mytarget-refresh-token", required=True)
 @click.option("--mytarget-request-type", type=click.Choice(REQUEST_TYPES), required=True)
-@click.option("--mytarget-start-date", type=click.DateTime(), required=True)
-@click.option("--mytarget-end-date", type=click.DateTime(), required=True)
+@click.option(
+    "--mytarget-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
+@click.option("--mytarget-start-date", type=click.DateTime())
+@click.option("--mytarget-end-date", type=click.DateTime())
 @processor("mytarget-client-id", "mytarget-client-secret")
 def mytarget(**kwargs):
     return MyTargetReader(**extract_args("mytarget_", kwargs))
@@ -50,6 +56,7 @@ class MyTargetReader(Reader):
         client_secret,
         refresh_token,
         request_type,
+        date_range,
         start_date,
         end_date,
         **kwargs
@@ -58,9 +65,12 @@ class MyTargetReader(Reader):
         self.client_secret = client_secret
         self.agency_client_token = {'refresh_token': refresh_token}
         self.request_type = request_type
+        self.date_range = date_range
+        start_date, end_date = get_date_start_and_date_stop_from_date_range(self.date_range)
         self.start_date = start_date
         self.end_date = end_date
         self.date_format = kwargs.get('date_format')
+
         self.date_are_valid = self.__check_date_input_validity()
         self.__retrieve_and_set_token()
 
@@ -89,10 +99,10 @@ class MyTargetReader(Reader):
             self.__check_date_not_in_future(self.end_date)
 
     def __check_date_not_in_future(self, end_date: datetime) -> bool:
-        if end_date <= datetime.now():
+        if end_date <= date.today():
             return True
         else:
-            raise ValueError(f'The end date {end_date} is posterior to current date {datetime.now()}')
+            raise ValueError(f'The end date {end_date} is posterior to current date {date.today()}')
 
     def __check_end_posterior_to_start(
         self,
@@ -164,9 +174,15 @@ class MyTargetReader(Reader):
         dict_camp: List[Dict[str, str]],
         dict_banner: Dict[str, str]
     ) -> List[Dict[str, str]]:
+        unused_banners = []
         for ban_id in dict_banner.keys():
-            dict_banner[ban_id]['campaign_name'] = dict_camp[dict_banner[ban_id]['campaign_id']]['name']
-            dict_banner[ban_id]['rows'] = dict_stat[dict_banner[ban_id]['id']]['rows']
+            if dict_banner[ban_id]['campaign_id'] in dict_camp.keys():
+                dict_banner[ban_id]['campaign_name'] = dict_camp[dict_banner[ban_id]['campaign_id']]['name']
+                dict_banner[ban_id]['rows'] = dict_stat[dict_banner[ban_id]['id']]['rows']
+            else:
+                unused_banners.append(ban_id)
+        for unused_ban_id in unused_banners:
+            dict_banner.pop(unused_ban_id)
         return dict_banner
 
     def split_content_by_date(self, content: List[Dict[str, Any]]):
