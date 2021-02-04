@@ -37,6 +37,21 @@ DEFAULT_DATE_RANGE_FUNCTIONS = {
 }
 
 
+def check_date_range_definition_conformity(start_date: date, end_date, date_range: str):
+    if start_date is None and end_date is None and date_range is None:
+        raise Exception(
+            "You must at least define a couple \
+                        start-date/end-date or a date-range"
+        )
+    if start_date is None or end_date is None:
+        raise Exception("Both start_date and end_date must be defined")
+    if start_date is not None and end_date is not None and date_range is not None:
+        raise Exception(
+            "You must define either start_date and end_date \
+                        or date_range, but not both"
+        )
+
+
 def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date, date]:
     """Returns date start and date stop based on the date range provided
     and the current date.
