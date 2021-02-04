@@ -37,7 +37,6 @@ As of now, the application is offering:
 - Google Sheets
 - MySQL
 - MyTarget
-- Oracle
 - Radarly
 - SalesForce
 - The Trade Desk

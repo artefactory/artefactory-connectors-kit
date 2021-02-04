@@ -1049,20 +1049,23 @@ Command name
 Command options
 ---------------
 
-==============================  =========================================================================================================
-Options                         Definition
-==============================  =========================================================================================================
-``--mysql-user``                Database user
-``--mysql-password``            Database password
-``--mysql-host``                Database host
-``--mysql-port``                Database port
-``--mysql-database``            Database name
-``--mysql-query``               SQL query (you must specify either a query or a table)
-``--mysql-query-name``          SQL query name (required if you specify a query)
-``--mysql-table``               Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)
-``--mysql-watermark-column``    Watermark column (required when using state management)
-``--mysql-watermark-init``      Initial watermark column value (required when using state management)
-==============================  =========================================================================================================
+=====================================  =========================================================================================================
+Options                                Definition
+=====================================  =========================================================================================================
+``--mysql-user``                       Database user
+``--mysql-password``                   Database password
+``--mysql-host``                       Database host
+``--mysql-port``                       Database port
+``--mysql-database``                   Database name
+``--mysql-query``                      SQL query (you must specify either a query or a table)
+``--mysql-query-name``                 SQL query name (required if you specify a query)
+``--mysql-table``                      Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)
+``--mysql-watermark-column``           Watermark column (required when using state management)
+``--mysql-watermark-init``             Initial watermark column value (required when using state management)
+``--mysql-redis-state-service-name``   Redis state service hash name
+``--mysql-redis-state-service-host``   Redis state service host
+``--mysql-redis-state-service-port``   Redis state service port
+=====================================  =========================================================================================================
 
 ==============
 Radarly Reader
