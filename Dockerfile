@@ -1,24 +1,11 @@
-FROM python:3.7
+FROM python:3.7-slim-buster
 
-# Install Unix packages
-RUN apt-get update && apt-get install -y \
-    supervisor \
-    cron \
-    nano \
-    git \
-    build-essential \
-    unzip \
-    libaio-dev \
-    && mkdir -p /opt/data/api
+ENV PYTHONDONTWRITEBYTECODE True
+ENV PYTHONUNBUFFERED True
 
-RUN mkdir /app
-
-# Copy code
-ADD . /app/
-RUN chmod -R 0644 /app
-WORKDIR /app/
+WORKDIR /app
+ADD . /app
+RUN python -m pip install -r requirements.txt
 ENV PYTHONPATH=${PYTHONPATH}:.
 
-RUN python setup.py install
-
-ENTRYPOINT ["nckrun"]
+ENTRYPOINT ["python", "nck/entrypoint.py"]
