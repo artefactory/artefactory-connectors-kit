@@ -37,7 +37,7 @@ DEFAULT_DATE_RANGE_FUNCTIONS = {
 }
 
 
-def check_date_range_definition_conformity(start_date: date, end_date, date_range: str):
+def check_date_range_definition_conformity(start_date: date, end_date: date, date_range: str):
     if start_date is None and end_date is None and date_range is None:
         raise Exception(
             "You must at least define a couple \

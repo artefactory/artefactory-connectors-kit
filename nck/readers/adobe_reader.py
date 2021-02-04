@@ -15,23 +15,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import click
-import logging
 import datetime
 import json
-import requests
-from time import sleep
+import logging
 from itertools import chain
+from time import sleep
 
-from nck.commands.command import processor
-from nck.readers.reader import Reader
-from nck.utils.args import extract_args
-from nck.utils.retry import retry
-from nck.streams.json_stream import JSONStream
-from nck.clients.adobe_client import AdobeClient
-from nck.helpers.adobe_helper import ReportDescriptionError, ReportNotReadyError, parse
-
+import click
+import requests
 from click import ClickException
+from nck.clients.adobe_client import AdobeClient
+from nck.commands.command import processor
+from nck.helpers.adobe_helper import ReportDescriptionError, ReportNotReadyError, parse
+from nck.readers.reader import Reader
+from nck.streams.json_stream import JSONStream
+from nck.utils.args import extract_args
+from nck.utils.date_handler import check_date_range_definition_conformity
+from nck.utils.retry import retry
 
 # Credit goes to Mr Martin Winkel for the base code provided :
 # github : https://github.com/SaturnFromTitan/adobe_analytics
@@ -114,11 +114,13 @@ class AdobeReader(Reader):
         global_company_id,
         **kwargs,
     ):
-        self.adobe_client = AdobeClient(
-            client_id, client_secret, tech_account_id, org_id, private_key
-        )
+        self.adobe_client = AdobeClient(client_id, client_secret, tech_account_id, org_id, private_key)
         self.global_company_id = global_company_id
         self.kwargs = kwargs
+
+        check_date_range_definition_conformity(
+            self.kwargs.get("start_date"), self.kwargs.get("end_date"), self.kwargs.get("day_range")
+        )
 
     def request(self, api, method, data=None):
         """
@@ -148,12 +150,8 @@ class AdobeReader(Reader):
             "reportDescription": {
                 "source": "warehouse",
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [
-                    {"id": el} for el in self.kwargs.get("report_element_id", [])
-                ],
-                "metrics": [
-                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
-                ],
+                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
+                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
             }
         }
         self.set_date_gran_report_desc(report_description)
@@ -185,21 +183,15 @@ class AdobeReader(Reader):
         else:
             end_date = datetime.datetime.now().date()
             start_date = end_date - datetime.timedelta(days=self.get_days_delta())
-        report_description["reportDescription"]["dateFrom"] = start_date.strftime(
-            "%Y-%m-%d"
-        )
-        report_description["reportDescription"]["dateTo"] = end_date.strftime(
-            "%Y-%m-%d"
-        )
+        report_description["reportDescription"]["dateFrom"] = start_date.strftime("%Y-%m-%d")
+        report_description["reportDescription"]["dateTo"] = end_date.strftime("%Y-%m-%d")
 
     def set_date_gran_report_desc(self, report_description):
         """
         Adds the dateGranularity parameter to a reportDescription.
         """
         if self.kwargs.get("date_granularity", None) is not None:
-            report_description["reportDescription"][
-                "dateGranularity"
-            ] = self.kwargs.get("date_granularity")
+            report_description["reportDescription"]["dateGranularity"] = self.kwargs.get("date_granularity")
 
     @retry
     def query_report(self):
@@ -210,9 +202,7 @@ class AdobeReader(Reader):
         - Output: reportID, to be passed to the Report.Get method
         - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Queue.md
         """
-        query_report = self.request(
-            api="Report", method="Queue", data=self.build_report_description()
-        )
+        query_report = self.request(api="Report", method="Queue", data=self.build_report_description())
         return query_report
 
     @retry
@@ -224,11 +214,14 @@ class AdobeReader(Reader):
         - Output: reportResponse containing the requested report data
         - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Get.md
         """
-        request_f = lambda: self.request(
-            api="Report",
-            method="Get",
-            data={"reportID": report_id, "page": page_number},
-        )
+
+        def request_f():
+            return self.request(
+                api="Report",
+                method="Get",
+                data={"reportID": report_id, "page": page_number},
+            )
+
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":
@@ -249,8 +242,7 @@ class AdobeReader(Reader):
             all_responses = [parse(raw_response)]
             if "totalPages" in raw_response["report"]:
                 all_responses = all_responses + [
-                    parse(self.get_report(rep_id, page_number=np))
-                    for np in range(2, raw_response["report"]["totalPages"] + 1)
+                    parse(self.get_report(rep_id, page_number=np)) for np in range(2, raw_response["report"]["totalPages"] + 1)
                 ]
             return chain(*all_responses)
 

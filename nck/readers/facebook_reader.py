@@ -17,36 +17,36 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import logging
-import click
 import re
-from math import ceil
-from click import ClickException
 from datetime import datetime
-from tenacity import retry, wait_none, wait_exponential, stop_after_delay, stop_after_attempt
+from math import ceil
 
-from nck.readers.reader import Reader
-from nck.utils.args import extract_args
+import click
+from click import ClickException
+from facebook_business.adobjects.ad import Ad
+from facebook_business.adobjects.adaccount import AdAccount
+from facebook_business.adobjects.adcreative import AdCreative
+from facebook_business.adobjects.adreportrun import AdReportRun
+from facebook_business.adobjects.adset import AdSet
+from facebook_business.adobjects.adspixel import AdsPixel
+from facebook_business.adobjects.campaign import Campaign
+from facebook_business.api import FacebookAdsApi
 from nck.commands.command import processor
-from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.helpers.facebook_helper import (
-    FACEBOOK_OBJECTS,
-    DATE_PRESETS,
-    BREAKDOWNS,
     ACTION_BREAKDOWNS,
+    BREAKDOWNS,
+    DATE_PRESETS,
+    FACEBOOK_OBJECTS,
+    generate_batches,
     get_action_breakdown_filters,
     get_field_values,
-    generate_batches,
     monitor_usage,
 )
-
-from facebook_business.api import FacebookAdsApi
-from facebook_business.adobjects.adaccount import AdAccount
-from facebook_business.adobjects.campaign import Campaign
-from facebook_business.adobjects.adset import AdSet
-from facebook_business.adobjects.ad import Ad
-from facebook_business.adobjects.adcreative import AdCreative
-from facebook_business.adobjects.adspixel import AdsPixel
-from facebook_business.adobjects.adreportrun import AdReportRun
+from nck.readers.reader import Reader
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.utils.args import extract_args
+from nck.utils.date_handler import check_date_range_definition_conformity
+from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential, wait_none
 
 DATEFORMAT = "%Y-%m-%d"
 
@@ -87,9 +87,7 @@ def check_object_id(ctx, param, values):
 
 @click.command(name="read_facebook")
 @click.option("--facebook-app-id", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
-@click.option(
-    "--facebook-app-secret", default="", help="Not mandatory for AdsInsights reporting if access-token provided"
-)
+@click.option("--facebook-app-secret", default="", help="Not mandatory for AdsInsights reporting if access-token provided")
 @click.option("--facebook-access-token", required=True)
 @click.option("--facebook-object-id", required=True, multiple=True, callback=check_object_id)
 @click.option("--facebook-object-type", type=click.Choice(FACEBOOK_OBJECTS), default="account")
@@ -175,6 +173,7 @@ class FacebookReader(Reader):
 
         # Validate inputs
         self.validate_inputs()
+        check_date_range_definition_conformity(self.start_date, self.end_date, self.date_preset)
 
     def validate_inputs(self):
         """
@@ -206,9 +205,7 @@ class FacebookReader(Reader):
     def validate_ad_insights_breakdowns(self):
 
         if self.ad_insights:
-            missing_breakdowns = {
-                f[0] for f in self._field_paths if (f[0] in BREAKDOWNS) and (f[0] not in self.breakdowns)
-            }
+            missing_breakdowns = {f[0] for f in self._field_paths if (f[0] in BREAKDOWNS) and (f[0] not in self.breakdowns)}
             if missing_breakdowns != set():
                 raise ClickException(f"Wrong query. Please add to Breakdowns: {missing_breakdowns}")
 
@@ -216,10 +213,7 @@ class FacebookReader(Reader):
 
         if self.ad_insights:
             missing_action_breakdowns = {
-                flt
-                for f in self._field_paths
-                for flt in get_action_breakdown_filters(f)
-                if flt not in self.action_breakdowns
+                flt for f in self._field_paths for flt in get_action_breakdown_filters(f) if flt not in self.action_breakdowns
             }
             if missing_action_breakdowns != set():
                 raise ClickException(f"Wrong query. Please add to Action Breakdowns: {missing_action_breakdowns}")
@@ -228,9 +222,7 @@ class FacebookReader(Reader):
 
         if not self.ad_insights:
             if self.breakdowns != [] or self.action_breakdowns != []:
-                raise ClickException(
-                    "Wrong query. Ad Management queries do not accept Breakdowns nor Action Breakdowns."
-                )
+                raise ClickException("Wrong query. Ad Management queries do not accept Breakdowns nor Action Breakdowns.")
 
             if self.time_increment:
                 raise ClickException("Wrong query. Ad Management queries do not accept the time_increment parameter.")
@@ -275,9 +267,7 @@ class FacebookReader(Reader):
                 params["date_preset"] = self.date_preset
             else:
                 logging.warning("No date range provided - Last 30 days by default")
-                logging.warning(
-                    "https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters"
-                )
+                logging.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
 
     def create_time_range(self):
         return {"since": self.start_date.strftime(DATEFORMAT), "until": self.end_date.strftime(DATEFORMAT)}
@@ -379,9 +369,7 @@ class FacebookReader(Reader):
                 def callback_failure(response):
                     raise response.error()
 
-                obj.api_get(
-                    fields=fields, params=params, batch=api_batch, success=callback_success, failure=callback_failure
-                )
+                obj.api_get(fields=fields, params=params, batch=api_batch, success=callback_success, failure=callback_failure)
 
             # Execute batch
             api_batch.execute()

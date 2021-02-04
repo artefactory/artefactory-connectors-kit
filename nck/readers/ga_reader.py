@@ -15,21 +15,20 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import click
-import httplib2
 import logging
 import re
-
 from datetime import datetime, timedelta
+
+import click
+import httplib2
 from click import ClickException
 from googleapiclient import discovery
-from oauth2client import client, GOOGLE_REVOKE_URI
-
 from nck.commands.command import processor
 from nck.readers.reader import Reader
+from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args
 from nck.utils.retry import retry
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from oauth2client import GOOGLE_REVOKE_URI, client
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 DATEFORMAT = "%Y-%m-%d"
@@ -207,9 +206,7 @@ class GaReader(Reader):
                     yield from self.format_and_yield(view_id, report)
 
     def read(self):
-        yield GaStream(
-            "result_view_" + "_".join(self.view_ids), self.result_generator()
-        )
+        yield GaStream("result_view_" + "_".join(self.view_ids), self.result_generator())
 
 
 class GaStream(NormalizedJSONStream):

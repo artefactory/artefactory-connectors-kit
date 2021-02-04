@@ -15,17 +15,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import itertools
+from datetime import date, datetime
+from typing import Any, Dict, List, Tuple
+
 import click
 import requests
-from typing import Dict, List, Any, Tuple
-import itertools
-from datetime import datetime, date
 from nck.commands.command import processor
+from nck.helpers.mytarget_helper import REQUEST_CONFIG, REQUEST_TYPES
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
-from nck.helpers.mytarget_helper import REQUEST_CONFIG, REQUEST_TYPES
-from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, get_date_start_and_date_stop_from_date_range
+from nck.utils.date_handler import (
+    DEFAULT_DATE_RANGE_FUNCTIONS,
+    check_date_range_definition_conformity,
+    get_date_start_and_date_stop_from_date_range,
+)
 
 
 @click.command(name="read_mytarget")
@@ -49,66 +54,47 @@ LIMIT_REQUEST_MYTARGET = 20
 
 
 class MyTargetReader(Reader):
-
-    def __init__(
-        self,
-        client_id,
-        client_secret,
-        refresh_token,
-        request_type,
-        date_range,
-        start_date,
-        end_date,
-        **kwargs
-    ):
+    def __init__(self, client_id, client_secret, refresh_token, request_type, date_range, start_date, end_date, **kwargs):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.agency_client_token = {'refresh_token': refresh_token}
+        self.agency_client_token = {"refresh_token": refresh_token}
         self.request_type = request_type
         self.date_range = date_range
         start_date, end_date = get_date_start_and_date_stop_from_date_range(self.date_range)
         self.start_date = start_date
         self.end_date = end_date
-        self.date_format = kwargs.get('date_format')
+        self.date_format = kwargs.get("date_format")
 
         self.date_are_valid = self.__check_date_input_validity()
         self.__retrieve_and_set_token()
 
+        check_date_range_definition_conformity(self.start_date, self.end_date, self.date_range)
+
     def read(self):
         if self.date_are_valid:
-            if self.request_type == 'performance':
+            if self.request_type == "performance":
                 dict_stat, dict_camp, dict_banner = self.__retrieve_all_data()
 
-                complete_daily_content = self.map_campaign_name_to_daily_stat(
-                    dict_stat, dict_camp, dict_banner
-                )
-                yield JSONStream(
-                    "mytarget_performance_", self.split_content_by_date(complete_daily_content)
-                )
-            if self.request_type == 'budget':
-                res_budgets = self.__get_all_results('get_campaign_budgets')
+                complete_daily_content = self.map_campaign_name_to_daily_stat(dict_stat, dict_camp, dict_banner)
+                yield JSONStream("mytarget_performance_", self.split_content_by_date(complete_daily_content))
+            if self.request_type == "budget":
+                res_budgets = self.__get_all_results("get_campaign_budgets")
 
-                yield JSONStream(
-                    "mytarget_budget_", self.__yield_from_list(res_budgets)
-                )
+                yield JSONStream("mytarget_budget_", self.__yield_from_list(res_budgets))
 
     def __check_date_input_validity(self) -> bool:
-        """The goal of this function is to check the validity of the date input parameters before retrieving the data.
-        """
-        return self.__check_end_posterior_to_start(self.start_date, self.end_date) and \
-            self.__check_date_not_in_future(self.end_date)
+        """The goal of this function is to check the validity of the date input parameters before retrieving the data."""
+        return self.__check_end_posterior_to_start(self.start_date, self.end_date) and self.__check_date_not_in_future(
+            self.end_date
+        )
 
     def __check_date_not_in_future(self, end_date: datetime) -> bool:
         if end_date <= date.today():
             return True
         else:
-            raise ValueError(f'The end date {end_date} is posterior to current date {date.today()}')
+            raise ValueError(f"The end date {end_date} is posterior to current date {date.today()}")
 
-    def __check_end_posterior_to_start(
-        self,
-        start_date: datetime,
-        end_date: datetime
-    ) -> bool:
+    def __check_end_posterior_to_start(self, start_date: datetime, end_date: datetime) -> bool:
         if start_date > end_date:
             raise ValueError(f"The start date {start_date} is posterior to end date {end_date}")
         else:
@@ -119,32 +105,24 @@ class MyTargetReader(Reader):
         was provided to get a new one which is going to be active for a day. Once done we set it
         as an attribute.
         """
-        parameters_refresh_token = self.__generate_params_dict('refresh_agency_token')
-        request_refresh_token = self.__create_request('refresh_agency_token', parameters_refresh_token)
+        parameters_refresh_token = self.__generate_params_dict("refresh_agency_token")
+        request_refresh_token = self.__create_request("refresh_agency_token", parameters_refresh_token)
         refreshed_token = requests.post(**request_refresh_token).json()
         self.set_agency_client_token(refreshed_token)
 
-    def __retrieve_all_data(
-        self) -> Tuple[
-            Dict[str, Dict[str, str]],
-            Dict[str, Dict[str, str]],
-            Dict[str, Dict[str, str]]]:
+    def __retrieve_all_data(self) -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, str]], Dict[str, Dict[str, str]]]:
 
-        response_camp_id_name = self.__get_all_results('get_campaign_ids_names')
-        response_banner_id_name = self.__get_all_results('get_banner_ids_names')
-        response_daily_stat = self.__get_response('get_banner_stats')
+        response_camp_id_name = self.__get_all_results("get_campaign_ids_names")
+        response_banner_id_name = self.__get_all_results("get_banner_ids_names")
+        response_daily_stat = self.__get_response("get_banner_stats")
 
-        dict_stat = self.__transform_list_dict_to_dict(response_daily_stat['items'])
+        dict_stat = self.__transform_list_dict_to_dict(response_daily_stat["items"])
         dict_camp = self.__transform_list_dict_to_dict(response_camp_id_name)
         dict_banner = self.__transform_list_dict_to_dict(response_banner_id_name)
 
         return dict_stat, dict_camp, dict_banner
 
-    def __get_all_results(
-        self,
-        name_content: str,
-        offset=0
-    ) -> List[Dict[str, str]]:
+    def __get_all_results(self, name_content: str, offset=0) -> List[Dict[str, str]]:
         """Based on the __get_response function this function is incrementing through offsets according to the
         number of elements given by the first response.
 
@@ -156,29 +134,25 @@ class MyTargetReader(Reader):
             List[Dict[str, Any]]: list of dicts resulting from the requests we made to the api
         """
         first_elements = self.__get_response(name_content)
-        count = first_elements['count']
-        elements = [first_elements['items']]
+        count = first_elements["count"]
+        elements = [first_elements["items"]]
         if count > LIMIT_REQUEST_MYTARGET:
             elements += [
-                self.__get_response(name_content, offset=offset)['items']
+                self.__get_response(name_content, offset=offset)["items"]
                 for offset in range(
-                    LIMIT_REQUEST_MYTARGET,
-                    self.round_up_to_base(count, LIMIT_REQUEST_MYTARGET),
-                    LIMIT_REQUEST_MYTARGET)
+                    LIMIT_REQUEST_MYTARGET, self.round_up_to_base(count, LIMIT_REQUEST_MYTARGET), LIMIT_REQUEST_MYTARGET
+                )
             ]
         return list(itertools.chain.from_iterable(elements))
 
     def map_campaign_name_to_daily_stat(
-        self,
-        dict_stat: Dict[str, str],
-        dict_camp: List[Dict[str, str]],
-        dict_banner: Dict[str, str]
+        self, dict_stat: Dict[str, str], dict_camp: List[Dict[str, str]], dict_banner: Dict[str, str]
     ) -> List[Dict[str, str]]:
         unused_banners = []
         for ban_id in dict_banner.keys():
-            if dict_banner[ban_id]['campaign_id'] in dict_camp.keys():
-                dict_banner[ban_id]['campaign_name'] = dict_camp[dict_banner[ban_id]['campaign_id']]['name']
-                dict_banner[ban_id]['rows'] = dict_stat[dict_banner[ban_id]['id']]['rows']
+            if dict_banner[ban_id]["campaign_id"] in dict_camp.keys():
+                dict_banner[ban_id]["campaign_name"] = dict_camp[dict_banner[ban_id]["campaign_id"]]["name"]
+                dict_banner[ban_id]["rows"] = dict_stat[dict_banner[ban_id]["id"]]["rows"]
             else:
                 unused_banners.append(ban_id)
         for unused_ban_id in unused_banners:
@@ -200,23 +174,19 @@ class MyTargetReader(Reader):
         dates = []
         for key, value in content.items():
             new_line_base = {
-                'campaign_id': value['campaign_id'],
-                'campaign_name': value['campaign_name'],
-                'banner_id': value['id'],
-                'banner_name': value.get('name')
+                "campaign_id": value["campaign_id"],
+                "campaign_name": value["campaign_name"],
+                "banner_id": value["id"],
+                "banner_name": value.get("name"),
             }
-            for dict_daily_stats in value['rows']:
-                if dict_daily_stats['date'] not in dates:
-                    dates.append(dict_daily_stats['date'])
+            for dict_daily_stats in value["rows"]:
+                if dict_daily_stats["date"] not in dates:
+                    dates.append(dict_daily_stats["date"])
                 new_line = {**new_line_base, **dict_daily_stats}
                 content_by_date.append(new_line)
         yield from content_by_date
 
-    def __get_response(
-        self,
-        name_content: str,
-        offset=0
-    ) -> Dict[str, Any]:
+    def __get_response(self, name_content: str, offset=0) -> Dict[str, Any]:
         """This function makes a request to the api after building eveything necessary to get the
         desired results for a specific need which is defined by name_content.
 
@@ -231,11 +201,7 @@ class MyTargetReader(Reader):
         request = self.__create_request(name_content, parameters)
         return requests.get(**request).json()
 
-    def __create_request(
-        self,
-        name_content: str,
-        parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def __create_request(self, name_content: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """This function creates the dict with all the parameters required to query the api
 
         Args:
@@ -246,15 +212,12 @@ class MyTargetReader(Reader):
             Dict[str, Any]: dict used to make a request to the api
         """
         req_base = {
-            'url': self.__get_url(name_content),
-            'headers': self.__get_header(REQUEST_CONFIG[name_content]['headers_type'])
+            "url": self.__get_url(name_content),
+            "headers": self.__get_header(REQUEST_CONFIG[name_content]["headers_type"]),
         }
         return {**req_base, **parameters}
 
-    def __get_url(
-        self,
-        name_content: str
-    ) -> str:
+    def __get_url(self, name_content: str) -> str:
         """This function retrieves the url and if it is mandatory to add an id in the url
         we fill if using substitute.
 
@@ -264,25 +227,15 @@ class MyTargetReader(Reader):
         Returns:
             str: url endpoint
         """
-        return REQUEST_CONFIG[name_content]['url']
+        return REQUEST_CONFIG[name_content]["url"]
 
     def __get_header(self, header_type: str) -> Dict[str, str]:
         if header_type == "content_type":
-            return {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Host': 'target.my.com'
-            }
+            return {"Content-Type": "application/x-www-form-urlencoded", "Host": "target.my.com"}
         elif header_type == "authorization":
-            return {
-                'Authorization': 'Bearer ' + self.agency_client_token['access_token'],
-                'Host': 'target.my.com'
-            }
+            return {"Authorization": "Bearer " + self.agency_client_token["access_token"], "Host": "target.my.com"}
 
-    def __generate_params_dict(
-        self,
-        name_content: str,
-        offset=0
-    ) -> Dict[str, Any]:
+    def __generate_params_dict(self, name_content: str, offset=0) -> Dict[str, Any]:
         """This function returns a dict containing all the parameters required
         for the request.
 
@@ -295,22 +248,22 @@ class MyTargetReader(Reader):
         """
         dict_config = REQUEST_CONFIG[name_content]
         params = {}
-        if name_content == 'refresh_agency_token' :
-            params['data'] = {
-                'grant_type': 'refresh_token',
-                'refresh_token': self.agency_client_token['refresh_token'],
-                'client_id': self.client_id,
-                'client_secret': self.client_secret
+        if name_content == "refresh_agency_token":
+            params["data"] = {
+                "grant_type": "refresh_token",
+                "refresh_token": self.agency_client_token["refresh_token"],
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
             }
         else:
-            params['params'] = {}
-            if dict_config['offset']:
-                params['params']['offset'] = offset
-            if dict_config['dates_required']:
-                params['params'] = {
-                    'date_from': self.start_date.strftime('%Y-%m-%d'),
-                    'date_to': self.end_date.strftime('%Y-%m-%d'),
-                    'metrics': 'all'
+            params["params"] = {}
+            if dict_config["offset"]:
+                params["params"]["offset"] = offset
+            if dict_config["dates_required"]:
+                params["params"] = {
+                    "date_from": self.start_date.strftime("%Y-%m-%d"),
+                    "date_to": self.end_date.strftime("%Y-%m-%d"),
+                    "metrics": "all",
                 }
         return params
 
@@ -324,4 +277,4 @@ class MyTargetReader(Reader):
         yield from content
 
     def __transform_list_dict_to_dict(self, data: List[Dict[str, str]]) -> Dict[str, Dict[str, str]]:
-        return {item['id']: item for item in data}
+        return {item["id"]: item for item in data}
