@@ -28,7 +28,13 @@ class TestYandexStatisticsReader(unittest.TestCase):
         [
             (
                 "ALL_TIME",
-                {"report_language": "en", "filters": (), "max_rows": None, "date_start": None, "date_stop": None},
+                {
+                    "report_language": "en",
+                    "filters": (),
+                    "max_rows": None,
+                    "date_start": "2020-01-01",
+                    "date_stop": "2020-02-01",
+                },
                 True,
                 {
                     "params": {
