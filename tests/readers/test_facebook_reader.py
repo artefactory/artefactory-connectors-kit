@@ -17,14 +17,13 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from unittest import TestCase, mock
-from parameterized import parameterized
+
 from click import ClickException
-
-from nck.readers.facebook_reader import FacebookReader
-
-from facebook_business.api import FacebookAdsApi
-from facebook_business.adobjects.adsinsights import AdsInsights
 from facebook_business.adobjects.ad import Ad
+from facebook_business.adobjects.adsinsights import AdsInsights
+from facebook_business.api import FacebookAdsApi
+from nck.readers.facebook_reader import FacebookReader
+from parameterized import parameterized
 
 
 def mock_facebook_obj(data):
@@ -49,8 +48,8 @@ class FacebookReaderTest(TestCase):
         "action_breakdown": [],
         "field": [],
         "time_increment": None,
-        "start_date": None,
-        "end_date": None,
+        "start_date": "2020-01-01",
+        "end_date": "2020-02-02",
         "date_preset": None,
         "add_date_to_report": False,
     }
@@ -142,9 +141,7 @@ class FacebookReaderTest(TestCase):
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
     def test_read_with_ad_insights_query(self, mock_query_ad_insights):
         temp_kwargs = self.kwargs.copy()
-        temp_kwargs.update(
-            {"ad_insights": True, "field": ["date_start", "impressions"]}
-        )
+        temp_kwargs.update({"ad_insights": True, "field": ["date_start", "impressions"]})
 
         row1, row2 = AdsInsights(), AdsInsights()
         row1.set_data({"date_start": "2020-01-01", "impressions": "1"})
@@ -257,45 +254,36 @@ class FacebookReaderTest(TestCase):
                     "f_string": "CAMPAIGN_PAUSED",
                     "f_numeric": 10.95,
                     "f_list_of_single_values": ["CAMPAIGN_PAUSED", 1, 10.95],
-                    "f_python_obj": [{'event': 'CLICK_THROUGH', 'days': 28}, {'event': 'VIEW_THROUGH', 'days': 1}],
-                    "f_facebook_obj": mock_facebook_obj({'id': '123456789', 'display_name': 'my_object_name'})
+                    "f_python_obj": [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}],
+                    "f_facebook_obj": mock_facebook_obj({"id": "123456789", "display_name": "my_object_name"}),
                 },
                 {
                     "f_string": "CAMPAIGN_PAUSED",
                     "f_numeric": "10.95",
                     "f_list_of_single_values": "CAMPAIGN_PAUSED, 1, 10.95",
                     "f_python_obj": "[{'event': 'CLICK_THROUGH', 'days': 28}, {'event': 'VIEW_THROUGH', 'days': 1}]",
-                    "f_facebook_obj": "{'id': '123456789', 'display_name': 'my_object_name'}"
-                }
-            )
+                    "f_facebook_obj": "{'id': '123456789', 'display_name': 'my_object_name'}",
+                },
+            ),
         ]
     )
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
     def test_format_and_yield(self, name, parameters, record, expected):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(parameters)
-        self.assertEqual(
-            next(FacebookReader(**temp_kwargs).format_and_yield(record)), expected
-        )
+        self.assertEqual(next(FacebookReader(**temp_kwargs).format_and_yield(record)), expected)
 
     @parameterized.expand(
         [
-            (
-                "simple_list_of_dicts",
-                [
-                    {"event": "CLICK_THROUGH", "days": 28},
-                    {"event": "VIEW_THROUGH", "days": 1}
-                ],
-                False
-            ),
+            ("simple_list_of_dicts", [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}], False),
             (
                 "action_breakdown_list_of_dicts",
                 [
                     {"action_type": "link_click", "action_device": "iphone", "value": "0"},
-                    {"action_type": "post_engagement", "action_device": "iphone", "value": "1"}
+                    {"action_type": "post_engagement", "action_device": "iphone", "value": "1"},
                 ],
-                True
-            )
+                True,
+            ),
         ]
     )
     def test_obj_follows_action_breakdown_pattern(self, name, obj, expected):
@@ -306,16 +294,8 @@ class FacebookReaderTest(TestCase):
 
     @parameterized.expand(
         [
-            (
-                "list_of_dicts",
-                [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}],
-                False
-            ),
-            (
-                "list_of_single_values",
-                ["CAMPAIGN_PAUSED", 1, 10.95],
-                True
-            ),
+            ("list_of_dicts", [{"event": "CLICK_THROUGH", "days": 28}, {"event": "VIEW_THROUGH", "days": 1}], False),
+            ("list_of_single_values", ["CAMPAIGN_PAUSED", 1, 10.95], True),
         ]
     )
     def test_obj_is_list_of_single_values(self, name, obj, expected):
