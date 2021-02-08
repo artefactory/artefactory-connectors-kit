@@ -956,7 +956,6 @@ Options                         Definition
 ``--gs-page-number``            The page number you want to access. The number pages starts at 0.
 ==============================  ==============================================================================================================================================================
 
-
 ===================
 MyTarget Reader
 ===================
@@ -1018,54 +1017,6 @@ Options                         Definition
 ``--mytarget-end-date``         End date of the period to request (format: YYYY-MM-DD)
 ==============================  ===============================================================
 
-
-=============
-Oracle Reader
-=============
-
-----------
-Source ORM
-----------
-
-`SQL Alchemy <https://docs.sqlalchemy.org/en/13/>`__ (using the ``oracle+cx_oracle`` engine)
-
-----------
-Quickstart
-----------
-
-The following command retrieves all records from the table <TABLE_NAME> (equivalent to ``SELECT * FROM <TABLE_NAME>``).
-
-.. code-block:: shell
-
-    python nck/entrypoint.py read_oracle --oracle-user <DATABASE_USER> --oracle-password <DATABASE_PASSWORD> --oracle-host <DATABASE_HOST> --oracle-port <DATABASE_PORT> --oracle-database <DATABASE_NAME> --oracle-table <TABLE_NAME> write_console
-
-*Didn't work?* See the `Troubleshooting`_ section.
-
-------------
-Command name
-------------
-
-``read_oracle``
-
----------------
-Command options
----------------
-
-==============================  =========================================================================================================
-Options                         Definition
-==============================  =========================================================================================================
-``--oracle-user``               Database user
-``--oracle-password``           Database password
-``--oracle-host``               Database host
-``--oracle-port``               Database port
-``--oracle-database``           Database name
-``--oracle-query``              SQL query (you must specify either a query or a table)
-``--oracle-query-name``         SQL query name (required if you specify a query)
-``--oracle-table``              Database table on which you want to run a ``SELECT *`` query (you must specify either a query or a table)
-``--oracle-watermark-column``   Watermark column (required when using state management)
-``--oracle-watermark-init``     Initial watermark column value (required when using state management)
-==============================  =========================================================================================================
-
 ============
 MySQL Reader
 ============
@@ -1098,20 +1049,23 @@ Command name
 Command options
 ---------------
 
-==============================  =========================================================================================================
-Options                         Definition
-==============================  =========================================================================================================
-``--mysql-user``                Database user
-``--mysql-password``            Database password
-``--mysql-host``                Database host
-``--mysql-port``                Database port
-``--mysql-database``            Database name
-``--mysql-query``               SQL query (you must specify either a query or a table)
-``--mysql-query-name``          SQL query name (required if you specify a query)
-``--mysql-table``               Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)
-``--mysql-watermark-column``    Watermark column (required when using state management)
-``--mysql-watermark-init``      Initial watermark column value (required when using state management)
-==============================  =========================================================================================================
+=====================================  =========================================================================================================
+Options                                Definition
+=====================================  =========================================================================================================
+``--mysql-user``                       Database user
+``--mysql-password``                   Database password
+``--mysql-host``                       Database host
+``--mysql-port``                       Database port
+``--mysql-database``                   Database name
+``--mysql-query``                      SQL query (you must specify either a query or a table)
+``--mysql-query-name``                 SQL query name (required if you specify a query)
+``--mysql-table``                      Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)
+``--mysql-watermark-column``           Watermark column (required when using state management)
+``--mysql-watermark-init``             Initial watermark column value (required when using state management)
+``--mysql-redis-state-service-name``   Redis state service hash name
+``--mysql-redis-state-service-host``   Redis state service host
+``--mysql-redis-state-service-port``   Redis state service port
+=====================================  =========================================================================================================
 
 ==============
 Radarly Reader

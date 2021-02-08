@@ -92,7 +92,6 @@
 <li class="toctree-l1"><a class="reference internal" href="writers.html">Writers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">To go further</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#build-a-docker-image-of-the-application-and-push-it-to-gcp-container-registry">Build a Docker image of the application and push it to GCP Container Registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#package-the-application-to-use-it-as-a-binary-or-library">Package the application to use it as a binary or library</a></li>
 </ul>
 </li>
 </ul>
@@ -181,26 +180,6 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make publish_base_image
 </pre></div>
 </div>
-</div>
-<div class="section" id="package-the-application-to-use-it-as-a-binary-or-library">
-<h2>Package the application to use it as a binary or library<a class="headerlink" href="#package-the-application-to-use-it-as-a-binary-or-library" title="Permalink to this headline">¶</a></h2>
-<p>Build a wheel for the NCK package (creates a <code class="docutils literal notranslate"><span class="pre">/dist</span></code> directory storing a &lt;NCK_WHEEL&gt;.whl file):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make dist
-</pre></div>
-</div>
-<p>Build wheels for NCK dependencies (creates a <code class="docutils literal notranslate"><span class="pre">wheels/</span></code> directory storing multiple .whl files):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip wheel --wheel-dir<span class="o">=</span>wheels -r requirements.txt
-</pre></div>
-</div>
-<p>Install the NCK package and its dependencies:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install --no-index --find-links<span class="o">=</span>./wheels dist/&lt;NCK_WHEEL&gt;.whl
-</pre></div>
-</div>
-<p>Then, you can use NCK as:</p>
-<ul class="simple">
-<li><p>A binary: <code class="docutils literal notranslate"><span class="pre">nckrun</span> <span class="pre">--help</span></code> (equivalent to <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">nck/entrypoint.py</span> <span class="pre">--help</span></code>)</p></li>
-<li><p>A library: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">nck.readers.facebook_reader</span> <span class="pre">import</span> <span class="pre">FacebookReader</span></code></p></li>
-</ul>
 </div>
 </div>
 
