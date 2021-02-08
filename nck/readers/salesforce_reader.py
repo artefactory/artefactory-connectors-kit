@@ -100,7 +100,7 @@ class SalesforceClient:
         return {
             "Content-type": "application/json",
             "Accept-Encoding": "gzip",
-            "Authorization": "Bearer {}".format(self.access_token),
+            "Authorization": f"Bearer {self.access_token}",
         }
 
     @property
@@ -154,7 +154,7 @@ class SalesforceClient:
 
     def query(self, query):
 
-        logger.info("Running Salesforce query: %s", query)
+        logger.info(f"Running Salesforce query: {query}")
 
         response = self._request_data(SALESFORCE_QUERY_ENDPOINT, {"q": query})
 

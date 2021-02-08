@@ -128,7 +128,7 @@ class SearchConsoleReader(Reader):
 
         # Pagination
         while len(response.get("rows", [])) != 0:
-            logger.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
+            logger.info(f"{len(response.get('rows')) + self.start_row} lines successfully processed...")
             self.start_row += self.row_limit
             response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
             yield response

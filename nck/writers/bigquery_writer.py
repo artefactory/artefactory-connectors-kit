@@ -72,13 +72,13 @@ class BigQueryWriter(Writer, GoogleBaseClass):
 
         load_job = self._client.load_table_from_uri(gcs_uri, table_ref, job_config=self.job_config())
 
-        logger.info("Loading data into BigQuery %s:%s", self._dataset, self._table)
+        logger.info(f"Loading data into BigQuery {self._dataset}:{self._table}")
         result = load_job.result()
 
         assert result.state == "DONE"
 
         if not self._keep_files:
-            logger.info("Deleting GCS file: %s", gcs_uri)
+            logger.info(f"Deleting GCS file: {gcs_uri}")
             blob.delete()
 
     def _get_dataset(self):

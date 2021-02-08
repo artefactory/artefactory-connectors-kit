@@ -122,7 +122,7 @@ class GaReader(Reader):
         try:
             days_delta = delta_mapping[day_range]
         except KeyError:
-            raise ClickException("{} is not handled by the reader".format(day_range))
+            raise ClickException(f"{day_range} is not handled by the reader")
         return days_delta
 
     def get_view_id_report_request(self, view_id):
@@ -176,7 +176,7 @@ class GaReader(Reader):
                 report_page = self.client_v4.reports().batchGet(body=body).execute()
                 yield report_page["reports"][0]
         except Exception as e:
-            raise ClickException("failed while requesting pages of the report: {}".format(e))
+            raise ClickException(f"failed while requesting pages of the report: {e}")
 
     def format_and_yield(self, view_id, report):
         dimension_names = report["columnHeader"]["dimensions"]

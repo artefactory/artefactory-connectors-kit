@@ -43,7 +43,7 @@ class LocalWriter(Writer):
         file_name = self._file_name or stream.name
         path = os.path.join(self._local_directory, file_name)
 
-        logger.info("Writing stream %s to %s", file_name, path)
+        logger.info(f"Writing stream {file_name} to {path}")
         file = stream.as_file()
         with open(path, "wb") as h:
             while True:

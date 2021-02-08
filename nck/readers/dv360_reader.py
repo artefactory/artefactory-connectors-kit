@@ -120,7 +120,7 @@ class DV360Reader(Reader):
         """
 
         operation = self._client.sdfdownloadtasks().create(body=body).execute()
-        logger.info("Operation %s was created." % operation["name"])
+        logger.info(f"Operation {operation['name']} was created.")
         return operation
 
     def __download_sdf(self, operation):
@@ -146,8 +146,8 @@ class DV360Reader(Reader):
         created_operation = self.__wait_sdf_download_request(init_operation)
         if "error" in created_operation:
             raise SdfOperationError(
-                "The operation finished in error with code %s: %s"
-                % (created_operation["error"]["code"], created_operation["error"]["message"])
+                "The operation finished in error with code "
+                f"{created_operation['error']['code']}: {created_operation['error']['message']}"
             )
         self.__download_sdf(created_operation)
         unzip(f"{self.BASE}/{self.ARCHIVE_NAME}.zip", output_path=self.BASE)
@@ -163,7 +163,7 @@ class DV360Reader(Reader):
             all_creatives = response["creatives"]
             while "nextPageToken" in response:
                 token = response["nextPageToken"]
-                logger.info("Query a new page of creatives. Page id: %s", token)
+                logger.info(f"Query a new page of creatives. Page id: {token}")
                 response = (
                     self._client.advertisers()
                     .creatives()

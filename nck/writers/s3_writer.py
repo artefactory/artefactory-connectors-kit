@@ -64,9 +64,7 @@ class S3Writer(Writer):
         # if the bucket region doesn't match the presigned url generated, will not work
         assert (
             bucket_region == self._bucket_region
-        ), "the region you provided ({}) does'nt match the bucket's found region : ({}) ".format(
-            self._bucket_region, bucket_region
-        )
+        ), f"the region you provided ({self._bucket_region}) does'nt match the bucket's found region : ({bucket_region})"
         if self.kwargs.get("prefix"):
             prefix = self.kwargs.get("prefix") + "/"
         else:

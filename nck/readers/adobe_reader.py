@@ -114,9 +114,9 @@ class AdobeReader(Reader):
         Makes "raw" HTTP requests to Reporting API 1.4 (used within the query_report and get_report methods)
         API workflow: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/get_started.md
         """
-        api_method = "{0}.{1}".format(api, method)
+        api_method = f"{api}.{method}"
         data = data or dict()
-        logger.info("{}.{} {}".format(api, method, data))
+        logger.info(f"{api}.{method} {data}")
         response = requests.post(
             ADOBE_API_ENDPOINT,
             params={"method": api_method},
@@ -124,7 +124,7 @@ class AdobeReader(Reader):
             headers=self.adobe_client.build_request_headers(self.global_company_id),
         )
         json_response = response.json()
-        logger.debug("Response: {}".format(json_response))
+        logger.debug(f"Response: {json_response}")
         return json_response
 
     def build_report_description(self):
@@ -157,7 +157,7 @@ class AdobeReader(Reader):
         try:
             days_delta = delta_mapping[days_range]
         except KeyError:
-            raise ClickException("{} is not handled by the reader".format(days_range))
+            raise ClickException(f"{days_range} is not handled by the reader")
         return days_delta
 
     def set_date_range_report_desc(self, report_description):

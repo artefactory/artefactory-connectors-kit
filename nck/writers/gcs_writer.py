@@ -65,7 +65,7 @@ class GCSWriter(Writer, GoogleBaseClass):
         blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
         uri = self.uri_for_name(file_name)
 
-        logger.info("Uploaded file to {}".format(uri))
+        logger.info(f"Uploaded file to {uri}")
 
         return uri, blob
 
@@ -75,7 +75,7 @@ class GCSWriter(Writer, GoogleBaseClass):
 
     def uri_for_name(self, name):
         path = self.path_for_name(name)
-        return "gs://{bucket}/{path}".format(bucket=self._bucket.name, path=path)
+        return f"gs://{self._bucket.name}/{path}"
 
     def path_for_name(self, name):
         if self._prefix:

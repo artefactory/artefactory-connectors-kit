@@ -66,7 +66,7 @@ class GoogleBaseClass:
         elif key_path:
             # Get credentials from a JSON file.
             if key_path.endswith(".json"):
-                logger.debug("Getting connection using JSON key file %s" % key_path)
+                logger.debug(f"Getting connection using JSON key file {key_path}")
                 credentials = google.oauth2.service_account.Credentials.from_service_account_file(key_path, scopes=self.scopes)
                 project_id = credentials.project_id
             elif key_path.endswith(".p12"):
