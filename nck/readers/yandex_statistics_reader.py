@@ -30,7 +30,6 @@ from nck.helpers.yandex_helper import DATE_RANGE_TYPES, LANGUAGES, OPERATORS, RE
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
-from nck.utils.date_handler import check_date_range_definition_conformity
 from nck.utils.text import get_report_generator_from_flat_file
 
 
@@ -106,8 +105,6 @@ class YandexStatisticsReader(Reader):
         self.date_range = date_range
         self.include_vat = include_vat
         self.kwargs = kwargs
-
-        check_date_range_definition_conformity(self.kwargs.get("date_start"), self.kwargs.get("date_stop"), self.date_range)
 
     def result_generator(self):
         api_client = ApiClient(self.token, YANDEX_DIRECT_API_BASE_URL)
