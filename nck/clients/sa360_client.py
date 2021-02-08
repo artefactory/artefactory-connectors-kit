@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import logging
+from nck.config import logger
 import httplib2
 import requests
 
@@ -23,7 +23,6 @@ from tenacity import retry, wait_exponential, stop_after_delay
 from oauth2client import client, GOOGLE_TOKEN_URI
 from googleapiclient import discovery
 
-logger = logging.getLogger("SA360_client")
 DOWNLOAD_FORMAT = "CSV"
 
 
@@ -43,9 +42,7 @@ class SA360Client:
         )
         http = self._credentials.authorize(httplib2.Http())
         self._credentials.refresh(http)
-        self.auth = (
-            f"{self._credentials.token_response['token_type']} {self._credentials.token_response['access_token']}"
-        )
+        self.auth = f"{self._credentials.token_response['token_type']} {self._credentials.token_response['access_token']}"
         self._service = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
     def get_all_advertisers_of_agency(self, agency_id):

@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
-import logging
+from nck.config import logger
 
 import sys
 import traceback
@@ -49,31 +49,18 @@ class DateRangeSplit(NamedTuple):
 @click.option("--radarly-client-id", required=True, type=click.STRING)
 @click.option("--radarly-client-secret", required=True, type=click.STRING)
 @click.option(
-    "--radarly-focus-id",
-    required=True,
-    multiple=True,
-    type=click.INT,
-    help="Focus IDs (from Radarly queries)",
+    "--radarly-focus-id", required=True, multiple=True, type=click.INT, help="Focus IDs (from Radarly queries)",
 )
 @click.option(
     "--radarly-start-date",
     required=True,
-    type=click.DateTime(
-        formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]
-    ),
+    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]),
 )
 @click.option(
-    "--radarly-end-date",
-    required=True,
-    type=click.DateTime(
-        formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]
-    ),
+    "--radarly-end-date", required=True, type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]),
 )
 @click.option(
-    "--radarly-api-request-limit",
-    default=250,
-    type=click.INT,
-    help="Max number of posts per API request",
+    "--radarly-api-request-limit", default=250, type=click.INT, help="Max number of posts per API request",
 )
 @click.option(
     "--radarly-api-date-period-limit",
@@ -88,10 +75,7 @@ class DateRangeSplit(NamedTuple):
     help="Max number of posts requested in the window (usually 15 min) (see Radarly documentation)",
 )
 @click.option(
-    "--radarly-api-window",
-    default=300,
-    type=click.INT,
-    help="Duration of the window (usually 300 seconds)",
+    "--radarly-api-window", default=300, type=click.INT, help="Duration of the window (usually 300 seconds)",
 )
 @click.option(
     "--radarly-throttle",
@@ -100,9 +84,7 @@ class DateRangeSplit(NamedTuple):
     help="""If set to True, forces the connector to abide by official Radarly API limitations
          (using the api-quarterly-posts-limit parameter)""",
 )
-@click.option(
-    "--radarly-throttling-threshold-coefficient", default=0.95, type=click.FLOAT
-)
+@click.option("--radarly-throttling-threshold-coefficient", default=0.95, type=click.FLOAT)
 @processor("radarly_client_id", "radarly_client_secret")
 def radarly(**kwargs):
     return RadarlyReader(**extract_args("radarly_", kwargs))
@@ -147,9 +129,7 @@ class RadarlyReader(Reader):
         :return: stream that returns Radarly posts one by one
         """
         date_ranges_and_posts_volumes: Dict = self.split_date_range()
-        logging.info(
-            f"API Compliant Date Ranges and Posts Volumes: {date_ranges_and_posts_volumes}"
-        )
+        logger.info(f"API Compliant Date Ranges and Posts Volumes: {date_ranges_and_posts_volumes}")
         api_compliant_date_ranges = list(date_ranges_and_posts_volumes.keys())
 
         t0 = time.time()
@@ -161,20 +141,11 @@ class RadarlyReader(Reader):
                 current_time = time.time() - t0
                 ingestion_tracker.append(current_time)
                 posts_ingested_over_window = (
-                    sum(np.array(ingestion_tracker) > current_time - self.api_window)
-                    * self.api_date_period_limit
+                    sum(np.array(ingestion_tracker) > current_time - self.api_window) * self.api_date_period_limit
                 )
-                if (
-                    posts_ingested_over_window
-                    > self.throttling_threshold_coefficient
-                    * self.api_quarterly_posts_limit
-                ):
-                    sleep_duration = self.api_window * (
-                        self.api_date_period_limit / self.api_quarterly_posts_limit
-                    )
-                    logging.info(
-                        f"Throttling activated: waiting for {sleep_duration} seconds..."
-                    )
+                if posts_ingested_over_window > self.throttling_threshold_coefficient * self.api_quarterly_posts_limit:
+                    sleep_duration = self.api_window * (self.api_date_period_limit / self.api_quarterly_posts_limit)
+                    logger.info(f"Throttling activated: waiting for {sleep_duration} seconds...")
                     time.sleep(sleep_duration)
 
             all_publications = self.get_publications_iterator(date_range)
@@ -190,9 +161,7 @@ class RadarlyReader(Reader):
                         break
                     except Exception:
                         ex_type, ex, tb = sys.exc_info()
-                        logging.warning(
-                            f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}"
-                        )
+                        logger.warning(f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}")
 
             yield NormalizedJSONStream(name, result_generator())
 
@@ -200,7 +169,7 @@ class RadarlyReader(Reader):
     def get_publications_iterator(self, date_range: Tuple[datetime, datetime]):
         param = self.get_payload(date_range[0], date_range[1])
         all_publications = self.project.get_all_publications(param)
-        logging.info(f"Getting posts from {date_range[0]} to {date_range[1]}")
+        logger.info(f"Getting posts from {date_range[0]} to {date_range[1]}")
         return all_publications
 
     @staticmethod
@@ -224,9 +193,7 @@ class RadarlyReader(Reader):
         return posts_volume
 
     def get_total_posts_volume(self) -> int:
-        return self.get_posts_volume(
-            first_date=self.start_date, second_date=self.end_date
-        )
+        return self.get_posts_volume(first_date=self.start_date, second_date=self.end_date)
 
     def get_posts_volumes_from_list(
         self, date_ranges: List[Tuple[datetime, datetime]]
@@ -234,33 +201,26 @@ class RadarlyReader(Reader):
         posts_volumes = OrderedDict()
         for date_range in date_ranges:
             first_date, second_date = date_range
-            posts_volume = self.get_posts_volume(
-                first_date=first_date, second_date=second_date
-            )
+            posts_volume = self.get_posts_volume(first_date=first_date, second_date=second_date)
             posts_volumes[date_range] = posts_volume
         return posts_volumes
 
     def split_date_range(self) -> Dict[Tuple[datetime, datetime], int]:
         total_count = self.get_total_posts_volume()
-        logging.info(f"Posts Total Count: {total_count}")
-        return self._split_date_range_auxiliary(
-            self.start_date, self.end_date, posts_count=total_count
-        )
+        logger.info(f"Posts Total Count: {total_count}")
+        return self._split_date_range_auxiliary(self.start_date, self.end_date, posts_count=total_count)
 
     def _split_date_range_auxiliary(
         self, first_date: datetime, second_date: datetime, posts_count: int
     ) -> Dict[Tuple[datetime, datetime], int]:
         if posts_count < self.api_date_period_limit:
-            logging.debug(f"Direct Return: {[first_date, second_date]}")
+            logger.debug(f"Direct Return: {[first_date, second_date]}")
             return OrderedDict({(first_date, second_date): posts_count})
 
         else:
 
             date_range_split: DateRangeSplit = self.generate_DateRangeSplit_object(
-                date_range_start=first_date,
-                date_range_end=second_date,
-                posts_count=posts_count,
-                extra_margin=1,
+                date_range_start=first_date, date_range_end=second_date, posts_count=posts_count, extra_margin=1,
             )
             date_ranges_and_posts_volumes: Dict[
                 Tuple[datetime, datetime], int
@@ -275,37 +235,20 @@ class RadarlyReader(Reader):
                     if vol < self.api_date_period_limit:
                         res.update({date_range: vol})
                     else:
-                        res.update(
-                            self._split_date_range_auxiliary(
-                                *date_range, posts_count=vol
-                            )
-                        )
+                        res.update(self._split_date_range_auxiliary(*date_range, posts_count=vol))
             return res
 
     def generate_DateRangeSplit_object(
-        self,
-        date_range_start: datetime,
-        date_range_end: datetime,
-        posts_count: int,
-        extra_margin=1,
+        self, date_range_start: datetime, date_range_end: datetime, posts_count: int, extra_margin=1,
     ) -> DateRangeSplit:
 
         delta = date_range_end - date_range_start
-        split_count_guess = (
-            posts_count // self.api_date_period_limit + delta.days + extra_margin
-        )
+        split_count_guess = posts_count // self.api_date_period_limit + delta.days + extra_margin
         split_range_guess = delta.total_seconds() // split_count_guess
 
-        date_ranges_guess = self._generate_date_ranges(
-            date_range_start, date_range_end, split_range_guess, split_count_guess
-        )
-        date_ranges_and_posts_volumes = self.get_posts_volumes_from_list(
-            date_ranges_guess
-        )
-        is_compliant = all(
-            np.fromiter(date_ranges_and_posts_volumes.values(), dtype=int)
-            <= self.api_date_period_limit
-        )
+        date_ranges_guess = self._generate_date_ranges(date_range_start, date_range_end, split_range_guess, split_count_guess)
+        date_ranges_and_posts_volumes = self.get_posts_volumes_from_list(date_ranges_guess)
+        is_compliant = all(np.fromiter(date_ranges_and_posts_volumes.values(), dtype=int) <= self.api_date_period_limit)
 
         return DateRangeSplit(date_ranges_and_posts_volumes, is_compliant)
 
@@ -314,14 +257,9 @@ class RadarlyReader(Reader):
         start_date: datetime, end_date: datetime, split_range: float, split_count: int
     ) -> List[Tuple[datetime, datetime]]:
         res = [
-            (
-                start_date + i * timedelta(seconds=split_range),
-                start_date + (i + 1) * timedelta(seconds=split_range),
-            )
+            (start_date + i * timedelta(seconds=split_range), start_date + (i + 1) * timedelta(seconds=split_range),)
             for i in range(split_count - 1)
         ]
-        res += [
-            (start_date + (split_count - 1) * timedelta(seconds=split_range), end_date)
-        ]
+        res += [(start_date + (split_count - 1) * timedelta(seconds=split_range), end_date)]
 
         return res

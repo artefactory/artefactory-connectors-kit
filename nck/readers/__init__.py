@@ -23,7 +23,6 @@ from nck.readers.gcs_reader import gcs
 from nck.readers.googleads_reader import google_ads
 from nck.readers.s3_reader import s3
 from nck.readers.sa360_reader import sa360_reader
-from nck.readers.oracle_reader import oracle
 from nck.readers.gsheets_reader import gsheets
 from nck.readers.salesforce_reader import salesforce
 from nck.readers.facebook_reader import facebook
@@ -53,7 +52,6 @@ readers = [
     facebook,
     the_trade_desk,
     twitter,
-    oracle,
     dv360,
     dbm,
     dcm,
@@ -66,7 +64,7 @@ readers = [
     yandex_statistics,
     google_sheets,
     confluence,
-    mytarget
+    mytarget,
 ]
 
 

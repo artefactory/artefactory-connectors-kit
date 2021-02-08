@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
-import logging
+from nck.config import logger
 import random
 import time
 from http import HTTPStatus
@@ -47,8 +47,6 @@ class StrList(click.ParamType):
 
 STR_LIST_TYPE = StrList()
 
-logger = logging.getLogger(__name__)
-
 
 @click.command(name="read_yandex_statistics")
 @click.option("--yandex-token", required=True)
@@ -57,9 +55,7 @@ logger = logging.getLogger(__name__)
     "--yandex-filter",
     "yandex_filters",
     multiple=True,
-    type=click.Tuple(
-        [click.Choice(STATS_FIELDS), click.Choice(OPERATORS), STR_LIST_TYPE]
-    ),
+    type=click.Tuple([click.Choice(STATS_FIELDS), click.Choice(OPERATORS), STR_LIST_TYPE]),
 )
 @click.option("--yandex-max-rows", type=int)
 @click.option(
@@ -75,8 +71,7 @@ logger = logging.getLogger(__name__)
     ),
 )
 @click.option(
-    "--yandex-report-name",
-    default=f"stats_report_{datetime.date.today()}_{random.randrange(10000)}",
+    "--yandex-report-name", default=f"stats_report_{datetime.date.today()}_{random.randrange(10000)}",
 )
 @click.option("--yandex-report-type", type=click.Choice(REPORT_TYPES), required=True)
 @click.option("--yandex-date-range", type=click.Choice(DATE_RANGE_TYPES), required=True)
@@ -98,14 +93,7 @@ YANDEX_DIRECT_API_BASE_URL = "https://api.direct.yandex.com/json/v5/"
 
 class YandexStatisticsReader(Reader):
     def __init__(
-        self,
-        token,
-        fields: Tuple[str],
-        report_type: str,
-        report_name: str,
-        date_range: str,
-        include_vat: bool,
-        **kwargs,
+        self, token, fields: Tuple[str], report_type: str, report_name: str, date_range: str, include_vat: bool, **kwargs,
     ):
         self.token = token
         self.fields = list(fields)
@@ -120,22 +108,16 @@ class YandexStatisticsReader(Reader):
         body = self._build_request_body()
         headers = self._build_request_headers()
         while True:
-            response = api_client.execute_request(
-                url="reports", body=body, headers=headers, stream=True
-            )
+            response = api_client.execute_request(url="reports", body=body, headers=headers, stream=True)
             if response.status_code == HTTPStatus.CREATED:
                 waiting_time = int(response.headers["retryIn"])
-                logger.info(
-                    f"Report added to queue. Should be ready in {waiting_time} min."
-                )
+                logger.info(f"Report added to queue. Should be ready in {waiting_time} min.")
                 time.sleep(waiting_time * 60)
             elif response.status_code == HTTPStatus.ACCEPTED:
                 logger.info("Report in queue.")
             elif response.status_code == HTTPStatus.OK:
                 logger.info("Report successfully retrieved.")
-                return get_report_generator_from_flat_file(
-                    response.iter_lines(), delimiter="\t", skip_n_first=1,
-                )
+                return get_report_generator_from_flat_file(response.iter_lines(), delimiter="\t", skip_n_first=1,)
             elif response.status_code == HTTPStatus.BAD_REQUEST:
                 logger.error("Invalid request.")
                 logger.error(response.json())
@@ -155,15 +137,11 @@ class YandexStatisticsReader(Reader):
         if len(self.kwargs["filters"]) > 0:
             selection_criteria["Filter"] = [
                 api_client_helper.get_dict_with_keys_converted_to_new_string_format(
-                    field=filter_element[0],
-                    operator=filter_element[1],
-                    values=filter_element[2],
+                    field=filter_element[0], operator=filter_element[1], values=filter_element[2],
                 )
                 for filter_element in self.kwargs["filters"]
             ]
-        body[
-            "params"
-        ] = api_client_helper.get_dict_with_keys_converted_to_new_string_format(
+        body["params"] = api_client_helper.get_dict_with_keys_converted_to_new_string_format(
             selection_criteria=selection_criteria,
             field_names=self.fields,
             report_name=self.report_name,
@@ -173,9 +151,7 @@ class YandexStatisticsReader(Reader):
             include_v_a_t="YES" if self.include_vat else "NO",
         )
         if self.kwargs["max_rows"] is not None:
-            body["params"][
-                "Page"
-            ] = api_client_helper.get_dict_with_keys_converted_to_new_string_format(
+            body["params"]["Page"] = api_client_helper.get_dict_with_keys_converted_to_new_string_format(
                 limit=self.kwargs["max_rows"]
             )
         return body
@@ -188,26 +164,15 @@ class YandexStatisticsReader(Reader):
 
     def _add_custom_dates_if_set(self) -> Dict:
         selection_criteria = {}
-        if (
-            self.kwargs["date_start"] is not None
-            and self.kwargs["date_stop"] is not None
-            and self.date_range == "CUSTOM_DATE"
-        ):
-            selection_criteria["DateFrom"] = self.kwargs["date_start"].strftime(
-                "%Y-%m-%d"
-            )
+        if self.kwargs["date_start"] is not None and self.kwargs["date_stop"] is not None and self.date_range == "CUSTOM_DATE":
+            selection_criteria["DateFrom"] = self.kwargs["date_start"].strftime("%Y-%m-%d")
             selection_criteria["DateTo"] = self.kwargs["date_stop"].strftime("%Y-%m-%d")
         elif (
-            self.kwargs["date_start"] is not None
-            and self.kwargs["date_stop"] is not None
-            and self.date_range != "CUSTOM_DATE"
+            self.kwargs["date_start"] is not None and self.kwargs["date_stop"] is not None and self.date_range != "CUSTOM_DATE"
         ):
-            raise click.ClickException(
-                "Wrong date range. If start and stop dates are set, should be CUSTOM_DATE."
-            )
+            raise click.ClickException("Wrong date range. If start and stop dates are set, should be CUSTOM_DATE.")
         elif (
-            self.kwargs["date_start"] is not None
-            or self.kwargs["date_stop"] is not None
+            self.kwargs["date_start"] is not None or self.kwargs["date_stop"] is not None
         ) and self.date_range != "CUSTOM_DATE":
             raise click.ClickException(
                 (
@@ -215,12 +180,8 @@ class YandexStatisticsReader(Reader):
                     "Only use date start and date stop with date range set to CUSTOM_DATE."
                 )
             )
-        elif (
-            self.kwargs["date_start"] is None or self.kwargs["date_stop"] is None
-        ) and self.date_range == "CUSTOM_DATE":
-            raise click.ClickException(
-                "Missing at least one date. Have you set start and stop dates?"
-            )
+        elif (self.kwargs["date_start"] is None or self.kwargs["date_stop"] is None) and self.date_range == "CUSTOM_DATE":
+            raise click.ClickException("Missing at least one date. Have you set start and stop dates?")
         return selection_criteria
 
     def read(self):

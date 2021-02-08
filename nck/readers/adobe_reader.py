@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
-import logging
+from nck.config import logger
 import datetime
 import json
 import requests
@@ -91,9 +91,7 @@ def format_key_if_needed(ctx, param, value):
 @click.option("--adobe-report-metric-id", multiple=True)
 @click.option("--adobe-date-granularity", default=None)
 @click.option(
-    "--adobe-day-range",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
-    default=None,
+    "--adobe-day-range", type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]), default=None,
 )
 @click.option("--adobe-start-date", type=click.DateTime())
 @click.option("--adobe-end-date", default=None, type=click.DateTime())
@@ -105,18 +103,9 @@ def adobe(**kwargs):
 
 class AdobeReader(Reader):
     def __init__(
-        self,
-        client_id,
-        client_secret,
-        tech_account_id,
-        org_id,
-        private_key,
-        global_company_id,
-        **kwargs,
+        self, client_id, client_secret, tech_account_id, org_id, private_key, global_company_id, **kwargs,
     ):
-        self.adobe_client = AdobeClient(
-            client_id, client_secret, tech_account_id, org_id, private_key
-        )
+        self.adobe_client = AdobeClient(client_id, client_secret, tech_account_id, org_id, private_key)
         self.global_company_id = global_company_id
         self.kwargs = kwargs
 
@@ -125,9 +114,9 @@ class AdobeReader(Reader):
         Makes "raw" HTTP requests to Reporting API 1.4 (used within the query_report and get_report methods)
         API workflow: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/get_started.md
         """
-        api_method = "{0}.{1}".format(api, method)
+        api_method = f"{api}.{method}"
         data = data or dict()
-        logging.info("{}.{} {}".format(api, method, data))
+        logger.info(f"{api}.{method} {data}")
         response = requests.post(
             ADOBE_API_ENDPOINT,
             params={"method": api_method},
@@ -135,7 +124,7 @@ class AdobeReader(Reader):
             headers=self.adobe_client.build_request_headers(self.global_company_id),
         )
         json_response = response.json()
-        logging.debug("Response: {}".format(json_response))
+        logger.debug(f"Response: {json_response}")
         return json_response
 
     def build_report_description(self):
@@ -148,17 +137,13 @@ class AdobeReader(Reader):
             "reportDescription": {
                 "source": "warehouse",
                 "reportSuiteID": self.kwargs.get("report_suite_id"),
-                "elements": [
-                    {"id": el} for el in self.kwargs.get("report_element_id", [])
-                ],
-                "metrics": [
-                    {"id": mt} for mt in self.kwargs.get("report_metric_id", [])
-                ],
+                "elements": [{"id": el} for el in self.kwargs.get("report_element_id", [])],
+                "metrics": [{"id": mt} for mt in self.kwargs.get("report_metric_id", [])],
             }
         }
         self.set_date_gran_report_desc(report_description)
         self.set_date_range_report_desc(report_description)
-        logging.debug(f"report_description content {report_description}")
+        logger.debug(f"report_description content {report_description}")
         return report_description
 
     def get_days_delta(self):
@@ -172,7 +157,7 @@ class AdobeReader(Reader):
         try:
             days_delta = delta_mapping[days_range]
         except KeyError:
-            raise ClickException("{} is not handled by the reader".format(days_range))
+            raise ClickException(f"{days_range} is not handled by the reader")
         return days_delta
 
     def set_date_range_report_desc(self, report_description):
@@ -185,21 +170,15 @@ class AdobeReader(Reader):
         else:
             end_date = datetime.datetime.now().date()
             start_date = end_date - datetime.timedelta(days=self.get_days_delta())
-        report_description["reportDescription"]["dateFrom"] = start_date.strftime(
-            "%Y-%m-%d"
-        )
-        report_description["reportDescription"]["dateTo"] = end_date.strftime(
-            "%Y-%m-%d"
-        )
+        report_description["reportDescription"]["dateFrom"] = start_date.strftime("%Y-%m-%d")
+        report_description["reportDescription"]["dateTo"] = end_date.strftime("%Y-%m-%d")
 
     def set_date_gran_report_desc(self, report_description):
         """
         Adds the dateGranularity parameter to a reportDescription.
         """
         if self.kwargs.get("date_granularity", None) is not None:
-            report_description["reportDescription"][
-                "dateGranularity"
-            ] = self.kwargs.get("date_granularity")
+            report_description["reportDescription"]["dateGranularity"] = self.kwargs.get("date_granularity")
 
     @retry
     def query_report(self):
@@ -210,9 +189,7 @@ class AdobeReader(Reader):
         - Output: reportID, to be passed to the Report.Get method
         - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Queue.md
         """
-        query_report = self.request(
-            api="Report", method="Queue", data=self.build_report_description()
-        )
+        query_report = self.request(api="Report", method="Queue", data=self.build_report_description())
         return query_report
 
     @retry
@@ -224,15 +201,11 @@ class AdobeReader(Reader):
         - Output: reportResponse containing the requested report data
         - Doc: https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_Get.md
         """
-        request_f = lambda: self.request(
-            api="Report",
-            method="Get",
-            data={"reportID": report_id, "page": page_number},
-        )
+        request_f = lambda: self.request(api="Report", method="Get", data={"reportID": report_id, "page": page_number},)
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":
-            logging.info(f"waiting {idx} s for report to be ready")
+            logger.info(f"waiting {idx} s for report to be ready")
             sleep(idx + 1)
             if idx + 1 > MAX_WAIT_REPORT_DELAY:
                 raise ReportNotReadyError("waited too long for report to be ready")
@@ -249,8 +222,7 @@ class AdobeReader(Reader):
             all_responses = [parse(raw_response)]
             if "totalPages" in raw_response["report"]:
                 all_responses = all_responses + [
-                    parse(self.get_report(rep_id, page_number=np))
-                    for np in range(2, raw_response["report"]["totalPages"] + 1)
+                    parse(self.get_report(rep_id, page_number=np)) for np in range(2, raw_response["report"]["totalPages"] + 1)
                 ]
             return chain(*all_responses)
 

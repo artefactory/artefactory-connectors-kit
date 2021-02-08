@@ -79,7 +79,7 @@ class Stream(object):
     def create_stream_name(name):
         ts = time.time()
         ts_as_string = datetime.fromtimestamp(ts).strftime("%Y-%m-%d-%H-%M-%S")
-        return "{}_{}".format(name, ts_as_string)
+        return f"{name}_{ts_as_string}"
 
     @property
     def name(self):

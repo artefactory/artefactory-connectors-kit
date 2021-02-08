@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
-import logging
+from nck.config import logger
 import os
 
 from nck.writers.writer import Writer
@@ -43,7 +43,7 @@ class LocalWriter(Writer):
         file_name = self._file_name or stream.name
         path = os.path.join(self._local_directory, file_name)
 
-        logging.info("Writing stream %s to %s", file_name, path)
+        logger.info(f"Writing stream {file_name} to {path}")
         file = stream.as_file()
         with open(path, "wb") as h:
             while True:

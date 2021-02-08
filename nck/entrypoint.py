@@ -19,68 +19,40 @@ import click
 
 from nck.writers import writers, Writer
 from nck.readers import readers, Reader
-import nck.state_service as state
-from nck.streams.normalized_json_stream import NormalizedJSONStream
-from nck.streams.json_stream import JSONStream
 
 
 @click.group(chain=True)
-@click.option("--state-service-name")
-@click.option("--state-service-host", help="Redis server IP address")
-@click.option("--state-service-port", help="Redis server port", default=6379)
-@click.option("--normalize-keys", default=False,
-              help="(Optional) If set to true, will normalize the output files keys, removing "
-                   "white spaces and special characters.", type=bool)
-def app(state_service_name, state_service_host, state_service_port, normalize_keys):
-    if (state_service_name or state_service_host) and not (
-            state_service_name and state_service_host
-    ):
-        raise click.BadParameter(
-            "You must specify both a name and a host for the state service"
-        )
+def cli():
+    pass
 
 
-@app.resultcallback()
-def run(processors, state_service_name, state_service_host, state_service_port, normalize_keys):
-    state.configure(state_service_name, state_service_host, state_service_port)
+def build_commands(cli, available_commands):
+    for cmd in available_commands:
+        cli.add_command(cmd)
 
-    processor_instances = [p() for p in processors]
 
-    _readers = list(filter(lambda o: isinstance(o, Reader), processor_instances))
-    _writers = list(filter(lambda o: isinstance(o, Writer), processor_instances))
+@cli.resultcallback()
+def process_command_pipeline(provided_commands):
+    provided_readers = [cmd for cmd in provided_commands if isinstance(cmd(), Reader)]
+    provided_writers = [cmd for cmd in provided_commands if isinstance(cmd(), Writer)]
+    _validate_provided_commands(provided_readers, provided_writers)
 
-    if len(_readers) < 1:
+    reader = provided_readers[0]
+    for stream in reader().read():
+        for writer in provided_writers:
+            writer().write(stream)
+
+
+def _validate_provided_commands(provided_readers, provided_writers):
+    if len(provided_readers) < 1:
         raise click.BadParameter("You must specify a reader")
-
-    if len(_readers) > 1:
+    if len(provided_readers) > 1:
         raise click.BadParameter("You cannot specify multiple readers")
-
-    if len(_writers) < 1:
+    if len(provided_writers) < 1:
         raise click.BadParameter("You must specify at least one writer")
-
-    reader = _readers[0]
-    # A stream should represent a full file!
-    for stream in reader.read():
-        for writer in _writers:
-            if normalize_keys and issubclass(stream.__class__, JSONStream):
-                writer.write(NormalizedJSONStream.create_from_stream(stream))
-            else:
-                writer.write(stream)
-
-
-def cli_entrypoint():
-    build_commands()
-    app()
-
-
-def build_commands():
-    for writer in writers:
-        app.add_command(writer)
-
-    for reader in readers:
-        app.add_command(reader)
 
 
 if __name__ == "__main__":
-    build_commands()
-    app()
+    available_commands = readers + writers
+    build_commands(cli, available_commands)
+    cli()
