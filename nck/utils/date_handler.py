@@ -2,6 +2,8 @@ import calendar
 from datetime import date, timedelta
 from typing import Tuple
 
+from nck.utils.exceptions import InconsistentDateDefinitionException, MissingDateDefinitionException, NoDateDefinitionException
+
 
 def __get_yesterday_date(current_date: date) -> Tuple[date, date]:
     yesterday = current_date - timedelta(days=1)
@@ -39,16 +41,16 @@ DEFAULT_DATE_RANGE_FUNCTIONS = {
 
 def check_date_range_definition_conformity(start_date: date, end_date: date, date_range: str):
     if (start_date is None and end_date is None) and date_range is None:
-        raise Exception(
+        raise NoDateDefinitionException(
             "You must at least define a couple \
                         start-date/end-date or a date-range"
         )
     elif (start_date is None or end_date is None) and (start_date is not None or end_date is not None):
-        raise Exception("If you define dates, both start_date and end_date must be defined")
+        raise MissingDateDefinitionException("If you define dates, both start_date and end_date must be defined")
     if start_date is not None and end_date is not None and date_range is not None:
-        raise Exception(
+        raise InconsistentDateDefinitionException(
             "You must define either start_date and end_date \
-                        or date_range, but not both"
+            or date_range, but not both"
         )
 
 
