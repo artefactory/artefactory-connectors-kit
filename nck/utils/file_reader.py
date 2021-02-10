@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from enum import Enum
 import csv
 import codecs
 import gzip
@@ -26,7 +25,7 @@ csv.field_size_limit(1000000)
 
 
 def unzip(input_file, output_path):
-    with zipfile.ZipFile(input_file, 'r') as zip_ref:
+    with zipfile.ZipFile(input_file, "r") as zip_ref:
         zip_ref.extractall(output_path)
 
 
@@ -53,20 +52,42 @@ def format_csv_fieldnames(csv_fieldnames):
     elif isinstance(csv_fieldnames, (str, bytes)):
         _csv_fieldnames = json.loads(csv_fieldnames)
     else:
-        raise TypeError(
-            f"The CSV fieldnames is of the following type: {type(csv_fieldnames)}."
-        )
+        raise TypeError(f"The CSV fieldnames is of the following type: {type(csv_fieldnames)}.")
     assert isinstance(_csv_fieldnames, list)
     return _csv_fieldnames
 
 
-class CSVReader(object):
+class FormatReader:
+    def create_file_reader(self, _format, **kwargs):
+        if _format == "csv":
+            return CSVReader(**kwargs)
+        if _format == "gz":
+            return GZReader(**kwargs)
+        if _format == "njson":
+            return NJSONReader(**kwargs)
+        else:
+            raise NotImplementedError(f"The file format {str(_format)} has not been implemented for reading yet.")
+
+
+class FileReader:
+    def __init__(self, **kwargs):
+        self.reader = lambda fd: self.read(fd, **kwargs)
+
+    def read(self, fd, **kwargs):
+        fd.seek(0)
+        return codecs.iterdecode(fd, encoding="utf8")
+
+    def get_reader(self):
+        return self.reader
+
+
+class CSVReader(FileReader):
     def __init__(self, csv_delimiter, csv_fieldnames, **kwargs):
         self.csv_delimiter = format_csv_delimiter(csv_delimiter)
         self.csv_fieldnames = format_csv_fieldnames(csv_fieldnames) if csv_fieldnames is not None else None
-        self.csv_reader = lambda fd: self.read_csv(fd, **kwargs)
+        super().__init__(**kwargs)
 
-    def read_csv(self, fd, **kwargs):
+    def read(self, fd, **kwargs):
         fd.seek(0)
         fd = self.decompress(fd)
         return csv.DictReader(
@@ -79,9 +100,6 @@ class CSVReader(object):
     def decompress(self, fd):
         return fd
 
-    def get_csv_reader(self):
-        return self.csv_reader
-
 
 class GZReader(CSVReader):
     def decompress(self, fd):
@@ -89,6 +107,11 @@ class GZReader(CSVReader):
         return gzf
 
 
-class FileEnum(Enum):
-    CSV = CSVReader
-    GZ = GZReader
+class NJSONReader(FileReader):
+    def read(self, fd, **kwargs):
+        fd.seek(0)
+        return self.jsongene(fd, **kwargs)
+
+    def jsongene(self, fd, **kwargs):
+        for line in codecs.iterdecode(fd, encoding="utf8"):
+            yield json.loads(line)
