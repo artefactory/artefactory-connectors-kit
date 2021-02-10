@@ -71,11 +71,6 @@ class ObjectStorageReader(Reader):
     def is_compatible_object(self, _object):
         return self.get_key(_object).endswith("." + self._format)
 
-    def update_max_files(self, _object):
-        max_files = self.state.get(self.MAX_FILES_STATE_KEY)
-        max_files.append(self.get_key(_object))
-        self.state.set(self.MAX_FILES_STATE_KEY, max_files)
-
     def create_client(self, config):
         raise NotImplementedError
 
