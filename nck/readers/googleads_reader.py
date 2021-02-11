@@ -31,6 +31,8 @@ from googleads.errors import AdWordsReportBadRequestError
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
 from nck.utils.retry import retry
+from nck.utils.exceptions import NoValidCustomerIdProvidedInMCC
+from nck.utils.list_comparator import get_intersection_two_lists, get_difference_two_list_order
 from nck.commands.command import processor
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.helpers.googleads_helper import (
@@ -326,9 +328,51 @@ class GoogleAdsReader(Reader):
                         else:
                             yield row
 
-    def read(self):
-        if self.manager_id:
+    def __update_customer_ids(self):
+        """This function will set the customer ids for the query ONLY IF a manager id is provided.
+
+        2 main cases possibles :
+
+        1 - If some customer ids are provided in addition of a manager id we make sure that these are valid
+        for the manager id. If at least one customer id is not valid we log these invalid ids. Then if at
+        least one or more ids are valid we set them as customer ids. If none of the ids are valid we raise
+        an exception.
+        2 - If no customer id is specified we set all of the ids which are link to this manager id as customer
+        ids.
+
+        Of couse if no manager id is provided we don't update the customer ids.
+
+        Raises:
+            NoValidCustomerIdProvidedInMCC: Raised when none of the given customer_ids are valid for this manager id.
+        """
+        if self.manager_id and self.client_customer_ids:
+            customer_ids_available = get_intersection_two_lists(
+                self.client_customer_ids,
+                self.get_customer_ids(self.manager_id)
+            )
+            customer_ids_missing = get_difference_two_list_order(
+                self.client_customer_ids,
+                self.get_customer_ids(self.manager_id)
+            )
+            if len(customer_ids_missing) > 0:
+                logger.warning(
+                    f'Some ids are not present in the current manager id, here is the list: {", ".join(customer_ids_missing)}'
+                )
+            if len(customer_ids_available) > 0:
+                self.client_customer_ids = customer_ids_available
+                logger.info(
+                    f'Here is the list of ids queried: {", ".join(customer_ids_available)}'
+                )
+            else:
+                raise NoValidCustomerIdProvidedInMCC(
+                    f'None of the customer ids provided are valid for this mcc id: {self.manager_id}'
+                )
+
+        elif self.manager_id and self.client_customer_ids is None:
             self.client_customer_ids = self.get_customer_ids(self.manager_id)
+
+    def read(self):
+        self.__update_customer_ids()
 
         yield NormalizedJSONStream(
             "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield(),
