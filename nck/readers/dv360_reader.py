@@ -20,6 +20,7 @@ import click
 from nck.config import logger
 import io
 import httplib2
+import logging
 
 from itertools import chain
 from typing import List
@@ -36,6 +37,9 @@ from nck.readers.reader import Reader
 from nck.utils.file_reader import sdf_to_njson_generator, unzip
 from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
+from nck.utils.stdout_to_log import StdoutToLog
+
+httplib2.debuglevel = 4
 
 
 @click.command(name="read_dv360")
@@ -65,6 +69,7 @@ class DV360Reader(Reader):
     # if more than one file type where to be provided.
     ARCHIVE_NAME = "sdf"
 
+    @StdoutToLog("test", logging.DEBUG)
     def __init__(self, access_token: str, refresh_token: str, client_id: str, client_secret: str, **kwargs):
 
         credentials = client.GoogleCredentials(
@@ -92,8 +97,10 @@ class DV360Reader(Reader):
         """
         return [f"SDF-{FILE_NAMES[file_type]}" for file_type in self.kwargs.get("file_type")]
 
+    @StdoutToLog("dv360_reader", logging.DEBUG)
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(36000),
     )
     def __wait_sdf_download_request(self, operation):
         """
@@ -110,6 +117,7 @@ class DV360Reader(Reader):
             raise RetryTimeoutError("The operation has taken more than 10 hours to complete.\n")
         return operation
 
+    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __create_sdf_task(self, body):
         """
         Create a sdf asynchronous task of type googleapiclient.discovery.Resource
@@ -155,6 +163,7 @@ class DV360Reader(Reader):
         # We chain operation if many file_types were to be provided.
         return chain(*[sdf_to_njson_generator(f"{self.BASE}/{file_name}.csv") for file_name in self.file_names])
 
+    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __get_creatives(self):
         response = self._client.advertisers().creatives().list(advertiserId=self.kwargs.get("advertiser_id")).execute()
         if len(response.keys()) == 0:  # no data returned
@@ -177,7 +186,10 @@ class DV360Reader(Reader):
         request_type = self.kwargs.get("request_type")
         if request_type == "sdf_request":
             yield FormatDateStream(
-                "sdf", self.__get_sdf_objects(), keys=["Date"], date_format=self.kwargs.get("date_format"),
+                "sdf",
+                self.__get_sdf_objects(),
+                keys=["Date"],
+                date_format=self.kwargs.get("date_format"),
             )
         elif request_type == "creative_request":
             yield JSONStream("advertiser_creatives", self.__get_creatives())
