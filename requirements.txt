@@ -62,5 +62,5 @@ Werkzeug==0.16.0
 googleads==22.0.0
 twitter-ads==7.0.1
 pyjwt==1.7.1
-cryptography==3.2
+cryptography==3.3.2
 bs4==0.0.1
