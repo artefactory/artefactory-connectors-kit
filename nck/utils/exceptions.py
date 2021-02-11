@@ -27,3 +27,8 @@ class SdfOperationError(Exception):
     """Raised when a sdf operation has failed."""
 
     pass
+
+
+class NoValidCustomerIdProvidedInMCC(Exception):
+    """Raised when customer ids are not under the provided mcc id"""
+    pass
