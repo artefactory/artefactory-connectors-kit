@@ -17,13 +17,8 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import ast
 import codecs
-
 import csv
 import logging
-
-from nck.config import logger
-import click
-
 import re
 from io import StringIO
 
@@ -33,6 +28,7 @@ from googleads import adwords
 from googleads.errors import AdWordsReportBadRequestError
 from googleads.oauth2 import GoogleRefreshTokenClient
 from nck.commands.command import processor
+from nck.config import logger
 from nck.helpers.googleads_helper import DATE_RANGE_TYPE_POSSIBLE_VALUES, ENCODING, REPORT_TYPE_POSSIBLE_VALUES
 from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
@@ -351,5 +347,6 @@ class GoogleAdsReader(Reader):
             self.client_customer_ids = self.get_customer_ids(self.manager_id)
 
         yield NormalizedJSONStream(
-            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield(),
+            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids),
+            self.format_and_yield(),
         )

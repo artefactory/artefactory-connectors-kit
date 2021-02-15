@@ -18,10 +18,6 @@
 
 
 import logging
-
-from nck.config import logger
-import click
-
 import re
 from datetime import datetime
 from math import ceil
@@ -37,6 +33,7 @@ from facebook_business.adobjects.adspixel import AdsPixel
 from facebook_business.adobjects.campaign import Campaign
 from facebook_business.api import FacebookAdsApi
 from nck.commands.command import processor
+from nck.config import logger
 from nck.helpers.facebook_helper import (
     ACTION_BREAKDOWNS,
     BREAKDOWNS,
@@ -277,7 +274,6 @@ class FacebookReader(Reader):
 
                 logger.warning("No date range provided - Last 30 days by default")
                 logger.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
-
 
     def create_time_range(self):
         return {"since": self.start_date.strftime(DATEFORMAT), "until": self.end_date.strftime(DATEFORMAT)}

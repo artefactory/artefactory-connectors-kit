@@ -16,12 +16,8 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import click
-from nck.config import logger
-
 import datetime
 import json
-import logging
 from itertools import chain
 from time import sleep
 
@@ -30,6 +26,7 @@ import requests
 from click import ClickException
 from nck.clients.adobe_client import AdobeClient
 from nck.commands.command import processor
+from nck.config import logger
 from nck.helpers.adobe_helper import ReportDescriptionError, ReportNotReadyError, parse
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
@@ -95,7 +92,9 @@ def format_key_if_needed(ctx, param, value):
 @click.option("--adobe-report-metric-id", multiple=True)
 @click.option("--adobe-date-granularity", default=None)
 @click.option(
-    "--adobe-day-range", type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]), default=None,
+    "--adobe-day-range",
+    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
+    default=None,
 )
 @click.option("--adobe-start-date", type=click.DateTime())
 @click.option("--adobe-end-date", default=None, type=click.DateTime())
@@ -107,7 +106,14 @@ def adobe(**kwargs):
 
 class AdobeReader(Reader):
     def __init__(
-        self, client_id, client_secret, tech_account_id, org_id, private_key, global_company_id, **kwargs,
+        self,
+        client_id,
+        client_secret,
+        tech_account_id,
+        org_id,
+        private_key,
+        global_company_id,
+        **kwargs,
     ):
         self.adobe_client = AdobeClient(client_id, client_secret, tech_account_id, org_id, private_key)
         self.global_company_id = global_company_id
@@ -217,7 +223,6 @@ class AdobeReader(Reader):
                 data={"reportID": report_id, "page": page_number},
             )
 
-        request_f = lambda: self.request(api="Report", method="Get", data={"reportID": report_id, "page": page_number},)
         response = request_f()
         idx = 1
         while response.get("error") == "report_not_ready":

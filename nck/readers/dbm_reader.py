@@ -17,12 +17,6 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import datetime
-import logging
-
-import click
-from nck.config import logger
-import httplib2
-
 
 import click
 import httplib2
@@ -30,6 +24,7 @@ import requests
 from click import ClickException
 from googleapiclient import discovery
 from nck.commands.command import processor
+from nck.config import logger
 from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES
 from nck.readers.reader import Reader
 from nck.streams.format_date_stream import FormatDateStream
