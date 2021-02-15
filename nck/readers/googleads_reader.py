@@ -34,6 +34,7 @@ from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args
 from nck.utils.date_handler import check_date_range_definition_conformity
+from nck.utils.exceptions import InconsistentDateDefinitionException, NoDateDefinitionException
 from nck.utils.retry import retry
 
 DATEFORMAT = "%Y%m%d"
@@ -65,7 +66,6 @@ DATEFORMAT = "%Y%m%d"
 @click.option(
     "--googleads-date-range-type",
     type=click.Choice(DATE_RANGE_TYPE_POSSIBLE_VALUES),
-    default=DATE_RANGE_TYPE_POSSIBLE_VALUES[0],
     help="Desired Date Range Type to fetch\n" "https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges",
 )
 @click.option("--googleads-start-date", type=click.DateTime())
@@ -249,23 +249,21 @@ class GoogleAdsReader(Reader):
     def add_period_to_report_definition(self, report_definition):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
         if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
-
-            logging.warning(
-                "Custom Date Range selected but no date range provided :" + DATE_RANGE_TYPE_POSSIBLE_VALUES[0] + " by default"
+            raise NoDateDefinitionException(
+                "You must define a couple \
+            start-date/end-date when using a custom_date"
             )
-            logging.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
-            report_definition["dateRangeType"] = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
         elif self.date_range_type == "CUSTOM_DATE":
-            logging.info("Date format used for request : Custom Date Range with start_date and end_date provided")
-
-            logger.warning(
-                "Custom Date Range selected but no date range provided :" + DATE_RANGE_TYPE_POSSIBLE_VALUES[0] + " by default"
+            logger.info(
+                "Date format used for request : Custom Date Range with\
+            start_date and end_date provided"
             )
-            logger.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
-            report_definition["dateRangeType"] = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
-        elif self.date_range_type == "CUSTOM_DATE":
-            logger.info("Date format used for request : Custom Date Range with start_date and end_date provided")
             report_definition["selector"]["dateRange"] = self.create_date_range(self.start_date, self.end_date)
+        elif self.start_date is not None and self.end_date is not None and self.date_range_type != "CUSTOM_DATE":
+            raise InconsistentDateDefinitionException(
+                "You must define either the couple start_date and end_date \
+            or a date_range \(different from CUSTOM_DATE\), but not both"
+            )
 
     def add_report_filter(self, report_definition):
         """Check if a filter was provided and contains the necessary information"""
