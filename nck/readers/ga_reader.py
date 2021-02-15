@@ -16,12 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
-
-import click
-import httplib2
-from nck.config import logger
-
 import re
 from datetime import datetime, timedelta
 
@@ -30,6 +24,7 @@ import httplib2
 from click import ClickException
 from googleapiclient import discovery
 from nck.commands.command import processor
+from nck.config import logger
 from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args
