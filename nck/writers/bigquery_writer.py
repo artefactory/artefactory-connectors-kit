@@ -15,20 +15,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import config
-
 import click
-
-from config import logging
-
 from google.cloud import bigquery
-from nck.streams.normalized_json_stream import NormalizedJSONStream
-from nck.writers.writer import Writer
-from nck.writers.gcs_writer import GCSWriter
+from nck import config
 from nck.commands.command import processor
+from nck.config import logger
+from nck.helpers.google_base import GoogleBaseClass
+from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args
 from nck.utils.retry import retry
-from nck.helpers.google_base import GoogleBaseClass
+from nck.writers.gcs_writer import GCSWriter
+from nck.writers.writer import Writer
 
 
 @click.command(name="write_bq")
@@ -37,9 +34,7 @@ from nck.helpers.google_base import GoogleBaseClass
 @click.option("--bq-bucket", required=True)
 @click.option("--bq-partition-column")
 @click.option(
-    "--bq-write-disposition",
-    default="truncate",
-    type=click.Choice(["truncate", "append"]),
+    "--bq-write-disposition", default="truncate", type=click.Choice(["truncate", "append"]),
 )
 @click.option("--bq-location", default="EU", type=click.Choice(["EU", "US"]))
 @click.option("--bq-keep-files", is_flag=True, default=False)
@@ -52,20 +47,11 @@ class BigQueryWriter(Writer, GoogleBaseClass):
     _client = None
 
     def __init__(
-        self,
-        dataset,
-        table,
-        bucket,
-        partition_column,
-        write_disposition,
-        location,
-        keep_files,
+        self, dataset, table, bucket, partition_column, write_disposition, location, keep_files,
     ):
 
         self._project_id = config.PROJECT_ID
-        self._client = bigquery.Client(
-            credentials=self._get_credentials(), project=self._project_id
-        )
+        self._client = bigquery.Client(credentials=self._get_credentials(), project=self._project_id)
         self._dataset = dataset
         self._table = table
         self._bucket = bucket
@@ -84,17 +70,15 @@ class BigQueryWriter(Writer, GoogleBaseClass):
 
         table_ref = self._get_table_ref()
 
-        load_job = self._client.load_table_from_uri(
-            gcs_uri, table_ref, job_config=self.job_config()
-        )
+        load_job = self._client.load_table_from_uri(gcs_uri, table_ref, job_config=self.job_config())
 
-        logging.info("Loading data into BigQuery %s:%s", self._dataset, self._table)
+        logger.info(f"Loading data into BigQuery {self._dataset}:{self._table}")
         result = load_job.result()
 
         assert result.state == "DONE"
 
         if not self._keep_files:
-            logging.info("Deleting GCS file: %s", gcs_uri)
+            logger.info(f"Deleting GCS file: {gcs_uri}")
             blob.delete()
 
     def _get_dataset(self):

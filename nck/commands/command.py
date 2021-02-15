@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from functools import update_wrapper
-import logging
+from nck.config import logger
 
 
 def processor(*sensitive_fields):
@@ -35,7 +35,7 @@ def processor(*sensitive_fields):
                 else:
                     _kwargs[key] = value
 
-            logging.info("Calling %s with (%s)", f.__name__, _kwargs)
+            logger.info(f"Calling {f.__name__} with ({_kwargs})")
 
             def processor():
                 return f(*args, **kwargs)

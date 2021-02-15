@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
 import more_itertools
-import logging
+from nck.config import logger
 from nck.utils.text import reformat_naming_for_bq
 
 
@@ -26,9 +26,7 @@ from nck.utils.text import reformat_naming_for_bq
 
 
 def _parse_header(report):
-    dimensions = [
-        _classification_or_name(dimension) for dimension in report["elements"]
-    ]
+    dimensions = [_classification_or_name(dimension) for dimension in report["elements"]]
     metrics = [metric["name"] for metric in report["metrics"]]
     return dimensions, metrics
 
@@ -53,7 +51,7 @@ def _parse_data(data, metric_count):
     :param metric_count: int, number of metrics in report
     :return: list of lists
     """
-    logging.debug("Parsing report data (recursively).")
+    logger.debug("Parsing report data (recursively).")
     if len(data) > 0 and "breakdown" in data[0]:
         rows = list()
         for chunk in data:
@@ -76,7 +74,7 @@ def _parse_most_granular(data, metric_count):
     :param metric_count: int, number of metrics in report
     :return: list of lists
     """
-    logging.debug("Parsing most granular level of data.")
+    logger.debug("Parsing most granular level of data.")
     rows = list()
     for chunk in data:
         part_rows = [(val if val != "" else None) for val in chunk["counts"]]
@@ -101,20 +99,11 @@ def _dimension_value(chunk):
 
 
 def _dimension_value_is_nan(chunk):
-    return (
-        ("name" not in chunk)
-        or (chunk["name"] == "")
-        or (chunk["name"] == "::unspecified::")
-    )
+    return ("name" not in chunk) or (chunk["name"] == "") or (chunk["name"] == "::unspecified::")
 
 
 def _to_datetime(chunk):
-    time_stamp = datetime.datetime(
-        year=chunk["year"],
-        month=chunk["month"],
-        day=chunk["day"],
-        hour=chunk.get("hour", 0),
-    )
+    time_stamp = datetime.datetime(year=chunk["year"], month=chunk["month"], day=chunk["day"], hour=chunk.get("hour", 0),)
     return time_stamp.strftime("%Y-%m-%d %H:00:00")
 
 
@@ -136,10 +125,10 @@ def parse(raw_response):
 class ReportDescriptionError(Exception):
     def __init__(self, message):
         super().__init__(message)
-        logging.error(message)
+        logger.error(message)
 
 
 class ReportNotReadyError(Exception):
     def __init__(self, message):
         super().__init__(message)
-        logging.error(message)
+        logger.error(message)

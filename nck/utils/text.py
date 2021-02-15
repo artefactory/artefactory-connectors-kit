@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import logging
+from nck.config import logger
 import re
 import csv
 from io import StringIO
@@ -24,12 +24,7 @@ from itertools import islice
 
 
 def get_report_generator_from_flat_file(
-    line_iterator,
-    delimiter=",",
-    skip_n_first=0,
-    skip_n_last=0,
-    add_column=False,
-    column_dict={},
+    line_iterator, delimiter=",", skip_n_first=0, skip_n_last=0, add_column=False, column_dict={},
 ):
     """
     From the line iterator of a flat file:
@@ -62,9 +57,7 @@ def get_report_generator_from_flat_file(
         else:
             parsed_line = parse_decoded_line(line, delimiter)
             if len(parsed_line) != len(headers):
-                logging.warning(
-                    f"Skipping line '{line}': length of parsed line doesn't match length of headers."
-                )
+                logger.warning(f"Skipping line '{line}': length of parsed line doesn't match length of headers.")
             else:
                 record = dict(zip(headers, parsed_line))
                 if add_column:
@@ -78,7 +71,7 @@ def decode_if_needed(line):
         try:
             line = line.decode("utf-8")
         except UnicodeDecodeError as e:
-            logging.warning(
+            logger.warning(
                 "An error has occurred while parsing the file."
                 f"The line could not be decoded in {e.encoding}."
                 f"Invalid input that the codec failed on: {e.object[e.start : e.end]}"
@@ -89,13 +82,7 @@ def decode_if_needed(line):
 
 def parse_decoded_line(line, delimiter=",", quotechar='"'):
     line_as_file = StringIO(line)
-    reader = csv.reader(
-        line_as_file,
-        delimiter=delimiter,
-        quotechar=quotechar,
-        quoting=csv.QUOTE_ALL,
-        skipinitialspace=True,
-    )
+    reader = csv.reader(line_as_file, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_ALL, skipinitialspace=True,)
     return next(reader)
 
 

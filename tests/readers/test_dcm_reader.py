@@ -16,11 +16,9 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from unittest import TestCase, mock
-import logging
+from nck.config import logger
 
 from nck.readers.dcm_reader import DcmReader
-
-logger = logging.getLogger("DCM_reader_test")
 
 
 class DCMReaderTest(TestCase):

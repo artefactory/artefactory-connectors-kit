@@ -7,7 +7,6 @@ chardet==3.0.4
 Click==7.0
 colorama==0.4.3
 curlify==2.2.1
-cx-Oracle==7.3.0
 docopt==0.6.2
 docutils==0.15.2
 facebook-business==8.0.5
@@ -23,7 +22,7 @@ googleanalytics==0.26.0
 googleapis-common-protos==1.6.0
 gspread==3.1.0
 hiredis==1.0.1
-httplib2==0.18.0
+httplib2==0.19.0
 idna==2.8
 inspect-it==0.3.2
 Jinja2==2.10.3
@@ -63,5 +62,5 @@ Werkzeug==0.16.0
 googleads==22.0.0
 twitter-ads==7.0.1
 pyjwt==1.7.1
-cryptography==3.2
+cryptography==3.3.2
 bs4==0.0.1

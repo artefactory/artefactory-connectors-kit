@@ -15,16 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-
-import nck.state_service as state
-
-
-class Reader(object):
-    @property
-    def state(self):
-        return state.state()
-
+class Reader:
     def read(self):
         """
         The read method takes no arguments, and should return a generator of stream objects.

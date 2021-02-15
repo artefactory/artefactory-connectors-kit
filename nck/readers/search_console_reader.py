@@ -22,7 +22,7 @@ import httplib2
 from datetime import datetime, timedelta
 
 import click
-import logging
+from nck.config import logger
 
 from nck.commands.command import processor
 from nck.readers.reader import Reader
@@ -97,14 +97,12 @@ class SearchConsoleReader(Reader):
             http = credentials.authorize(httplib2.Http())
             credentials.refresh(http)
 
-            self._service = build(
-                serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False
-            )
+            self._service = build(serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False)
 
     @staticmethod
     def check_end_date(end_date):
         if end_date > MAX_END_DATE:
-            logging.warning(f"The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)}")
+            logger.warning(f"The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)}")
         return end_date
 
     def build_query(self):
@@ -130,7 +128,7 @@ class SearchConsoleReader(Reader):
 
         # Pagination
         while len(response.get("rows", [])) != 0:
-            logging.info("{} lines successfully processed...".format(len(response.get("rows")) + self.start_row))
+            logger.info(f"{len(response.get('rows')) + self.start_row} lines successfully processed...")
             self.start_row += self.row_limit
             response = self._service.searchanalytics().query(siteUrl=self.site_url, body=self.build_query()).execute()
             yield response

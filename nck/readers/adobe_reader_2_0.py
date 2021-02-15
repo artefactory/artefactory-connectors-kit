@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import json
-import logging
+from nck.config import logger
 import time
 from datetime import timedelta
 from itertools import chain
@@ -92,9 +92,7 @@ def format_key_if_needed(ctx, param, value):
     "Doc: https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md)",
 )
 @click.option(
-    "--adobe-2-0-report-suite-id",
-    required=True,
-    help="ID of the requested Adobe Report Suite",
+    "--adobe-2-0-report-suite-id", required=True, help="ID of the requested Adobe Report Suite",
 )
 @click.option(
     "--adobe-2-0-dimension",
@@ -113,14 +111,10 @@ def format_key_if_needed(ctx, param, value):
     "Doc: https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md",
 )
 @click.option(
-    "--adobe-2-0-start-date",
-    type=click.DateTime(),
-    help="Start date of the report",
+    "--adobe-2-0-start-date", type=click.DateTime(), help="Start date of the report",
 )
 @click.option(
-    "--adobe-2-0-end-date",
-    type=click.DateTime(),
-    help="End date of the report",
+    "--adobe-2-0-end-date", type=click.DateTime(), help="End date of the report",
 )
 @click.option(
     "--adobe-2-0-date-range",
@@ -128,11 +122,7 @@ def format_key_if_needed(ctx, param, value):
     help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
 @processor(
-    "adobe_2_0_client_id",
-    "adobe_2_0_client_secret",
-    "adobe_2_0_tech_account_id",
-    "adobe_2_0_org_id",
-    "adobe_2_0_private_key",
+    "adobe_2_0_client_id", "adobe_2_0_client_secret", "adobe_2_0_tech_account_id", "adobe_2_0_org_id", "adobe_2_0_private_key",
 )
 def adobe_2_0(**kwargs):
     return AdobeReader_2_0(**extract_args("adobe_2_0_", kwargs))
@@ -196,10 +186,7 @@ class AdobeReader_2_0(Reader):
         }
 
         rep_desc = add_metric_container_to_report_description(
-            rep_desc=rep_desc,
-            dimensions=self.dimensions,
-            metrics=metrics,
-            breakdown_item_ids=breakdown_item_ids,
+            rep_desc=rep_desc, dimensions=self.dimensions, metrics=metrics, breakdown_item_ids=breakdown_item_ids,
         )
 
         return rep_desc
@@ -215,7 +202,7 @@ class AdobeReader_2_0(Reader):
 
         if len(window_ingestion_tracker) >= API_REQUESTS_OVER_WINDOW_LIMIT:
             sleep_time = window_ingestion_tracker[0] + API_WINDOW_DURATION - current_time
-            logging.warning(f"Throttling activated: sleeping for {sleep_time} seconds...")
+            logger.warning(f"Throttling activated: sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
 
     @retry
@@ -253,7 +240,7 @@ class AdobeReader_2_0(Reader):
             "dim": rep_desc["dimension"].split("variables/")[1],
             "metrics": metrics,
         }
-        logging.info(f"Getting report: {report_info}")
+        logger.info(f"Getting report: {report_info}")
 
         first_response = self.get_report_page(rep_desc)
         all_responses = [parse_response(first_response, metrics, parent_dim_parsed)]
@@ -292,7 +279,7 @@ class AdobeReader_2_0(Reader):
             child_node_2: []
         """
 
-        logging.info(f"Adding child nodes of '{node}' to graph.")
+        logger.info(f"Adding child nodes of '{node}' to graph.")
 
         breakdown_item_ids = get_item_ids_from_nodes(path_to_node)
         child_node_values = self.get_node_values(breakdown_item_ids)

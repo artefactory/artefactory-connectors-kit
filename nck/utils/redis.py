@@ -15,35 +15,29 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import logging
-import os
-import sys
+from nck.config import logger
+import pickle
 
-FORMAT = '%(asctime)s - (%(name)s) - %(levelname)s - %(message)s'
-logging.basicConfig(format=FORMAT)
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-handler = logging.StreamHandler(sys.stdout)
-
-logger.handlers = [handler]
+import redis
 
 
-def env():
-    return os.environ.get('ENV', 'dev')
+class RedisStateService:
+    def __init__(self, name, host, port=6379):
+        if host:
+            logger.info(f"Using checkpointing service: {host}:{port} ({name})")
+            self._enabled = True
+            self._name = name
+            self._host = host
+            self._port = port
+            self._client = redis.Redis(host=host, port=port)
+        else:
+            self._enabled = False
+            logger.info("No checkpointing")
 
+    def get(self, key):
+        if self._enabled and self._client.hexists(self._name, key):
+            return pickle.loads(self._client.hget(self._name, key))
 
-def is_staging():
-    return env() == 'staging'
-
-
-def is_dev():
-    return env() == 'dev'
-
-
-def is_production():
-    return env() == 'production'
-
-
-for key, var in os.environ.items():
-    locals()[key] = var
+    def set(self, key, value):
+        if self._enabled:
+            self._client.hset(self._name, key, pickle.dumps(value))

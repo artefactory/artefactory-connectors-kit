@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from nck.streams.json_stream import JSONStream
 import click
-import logging
+from nck.config import logger
 import io
 import httplib2
 
@@ -93,8 +93,7 @@ class DV360Reader(Reader):
         return [f"SDF-{FILE_NAMES[file_type]}" for file_type in self.kwargs.get("file_type")]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600),
-        stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
     )
     def __wait_sdf_download_request(self, operation):
         """
@@ -104,7 +103,7 @@ class DV360Reader(Reader):
             Returns:
                 operation (dict): task metadata updated with resource location.
         """
-        logging.info(f"waiting for SDF operation: {operation['name']} to complete running.")
+        logger.info(f"waiting for SDF operation: {operation['name']} to complete running.")
         get_request = self._client.sdfdownloadtasks().operations().get(name=operation["name"])
         operation = get_request.execute()
         if "done" not in operation:
@@ -121,7 +120,7 @@ class DV360Reader(Reader):
         """
 
         operation = self._client.sdfdownloadtasks().create(body=body).execute()
-        logging.info("Operation %s was created." % operation["name"])
+        logger.info(f"Operation {operation['name']} was created.")
         return operation
 
     def __download_sdf(self, operation):
@@ -132,14 +131,11 @@ class DV360Reader(Reader):
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            logging.info(f"Download {int(status.progress() * 100)}%.")
+            logger.info(f"Download {int(status.progress() * 100)}%.")
 
     def __get_sdf_body(self):
         return {
-            "parentEntityFilter": {
-                "fileType": self.kwargs.get("file_type"),
-                "filterType": self.kwargs.get("filter_type"),
-            },
+            "parentEntityFilter": {"fileType": self.kwargs.get("file_type"), "filterType": self.kwargs.get("filter_type")},
             "version": self.SDF_VERSION,
             "advertiserId": self.kwargs.get("advertiser_id"),
         }
@@ -150,8 +146,8 @@ class DV360Reader(Reader):
         created_operation = self.__wait_sdf_download_request(init_operation)
         if "error" in created_operation:
             raise SdfOperationError(
-                "The operation finished in error with code %s: %s"
-                % (created_operation["error"]["code"], created_operation["error"]["message"])
+                "The operation finished in error with code "
+                f"{created_operation['error']['code']}: {created_operation['error']['message']}"
             )
         self.__download_sdf(created_operation)
         unzip(f"{self.BASE}/{self.ARCHIVE_NAME}.zip", output_path=self.BASE)
@@ -167,7 +163,7 @@ class DV360Reader(Reader):
             all_creatives = response["creatives"]
             while "nextPageToken" in response:
                 token = response["nextPageToken"]
-                logging.info("Query a new page of creatives. Page id: %s", token)
+                logger.info(f"Query a new page of creatives. Page id: {token}")
                 response = (
                     self._client.advertisers()
                     .creatives()
@@ -181,10 +177,7 @@ class DV360Reader(Reader):
         request_type = self.kwargs.get("request_type")
         if request_type == "sdf_request":
             yield FormatDateStream(
-                "sdf",
-                self.__get_sdf_objects(),
-                keys=["Date"],
-                date_format=self.kwargs.get("date_format"),
+                "sdf", self.__get_sdf_objects(), keys=["Date"], date_format=self.kwargs.get("date_format"),
             )
         elif request_type == "creative_request":
             yield JSONStream("advertiser_creatives", self.__get_creatives())

@@ -24,15 +24,6 @@ from nck.writers.bigquery_writer import bq
 from nck.writers.s3_writer import s3
 
 
-writers = [
-    gcs,
-    console,
-    local,
-    bq,
-    s3
-    # "oracle": oracle,
-    # "gsheets": gsheets,
-    # "salesforce": salesforce
-]
+writers = [gcs, console, local, bq, s3]
 
 __all__ = ["writers", "Writer"]

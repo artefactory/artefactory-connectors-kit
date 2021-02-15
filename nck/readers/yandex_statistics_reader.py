@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import datetime
-import logging
+from nck.config import logger
 import random
 import time
 from http import HTTPStatus
@@ -39,8 +39,6 @@ class StrList(click.ParamType):
 
 
 STR_LIST_TYPE = StrList()
-
-logger = logging.getLogger(__name__)
 
 
 @click.command(name="read_yandex_statistics")
@@ -66,8 +64,7 @@ logger = logging.getLogger(__name__)
     ),
 )
 @click.option(
-    "--yandex-report-name",
-    default=f"stats_report_{datetime.date.today()}_{random.randrange(10000)}",
+    "--yandex-report-name", default=f"stats_report_{datetime.date.today()}_{random.randrange(10000)}",
 )
 @click.option("--yandex-report-type", type=click.Choice(REPORT_TYPES), required=True)
 @click.option("--yandex-date-range", type=click.Choice(DATE_RANGE_TYPES), required=True)
@@ -89,14 +86,7 @@ YANDEX_DIRECT_API_BASE_URL = "https://api.direct.yandex.com/json/v5/"
 
 class YandexStatisticsReader(Reader):
     def __init__(
-        self,
-        token,
-        fields: Tuple[str],
-        report_type: str,
-        report_name: str,
-        date_range: str,
-        include_vat: bool,
-        **kwargs,
+        self, token, fields: Tuple[str], report_type: str, report_name: str, date_range: str, include_vat: bool, **kwargs,
     ):
         self.token = token
         self.fields = list(fields)
@@ -120,11 +110,15 @@ class YandexStatisticsReader(Reader):
                 logger.info("Report in queue.")
             elif response.status_code == HTTPStatus.OK:
                 logger.info("Report successfully retrieved.")
+
                 return get_report_generator_from_flat_file(
                     response.iter_lines(),
                     delimiter="\t",
                     skip_n_first=1,
                 )
+
+                return get_report_generator_from_flat_file(response.iter_lines(), delimiter="\t", skip_n_first=1,)
+
             elif response.status_code == HTTPStatus.BAD_REQUEST:
                 logger.error("Invalid request.")
                 logger.error(response.json())
@@ -144,9 +138,7 @@ class YandexStatisticsReader(Reader):
         if len(self.kwargs["filters"]) > 0:
             selection_criteria["Filter"] = [
                 api_client_helper.get_dict_with_keys_converted_to_new_string_format(
-                    field=filter_element[0],
-                    operator=filter_element[1],
-                    values=filter_element[2],
+                    field=filter_element[0], operator=filter_element[1], values=filter_element[2],
                 )
                 for filter_element in self.kwargs["filters"]
             ]

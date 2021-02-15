@@ -17,8 +17,13 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import ast
 import codecs
+
 import csv
 import logging
+
+from nck.config import logger
+import click
+
 import re
 from io import StringIO
 
@@ -175,7 +180,11 @@ class GoogleAdsReader(Reader):
                 return customer_report
             except AdWordsReportBadRequestError as e:
                 if e.type == "AuthorizationError.CUSTOMER_NOT_ACTIVE":
+
                     logging.warning(f"Skipping clientCustomerId {client_customer_id} (inactive).")
+
+                    logger.warning(f"Skipping clientCustomerId {client_customer_id} (inactive).")
+
                 else:
                     raise Exception(f"Wrong request. Error type: {e.type}")
 
@@ -199,9 +208,7 @@ class GoogleAdsReader(Reader):
         # Get the account hierarchy for this account.
         selector = {
             "fields": ["CustomerId"],
-            "predicates": [
-                {"field": "CanManageClients", "operator": "EQUALS", "values": [False]},
-            ],
+            "predicates": [{"field": "CanManageClients", "operator": "EQUALS", "values": [False]}],
             "paging": {"startIndex": str(offset), "numberResults": str(PAGE_SIZE)},
         }
 
@@ -246,6 +253,7 @@ class GoogleAdsReader(Reader):
     def add_period_to_report_definition(self, report_definition):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
         if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
+
             logging.warning(
                 "Custom Date Range selected but no date range provided :" + DATE_RANGE_TYPE_POSSIBLE_VALUES[0] + " by default"
             )
@@ -253,12 +261,24 @@ class GoogleAdsReader(Reader):
             report_definition["dateRangeType"] = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
         elif self.date_range_type == "CUSTOM_DATE":
             logging.info("Date format used for request : Custom Date Range with start_date and end_date provided")
+
+            logger.warning(
+                "Custom Date Range selected but no date range provided :" + DATE_RANGE_TYPE_POSSIBLE_VALUES[0] + " by default"
+            )
+            logger.warning("https://developers.google.com/adwords/api/docs/guides/reporting#custom_date_ranges")
+            report_definition["dateRangeType"] = DATE_RANGE_TYPE_POSSIBLE_VALUES[0]
+        elif self.date_range_type == "CUSTOM_DATE":
+            logger.info("Date format used for request : Custom Date Range with start_date and end_date provided")
             report_definition["selector"]["dateRange"] = self.create_date_range(self.start_date, self.end_date)
 
     def add_report_filter(self, report_definition):
         """Check if a filter was provided and contains the necessary information"""
         if not self.report_filter:
+
             logging.info("No filter provided by user")
+
+            logger.info("No filter provided by user")
+
         elif all(required_param in self.report_filter.keys() for required_param in ("field", "operator", "values")):
             report_definition["selector"]["predicates"] = {
                 "field": self.report_filter["field"],
@@ -331,6 +351,5 @@ class GoogleAdsReader(Reader):
             self.client_customer_ids = self.get_customer_ids(self.manager_id)
 
         yield NormalizedJSONStream(
-            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids),
-            self.format_and_yield(),
+            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield(),
         )

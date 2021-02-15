@@ -15,7 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 import logging
+
+import click
+import httplib2
+from nck.config import logger
+
 import re
 from datetime import datetime, timedelta
 
@@ -92,16 +98,16 @@ class GaReader(Reader):
         day_range = self.kwargs.get("day_range")
 
         if start_date and end_date:
-            logging.info("Date format used for request : startDate and endDate")
+            logger.info("Date format used for request : startDate and endDate")
             return self.create_date_range(start_date, end_date)
         elif date_range:
-            logging.info("Date format used for request : dateRange")
+            logger.info("Date format used for request : dateRange")
             return self.create_date_range(date_range[0], date_range[1])
         elif day_range:
-            logging.info("Date format used for request : dayRange")
+            logger.info("Date format used for request : dayRange")
             return self.generate_date_range_with_day_range(day_range)
         else:
-            logging.warning("No date range provided - Last 7 days by default")
+            logger.warning("No date range provided - Last 7 days by default")
             return []
 
     def generate_date_range_with_day_range(self, day_range):
@@ -121,7 +127,7 @@ class GaReader(Reader):
         try:
             days_delta = delta_mapping[day_range]
         except KeyError:
-            raise ClickException("{} is not handled by the reader".format(day_range))
+            raise ClickException(f"{day_range} is not handled by the reader")
         return days_delta
 
     def get_view_id_report_request(self, view_id):
@@ -146,15 +152,15 @@ class GaReader(Reader):
         data = report.get("data", {})
 
         if data.get("samplesReadCounts") is not None:
-            logging.warning("☝️Report has been sampled.")
+            logger.warning("☝️Report has been sampled.")
             sample_reads = data["samplesReadCounts"][0]
             sample_space = data["samplingSpaceSizes"][0]
-            logging.warning(f"sample reads : {sample_reads}")
-            logging.warning(f"sample space :{sample_space}")
+            logger.warning(f"sample reads : {sample_reads}")
+            logger.warning(f"sample space :{sample_space}")
 
-            logging.warning(f"sample percent :{100 * int(sample_reads) / int(sample_space)}%")
+            logger.warning(f"sample percent :{100 * int(sample_reads) / int(sample_space)}%")
         else:
-            logging.info("Report is not sampled.")
+            logger.info("Report is not sampled.")
 
     @staticmethod
     def format_date(dateYYYYMMDD):
@@ -175,7 +181,7 @@ class GaReader(Reader):
                 report_page = self.client_v4.reports().batchGet(body=body).execute()
                 yield report_page["reports"][0]
         except Exception as e:
-            raise ClickException("failed while requesting pages of the report: {}".format(e))
+            raise ClickException(f"failed while requesting pages of the report: {e}")
 
     def format_and_yield(self, view_id, report):
         dimension_names = report["columnHeader"]["dimensions"]

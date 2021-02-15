@@ -15,8 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 import datetime
 import logging
+
+import click
+from nck.config import logger
+import httplib2
+
 
 import click
 import httplib2
@@ -151,7 +157,7 @@ class DbmReader(Reader):
 
     @retry(wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000))
     def _wait_for_query(self, query_id):
-        logging.info("waiting for query of id : {} to complete running".format(query_id))
+        logger.info(f"waiting for query of id : {query_id} to complete running")
         query_infos = self.get_query(query_id)
         if query_infos["metadata"]["running"] or (
             "googleCloudStoragePathForLatestReport" not in query_infos["metadata"]

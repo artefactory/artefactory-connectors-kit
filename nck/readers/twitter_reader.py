@@ -10,7 +10,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
+from nck.config import logger
 import click
 from click import ClickException
 from itertools import chain
@@ -69,9 +69,7 @@ MAX_CONCURRENT_JOBS = 100
     help="Access token secret, available in the 'Keys and tokens' section of your Twitter Developper App.",
 )
 @click.option(
-    "--twitter-account-id",
-    required=True,
-    help="Specifies the Twitter Account ID for which the data should be returned.",
+    "--twitter-account-id", required=True, help="Specifies the Twitter Account ID for which the data should be returned.",
 )
 @click.option(
     "--twitter-report-type",
@@ -91,8 +89,7 @@ MAX_CONCURRENT_JOBS = 100
 @click.option(
     "--twitter-entity-attribute",
     multiple=True,
-    help="Specific to 'ENTITY' reports. "
-    "Specifies the entity attribute (a.k.a. dimension) that should be returned.",
+    help="Specific to 'ENTITY' reports. " "Specifies the entity attribute (a.k.a. dimension) that should be returned.",
 )
 @click.option(
     "--twitter-granularity",
@@ -129,13 +126,9 @@ MAX_CONCURRENT_JOBS = 100
     help="Specific to 'ANALYTICS' reports. Required if segmentation_type is set to 'CITIES', 'POSTAL_CODES', or 'REGION'. "
     "To get possible values: GET targeting_criteria/platforms",
 )
+@click.option("--twitter-start-date", type=click.DateTime(), help="Specifies report start date.")
 @click.option(
-    "--twitter-start-date", type=click.DateTime(), help="Specifies report start date."
-)
-@click.option(
-    "--twitter-end-date",
-    type=click.DateTime(),
-    help="Specifies report end date (inclusive).",
+    "--twitter-end-date", type=click.DateTime(), help="Specifies report end date (inclusive).",
 )
 @click.option(
     "--twitter-add-request-date-to-report",
@@ -144,10 +137,7 @@ MAX_CONCURRENT_JOBS = 100
     help="If set to 'True', the date on which the request is made will appear on each report record.",
 )
 @processor(
-    "twitter_consumer_key",
-    "twitter_consumer_secret",
-    "twitter_access_token",
-    "twitter_access_token_secret",
+    "twitter_consumer_key", "twitter_consumer_secret", "twitter_access_token", "twitter_access_token_secret",
 )
 def twitter(**kwargs):
     return TwitterReader(**extract_args("twitter_", kwargs))
@@ -175,9 +165,7 @@ class TwitterReader(Reader):
         add_request_date_to_report,
     ):
         # Authentication inputs
-        self.client = Client(
-            consumer_key, consumer_secret, access_token, access_token_secret
-        )
+        self.client = Client(consumer_key, consumer_secret, access_token, access_token_secret)
         self.account = self.client.accounts(account_id)
 
         # General inputs
@@ -216,23 +204,15 @@ class TwitterReader(Reader):
     def validate_dates(self):
 
         if self.end_date - timedelta(days=1) < self.start_date:
-            raise ClickException(
-                "Report end date should be equal or ulterior to report start date."
-            )
+            raise ClickException("Report end date should be equal or ulterior to report start date.")
 
     def validate_analytics_segmentation(self):
 
         if self.report_type == "ANALYTICS":
-            if (
-                self.segmentation_type in ["DEVICES", "PLATFORM VERSION"]
-                and not self.platform
-            ):
+            if self.segmentation_type in ["DEVICES", "PLATFORM VERSION"] and not self.platform:
                 raise ClickException("Please provide a value for 'platform'.")
 
-            elif (
-                self.segmentation_type in ["CITIES", "POSTAL_CODES", "REGION"]
-                and not self.country
-            ):
+            elif self.segmentation_type in ["CITIES", "POSTAL_CODES", "REGION"] and not self.country:
                 raise ClickException("Please provide a value for 'country'.")
 
     def validate_analytics_metric_groups(self):
@@ -240,54 +220,33 @@ class TwitterReader(Reader):
         if self.report_type == "ANALYTICS":
 
             if self.entity == "FUNDING_INSTRUMENT" and any(
-                [
-                    metric_group not in ["ENGAGEMENT", "BILLING"]
-                    for metric_group in self.metric_groups
-                ]
+                [metric_group not in ["ENGAGEMENT", "BILLING"] for metric_group in self.metric_groups]
             ):
-                raise ClickException(
-                    "'FUNDING_INSTRUMENT' only accept the 'ENGAGEMENT' and 'BILLING' metric groups."
-                )
+                raise ClickException("'FUNDING_INSTRUMENT' only accept the 'ENGAGEMENT' and 'BILLING' metric groups.")
 
-            if (
-                "MOBILE_CONVERSION" in self.metric_groups
-                and len(self.metric_groups) > 1
-            ):
-                raise ClickException(
-                    "'MOBILE_CONVERSION' data should be requested separately."
-                )
+            if "MOBILE_CONVERSION" in self.metric_groups and len(self.metric_groups) > 1:
+                raise ClickException("'MOBILE_CONVERSION' data should be requested separately.")
 
     def validate_analytics_entity(self):
 
         if self.report_type == "ANALYTICS":
 
             if self.entity == "CARD":
-                raise ClickException(
-                    f"'ANALYTICS' reports only accept following entities: {list(ENTITY_OBJECTS.keys())}."
-                )
+                raise ClickException(f"'ANALYTICS' reports only accept following entities: {list(ENTITY_OBJECTS.keys())}.")
 
     def validate_reach_entity(self):
 
         if self.report_type == "REACH":
 
             if self.entity not in ["CAMPAIGN", "FUNDING_INSTRUMENT"]:
-                raise ClickException(
-                    "'REACH' reports only accept the following entities: CAMPAIGN, FUNDING_INSTRUMENT."
-                )
+                raise ClickException("'REACH' reports only accept the following entities: CAMPAIGN, FUNDING_INSTRUMENT.")
 
     def validate_entity_attributes(self):
 
         if self.report_type == "ENTITY":
 
-            if not all(
-                [
-                    attr in ENTITY_ATTRIBUTES[self.entity]
-                    for attr in self.entity_attributes
-                ]
-            ):
-                raise ClickException(
-                    f"Available attributes for '{self.entity}' are: {ENTITY_ATTRIBUTES[self.entity]}"
-                )
+            if not all([attr in ENTITY_ATTRIBUTES[self.entity] for attr in self.entity_attributes]):
+                raise ClickException(f"Available attributes for '{self.entity}' are: {ENTITY_ATTRIBUTES[self.entity]}")
 
     def get_analytics_report(self, job_ids):
         """
@@ -299,13 +258,13 @@ class TwitterReader(Reader):
 
         for job_id in job_ids:
 
-            logging.info(f"Processing job_id: {job_id}")
+            logger.info(f"Processing job_id: {job_id}")
 
             # job_result = self.get_job_result(job_id)
             # waiting_sec = 2
 
             # while job_result.status == "PROCESSING":
-            #     logging.info(f"Waiting {waiting_sec} seconds for job to be completed")
+            #     logger.info(f"Waiting {waiting_sec} seconds for job to be completed")
             #     sleep(waiting_sec)
             #     if waiting_sec > MAX_WAITING_SEC:
             #         raise JobTimeOutError("Waited too long for job to be completed")
@@ -325,9 +284,7 @@ class TwitterReader(Reader):
         Documentation: https://developer.twitter.com/en/docs/ads/analytics/api-reference/active-entities
         """
 
-        active_entities = ENTITY_OBJECTS[self.entity].active_entities(
-            self.account, self.start_date, self.end_date
-        )
+        active_entities = ENTITY_OBJECTS[self.entity].active_entities(self.account, self.start_date, self.end_date)
         return [obj["entity_id"] for obj in active_entities]
 
     def get_job_ids(self, entity_ids):
@@ -356,8 +313,7 @@ class TwitterReader(Reader):
         ]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600),
-        stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
     )
     def _waiting_for_job_to_complete(self, job_id):
         """
@@ -376,11 +332,7 @@ class TwitterReader(Reader):
         Documentation: https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous
         """
 
-        return (
-            ENTITY_OBJECTS[self.entity]
-            .async_stats_job_result(self.account, job_ids=[job_id])
-            .first
-        )
+        return ENTITY_OBJECTS[self.entity].async_stats_job_result(self.account, job_ids=[job_id]).first
 
     def get_raw_analytics_response(self, job_result):
         """
@@ -389,9 +341,7 @@ class TwitterReader(Reader):
         Documentation: https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous
         """
 
-        return ENTITY_OBJECTS[self.entity].async_stats_job_data(
-            self.account, url=job_result.url
-        )
+        return ENTITY_OBJECTS[self.entity].async_stats_job_data(self.account, url=job_result.url)
 
     def parse(self, raw_analytics_response):
         """
@@ -404,9 +354,7 @@ class TwitterReader(Reader):
                     {
                         "id": entity_resp["id"],
                         **{
-                            mt: 0
-                            if entity_data["metrics"][mt] is None
-                            else entity_data["metrics"][mt][i]
+                            mt: 0 if entity_data["metrics"][mt] is None else entity_data["metrics"][mt][i]
                             for mt in entity_data["metrics"]
                         },
                     }
@@ -424,8 +372,7 @@ class TwitterReader(Reader):
         if self.granularity == "DAY":
             period_items = self.get_daily_period_items()
             return [
-                {**entity_records[i], "date": period_items[i].strftime(REP_DATEFORMAT)}
-                for i in range(len(entity_records))
+                {**entity_records[i], "date": period_items[i].strftime(REP_DATEFORMAT)} for i in range(len(entity_records))
             ]
         return entity_records
 
@@ -445,10 +392,7 @@ class TwitterReader(Reader):
 
         if self.segmentation_type:
             entity_segment = entity_data["segment"]["segment_name"]
-            return [
-                {**rec, self.segmentation_type.lower(): entity_segment}
-                for rec in entity_records
-            ]
+            return [{**rec, self.segmentation_type.lower(): entity_segment} for rec in entity_records]
         return entity_records
 
     def get_campaign_management_report(self):
@@ -481,10 +425,7 @@ class TwitterReader(Reader):
         for tweet in self.get_published_tweets():
             if "card_uri" in tweet:
                 card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
-                card_attributes = {
-                    attr: getattr(card_fetch, attr, None)
-                    for attr in self.entity_attributes
-                }
+                card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
                 record = {
                     "tweet_id": tweet["tweet_id"],
                     "card_uri": tweet["card_uri"],
@@ -539,18 +480,14 @@ class TwitterReader(Reader):
         """
 
         def check_add_period_date_to_report():
-            return (
-                self.report_type == "ANALYTICS" and self.granularity == "TOTAL"
-            ) or self.report_type == "REACH"
+            return (self.report_type == "ANALYTICS" and self.granularity == "TOTAL") or self.report_type == "REACH"
 
         if self.add_request_date_to_report:
             record["request_date"] = datetime.today().strftime(REP_DATEFORMAT)
 
         if check_add_period_date_to_report():
             record["period_start_date"] = self.start_date.strftime(REP_DATEFORMAT)
-            record["period_end_date"] = (self.end_date - timedelta(days=1)).strftime(
-                REP_DATEFORMAT
-            )
+            record["period_end_date"] = (self.end_date - timedelta(days=1)).strftime(REP_DATEFORMAT)
 
         return record
 
@@ -560,12 +497,10 @@ class TwitterReader(Reader):
             entity_ids = self.get_active_entity_ids()
 
             total_jobs = (len(entity_ids) // MAX_ENTITY_IDS_PER_JOB) + 1
-            logging.info(f"Processing a total of {total_jobs} jobs")
+            logger.info(f"Processing a total of {total_jobs} jobs")
 
             data = []
-            for chunk_entity_ids in split_list(
-                entity_ids, MAX_ENTITY_IDS_PER_JOB * MAX_CONCURRENT_JOBS
-            ):
+            for chunk_entity_ids in split_list(entity_ids, MAX_ENTITY_IDS_PER_JOB * MAX_CONCURRENT_JOBS):
                 job_ids = self.get_job_ids(chunk_entity_ids)
                 data += self.get_analytics_report(job_ids)
 

@@ -16,34 +16,19 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import logging
-import os
 import sys
+import os
 
+LEVEL = logging.INFO
 FORMAT = "%(asctime)s - (%(name)s) - %(levelname)s - %(message)s"
-logging.basicConfig(format=FORMAT)
+HANDLERS = [logging.StreamHandler(sys.stdout)]
+
+logging.basicConfig(level=LEVEL, format=FORMAT, handlers=HANDLERS)
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
-handler = logging.StreamHandler(sys.stdout)
-
-logger.handlers = [handler]
-
-
-def env():
-    return os.environ.get("ENV", "dev")
-
-
-def is_staging():
-    return env() == "staging"
-
-
-def is_dev():
-    return env() == "dev"
-
-
-def is_production():
-    return env() == "production"
-
-
+# The below snippet is used in the following modules:
+# - nck/readers/objectstorage_reader.py
+# - nck/writers/gcs_writer.py
+# - nck/writers/bigquery_writer.py
 for key, var in os.environ.items():
     locals()[key] = var
