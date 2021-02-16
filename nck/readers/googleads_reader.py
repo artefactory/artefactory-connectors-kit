@@ -33,7 +33,6 @@ from nck.helpers.googleads_helper import DATE_RANGE_TYPE_POSSIBLE_VALUES, ENCODI
 from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args
-from nck.utils.date_handler import check_date_range_definition_conformity
 from nck.utils.exceptions import InconsistentDateDefinitionException, NoDateDefinitionException
 from nck.utils.retry import retry
 
@@ -148,8 +147,6 @@ class GoogleAdsReader(Reader):
         self.include_client_customer_id = include_client_customer_id
         self.download_format = "CSV"
 
-        check_date_range_definition_conformity(self.start_date, self.end_date, self.date_range_type)
-
     def init_adwords_client(self, id):
         return adwords.AdWordsClient(self.developer_token, self.oauth2_client, client_customer_id=id)
 
@@ -250,19 +247,16 @@ class GoogleAdsReader(Reader):
         """Add Date period from provided start date and end date, when CUSTOM DATE range is called"""
         if (self.date_range_type == "CUSTOM_DATE") & (not self.start_date or not self.end_date):
             raise NoDateDefinitionException(
-                "You must define a couple \
-            start-date/end-date when using a custom_date"
+                """You must define a couple
+            start-date/end-date when using a custom_date"""
             )
         elif self.date_range_type == "CUSTOM_DATE":
-            logger.info(
-                "Date format used for request : Custom Date Range with\
-            start_date and end_date provided"
-            )
+            logger.info("Date format used for request : Custom Date Range with start_date and end_date provided")
             report_definition["selector"]["dateRange"] = self.create_date_range(self.start_date, self.end_date)
         elif self.start_date is not None and self.end_date is not None and self.date_range_type != "CUSTOM_DATE":
             raise InconsistentDateDefinitionException(
-                "You must define either the couple start_date and end_date \
-            or a date_range \(different from CUSTOM_DATE\), but not both"
+                "You must define either the couple start_date and end_date or a date_range, \
+                    different from CUSTOM_DATE, but not both"
             )
 
     def add_report_filter(self, report_definition):

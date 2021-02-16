@@ -197,33 +197,34 @@ class GoogleAdsReaderTest(TestCase):
 
     @parameterized.expand(
         [
-            [{"date_range_type": "CUSTOM_DATE", "start_date": datetime.date(2019, 1, 1), "end_date": None}],
-            [{"date_range_type": "CUSTOM_DATE", "start_date": None, "end_date": datetime.date(2019, 1, 1)}],
-            [{"date_range_type": "CUSTOM_DATE", "start_date": None, "end_date": None}],
+            [
+                {"date_range_type": "CUSTOM_DATE", "start_date": datetime.date(2019, 1, 1), "end_date": None},
+                NoDateDefinitionException,
+            ],
+            [
+                {"date_range_type": "CUSTOM_DATE", "start_date": None, "end_date": datetime.date(2019, 1, 1)},
+                NoDateDefinitionException,
+            ],
+            [{"date_range_type": "CUSTOM_DATE", "start_date": None, "end_date": None}, NoDateDefinitionException],
+            [
+                {
+                    "date_range_type": "YESTERDAY",
+                    "start_date": datetime.date(2019, 1, 1),
+                    "end_date": datetime.date(2019, 3, 1),
+                },
+                InconsistentDateDefinitionException,
+            ],
         ]
     )
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
-    def test_add_invalid_custom_period_to_report_definition(self, invalid_parameter):
+    def test_add_invalid_custom_period_to_report_definition(self, invalid_parameter, exception):
         """Test that report definition dateRangeType is replaced by default value
         when no start_date and end_date are provided
         """
-        with self.assertRaises(NoDateDefinitionException):
+        with self.assertRaises(exception):
             report_definition = self.get_report_definition(invalid_parameter["date_range_type"])
             temp_kwargs = self.kwargs.copy()
             temp_kwargs.update(invalid_parameter)
-            GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
-
-    @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
-    def test_add_inconsistent_period_to_report_definition(self):
-        with self.assertRaises(InconsistentDateDefinitionException):
-            inconsistent_report_definition = {
-                "date_range_type": "YESTERDAY",
-                "start_date": datetime.date(2019, 1, 1),
-                "end_date": datetime.date(2019, 3, 1),
-            }
-            report_definition = self.get_report_definition(inconsistent_report_definition["date_range_type"])
-            temp_kwargs = self.kwargs.copy()
-            temp_kwargs.update(inconsistent_report_definition)
             GoogleAdsReader(**temp_kwargs).add_period_to_report_definition(report_definition)
 
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
