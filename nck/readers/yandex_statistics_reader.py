@@ -23,17 +23,10 @@ from http import HTTPStatus
 from typing import Dict, Tuple
 
 import click
-
 import nck.helpers.api_client_helper as api_client_helper
 from nck.clients.api_client import ApiClient
 from nck.commands.command import processor
-from nck.helpers.yandex_helper import (
-    DATE_RANGE_TYPES,
-    LANGUAGES,
-    OPERATORS,
-    REPORT_TYPES,
-    STATS_FIELDS,
-)
+from nck.helpers.yandex_helper import DATE_RANGE_TYPES, LANGUAGES, OPERATORS, REPORT_TYPES, STATS_FIELDS
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
@@ -117,7 +110,15 @@ class YandexStatisticsReader(Reader):
                 logger.info("Report in queue.")
             elif response.status_code == HTTPStatus.OK:
                 logger.info("Report successfully retrieved.")
+
+                return get_report_generator_from_flat_file(
+                    response.iter_lines(),
+                    delimiter="\t",
+                    skip_n_first=1,
+                )
+
                 return get_report_generator_from_flat_file(response.iter_lines(), delimiter="\t", skip_n_first=1,)
+
             elif response.status_code == HTTPStatus.BAD_REQUEST:
                 logger.error("Invalid request.")
                 logger.error(response.json())
