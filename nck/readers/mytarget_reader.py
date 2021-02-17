@@ -18,13 +18,14 @@
 import itertools
 from datetime import date, datetime
 from typing import Any, Dict, List, Tuple
-
 import click
 import requests
+from tenacity import retry, wait_exponential, stop_after_delay
 from nck.commands.command import processor
 from nck.helpers.mytarget_helper import REQUEST_CONFIG, REQUEST_TYPES
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
+from nck.utils.exceptions import MissingItemsInResponse
 from nck.utils.args import extract_args
 from nck.utils.date_handler import (
     DEFAULT_DATE_RANGE_FUNCTIONS,
@@ -55,20 +56,19 @@ LIMIT_REQUEST_MYTARGET = 20
 
 class MyTargetReader(Reader):
     def __init__(self, client_id, client_secret, refresh_token, request_type, date_range, start_date, end_date, **kwargs):
+        check_date_range_definition_conformity(start_date, end_date, date_range)
+        if date_range is not None:
+            start_date, end_date = get_date_start_and_date_stop_from_date_range(date_range)
         self.client_id = client_id
         self.client_secret = client_secret
         self.agency_client_token = {"refresh_token": refresh_token}
         self.request_type = request_type
         self.date_range = date_range
-        start_date, end_date = get_date_start_and_date_stop_from_date_range(self.date_range)
         self.start_date = start_date
         self.end_date = end_date
         self.date_format = kwargs.get("date_format")
-
         self.date_are_valid = self.__check_date_input_validity()
         self.__retrieve_and_set_token()
-
-        check_date_range_definition_conformity(self.start_date, self.end_date, self.date_range)
 
     def read(self):
         if self.date_are_valid:
@@ -186,6 +186,7 @@ class MyTargetReader(Reader):
                 content_by_date.append(new_line)
         yield from content_by_date
 
+    @retry(wait=wait_exponential(multiplier=1, min=1, max=600), stop=stop_after_delay(600))
     def __get_response(self, name_content: str, offset=0) -> Dict[str, Any]:
         """This function makes a request to the api after building eveything necessary to get the
         desired results for a specific need which is defined by name_content.
@@ -199,7 +200,10 @@ class MyTargetReader(Reader):
         """
         parameters = self.__generate_params_dict(name_content, offset=offset)
         request = self.__create_request(name_content, parameters)
-        return requests.get(**request).json()
+        resp = requests.get(**request).json()
+        if "items" not in resp.keys():
+            raise MissingItemsInResponse("Can't retrieve any item from this response")
+        return resp
 
     def __create_request(self, name_content: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """This function creates the dict with all the parameters required to query the api
