@@ -92,9 +92,7 @@ class DV360Reader(Reader):
         """
         return [f"SDF-{FILE_NAMES[file_type]}" for file_type in self.kwargs.get("file_type")]
 
-    @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
-    )
+    @retry(wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000))
     def __wait_sdf_download_request(self, operation):
         """
         Wait for a sdf task to be completed. ie. (file ready for download)
