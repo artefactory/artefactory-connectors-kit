@@ -186,7 +186,7 @@ class MyTargetReader(Reader):
                 content_by_date.append(new_line)
         yield from content_by_date
 
-    @retry(wait=wait_exponential(multiplier=1, min=1, max=600), stop=stop_after_delay(600),)
+    @retry(wait=wait_exponential(multiplier=1, min=1, max=600), stop=stop_after_delay(600))
     def __get_response(self, name_content: str, offset=0) -> Dict[str, Any]:
         """This function makes a request to the api after building eveything necessary to get the
         desired results for a specific need which is defined by name_content.
@@ -201,7 +201,7 @@ class MyTargetReader(Reader):
         parameters = self.__generate_params_dict(name_content, offset=offset)
         request = self.__create_request(name_content, parameters)
         resp = requests.get(**request).json()
-        if 'items' not in resp.keys():
+        if "items" not in resp.keys():
             raise MissingItemsInResponse("Can't retrieve any item from this response")
         return resp
 
