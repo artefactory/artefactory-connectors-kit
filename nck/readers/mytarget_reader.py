@@ -18,7 +18,7 @@
 import itertools
 from datetime import date, datetime
 from typing import Any, Dict, List, Tuple
-
+import logging
 import click
 import requests
 from nck.commands.command import processor
@@ -136,12 +136,21 @@ class MyTargetReader(Reader):
         count = first_elements["count"]
         elements = [first_elements["items"]]
         if count > LIMIT_REQUEST_MYTARGET:
-            elements += [
-                self.__get_response(name_content, offset=offset)["items"]
-                for offset in range(
-                    LIMIT_REQUEST_MYTARGET, self.round_up_to_base(count, LIMIT_REQUEST_MYTARGET), LIMIT_REQUEST_MYTARGET
-                )
-            ]
+            range_offset = range(
+                LIMIT_REQUEST_MYTARGET,
+                self.round_up_to_base(count, LIMIT_REQUEST_MYTARGET),
+                LIMIT_REQUEST_MYTARGET
+            )
+            for offset in range_offset:
+                resp = self.__get_response(name_content, offset=offset)
+                count = 0
+                while 'items' not in resp.keys() and count < 10:
+                    resp = self.__get_response(name_content, offset=offset)
+                    count += 1
+                if 'items' in resp.keys():
+                    elements.append(resp['items'])
+                else:
+                    logging.warning('Incorrect response from the API' + str(resp))
         return list(itertools.chain.from_iterable(elements))
 
     def map_campaign_name_to_daily_stat(
