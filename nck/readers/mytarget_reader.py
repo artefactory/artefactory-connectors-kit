@@ -18,13 +18,14 @@
 import itertools
 from datetime import date, datetime
 from typing import Any, Dict, List, Tuple
-import logging
 import click
 import requests
+from tenacity import retry, wait_exponential, stop_after_delay
 from nck.commands.command import processor
 from nck.helpers.mytarget_helper import REQUEST_CONFIG, REQUEST_TYPES
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
+from nck.utils.exceptions import MissingItemsInResponse
 from nck.utils.args import extract_args
 from nck.utils.date_handler import (
     DEFAULT_DATE_RANGE_FUNCTIONS,
@@ -136,21 +137,12 @@ class MyTargetReader(Reader):
         count = first_elements["count"]
         elements = [first_elements["items"]]
         if count > LIMIT_REQUEST_MYTARGET:
-            range_offset = range(
-                LIMIT_REQUEST_MYTARGET,
-                self.round_up_to_base(count, LIMIT_REQUEST_MYTARGET),
-                LIMIT_REQUEST_MYTARGET
-            )
-            for offset in range_offset:
-                resp = self.__get_response(name_content, offset=offset)
-                count = 0
-                while 'items' not in resp.keys() and count < 10:
-                    resp = self.__get_response(name_content, offset=offset)
-                    count += 1
-                if 'items' in resp.keys():
-                    elements.append(resp['items'])
-                else:
-                    logging.warning('Incorrect response from the API' + str(resp))
+            elements += [
+                self.__get_response(name_content, offset=offset)["items"]
+                for offset in range(
+                    LIMIT_REQUEST_MYTARGET, self.round_up_to_base(count, LIMIT_REQUEST_MYTARGET), LIMIT_REQUEST_MYTARGET
+                )
+            ]
         return list(itertools.chain.from_iterable(elements))
 
     def map_campaign_name_to_daily_stat(
@@ -194,6 +186,7 @@ class MyTargetReader(Reader):
                 content_by_date.append(new_line)
         yield from content_by_date
 
+    @retry(wait=wait_exponential(multiplier=1, min=1, max=600), stop=stop_after_delay(600),)
     def __get_response(self, name_content: str, offset=0) -> Dict[str, Any]:
         """This function makes a request to the api after building eveything necessary to get the
         desired results for a specific need which is defined by name_content.
@@ -207,7 +200,10 @@ class MyTargetReader(Reader):
         """
         parameters = self.__generate_params_dict(name_content, offset=offset)
         request = self.__create_request(name_content, parameters)
-        return requests.get(**request).json()
+        resp = requests.get(**request).json()
+        if 'items' not in resp.keys():
+            raise MissingItemsInResponse("Can't retrieve any item from this response")
+        return resp
 
     def __create_request(self, name_content: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """This function creates the dict with all the parameters required to query the api
