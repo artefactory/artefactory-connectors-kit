@@ -45,3 +45,9 @@ class InconsistentDateDefinitionException(Exception):
     """Raised when both start date/end date and date range are defined"""
 
     pass
+
+
+class MissingItemsInResponse(Exception):
+    """Raised when the body of the response is missing items"""
+
+    pass
