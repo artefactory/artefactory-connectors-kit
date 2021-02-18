@@ -20,7 +20,6 @@ import click
 from nck.config import logger
 import io
 import httplib2
-import logging
 
 from itertools import chain
 from typing import List
@@ -37,9 +36,7 @@ from nck.readers.reader import Reader
 from nck.utils.file_reader import sdf_to_njson_generator, unzip
 from nck.utils.args import extract_args
 from nck.streams.format_date_stream import FormatDateStream
-from nck.utils.stdout_to_log import StdoutToLog
-
-httplib2.debuglevel = 4
+from nck.utils.stdout_to_log import http_log, http_log_for_init
 
 
 @click.command(name="read_dv360")
@@ -69,7 +66,7 @@ class DV360Reader(Reader):
     # if more than one file type where to be provided.
     ARCHIVE_NAME = "sdf"
 
-    @StdoutToLog("dv360_reader", logging.DEBUG)
+    @http_log_for_init("dv360_reader")
     def __init__(self, access_token: str, refresh_token: str, client_id: str, client_secret: str, **kwargs):
 
         credentials = client.GoogleCredentials(
@@ -97,7 +94,6 @@ class DV360Reader(Reader):
         """
         return [f"SDF-{FILE_NAMES[file_type]}" for file_type in self.kwargs.get("file_type")]
 
-    @StdoutToLog("dv360_reader", logging.DEBUG)
     @retry(
         wait=wait_exponential(multiplier=1, min=60, max=3600),
         stop=stop_after_delay(36000),
@@ -117,7 +113,6 @@ class DV360Reader(Reader):
             raise RetryTimeoutError("The operation has taken more than 10 hours to complete.\n")
         return operation
 
-    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __create_sdf_task(self, body):
         """
         Create a sdf asynchronous task of type googleapiclient.discovery.Resource
@@ -131,7 +126,6 @@ class DV360Reader(Reader):
         logger.info(f"Operation {operation['name']} was created.")
         return operation
 
-    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __download_sdf(self, operation):
         request = self._client.media().download(resourceName=operation["response"]["resourceName"])
         request.uri = request.uri.replace("?alt=json", "?alt=media")
@@ -142,7 +136,6 @@ class DV360Reader(Reader):
             status, done = downloader.next_chunk()
             logger.info(f"Download {int(status.progress() * 100)}%.")
 
-    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __get_sdf_body(self):
         return {
             "parentEntityFilter": {"fileType": self.kwargs.get("file_type"), "filterType": self.kwargs.get("filter_type")},
@@ -150,7 +143,6 @@ class DV360Reader(Reader):
             "advertiserId": self.kwargs.get("advertiser_id"),
         }
 
-    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __get_sdf_objects(self):
         body = self.__get_sdf_body()
         init_operation = self.__create_sdf_task(body=body)
@@ -166,7 +158,6 @@ class DV360Reader(Reader):
         # We chain operation if many file_types were to be provided.
         return chain(*[sdf_to_njson_generator(f"{self.BASE}/{file_name}.csv") for file_name in self.file_names])
 
-    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __get_creatives(self):
         response = self._client.advertisers().creatives().list(advertiserId=self.kwargs.get("advertiser_id")).execute()
         if len(response.keys()) == 0:  # no data returned
@@ -185,6 +176,7 @@ class DV360Reader(Reader):
                 all_creatives.extend(response["creatives"])
         yield from all_creatives
 
+    @http_log("dv360_reader")
     def read(self):
         request_type = self.kwargs.get("request_type")
         if request_type == "sdf_request":

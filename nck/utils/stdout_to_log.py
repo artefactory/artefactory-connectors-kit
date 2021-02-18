@@ -1,5 +1,6 @@
 import logging
 import sys
+import httplib2
 
 
 class STDoutToLog:
@@ -30,15 +31,38 @@ class STDoutToLog:
         pass
 
 
-def StdoutToLog(logger_name, level):
-    def StdoutToLogDec(func):
+def http_log(logger_name, level=logging.DEBUG):
+    def decorator(func):
         def wrapper(*args, **kwargs):
+            httplib2.debuglevel = 4
+
             httpLog = STDoutToLog(logger_name, level)
             sys.stdout = httpLog
-            returnvalue = func(*args, **kwargs)
+
+            items = []
+            for item in func(*args, **kwargs):
+                items.append(item)
+
             sys.stdout = sys.__stdout__
-            return returnvalue
+
+            for item in items:
+                yield item
 
         return wrapper
 
-    return StdoutToLogDec
+    return decorator
+
+
+def http_log_for_init(logger_name, level=logging.DEBUG):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            httplib2.debuglevel = 4
+
+            httpLog = STDoutToLog(logger_name, level)
+            sys.stdout = httpLog
+            func(*args, **kwargs)
+            sys.stdout = sys.__stdout__
+
+        return wrapper
+
+    return decorator

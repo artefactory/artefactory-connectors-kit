@@ -20,6 +20,8 @@ import sys
 import os
 
 LEVEL = logging.INFO
+if "LOGGING_LEVEL" in os.environ:
+    LEVEL = os.environ["LOGGING_LEVEL"]
 FORMAT = "%(asctime)s - (%(name)s) - %(levelname)s - %(message)s"
 HANDLERS = [logging.StreamHandler(sys.stdout)]
 
