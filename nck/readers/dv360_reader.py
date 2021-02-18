@@ -69,7 +69,7 @@ class DV360Reader(Reader):
     # if more than one file type where to be provided.
     ARCHIVE_NAME = "sdf"
 
-    @StdoutToLog("test", logging.DEBUG)
+    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __init__(self, access_token: str, refresh_token: str, client_id: str, client_secret: str, **kwargs):
 
         credentials = client.GoogleCredentials(
@@ -131,6 +131,7 @@ class DV360Reader(Reader):
         logger.info(f"Operation {operation['name']} was created.")
         return operation
 
+    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __download_sdf(self, operation):
         request = self._client.media().download(resourceName=operation["response"]["resourceName"])
         request.uri = request.uri.replace("?alt=json", "?alt=media")
@@ -141,6 +142,7 @@ class DV360Reader(Reader):
             status, done = downloader.next_chunk()
             logger.info(f"Download {int(status.progress() * 100)}%.")
 
+    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __get_sdf_body(self):
         return {
             "parentEntityFilter": {"fileType": self.kwargs.get("file_type"), "filterType": self.kwargs.get("filter_type")},
@@ -148,6 +150,7 @@ class DV360Reader(Reader):
             "advertiserId": self.kwargs.get("advertiser_id"),
         }
 
+    @StdoutToLog("dv360_reader", logging.DEBUG)
     def __get_sdf_objects(self):
         body = self.__get_sdf_body()
         init_operation = self.__create_sdf_task(body=body)

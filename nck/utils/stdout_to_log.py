@@ -35,8 +35,9 @@ def StdoutToLog(logger_name, level):
         def wrapper(*args, **kwargs):
             httpLog = STDoutToLog(logger_name, level)
             sys.stdout = httpLog
-            func(*args, **kwargs)
+            returnvalue = func(*args, **kwargs)
             sys.stdout = sys.__stdout__
+            return returnvalue
 
         return wrapper
 
