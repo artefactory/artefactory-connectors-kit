@@ -98,7 +98,6 @@ class DV360Reader(Reader):
         wait=wait_exponential(multiplier=1, min=60, max=3600),
         stop=stop_after_delay(36000),
     )
-
     def __wait_sdf_download_request(self, operation):
         """
         Wait for a sdf task to be completed. ie. (file ready for download)
