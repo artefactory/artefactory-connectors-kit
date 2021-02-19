@@ -27,3 +27,27 @@ class SdfOperationError(Exception):
     """Raised when a sdf operation has failed."""
 
     pass
+
+
+class NoDateDefinitionException(Exception):
+    """Raised when no date range or start date/end date is defined"""
+
+    pass
+
+
+class MissingDateDefinitionException(Exception):
+    """Raised when either the start date or end date is missing"""
+
+    pass
+
+
+class InconsistentDateDefinitionException(Exception):
+    """Raised when both start date/end date and date range are defined"""
+
+    pass
+
+
+class MissingItemsInResponse(Exception):
+    """Raised when the body of the response is missing items"""
+
+    pass

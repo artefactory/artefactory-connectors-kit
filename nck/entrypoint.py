@@ -19,10 +19,18 @@ import click
 
 from nck.writers import writers, Writer
 from nck.readers import readers, Reader
+from nck.streams.json_stream import JSONStream
+from nck.streams.normalized_json_stream import NormalizedJSONStream
 
 
 @click.group(chain=True)
-def cli():
+@click.option(
+    "--normalize-keys",
+    default=False,
+    help="(Optional) If set to true, will normalize output keys, removing white spaces and special characters.",
+    type=bool,
+)
+def cli(normalize_keys):
     pass
 
 
@@ -32,15 +40,18 @@ def build_commands(cli, available_commands):
 
 
 @cli.resultcallback()
-def process_command_pipeline(provided_commands):
-    provided_readers = [cmd for cmd in provided_commands if isinstance(cmd(), Reader)]
-    provided_writers = [cmd for cmd in provided_commands if isinstance(cmd(), Writer)]
+def process_command_pipeline(provided_commands, normalize_keys):
+    provided_readers = [cmd() for cmd in provided_commands if isinstance(cmd(), Reader)]
+    provided_writers = [cmd() for cmd in provided_commands if isinstance(cmd(), Writer)]
     _validate_provided_commands(provided_readers, provided_writers)
 
     reader = provided_readers[0]
-    for stream in reader().read():
+    for stream in reader.read():
         for writer in provided_writers:
-            writer().write(stream)
+            if normalize_keys and issubclass(stream.__class__, JSONStream):
+                writer.write(NormalizedJSONStream.create_from_stream(stream))
+            else:
+                writer.write(stream)
 
 
 def _validate_provided_commands(provided_readers, provided_writers):

@@ -37,7 +37,11 @@ from nck.helpers.adobe_helper_2_0 import (
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
-from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, get_date_start_and_date_stop_from_date_range
+from nck.utils.date_handler import (
+    DEFAULT_DATE_RANGE_FUNCTIONS,
+    check_date_range_definition_conformity,
+    get_date_start_and_date_stop_from_date_range,
+)
 from nck.utils.retry import retry
 
 DATEFORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -153,6 +157,8 @@ class AdobeReader_2_0(Reader):
         self.date_range = date_range
         self.ingestion_tracker = []
         self.node_values = {}
+
+        check_date_range_definition_conformity(self.start_date, self.end_date, self.date_range)
 
     def build_date_range(self):
         if self.start_date is not None and self.end_date is not None and self.date_range is None:

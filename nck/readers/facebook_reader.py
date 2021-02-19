@@ -16,37 +16,39 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from nck.config import logger
-import click
-import re
-from math import ceil
-from click import ClickException
-from datetime import datetime
-from tenacity import retry, wait_none, wait_exponential, stop_after_delay, stop_after_attempt
 
-from nck.readers.reader import Reader
-from nck.utils.args import extract_args
+import logging
+import re
+from datetime import datetime
+from math import ceil
+
+import click
+from click import ClickException
+from facebook_business.adobjects.ad import Ad
+from facebook_business.adobjects.adaccount import AdAccount
+from facebook_business.adobjects.adcreative import AdCreative
+from facebook_business.adobjects.adreportrun import AdReportRun
+from facebook_business.adobjects.adset import AdSet
+from facebook_business.adobjects.adspixel import AdsPixel
+from facebook_business.adobjects.campaign import Campaign
+from facebook_business.api import FacebookAdsApi
 from nck.commands.command import processor
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.config import logger
 from nck.helpers.facebook_helper import (
-    FACEBOOK_OBJECTS,
-    DATE_PRESETS,
-    BREAKDOWNS,
     ACTION_BREAKDOWNS,
+    BREAKDOWNS,
+    DATE_PRESETS,
+    FACEBOOK_OBJECTS,
+    generate_batches,
     get_action_breakdown_filters,
     get_field_values,
-    generate_batches,
     monitor_usage,
 )
-
-from facebook_business.api import FacebookAdsApi
-from facebook_business.adobjects.adaccount import AdAccount
-from facebook_business.adobjects.campaign import Campaign
-from facebook_business.adobjects.adset import AdSet
-from facebook_business.adobjects.ad import Ad
-from facebook_business.adobjects.adcreative import AdCreative
-from facebook_business.adobjects.adspixel import AdsPixel
-from facebook_business.adobjects.adreportrun import AdReportRun
+from nck.readers.reader import Reader
+from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.utils.args import extract_args
+from nck.utils.date_handler import check_date_range_definition_conformity
+from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential, wait_none
 
 DATEFORMAT = "%Y-%m-%d"
 
@@ -173,6 +175,7 @@ class FacebookReader(Reader):
 
         # Validate inputs
         self.validate_inputs()
+        check_date_range_definition_conformity(self.start_date, self.end_date, self.date_preset)
 
     def validate_inputs(self):
         """
@@ -265,6 +268,10 @@ class FacebookReader(Reader):
                 logger.info("Date format used for request: date_preset")
                 params["date_preset"] = self.date_preset
             else:
+
+                logging.warning("No date range provided - Last 30 days by default")
+                logging.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
+
                 logger.warning("No date range provided - Last 30 days by default")
                 logger.warning("https://developers.facebook.com/docs/marketing-api/reference/ad-account/insights#parameters")
 

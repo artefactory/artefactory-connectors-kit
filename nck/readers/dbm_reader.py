@@ -15,32 +15,26 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import click
-from nck.config import logger
-import httplib2
 
-import requests
 import datetime
 
-from googleapiclient import discovery
-from oauth2client import client, GOOGLE_REVOKE_URI
-from tenacity import retry, wait_exponential, stop_after_delay
+import click
+import httplib2
+import requests
 from click import ClickException
-
+from googleapiclient import discovery
 from nck.commands.command import processor
-from nck.readers.reader import Reader
-from nck.utils.args import extract_args
-from nck.streams.format_date_stream import FormatDateStream
-
-from nck.utils.text import get_report_generator_from_flat_file, skip_last
-from nck.utils.date_handler import get_date_start_and_date_stop_from_date_range
-
+from nck.config import logger
 from nck.helpers.dbm_helper import POSSIBLE_REQUEST_TYPES
+from nck.readers.reader import Reader
+from nck.streams.format_date_stream import FormatDateStream
+from nck.utils.args import extract_args
+from nck.utils.date_handler import check_date_range_definition_conformity, get_date_start_and_date_stop_from_date_range
+from nck.utils.text import get_report_generator_from_flat_file, skip_last
+from oauth2client import GOOGLE_REVOKE_URI, client
+from tenacity import retry, stop_after_delay, wait_exponential
 
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
-
-default_start_date = datetime.date.today() - datetime.timedelta(days=2)
-default_end_date = datetime.date.today()
 
 
 @click.command(name="read_dbm")
@@ -108,6 +102,10 @@ class DbmReader(Reader):
         self._client = discovery.build(self.API_NAME, self.API_VERSION, http=http, cache_discovery=False)
 
         self.kwargs = kwargs
+
+        check_date_range_definition_conformity(
+            self.kwargs.get("start_date"), self.kwargs.get("end_date"), self.kwargs.get("day_range")
+        )
 
     def get_query(self, query_id):
         if query_id:
