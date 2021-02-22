@@ -41,17 +41,17 @@ def build_commands(cli, available_commands):
 
 @cli.resultcallback()
 def process_command_pipeline(provided_commands, normalize_keys):
-    provided_readers = [cmd() for cmd in provided_commands if isinstance(cmd(), Reader)]
-    provided_writers = [cmd() for cmd in provided_commands if isinstance(cmd(), Writer)]
+    provided_readers = [cmd for cmd in provided_commands if isinstance(cmd(), Reader)]
+    provided_writers = [cmd for cmd in provided_commands if isinstance(cmd(), Writer)]
     _validate_provided_commands(provided_readers, provided_writers)
 
     reader = provided_readers[0]
-    for stream in reader.read():
+    for stream in reader().read():
         for writer in provided_writers:
             if normalize_keys and issubclass(stream.__class__, JSONStream):
-                writer.write(NormalizedJSONStream.create_from_stream(stream))
+                writer().write(NormalizedJSONStream.create_from_stream(stream))
             else:
-                writer.write(stream)
+                writer().write(stream)
 
 
 def _validate_provided_commands(provided_readers, provided_writers):
