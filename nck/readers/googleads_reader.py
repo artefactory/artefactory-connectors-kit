@@ -18,7 +18,6 @@
 import ast
 import codecs
 import csv
-import logging
 import re
 from io import StringIO
 
@@ -157,9 +156,12 @@ class GoogleAdsReader(Reader):
     @retry
     def fetch_report_from_gads_client_customer_obj(self, report_definition, client_customer_id):
         if not self.valid_client_customer_id(client_customer_id):
-            raise ClickException(f"Wrong format: {client_customer_id}. Client customer ID should be in the form 123-456-7890.")
+            raise ClickException(
+                f"Invalid format: {client_customer_id}.\nClient customer ID should respect the following format 123-456-7890."
+            )
         else:
             try:
+
                 adwords_client = self.init_adwords_client(client_customer_id)
                 report_downloader = adwords_client.GetReportDownloader()
                 customer_report = report_downloader.DownloadReportAsStream(
@@ -173,11 +175,7 @@ class GoogleAdsReader(Reader):
                 return customer_report
             except AdWordsReportBadRequestError as e:
                 if e.type == "AuthorizationError.CUSTOMER_NOT_ACTIVE":
-
-                    logging.warning(f"Skipping clientCustomerId {client_customer_id} (inactive).")
-
                     logger.warning(f"Skipping clientCustomerId {client_customer_id} (inactive).")
-
                 else:
                     raise Exception(f"Wrong request. Error type: {e.type}")
 
@@ -262,9 +260,6 @@ class GoogleAdsReader(Reader):
     def add_report_filter(self, report_definition):
         """Check if a filter was provided and contains the necessary information"""
         if not self.report_filter:
-
-            logging.info("No filter provided by user")
-
             logger.info("No filter provided by user")
 
         elif all(required_param in self.report_filter.keys() for required_param in ("field", "operator", "values")):
@@ -281,10 +276,7 @@ class GoogleAdsReader(Reader):
 
     @staticmethod
     def create_date_range(start_date, end_date):
-        return {
-            "min": start_date.strftime(DATEFORMAT),
-            "max": end_date.strftime(DATEFORMAT),
-        }
+        return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
 
     def list_video_campaign_ids(self):
         video_campaign_report_definition = self.get_video_campaign_report_definition()
@@ -339,6 +331,5 @@ class GoogleAdsReader(Reader):
             self.client_customer_ids = self.get_customer_ids(self.manager_id)
 
         yield NormalizedJSONStream(
-            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids),
-            self.format_and_yield(),
+            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield()
         )
