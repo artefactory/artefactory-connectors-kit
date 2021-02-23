@@ -42,17 +42,23 @@ STR_LIST_TYPE = StrList()
 
 
 @click.command(name="read_yandex_statistics")
-@click.option("--yandex-token", required=True)
-@click.option("--yandex-report-language", type=click.Choice(LANGUAGES), default="en")
+@click.option("--yandex-statistics-token",
+              "yandex_token",
+              required=True)
+@click.option("--yandex-statistics-report-language",
+              "yandex_report_language",
+              type=click.Choice(LANGUAGES), default="en")
 @click.option(
-    "--yandex-filter",
+    "--yandex-statistics-filter",
     "yandex_filters",
     multiple=True,
     type=click.Tuple([click.Choice(STATS_FIELDS), click.Choice(OPERATORS), STR_LIST_TYPE]),
 )
-@click.option("--yandex-max-rows", type=int)
+@click.option("--yandex-statistics-max-rows",
+              "yandex_max_rows",
+              type=int)
 @click.option(
-    "--yandex-field-name",
+    "--yandex-statistics-field-name",
     "yandex_fields",
     multiple=True,
     type=click.Choice(STATS_FIELDS),
@@ -64,18 +70,29 @@ STR_LIST_TYPE = StrList()
     ),
 )
 @click.option(
-    "--yandex-report-name", default=f"stats_report_{datetime.date.today()}_{random.randrange(10000)}",
+    "--yandex-statistics-report-name",
+    "yandex_report_name",
+    default=f"stats_report_{datetime.date.today()}_{random.randrange(10000)}",
 )
-@click.option("--yandex-report-type", type=click.Choice(REPORT_TYPES), required=True)
-@click.option("--yandex-date-range", type=click.Choice(DATE_RANGE_TYPES), required=True)
+@click.option("--yandex-statistics-report-type",
+              "yandex_report_type",
+              type=click.Choice(REPORT_TYPES), required=True)
+@click.option("--yandex-statistics-date-range",
+              "yandex_date_range",
+              type=click.Choice(DATE_RANGE_TYPES), required=True)
 @click.option(
-    "--yandex-include-vat",
+    "--yandex-statistics-include-vat",
+    "yandex_include_vat",
     type=click.BOOL,
     required=True,
     help="Whether to include VAT in the monetary amounts in the report.",
 )
-@click.option("--yandex-date-start", type=click.DateTime())
-@click.option("--yandex-date-stop", type=click.DateTime())
+@click.option("--yandex-statistics-date-start",
+              "yandex_date_start",
+              type=click.DateTime())
+@click.option("--yandex-statistics-date-stop",
+              "yandex_date_stop",
+              type=click.DateTime())
 @processor("yandex_token")
 def yandex_statistics(**kwargs):
     return YandexStatisticsReader(**extract_args("yandex_", kwargs))
