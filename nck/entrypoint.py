@@ -41,9 +41,9 @@ def build_commands(cli, available_commands):
 
 @cli.resultcallback()
 def process_command_pipeline(provided_commands, normalize_keys):
-    provided_readers = [cmd() for cmd in provided_commands if isinstance(cmd(), Reader)]
-    provided_writers = [cmd() for cmd in provided_commands if isinstance(cmd(), Writer)]
-    _validate_provided_commands(provided_readers, provided_writers)
+    cmd_instances = [cmd() for cmd in provided_commands]
+    provided_readers = list(filter(lambda o: isinstance(o, Reader), cmd_instances))
+    provided_writers = list(filter(lambda o: isinstance(o, Writer), cmd_instances))
 
     reader = provided_readers[0]
     for stream in reader.read():
