@@ -157,7 +157,7 @@ class GoogleAdsReader(Reader):
     def fetch_report_from_gads_client_customer_obj(self, report_definition, client_customer_id):
         if not self.valid_client_customer_id(client_customer_id):
             raise ClickException(
-                f"Invalid format: {client_customer_id}.\nClient customer ID should respect the following format 123-456-7890."
+                f"Invalid format: {client_customer_id}. Client customer ID should respect the following format 123-456-7890."
             )
         else:
             try:
