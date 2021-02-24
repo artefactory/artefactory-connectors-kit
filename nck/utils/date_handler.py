@@ -66,3 +66,22 @@ def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date,
     """
     current_date = date.today()
     return DEFAULT_DATE_RANGE_FUNCTIONS[date_range](current_date)
+
+
+def build_date_range(start_date, end_date, date_range):
+    """Returns date start and date end adapted if there is a date range.
+
+    Args:
+        start_date (date): start date
+        end_date (date): end date
+        date_range (str): One of the default date ranges that exist
+
+    Returns:
+        Tuple[date, date]: date start and date stop that match the date range
+    """
+    check_date_range_definition_conformity(start_date, end_date, date_range)
+
+    if date_range is not None:
+        start_date, end_date = get_date_start_and_date_stop_from_date_range(date_range)
+
+    return start_date, end_date
