@@ -41,5 +41,13 @@ REQUEST_CONFIG = {
         '_campaign_id': False,
         'dates_required': False,
         'ids': False
+    },
+    'get_campaign_dates': {
+        'url': 'https://target.my.com/api/v2/campaigns.json?fields=id,name,date_start,date_end,status',
+        'headers_type': "authorization",
+        "offset": True,
+        '_campaign_id': False,
+        'dates_required': False,
+        'ids': False
     }
 }
