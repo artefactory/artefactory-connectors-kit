@@ -57,16 +57,15 @@ class ObjectStorageReader(Reader):
                     logger.info(f"Wrong extension: Skipping file {self.get_key(_object)}")
                     continue
 
-                def result_generator():
-                    temp = tempfile.TemporaryFile()
-                    self.download_object_to_file(_object, temp)
-
-                    for record in self._reader(temp):
-                        yield record
-
                 name = self.get_key(_object).split("/", self._dest_key_split)[-1]
 
-                yield NormalizedJSONStream(name, result_generator())
+                yield NormalizedJSONStream(name, self._result_generator(_object))
+
+    def _result_generator(self, _object):
+        with tempfile.TemporaryFile() as temp:
+            self.download_object_to_file(_object, temp)
+            for record in self._reader(temp):
+                yield record
 
     def is_compatible_object(self, _object):
         return self.get_key(_object).endswith("." + self._format)
