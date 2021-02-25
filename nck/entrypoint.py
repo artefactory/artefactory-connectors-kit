@@ -45,6 +45,8 @@ def process_command_pipeline(provided_commands, normalize_keys):
     provided_readers = list(filter(lambda o: isinstance(o, Reader), cmd_instances))
     provided_writers = list(filter(lambda o: isinstance(o, Writer), cmd_instances))
 
+    _validate_provided_commands(provided_readers, provided_writers)
+
     reader = provided_readers[0]
     for stream in reader.read():
         for writer in provided_writers:
