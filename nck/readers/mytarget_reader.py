@@ -64,7 +64,7 @@ class MyTargetReader(Reader):
         self.request_type = request_type
         self.date_range = date_range
         self.start_date = start_date
-        self.start_date = end_date
+        self.end_date = end_date
         self.date_format = kwargs.get("date_format")
         self.date_are_valid = self.__check_date_input_validity()
         self.__retrieve_and_set_token()
