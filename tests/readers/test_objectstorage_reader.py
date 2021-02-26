@@ -2,6 +2,7 @@ import io
 import csv
 import json
 
+from parameterized import parameterized
 from nck.readers.objectstorage_reader import ObjectStorageReader
 from unittest import TestCase, mock
 
@@ -11,7 +12,7 @@ mock_csv_files = [
     [["a", "b", "c"], [4, 5, 6], [7, 8, 9]],
     [{"a": "4", "b": "5", "c": "6"}, {"a": "7", "b": "8", "c": "9"}],
     [["a", "b", "c"], [4, 5, 6], [7, 8, 9]],
-    [["a", "b", "c"], [4, 5, 6], [7, 8, 9]],
+    [{"a": "4", "b": "5", "c": "6"}, {"a": "7", "b": "8", "c": "9"}],
 ]
 
 mock_timestamp = [
@@ -68,44 +69,28 @@ def mock_get_key(self, _object, **kwargs):
 class ObjectStorageReaderTest(TestCase):
     def test_wrong_format(self, a, b):
         with self.assertRaises(NotImplementedError):
-            reader = ObjectStorageReader(
+            ObjectStorageReader(
                 bucket="", prefix=["a"], file_format="txt", dest_key_split=-1, csv_delimiter=",", csv_fieldnames=None
             )
-            reader
 
-    def test_ObjectStorageReader_filter_files(self, a, b):
+    @parameterized.expand([("njson", 2), ("csv", 2)])
+    def test_ObjectStorageReader_filter_files(self, a, b, format, nb_files_expected):
+        reader = ObjectStorageReader(
+            bucket="", prefix=[""], file_format=format, dest_key_split=-1, csv_delimiter=",", csv_fieldnames=None
+        )
+        nb_file = len(list(reader.read()))
+        self.assertEqual(nb_file, nb_files_expected)
+
+    @parameterized.expand(
+        [
+            ("njson", [{"a": "4", "b": "5", "c": "6"}, {"a": "7", "b": "8", "c": "9"}]),
+            ("csv", [{"a": "4", "b": "5", "c": "6"}, {"a": "7", "b": "8", "c": "9"}]),
+        ]
+    )
+    def test_ObjectStorageReader_read_all_file(self, a, b, format, expected):
         reader = ObjectStorageReader(
             bucket="", prefix=["a"], file_format="csv", dest_key_split=-1, csv_delimiter=",", csv_fieldnames=None
         )
-        nb_file = len(list(reader.read()))
-        """check if filter csv with prefix ["a"]"""
-        self.assertEqual(nb_file, 1)
-
-        reader = ObjectStorageReader(
-            bucket="", prefix=["b"], file_format="njson", dest_key_split=-1, csv_delimiter=",", csv_fieldnames=None
-        )
-        nb_file = len(list(reader.read()))
-        """check if filter njson with prefix ["b"]"""
-        self.assertEqual(nb_file, 1)
-
-    def test_ObjectStorageReader_read_all_file_CSV(self, a, b):
-        reader = ObjectStorageReader(
-            bucket="", prefix=["a"], file_format="csv", dest_key_split=-1, csv_delimiter=",", csv_fieldnames=None
-        )
-
-        expected = [{"a": "4", "b": "5", "c": "6"}, {"a": "7", "b": "8", "c": "9"}]
-
-        for file in reader.read():
-            for expect, data in zip(expected, file.readlines()):
-                self.assertEqual(expect, data)
-
-    def test_ObjectStorageReader_read_all_file_NJSON(self, a, b):
-        reader = ObjectStorageReader(
-            bucket="", prefix=["a"], file_format="njson", dest_key_split=-1, csv_delimiter=",", csv_fieldnames=None
-        )
-
-        expected = [{"a": "4", "b": "5", "c": "6"}, {"a": "7", "b": "8", "c": "9"}]
-
         for file in reader.read():
             for expect, data in zip(expected, file.readlines()):
                 self.assertEqual(expect, data)
