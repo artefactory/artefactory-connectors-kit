@@ -21,7 +21,7 @@ from nck import config
 from nck.config import logger
 from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
-from nck.utils.file_reader import FormatReader
+from nck.utils.file_reader import create_file_reader
 
 
 class ObjectStorageReader(Reader):
@@ -32,7 +32,7 @@ class ObjectStorageReader(Reader):
         self._platform = platform
 
         self._format = file_format
-        self._reader = FormatReader().create_file_reader(self._format, **kwargs).get_reader()
+        self._reader = create_file_reader(self._format, **kwargs).get_reader()
         self._dest_key_split = dest_key_split
 
         self.MAX_TIMESTAMP_STATE_KEY = f"{self._platform}_max_timestamp".lower()
