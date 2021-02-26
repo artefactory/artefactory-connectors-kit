@@ -57,16 +57,15 @@ def format_csv_fieldnames(csv_fieldnames):
     return _csv_fieldnames
 
 
-class FormatReader:
-    def create_file_reader(self, _format, **kwargs):
-        if _format == "csv":
-            return CSVReader(**kwargs)
-        if _format == "gz":
-            return GZReader(**kwargs)
-        if _format == "njson":
-            return NJSONReader(**kwargs)
-        else:
-            raise NotImplementedError(f"The file format {str(_format)} has not been implemented for reading yet.")
+def create_file_reader(_format, **kwargs):
+    if _format == "csv":
+        return CSVReader(**kwargs)
+    if _format == "gz":
+        return GZReader(**kwargs)
+    if _format == "njson":
+        return NJSONReader(**kwargs)
+    else:
+        raise NotImplementedError(f"The file format {str(_format)} has not been implemented for reading yet.")
 
 
 class FileReader:
