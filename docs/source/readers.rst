@@ -384,7 +384,7 @@ If Facebook Object Type is...      Facebook Level can be...
 
 .. code-block:: shell
 
-    {"object_story_spec_video_data_call_to_action_value_link": "https://www.artefact.com"}
+    {"object_story_spec[video_data][call_to_action][value][link]": "https://www.artefact.com"}
 
 2.3 Action Breakdown filters can be applied to the fields of Ad Insights Requests using the following syntax: <FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
 
@@ -422,7 +422,7 @@ If Facebook Object Type is...      Facebook Level can be...
 
 .. code-block:: shell
     
-    {"actions_action_type_video_view": "17", "actions_action_type_post_engagement": "25"}
+    {"actions[action_type:video_view]": "17", "actions[action_type:post_engagement]": "25"}
 
 ==============
 Google Readers
