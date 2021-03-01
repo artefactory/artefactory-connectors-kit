@@ -19,7 +19,7 @@ import click
 
 from nck.commands.command import processor
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.clients.sa360_client import SA360Client
 from nck.helpers.sa360_helper import REPORT_TYPES
 from nck.utils.args import extract_args
@@ -120,6 +120,6 @@ class SA360Reader(Reader):
                 self.agency_id
             )
 
-        yield NormalizedJSONStream(
+        yield JSONStream(
             "results" + "_".join(self.advertiser_ids), self.result_generator()
         )
