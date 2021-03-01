@@ -22,7 +22,7 @@ from oauth2client.client import GoogleCredentials
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 
 
 @click.command(name="read_gsheets")
@@ -59,4 +59,4 @@ class GSheetsReader(Reader):
                 for record in worksheet.get_all_records():
                     yield record
 
-            yield NormalizedJSONStream(worksheet.title, result_generator())
+            yield JSONStream(worksheet.title, result_generator())
