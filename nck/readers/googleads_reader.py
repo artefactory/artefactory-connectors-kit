@@ -330,6 +330,4 @@ class GoogleAdsReader(Reader):
         if self.manager_id:
             self.client_customer_ids = self.get_customer_ids(self.manager_id)
 
-        yield JSONStream(
-            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield()
-        )
+        yield JSONStream("results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield())

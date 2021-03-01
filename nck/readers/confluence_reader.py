@@ -79,9 +79,7 @@ class ConfluenceReader(Reader):
         ]
         if len(requirements) > 0:
             inter_requirements = (
-                requirements[0]
-                if len(requirements) == 1
-                else list(set(requirements[0]).intersection(*requirements[1:]))
+                requirements[0] if len(requirements) == 1 else list(set(requirements[0]).intersection(*requirements[1:]))
             )
             if len(inter_requirements) == 0:
                 raise ClickException("Invalid request. No intersection found between spacekey requirements.")
@@ -95,9 +93,7 @@ class ConfluenceReader(Reader):
         self.headers = {"Authorization": f"Basic {encoded_string}", "Content-Type": "application/json"}
 
     def _build_params(self):
-        api_fields = [
-            CUSTOM_FIELDS[field]["source_field"] if field in CUSTOM_FIELDS else field for field in self.fields
-        ]
+        api_fields = [CUSTOM_FIELDS[field]["source_field"] if field in CUSTOM_FIELDS else field for field in self.fields]
         return {"type": self.content_type, "expand": ",".join(api_fields)}
 
     def _get_raw_response(self, page_nb, spacekey=None):

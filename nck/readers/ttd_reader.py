@@ -37,7 +37,10 @@ from nck.utils.text import get_report_generator_from_flat_file
 @click.option("--ttd-login", required=True, help="Login of your API account")
 @click.option("--ttd-password", required=True, help="Password of your API account")
 @click.option(
-    "--ttd-advertiser-id", required=True, multiple=True, help="Advertiser Ids for which report data should be fetched",
+    "--ttd-advertiser-id",
+    required=True,
+    multiple=True,
+    help="Advertiser Ids for which report data should be fetched",
 )
 @click.option(
     "--ttd-report-template-name",
@@ -46,13 +49,21 @@ from nck.utils.text import get_report_generator_from_flat_file
     "can be found within the MyReports section of The Trade Desk UI.",
 )
 @click.option(
-    "--ttd-report-schedule-name", required=True, help="Name of the Report Schedule to create.",
+    "--ttd-report-schedule-name",
+    required=True,
+    help="Name of the Report Schedule to create.",
 )
 @click.option(
-    "--ttd-start-date", required=True, type=click.DateTime(), help="Start date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-start-date",
+    required=True,
+    type=click.DateTime(),
+    help="Start date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
-    "--ttd-end-date", required=True, type=click.DateTime(), help="End date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-end-date",
+    required=True,
+    type=click.DateTime(),
+    help="End date of the period to request (format: YYYY-MM-DD)",
 )
 @processor("ttd_login", "ttd_password")
 def the_trade_desk(**kwargs):
@@ -145,7 +156,8 @@ class TheTradeDeskReader(Reader):
         self.report_schedule_id = json_response["ReportScheduleId"]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(36000),
     )
     def _wait_for_download_url(self):
         report_execution_details = self._get_report_execution_details()
@@ -188,7 +200,7 @@ class TheTradeDeskReader(Reader):
         def result_generator():
             for record in data:
                 yield {k: format_date(v) if k == "Date" else v for k, v in record.items()}
-            
+
         yield JSONStream("results_" + "_".join(self.advertiser_ids), result_generator())
 
         self._delete_report_schedule()

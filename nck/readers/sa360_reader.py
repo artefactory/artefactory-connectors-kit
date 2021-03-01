@@ -42,9 +42,7 @@ ENCODING = "utf-8"
     help="If empty, all advertisers from agency will be requested",
 )
 @click.option("--sa360-report-name", default="SA360 Report")
-@click.option(
-    "--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0]
-)
+@click.option("--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
     "--sa360-column",
     "sa360_columns",
@@ -80,9 +78,7 @@ class SA360Reader(Reader):
         start_date,
         end_date,
     ):
-        self.sa360_client = SA360Client(
-            access_token, client_id, client_secret, refresh_token
-        )
+        self.sa360_client = SA360Client(access_token, client_id, client_secret, refresh_token)
         self.agency_id = agency_id
         self.advertiser_ids = list(advertiser_ids)
         self.report_name = report_name
@@ -109,17 +105,11 @@ class SA360Reader(Reader):
 
             report_data = self.sa360_client.assert_report_file_ready(report_id)
 
-            for line_iterator in self.sa360_client.download_report_files(
-                report_data, report_id
-            ):
+            for line_iterator in self.sa360_client.download_report_files(report_data, report_id):
                 yield from get_report_generator_from_flat_file(line_iterator)
 
     def read(self):
         if not self.advertiser_ids:
-            self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(
-                self.agency_id
-            )
+            self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(self.agency_id)
 
-        yield JSONStream(
-            "results" + "_".join(self.advertiser_ids), self.result_generator()
-        )
+        yield JSONStream("results" + "_".join(self.advertiser_ids), self.result_generator())
