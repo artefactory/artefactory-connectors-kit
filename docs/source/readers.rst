@@ -234,7 +234,6 @@ Options                             Definition
 ``--confluence-content-type``       Type of content on which the report should be filtered. Possible values: page (default), blog_post.
 ``--confluence-spacekey``           (Optional) Space keys on which the report should be filtered
 ``--confluence-field``              Fields that should be included in the report (path.to.field.value or custom_field)
-``--confluence-normalize-stream``   If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by '_' in field names, which is useful for BigQuery). Else (default), yields a standard JSONStream.
 ==================================  ============================================================================================================================================================================================
 
 Please visit the following two pages for a better understanding of the `Authentification method <https://developer.atlassian.com/cloud/confluence/basic-auth-for-rest-apis/>`__, and of the parameters used in the `Get Content endpoint <https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get>`__.
