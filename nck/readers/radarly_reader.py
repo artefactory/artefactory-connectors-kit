@@ -30,7 +30,7 @@ from collections import OrderedDict
 
 from nck.readers import Reader
 from nck.commands.command import processor
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.retry import retry
 from nck.utils.args import extract_args
 
@@ -49,7 +49,11 @@ class DateRangeSplit(NamedTuple):
 @click.option("--radarly-client-id", required=True, type=click.STRING)
 @click.option("--radarly-client-secret", required=True, type=click.STRING)
 @click.option(
-    "--radarly-focus-id", required=True, multiple=True, type=click.INT, help="Focus IDs (from Radarly queries)",
+    "--radarly-focus-id",
+    required=True,
+    multiple=True,
+    type=click.INT,
+    help="Focus IDs (from Radarly queries)",
 )
 @click.option(
     "--radarly-start-date",
@@ -57,10 +61,15 @@ class DateRangeSplit(NamedTuple):
     type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]),
 )
 @click.option(
-    "--radarly-end-date", required=True, type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]),
+    "--radarly-end-date",
+    required=True,
+    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"]),
 )
 @click.option(
-    "--radarly-api-request-limit", default=250, type=click.INT, help="Max number of posts per API request",
+    "--radarly-api-request-limit",
+    default=250,
+    type=click.INT,
+    help="Max number of posts per API request",
 )
 @click.option(
     "--radarly-api-date-period-limit",
@@ -75,7 +84,10 @@ class DateRangeSplit(NamedTuple):
     help="Max number of posts requested in the window (usually 15 min) (see Radarly documentation)",
 )
 @click.option(
-    "--radarly-api-window", default=300, type=click.INT, help="Duration of the window (usually 300 seconds)",
+    "--radarly-api-window",
+    default=300,
+    type=click.INT,
+    help="Duration of the window (usually 300 seconds)",
 )
 @click.option(
     "--radarly-throttle",
@@ -163,7 +175,7 @@ class RadarlyReader(Reader):
                         ex_type, ex, tb = sys.exc_info()
                         logger.warning(f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}")
 
-            yield NormalizedJSONStream(name, result_generator())
+            yield JSONStream(name, result_generator())
 
     @retry
     def get_publications_iterator(self, date_range: Tuple[datetime, datetime]):
@@ -220,7 +232,10 @@ class RadarlyReader(Reader):
         else:
 
             date_range_split: DateRangeSplit = self.generate_DateRangeSplit_object(
-                date_range_start=first_date, date_range_end=second_date, posts_count=posts_count, extra_margin=1,
+                date_range_start=first_date,
+                date_range_end=second_date,
+                posts_count=posts_count,
+                extra_margin=1,
             )
             date_ranges_and_posts_volumes: Dict[
                 Tuple[datetime, datetime], int
@@ -239,7 +254,11 @@ class RadarlyReader(Reader):
             return res
 
     def generate_DateRangeSplit_object(
-        self, date_range_start: datetime, date_range_end: datetime, posts_count: int, extra_margin=1,
+        self,
+        date_range_start: datetime,
+        date_range_end: datetime,
+        posts_count: int,
+        extra_margin=1,
     ) -> DateRangeSplit:
 
         delta = date_range_end - date_range_start
@@ -257,7 +276,10 @@ class RadarlyReader(Reader):
         start_date: datetime, end_date: datetime, split_range: float, split_count: int
     ) -> List[Tuple[datetime, datetime]]:
         res = [
-            (start_date + i * timedelta(seconds=split_range), start_date + (i + 1) * timedelta(seconds=split_range),)
+            (
+                start_date + i * timedelta(seconds=split_range),
+                start_date + (i + 1) * timedelta(seconds=split_range),
+            )
             for i in range(split_count - 1)
         ]
         res += [(start_date + (split_count - 1) * timedelta(seconds=split_range), end_date)]
