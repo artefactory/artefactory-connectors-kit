@@ -151,6 +151,18 @@ You can now execute it into your terminal.
 
 **Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available** :ref:`readers:Readers` and :ref:`writers:Writers`.
 
+=====================
+Normalize field names
+=====================
+
+Some destinations have specific requirements for field names. This is the case of BigQuery, that only accepts letters, digits and underscores.
+
+To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option ``--normalize-keys true`` between ``python nck/entrypoint.py`` and the invocated reader command. If we keep using the previous Google Analytics example, it would give:
+
+.. code-block:: shell
+
+    python nck/entrypoint.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+
 ==========
 Contribute
 ==========
