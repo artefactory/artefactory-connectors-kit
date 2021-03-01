@@ -129,7 +129,7 @@ NCK commands can be broken down into 3 parts:
 
 .. code-block:: shell
 
-    read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03
+    read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric ga:sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03
 
 3. A writer command, and its options: in the below example, we are writing the output .nsjon stream into a Google Cloud Storage blob named ``google_analytics_report_2020-01-01.njson``, located under the Google Cloud Storage bucket ``nck_extracts``, with the path ``FR/google_analytics/``.
 
