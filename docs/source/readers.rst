@@ -1222,7 +1222,6 @@ Options                         Definition
 ``--ttd-report-schedule-name``  Name of the Report Schedule to create
 ``--ttd-start-date``            Start date of the period to request (format: YYYY-MM-DD)
 ``--ttd-end-date``              End date of the period to request (format: YYYY-MM-DD)
-``--ttd-normalize-stream``      If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by '_' in field names, which is useful for BigQuery). Else (default), yields a standard JSONStream.
 ==============================  ===========================================================================================================================================================================================
 
 If you need any further information, the documentation of The Trade Desk API can be found `here <https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview>`__.
