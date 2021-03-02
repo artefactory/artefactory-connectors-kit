@@ -32,7 +32,7 @@ def unzip(input_file, output_path):
 def sdf_to_njson_generator(path_to_file):
     csv_reader = CSVReader(csv_delimiter=",", csv_fieldnames=None)
     with open(path_to_file, "rb") as fd:
-        dict_reader = csv_reader.read_csv(fd)
+        dict_reader = csv_reader.read(fd)
         for line in dict_reader:
             yield line
 
