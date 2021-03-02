@@ -14,42 +14,78 @@ The application is composed of **3 main components** (*implemented as Python cla
 
 ## Available connectors
 
-![image](https://docs.google.com/presentation/d/1YfhzIKpsb6oAkoYvnCWbCsFQkNtFEWTYO_dNHtcFEhQ/edit#slide=id.gc3a277ee1c_0_806)
-
 As of now, the application is offering:
  
-**21 Readers, in various areas such as Media Activation, Website Analytics & many more**
+### Readers
 
-- Analytics
-    - Adobe Analytics 1.4
-    - Adobe Analytics 2.0
-- Amazon S3
-- Confluence
-- Facebook Marketing
-- Google Ads
+In various areas such as Media Activation, Website Analytics & many more
+
+**Analytics**
+
+- Adobe Analytics 1.4
+- Adobe Analytics 2.0
 - Google Analytics
-- Google Cloud Storage
-- Google Campaign Manager
-- Google Display & Video 360
-- Google Search Ads 360
-- Google Search Console
-- Google Sheets
-- MySQL
-- MyTarget
-- Radarly
-- SalesForce
-- The Trade Desk
-- Twitter Ads
-- Yandex Campaign
-- Yandex Statistics
 
-**5 Writers, including destinations to GCP & AWS cloud platforms**
+**CRM**
+
+- SalesForce
+
+**Databases**
+
+- MySQL
+
+**Files (.csv, .njson)**
 
 - Amazon S3
-- Google BigQuery
+- Google Cloud Storage
+- Google Sheets
+
+**DevTools**
+
+- Confluence
+
+**Advertising**
+
+- **DSP**
+
+    - Google Display & Video 360
+    - The Trade Desk
+
+- **Adserver**
+
+    - Google Campaign Manager
+
+- **Search**
+
+    - Google Ads
+    - Google Search Ads 360
+    - Google Search Console
+    - Yandex Campaign
+    - Yandex Statistics
+
+- **Social**
+
+    - Facebook Marketing
+    - MyTarget
+    - Radarly
+    - Twitter Ads
+
+
+### Writers, including destinations to GCP & AWS cloud platforms
+
+**Files (.njson)**
+
+- Amazon S3
 - Google Cloud Storage
 - Local file
-- Console (used for debugging)
+
+**Data Warehouse**
+
+- Google BigQuery
+
+**Debugging**
+
+- Console
 
 *A data connector could be, for instance, the combination of a Google Analytics reader + a Google Cloud Storage writer, collecting data from the Google Analytics API, and storing output stream records into a Google Cloud Storage bucket.*
 
