@@ -14,12 +14,15 @@ The application is composed of **3 main components** (*implemented as Python cla
 
 ## Available connectors
 
+![image](https://docs.google.com/presentation/d/1YfhzIKpsb6oAkoYvnCWbCsFQkNtFEWTYO_dNHtcFEhQ/edit#slide=id.gc3a277ee1c_0_806)
+
 As of now, the application is offering:
  
 **21 Readers, in various areas such as Media Activation, Website Analytics & many more**
 
-- Adobe Analytics 1.4
-- Adobe Analytics 2.0
+- Analytics
+    - Adobe Analytics 1.4
+    - Adobe Analytics 2.0
 - Amazon S3
 - Confluence
 - Facebook Marketing
