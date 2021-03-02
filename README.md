@@ -18,31 +18,11 @@ As of now, the application is offering:
  
 ### Readers
 
-In various areas such as Media Activation, Website Analytics & many more
-
 **Analytics**
 
 - Adobe Analytics 1.4
 - Adobe Analytics 2.0
 - Google Analytics
-
-**CRM**
-
-- SalesForce
-
-**Databases**
-
-- MySQL
-
-**Files (.csv, .njson)**
-
-- Amazon S3
-- Google Cloud Storage
-- Google Sheets
-
-**DevTools**
-
-- Confluence
 
 **Advertising**
 
@@ -70,8 +50,26 @@ In various areas such as Media Activation, Website Analytics & many more
     - Radarly
     - Twitter Ads
 
+**CRM**
 
-### Writers, including destinations to GCP & AWS cloud platforms
+- SalesForce
+
+**Databases**
+
+- MySQL
+
+**Files (.csv, .njson)**
+
+- Amazon S3
+- Google Cloud Storage
+- Google Sheets
+
+**DevTools**
+
+- Confluence
+
+
+### Writers
 
 **Files (.njson)**
 
