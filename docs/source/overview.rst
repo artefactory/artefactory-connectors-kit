@@ -20,9 +20,9 @@ Available connectors
 
 As of now, the application is offering:
 
-**********
-21 Readers
-**********
+*******
+Readers
+*******
 
 **Analytics**
 
@@ -75,9 +75,9 @@ As of now, the application is offering:
 - Confluence
 
 
-*********
-5 Writers
-*********
+*******
+Writers
+*******
 
 **Files (.njson)**
 
