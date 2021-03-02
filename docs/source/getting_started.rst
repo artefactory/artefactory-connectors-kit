@@ -189,10 +189,11 @@ The ``nck/helpers/<SOURCE_NAME>_helper.py`` module should implement helper metho
 
 3. Add your click-decorated reader function to the ``nck/readers/__init__.py`` file
 
-4. Complete the documentation
+4. Complete the documentation:
 
-- Add your reader to the list of existing readers in the :ref:`overview:Available Connectors` section.
-- Create dedicated documentation for your reader CLI command on the :ref:`readers:Readers` page. It should include the followings sections: *Source API - How to obtain credentials - Quickstart - Command name - Command options*
+    - Add your reader to the list of existing readers in the :ref:`overview:Available Connectors` section.
+    - Create dedicated documentation for your reader CLI command on the :ref:`readers:Readers` page. It should include the followings sections: *Source API - How to obtain credentials - Quickstart - Command name - Command options*
+    - Add your reader to the reader list in the README, at the root of the GitHub project
 
 ---------------------------
 How to develop a new stream
@@ -231,7 +232,8 @@ This module should implement 2 components:
 
 2. Add your click-decorated writer function to the ``nck/writers/__init__.py`` file
 
-3. Complete the documentation
+3. Complete the documentation:
 
-- Add your writer to the list of existing writers in the :ref:`overview:Available Connectors` section.
-- Create dedicated documentation for your writer CLI command on the :ref:`writers:Writers` page. It should include the followings sections: *Quickstart - Command name - Command options*
+    - Add your writer to the list of existing writers in the :ref:`overview:Available Connectors` section.
+    - Create dedicated documentation for your writer CLI command on the :ref:`writers:Writers` page. It should include the followings sections: *Quickstart - Command name - Command options*
+    - Add your writer to the writer list in the README, at the root of the GitHub project
