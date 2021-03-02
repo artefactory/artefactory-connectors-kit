@@ -315,15 +315,19 @@ You can launch a preview of these .html files in your brower with your code edit
 </li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">nck/helpers/&lt;SOURCE_NAME&gt;_helper.py</span></code> module should implement helper methods and configuration variables (<em>warning: we are planning to move configuration variables to a separate module for reasons of clarity</em>).</p>
-<ol class="arabic simple" start="2">
+<ol class="arabic" start="2">
 <li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
 <li><p>Add your click-decorated reader function to the <code class="docutils literal notranslate"><span class="pre">nck/readers/__init__.py</span></code> file</p></li>
-<li><p>Complete the documentation</p></li>
-</ol>
-<ul class="simple">
+<li><p>Complete the documentation:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>Add your reader to the list of existing readers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
 <li><p>Create dedicated documentation for your reader CLI command on the <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> page. It should include the followings sections: <em>Source API - How to obtain credentials - Quickstart - Command name - Command options</em></p></li>
+<li><p>Add your reader to the reader list in the README, at the root of the GitHub project</p></li>
 </ul>
+</div></blockquote>
+</li>
+</ol>
 </div>
 <div class="section" id="how-to-develop-a-new-stream">
 <h3>How to develop a new stream<a class="headerlink" href="#how-to-develop-a-new-stream" title="Permalink to this headline">¶</a></h3>
@@ -357,14 +361,18 @@ You can launch a preview of these .html files in your brower with your code edit
 </ul>
 </li>
 </ul>
-<ol class="arabic simple" start="2">
+<ol class="arabic" start="2">
 <li><p>Add your click-decorated writer function to the <code class="docutils literal notranslate"><span class="pre">nck/writers/__init__.py</span></code> file</p></li>
-<li><p>Complete the documentation</p></li>
-</ol>
-<ul class="simple">
+<li><p>Complete the documentation:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>Add your writer to the list of existing writers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
 <li><p>Create dedicated documentation for your writer CLI command on the <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a> page. It should include the followings sections: <em>Quickstart - Command name - Command options</em></p></li>
+<li><p>Add your writer to the writer list in the README, at the root of the GitHub project</p></li>
 </ul>
+</div></blockquote>
+</li>
+</ol>
 </div>
 </div>
 </div>
