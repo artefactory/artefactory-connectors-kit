@@ -16,92 +16,24 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Credit goes to Mr Martin Winkel for the base code provided :
+# github : https://github.com/SaturnFromTitan/adobe_analytics
+
 import datetime
 import json
 from itertools import chain
 from time import sleep
 
-import click
 import requests
 from click import ClickException
 from nck.clients.adobe_client import AdobeClient
-from nck.commands.command import processor
 from nck.config import logger
-from nck.helpers.adobe_helper import ReportDescriptionError, ReportNotReadyError, parse
+from nck.readers.adobe.config import ADOBE_API_ENDPOINT, MAX_WAIT_REPORT_DELAY
+from nck.readers.adobe.helper import ReportDescriptionError, ReportNotReadyError, parse
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
-from nck.utils.args import extract_args
 from nck.utils.date_handler import check_date_range_definition_conformity
 from nck.utils.retry import retry
-
-# Credit goes to Mr Martin Winkel for the base code provided :
-# github : https://github.com/SaturnFromTitan/adobe_analytics
-
-LIMIT_NVIEWS_PER_REQ = 5
-
-ADOBE_API_ENDPOINT = "https://api.omniture.com/admin/1.4/rest/"
-
-MAX_WAIT_REPORT_DELAY = 4096
-
-
-def format_key_if_needed(ctx, param, value):
-    """
-    In some cases, newlines are escaped when passed as a click.option().
-    This callback corrects this unexpected behaviour.
-    """
-    return value.replace("\\n", "\n")
-
-
-@click.command(name="read_adobe")
-@click.option(
-    "--adobe-client-id",
-    required=True,
-    help="Client ID, that you can find in your integration section on Adobe Developper Console.",
-)
-@click.option(
-    "--adobe-client-secret",
-    required=True,
-    help="Client Secret, that you can find in your integration section on Adobe Developper Console.",
-)
-@click.option(
-    "--adobe-tech-account-id",
-    required=True,
-    help="Technical Account ID, that you can find in your integration section on Adobe Developper Console.",
-)
-@click.option(
-    "--adobe-org-id",
-    required=True,
-    help="Organization ID, that you can find in your integration section on Adobe Developper Console.",
-)
-@click.option(
-    "--adobe-private-key",
-    required=True,
-    callback=format_key_if_needed,
-    help="Content of the private.key file, that you had to provide to create the integration. "
-    "Make sure to enter the parameter in quotes, include headers, and indicate newlines as '\\n'.",
-)
-@click.option(
-    "--adobe-global-company-id",
-    required=True,
-    help="Global Company ID, to be requested to Discovery API. "
-    "Doc: https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md)",
-)
-@click.option("--adobe-list-report-suite", type=click.BOOL, default=False)
-@click.option("--adobe-report-suite-id")
-@click.option("--adobe-report-element-id", multiple=True)
-@click.option("--adobe-report-metric-id", multiple=True)
-@click.option("--adobe-date-granularity", default=None)
-@click.option(
-    "--adobe-day-range",
-    type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS"]),
-    default=None,
-)
-@click.option("--adobe-start-date", type=click.DateTime())
-@click.option("--adobe-end-date", default=None, type=click.DateTime())
-@processor("adobe_password", "adobe_username")
-def adobe(**kwargs):
-    # Should handle valid combinations dimensions/metrics in the API
-    return AdobeReader(**extract_args("adobe_", kwargs))
 
 
 class AdobeReader(Reader):

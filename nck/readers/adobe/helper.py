@@ -15,14 +15,27 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+# Credit goes to Mr Martin Winkel for the base code provided :
+# github : https://github.com/SaturnFromTitan/adobe_analytics
+
 import datetime
+
 import more_itertools
 from nck.config import logger
 from nck.utils.text import reformat_naming_for_bq
 
 
-# Credit goes to Mr Martin Winkel for the base code provided :
-# github : https://github.com/SaturnFromTitan/adobe_analytics
+class ReportDescriptionError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        logger.error(message)
+
+
+class ReportNotReadyError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+        logger.error(message)
 
 
 def _parse_header(report):
@@ -103,7 +116,12 @@ def _dimension_value_is_nan(chunk):
 
 
 def _to_datetime(chunk):
-    time_stamp = datetime.datetime(year=chunk["year"], month=chunk["month"], day=chunk["day"], hour=chunk.get("hour", 0),)
+    time_stamp = datetime.datetime(
+        year=chunk["year"],
+        month=chunk["month"],
+        day=chunk["day"],
+        hour=chunk.get("hour", 0),
+    )
     return time_stamp.strftime("%Y-%m-%d %H:00:00")
 
 
@@ -120,15 +138,3 @@ def parse(raw_response):
                 yield {headers[i]: row[i] for i in range(len(headers))}
             else:
                 yield {header: None for header in headers}
-
-
-class ReportDescriptionError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logger.error(message)
-
-
-class ReportNotReadyError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logger.error(message)

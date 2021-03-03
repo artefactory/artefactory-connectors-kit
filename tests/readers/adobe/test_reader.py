@@ -15,9 +15,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 import datetime
-from nck.readers.adobe_reader import AdobeReader
 from unittest import TestCase, mock
+
+from nck.readers.adobe.reader import AdobeReader
 
 
 class AdobeReaderTest(TestCase):
@@ -54,14 +56,10 @@ class AdobeReaderTest(TestCase):
 
     @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
     @mock.patch(
-        "nck.readers.adobe_reader.AdobeReader.query_report",
+        "nck.readers.adobe.reader.AdobeReader.query_report",
         return_value={"reportID": "XXXXX"},
     )
-    @mock.patch(
-        "nck.readers.adobe_reader.AdobeReader.download_report", return_value=None
-    )
-    def test_read_empty_data(
-        self, mock_adobe_client, mock_query_report, mock_download_report
-    ):
+    @mock.patch("nck.readers.adobe.reader.AdobeReader.download_report", return_value=None)
+    def test_read_empty_data(self, mock_adobe_client, mock_query_report, mock_download_report):
         reader = AdobeReader(**self.kwargs)
         self.assertFalse(len(list(reader.read())) > 1)

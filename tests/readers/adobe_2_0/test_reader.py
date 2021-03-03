@@ -16,10 +16,10 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from nck.readers.adobe_reader_2_0 import AdobeReader_2_0
+import datetime
 from unittest import TestCase, mock
 
-import datetime
+from nck.readers.adobe_2_0.reader import AdobeReader_2_0
 
 
 class AdobeReaderTest_2_0(TestCase):
@@ -244,7 +244,7 @@ class AdobeReaderTest_2_0(TestCase):
         ],
     )
     @mock.patch(
-        "nck.readers.adobe_reader_2_0.AdobeReader_2_0.get_parsed_report",
+        "nck.readers.adobe_2_0.reader.AdobeReader_2_0.get_parsed_report",
         side_effect=[
             [
                 {
