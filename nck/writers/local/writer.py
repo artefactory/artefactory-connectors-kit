@@ -23,8 +23,8 @@ from nck.writers.writer import Writer
 
 
 class LocalWriter(Writer):
-    def __init__(self, local_directory, file_name):
-        self._local_directory = local_directory
+    def __init__(self, directory, file_name):
+        self._directory = directory
         self._file_name = file_name
 
     def write(self, stream):
@@ -32,7 +32,7 @@ class LocalWriter(Writer):
         Write file to disk at location given as parameter.
         """
         file_name = self._file_name or stream.name
-        path = os.path.join(self._local_directory, file_name)
+        path = os.path.join(self._directory, file_name)
 
         logger.info(f"Writing stream {file_name} to {path}")
         file = stream.as_file()
