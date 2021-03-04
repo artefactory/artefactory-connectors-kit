@@ -97,6 +97,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#launch-your-first-nck-command">Launch your first NCK command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#normalize-field-names">Normalize field names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contribute">Contribute</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-develop-a-new-reader">How to develop a new reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-develop-a-new-stream">How to develop a new stream</a></li>
@@ -269,7 +270,7 @@ You can launch a preview of these .html files in your brower with your code edit
 <ol class="arabic simple" start="2">
 <li><p>A reader command, and its options: in the below example, we are reading Google Analytics data for the view &lt;VIEW_ID&gt;, retrieving sessions, pageviews and bounces by date from 2020-01-01 to 2020-01-03.</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric ga:sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
@@ -286,6 +287,14 @@ You can launch a preview of these .html files in your brower with your code edit
 </div>
 <p>You can now execute it into your terminal.</p>
 <p><strong>Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> and <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a>.</p>
+</div>
+<div class="section" id="normalize-field-names">
+<h2>Normalize field names<a class="headerlink" href="#normalize-field-names" title="Permalink to this headline">¶</a></h2>
+<p>Some destinations have specific requirements for field names. This is the case of BigQuery, that only accepts letters, digits and underscores.</p>
+<p>To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option <code class="docutils literal notranslate"><span class="pre">--normalize-keys</span> <span class="pre">true</span></code> between <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">nck/entrypoint.py</span></code> and the invocated reader command. If we keep using the previous Google Analytics example, it would give:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py --normalize-keys <span class="nb">true</span> read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
+</pre></div>
+</div>
 </div>
 <div class="section" id="contribute">
 <h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h2>

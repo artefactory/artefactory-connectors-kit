@@ -626,9 +626,6 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-field</span></code></p></td>
 <td><p>Fields that should be included in the report (path.to.field.value or custom_field)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-normalize-stream</span></code></p></td>
-<td><p>If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by ‘_’ in field names, which is useful for BigQuery). Else (default), yields a standard JSONStream.</p></td>
-</tr>
 </tbody>
 </table>
 <p>Please visit the following two pages for a better understanding of the <a class="reference external" href="https://developer.atlassian.com/cloud/confluence/basic-auth-for-rest-apis/">Authentification method</a>, and of the parameters used in the <a class="reference external" href="https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get">Get Content endpoint</a>.</p>
@@ -810,7 +807,7 @@
 </pre></div>
 </div>
 <p><em>Facebook Marketing Reader Response</em></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;object_story_spec_video_data_call_to_action_value_link&quot;</span>: <span class="s2">&quot;https://www.artefact.com&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;object_story_spec[video_data][call_to_action][value][link]&quot;</span>: <span class="s2">&quot;https://www.artefact.com&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 <p>2.3 Action Breakdown filters can be applied to the fields of Ad Insights Requests using the following syntax: &lt;FIELD_NAME&gt;[&lt;ACTION_BREAKDOWN&gt;:&lt;ACTION_BREAKDOWN_VALUE&gt;]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.</p>
@@ -841,7 +838,7 @@
 </pre></div>
 </div>
 <p><em>Facebook Marketing Reader Response</em></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;actions_action_type_video_view&quot;</span>: <span class="s2">&quot;17&quot;</span>, <span class="s2">&quot;actions_action_type_post_engagement&quot;</span>: <span class="s2">&quot;25&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;actions[action_type:video_view]&quot;</span>: <span class="s2">&quot;17&quot;</span>, <span class="s2">&quot;actions[action_type:post_engagement]&quot;</span>: <span class="s2">&quot;25&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1884,9 +1881,6 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-normalize-stream</span></code></p></td>
-<td><p>If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by ‘_’ in field names, which is useful for BigQuery). Else (default), yields a standard JSONStream.</p></td>
 </tr>
 </tbody>
 </table>
