@@ -33,7 +33,7 @@ class TheTradeDeskReaderTest(TestCase):
         "report_schedule_name": "adgroup_performance_schedule",
         "start_date": datetime(2020, 1, 1),
         "end_date": datetime(2020, 3, 1),
-        "normalize_stream": False
+        "normalize_stream": False,
     }
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
@@ -60,9 +60,7 @@ class TheTradeDeskReaderTest(TestCase):
             "ResultCount": 1,
         },
     )
-    def test_get_report_template_id_if_exactly_1_match(
-        self, mock_build_headers, mock_api_call
-    ):
+    def test_get_report_template_id_if_exactly_1_match(self, mock_build_headers, mock_api_call):
         reader = TheTradeDeskReader(**self.kwargs)
         reader._get_report_template_id()
         self.assertEqual(reader.report_template_id, 1234)
@@ -90,9 +88,7 @@ class TheTradeDeskReaderTest(TestCase):
             "ResultCount": 2,
         },
     )
-    def test_get_report_template_id_if_more_than_1_match(
-        self, mock_build_headers, mock_api_call
-    ):
+    def test_get_report_template_id_if_more_than_1_match(self, mock_build_headers, mock_api_call):
         with self.assertRaises(Exception):
             TheTradeDeskReader(**self.kwargs)._get_report_template_id()
 
@@ -101,9 +97,7 @@ class TheTradeDeskReaderTest(TestCase):
         "nck.readers.ttd_reader.TheTradeDeskReader._make_api_call",
         return_value={"Result": [], "ResultCount": 0},
     )
-    def test_get_report_template_id_if_no_match(
-        self, mock_build_headers, mock_api_call
-    ):
+    def test_get_report_template_id_if_no_match(self, mock_build_headers, mock_api_call):
         with self.assertRaises(Exception):
             TheTradeDeskReader(**self.kwargs)._get_report_template_id()
 
@@ -167,25 +161,13 @@ class TheTradeDeskReaderTest(TestCase):
         "nck.readers.ttd_reader.TheTradeDeskReader._download_report",
         return_value=iter(
             [
-                {
-                    "Date": "2020-01-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 10
-                },
-                {
-                    "Date": "2020-02-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 11
-                },
-                {
-                    "Date": "2020-02-03T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 12
-                },
+                {"Date": "2020-01-01T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 10},
+                {"Date": "2020-02-01T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 11},
+                {"Date": "2020-02-03T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 12},
             ]
         ),
     )
-    def test_read_if_normalize_stream_is_False(self, mock_build_headers, mock_retry, mock_download_report):
+    def test_read(self, mock_build_headers, mock_retry, mock_download_report):
         reader = TheTradeDeskReader(**self.kwargs)
         reader.report_template_id = 1234
         reader.report_schedule_id = 5678
@@ -195,49 +177,6 @@ class TheTradeDeskReaderTest(TestCase):
             {"Date": "2020-01-01", "Advertiser ID": "XXXXX", "Impressions": 10},
             {"Date": "2020-02-01", "Advertiser ID": "XXXXX", "Impressions": 11},
             {"Date": "2020-02-03", "Advertiser ID": "XXXXX", "Impressions": 12},
-        ]
-        for output_record, expected_record in zip(output.readlines(), iter(expected)):
-            self.assertEqual(output_record, expected_record)
-
-    @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
-    @mock.patch("tenacity.BaseRetrying.wait", side_effect=lambda *args, **kwargs: 0)
-    @mock.patch.object(TheTradeDeskReader, "_get_report_template_id", lambda *args: None)
-    @mock.patch.object(TheTradeDeskReader, "_create_report_schedule", lambda *args: None)
-    @mock.patch.object(TheTradeDeskReader, "_wait_for_download_url", lambda *args: None)
-    @mock.patch(
-        "nck.readers.ttd_reader.TheTradeDeskReader._download_report",
-        return_value=iter(
-            [
-                {
-                    "Date": "2020-01-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 10,
-                },
-                {
-                    "Date": "2020-02-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 11,
-                },
-                {
-                    "Date": "2020-02-03T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 12,
-                },
-            ]
-        ),
-    )
-    def test_read_if_normalize_stream_is_True(self, mock_build_headers, mock_retry, mock_download_report):
-        temp_kwargs = self.kwargs.copy()
-        temp_kwargs.update({"normalize_stream": True})
-        reader = TheTradeDeskReader(**temp_kwargs)
-        reader.report_template_id = 1234
-        reader.report_schedule_id = 5678
-        reader.download_url = "https://download.url"
-        output = next(reader.read())
-        expected = [
-            {"Date": "2020-01-01", "Advertiser_ID": "XXXXX", "Impressions": 10},
-            {"Date": "2020-02-01", "Advertiser_ID": "XXXXX", "Impressions": 11},
-            {"Date": "2020-02-03", "Advertiser_ID": "XXXXX", "Impressions": 12},
         ]
         for output_record, expected_record in zip(output.readlines(), iter(expected)):
             self.assertEqual(output_record, expected_record)

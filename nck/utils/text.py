@@ -24,7 +24,12 @@ from itertools import islice
 
 
 def get_report_generator_from_flat_file(
-    line_iterator, delimiter=",", skip_n_first=0, skip_n_last=0, add_column=False, column_dict={},
+    line_iterator,
+    delimiter=",",
+    skip_n_first=0,
+    skip_n_last=0,
+    add_column=False,
+    column_dict={},
 ):
     """
     From the line iterator of a flat file:
@@ -82,7 +87,13 @@ def decode_if_needed(line):
 
 def parse_decoded_line(line, delimiter=",", quotechar='"'):
     line_as_file = StringIO(line)
-    reader = csv.reader(line_as_file, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_ALL, skipinitialspace=True,)
+    reader = csv.reader(
+        line_as_file,
+        delimiter=delimiter,
+        quotechar=quotechar,
+        quoting=csv.QUOTE_ALL,
+        skipinitialspace=True,
+    )
     return next(reader)
 
 
@@ -121,3 +132,7 @@ def reformat_naming_for_bq(text, char="_"):
     text = re.sub(r"[\s\W]+", char, text)
     text = re.sub(r"[" + char + "]+", char, text.strip())
     return text.lower()
+
+
+def strip_prefix(text, prefix):
+    return re.split(prefix, text)[-1]
