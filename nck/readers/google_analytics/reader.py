@@ -16,17 +16,17 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import re
 from datetime import datetime, timedelta
 
 import httplib2
 from click import ClickException
 from googleapiclient import discovery
 from nck.config import logger
-from nck.readers.google_analytics.config import DATEFORMAT, DISCOVERY_URI, GOOGLE_TOKEN_URI
+from nck.readers.google_analytics.config import DATEFORMAT, DISCOVERY_URI, GOOGLE_TOKEN_URI, PREFIX
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.retry import retry
+from nck.utils.text import strip_prefix
 from oauth2client import GOOGLE_REVOKE_URI, client
 
 
@@ -150,15 +150,18 @@ class GoogleAnalyticsReader(Reader):
             raise ClickException(f"failed while requesting pages of the report: {e}")
 
     def format_and_yield(self, view_id, report):
-        dimension_names = report["columnHeader"]["dimensions"]
-        metric_names = [m["name"] for m in report["columnHeader"]["metricHeader"]["metricHeaderEntries"]]
+        dimension_names = [strip_prefix(dim, PREFIX) for dim in report["columnHeader"]["dimensions"]]
+        metric_names = [
+            strip_prefix(met["name"], PREFIX) for met in report["columnHeader"]["metricHeader"]["metricHeaderEntries"]
+        ]
+
         for row in report["data"].get("rows", []):
             row_dimension_values = row["dimensions"]
             row_metric_values = row["metrics"][0]["values"]
             formatted_response = {}
 
             if self.add_view:
-                formatted_response["ga:viewId"] = view_id
+                formatted_response["viewId"] = view_id
 
             for dim, value in zip(dimension_names, row_dimension_values):
                 formatted_response[dim] = value
@@ -166,8 +169,8 @@ class GoogleAnalyticsReader(Reader):
             for metric, metric_value in zip(metric_names, row_metric_values):
                 formatted_response[metric] = metric_value
 
-            if "ga:date" in formatted_response:
-                formatted_response["ga:date"] = GoogleAnalyticsReader.format_date(formatted_response["ga:date"])
+            if "date" in formatted_response:
+                formatted_response["date"] = GoogleAnalyticsReader.format_date(formatted_response["date"])
 
             yield formatted_response
 
@@ -178,12 +181,4 @@ class GoogleAnalyticsReader(Reader):
                     yield from self.format_and_yield(view_id, report)
 
     def read(self):
-        yield GaStream("result_view_" + "_".join(self.view_ids), self.result_generator())
-
-
-class GaStream(NormalizedJSONStream):
-    GA_PREFIX = "^ga:"
-
-    @staticmethod
-    def _normalize_key(key):
-        return re.split(GaStream.GA_PREFIX, key)[-1].replace(" ", "_").replace("-", "_")
+        yield JSONStream("result_view_" + "_".join(self.view_ids), self.result_generator())

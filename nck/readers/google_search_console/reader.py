@@ -23,7 +23,7 @@ from googleapiclient.discovery import build
 from nck.config import logger
 from nck.readers.reader import Reader
 from nck.readers.google_search_console.config import DATEFORMAT, GOOGLE_TOKEN_URI
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.retry import retry
 from oauth2client import GOOGLE_REVOKE_URI
 from oauth2client.client import GoogleCredentials
@@ -138,4 +138,4 @@ class GoogleSearchConsoleReader(Reader):
                 return None
 
     def read(self):
-        yield NormalizedJSONStream("search_console_results", self.result_generator())
+        yield JSONStream("search_console_results", self.result_generator())

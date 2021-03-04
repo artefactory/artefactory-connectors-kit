@@ -18,7 +18,7 @@
 
 import gspread
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from oauth2client.client import GoogleCredentials
 
 
@@ -48,4 +48,4 @@ class GoogleSheetsReaderOld(Reader):
                 for record in worksheet.get_all_records():
                     yield record
 
-            yield NormalizedJSONStream(worksheet.title, result_generator())
+            yield JSONStream(worksheet.title, result_generator())

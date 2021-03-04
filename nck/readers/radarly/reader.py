@@ -26,7 +26,7 @@ from typing import Dict, List, NamedTuple, Tuple
 import numpy as np
 from nck.config import logger
 from nck.readers import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.retry import retry
 
 from radarly import RadarlyApi
@@ -112,7 +112,7 @@ class RadarlyReader(Reader):
                         ex_type, ex, tb = sys.exc_info()
                         logger.warning(f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}")
 
-            yield NormalizedJSONStream(name, result_generator())
+            yield JSONStream(name, result_generator())
 
     @retry
     def get_publications_iterator(self, date_range: Tuple[datetime, datetime]):

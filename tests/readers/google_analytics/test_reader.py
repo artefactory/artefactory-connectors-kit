@@ -20,7 +20,7 @@ from datetime import datetime
 from unittest import TestCase, mock
 
 from click import ClickException
-from nck.readers.google_analytics.reader import GoogleAnalyticsReader, GaStream
+from nck.readers.google_analytics.reader import GoogleAnalyticsReader
 
 
 class GoogleAnalyticsReaderTest(TestCase):
@@ -29,13 +29,6 @@ class GoogleAnalyticsReaderTest(TestCase):
     def mock_ga_reader(self, **kwargs):
         for param, value in kwargs.items():
             setattr(self, param, value)
-
-    def test_normalized_ga_stream(self):
-        rows = [{"ga:date": 0, "ga:dimension": "dim", "ga:metric": "met"}, {"ga:date-date": 0}, {"ga:date date": 0}]
-        expected = [{"date": 0, "dimension": "dim", "metric": "met"}, {"date_date": 0}, {"date_date": 0}]
-        ga_stream = GaStream("stream", iter(rows))
-        for row, output in zip(ga_stream.readlines(), iter(expected)):
-            assert row == output
 
     def test_format_date(self):
         test_date = "20190101"

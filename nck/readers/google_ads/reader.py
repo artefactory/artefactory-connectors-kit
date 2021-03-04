@@ -26,7 +26,7 @@ from click import ClickException
 from nck.config import logger
 from nck.readers.google_ads.config import DATEFORMAT, ENCODING
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.exceptions import InconsistentDateDefinitionException, NoDateDefinitionException
 from nck.utils.retry import retry
 
@@ -258,6 +258,4 @@ class GoogleAdsReader(Reader):
         if self.manager_id:
             self.client_customer_ids = self.get_customer_ids(self.manager_id)
 
-        yield NormalizedJSONStream(
-            "results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield()
-        )
+        yield JSONStream("results_" + self.report_name + "_" + "_".join(self.client_customer_ids), self.format_and_yield())

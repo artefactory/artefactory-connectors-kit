@@ -19,7 +19,7 @@
 import sqlalchemy
 from nck.config import logger
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.redis import RedisStateService
 from nck.utils.retry import retry
 from nck.readers.mysql.helper import build_custom_query, build_table_query
@@ -102,7 +102,7 @@ class MySQLReader(Reader):
                 row = rows.fetchone()
             rows.close()
 
-        return NormalizedJSONStream(self._name, result_generator())
+        return JSONStream(self._name, result_generator())
 
     def close(self):
         logger.info("Closing MySQL connection")

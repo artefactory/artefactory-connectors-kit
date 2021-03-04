@@ -20,7 +20,7 @@ import collections
 
 from nck.readers.reader import Reader
 from nck.readers.salesforce.client import SalesforceClient
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.normalized_json_stream import JSONStream
 from nck.utils.redis import RedisStateService
 from nck.utils.retry import retry
 
@@ -89,7 +89,7 @@ class SalesforceReader(Reader):
                 if self._watermark_column:
                     self._redis_state_service.set(self._name, row[self._watermark_column])
 
-        yield NormalizedJSONStream(self._name, result_generator())
+        yield JSONStream(self._name, result_generator())
 
     @classmethod
     def _clean_record(cls, record):

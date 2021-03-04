@@ -17,6 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ENCODING = "utf-8"
+PREFIX = "^dfa:"
 
 CRITERIA_MAPPING = {
     "STANDARD": "criteria",

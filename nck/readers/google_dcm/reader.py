@@ -17,13 +17,13 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import csv
-import re
 from io import StringIO
 
 from nck.readers.google_dcm.client import DCMClient
-from nck.readers.google_dcm.config import ENCODING
+from nck.readers.google_dcm.config import ENCODING, PREFIX
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
+from nck.utils.text import strip_prefix
 
 
 class GoogleDCMReader(Reader):
@@ -65,7 +65,8 @@ class GoogleDCMReader(Reader):
                 is_main_data = False
 
             if is_main_data:
-                csv_reader = csv.DictReader(StringIO(decoded_row), self.dimensions + self.metrics)
+                formatted_keys = [strip_prefix(key, PREFIX) for key in self.dimensions + self.metrics]
+                csv_reader = csv.DictReader(StringIO(decoded_row), formatted_keys)
                 yield next(csv_reader)
 
     def result_generator(self):
@@ -83,12 +84,4 @@ class GoogleDCMReader(Reader):
             yield from self.format_response(report_generator)
 
     def read(self):
-        yield DCMStream("results" + "_".join(self.profile_ids), self.result_generator())
-
-
-class DCMStream(NormalizedJSONStream):
-    DCM_PREFIX = "^dfa:"
-
-    @staticmethod
-    def _normalize_key(key):
-        return re.split(DCMStream.DCM_PREFIX, key)[-1].replace(" ", "_").replace("-", "_")
+        yield JSONStream("results" + "_".join(self.profile_ids), self.result_generator())

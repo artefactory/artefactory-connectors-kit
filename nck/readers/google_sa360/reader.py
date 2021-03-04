@@ -17,8 +17,8 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from nck.readers.reader import Reader
-from nck.readers.google_sa360.client import SA360Client
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
+from nck.readers.google_sa360.client import GoogleSA360Client
 from nck.utils.text import get_report_generator_from_flat_file
 
 
@@ -38,7 +38,7 @@ class GoogleSA360Reader(Reader):
         start_date,
         end_date,
     ):
-        self.sa360_client = SA360Client(access_token, client_id, client_secret, refresh_token)
+        self.sa360_client = GoogleSA360Client(access_token, client_id, client_secret, refresh_token)
         self.agency_id = agency_id
         self.advertiser_ids = list(advertiser_ids)
         self.report_name = report_name
@@ -72,4 +72,4 @@ class GoogleSA360Reader(Reader):
         if not self.advertiser_ids:
             self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(self.agency_id)
 
-        yield NormalizedJSONStream("results" + "_".join(self.advertiser_ids), self.result_generator())
+        yield JSONStream("results" + "_".join(self.advertiser_ids), self.result_generator())

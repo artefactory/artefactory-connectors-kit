@@ -29,6 +29,12 @@ class SdfOperationError(Exception):
     pass
 
 
+class DateDefinitionException(Exception):
+    """Raised when the date parameters are not valid"""
+
+    pass
+
+
 class NoDateDefinitionException(Exception):
     """Raised when no date range or start date/end date is defined"""
 

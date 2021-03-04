@@ -16,12 +16,12 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from unittest import TestCase
-from nck.readers.google_sa360.client import SA360Client
+from nck.readers.google_sa360.client import GoogleSA360Client
 
 
-class SA360ClientTest(TestCase):
+class GoogleSA360ClientTest(TestCase):
     def test_generate_all_columns(self):
         standard = ["clicks", "impressions"]
         saved = ["savedColumn"]
         expected = [{"columnName": "clicks"}, {"columnName": "impressions"}, {"savedColumnName": "savedColumn"}]
-        self.assertEqual(SA360Client.generate_columns(standard, saved), expected)
+        self.assertEqual(GoogleSA360Client.generate_columns(standard, saved), expected)

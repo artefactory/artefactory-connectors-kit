@@ -21,7 +21,7 @@ import tempfile
 from nck import config
 from nck.config import logger
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.file_reader import create_file_reader
 
 
@@ -60,7 +60,7 @@ class ObjectStorageReader(Reader):
 
                 name = self.get_key(_object).split("/", self._dest_key_split)[-1]
 
-                yield NormalizedJSONStream(name, self._result_generator(_object))
+                yield JSONStream(name, self._result_generator(_object))
 
     def _result_generator(self, _object):
         with tempfile.TemporaryFile() as temp:

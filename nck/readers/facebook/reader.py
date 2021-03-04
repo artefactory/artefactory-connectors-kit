@@ -36,7 +36,7 @@ from nck.readers.facebook.config import (
 )
 from nck.readers.facebook.helper import generate_batches, get_action_breakdown_filters, get_field_values, monitor_usage
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.date_handler import check_date_range_definition_conformity
 from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential, wait_none
 
@@ -340,4 +340,4 @@ class FacebookReader(Reader):
 
     def read(self):
 
-        yield NormalizedJSONStream("results_" + self.object_type + "_" + "_".join(self.object_ids), self.get_data())
+        yield JSONStream("results_" + self.object_type + "_" + "_".join(self.object_ids), self.get_data())

@@ -25,7 +25,6 @@ from nck.readers.confluence.config import CONTENT_ENDPOINT, RECORDS_PER_PAGE
 from nck.readers.confluence.helper import CUSTOM_FIELDS, parse_response
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
-from nck.streams.normalized_json_stream import NormalizedJSONStream
 
 
 class ConfluenceReader(Reader):
@@ -100,7 +99,4 @@ class ConfluenceReader(Reader):
             yield from self._get_report_generator()
 
     def read(self):
-        if self.normalize_stream:
-            yield NormalizedJSONStream("results_", self._get_aggregated_report_generator())
-        else:
-            yield JSONStream("results_", self._get_aggregated_report_generator())
+        yield JSONStream("results_", self._get_aggregated_report_generator())

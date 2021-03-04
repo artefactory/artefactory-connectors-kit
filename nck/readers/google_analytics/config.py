@@ -19,3 +19,5 @@
 GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 DISCOVERY_URI = "https://analyticsreporting.googleapis.com/$discovery/rest"
 DATEFORMAT = "%Y-%m-%d"
+
+PREFIX = "^ga:"

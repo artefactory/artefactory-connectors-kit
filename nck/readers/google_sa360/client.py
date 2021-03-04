@@ -27,7 +27,7 @@ from googleapiclient import discovery
 DOWNLOAD_FORMAT = "CSV"
 
 
-class SA360Client:
+class GoogleSA360Client:
     API_NAME = "doubleclicksearch"
     API_VERSION = "v2"
 
@@ -59,12 +59,12 @@ class SA360Client:
 
     @staticmethod
     def generate_report_body(agency_id, advertiser_id, report_type, columns, start_date, end_date, saved_columns):
-        all_columns = SA360Client.generate_columns(columns, saved_columns)
+        all_columns = GoogleSA360Client.generate_columns(columns, saved_columns)
         body = {
             "reportScope": {"agencyId": agency_id, "advertiserId": advertiser_id},
             "reportType": report_type,
             "columns": all_columns,
-            "timeRange": SA360Client.get_date_range(start_date, end_date),
+            "timeRange": GoogleSA360Client.get_date_range(start_date, end_date),
             "downloadFormat": "csv",
             "maxRowsPerFile": 4000000,
             "statisticsCurrency": "usd",
