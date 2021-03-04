@@ -29,10 +29,11 @@ from click import ClickException
 from nck.clients.adobe_analytics.client import AdobeAnalyticsClient
 from nck.config import logger
 from nck.readers.adobe_analytics_1_4.config import ADOBE_API_ENDPOINT, MAX_WAIT_REPORT_DELAY
-from nck.readers.adobe_analytics_1_4.helper import ReportDescriptionError, ReportNotReadyError, parse
+from nck.readers.adobe_analytics_1_4.helper import parse
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.date_handler import check_date_range_definition_conformity
+from nck.utils.exceptions import ReportDescriptionError, ReportNotReadyError
 from nck.utils.retry import retry
 
 

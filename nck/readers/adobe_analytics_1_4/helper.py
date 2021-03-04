@@ -26,18 +26,6 @@ from nck.config import logger
 from nck.utils.text import reformat_naming_for_bq
 
 
-class ReportDescriptionError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logger.error(message)
-
-
-class ReportNotReadyError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logger.error(message)
-
-
 def _parse_header(report):
     dimensions = [_classification_or_name(dimension) for dimension in report["elements"]]
     metrics = [metric["name"] for metric in report["metrics"]]

@@ -12,20 +12,7 @@
 
 from datetime import datetime
 
-from nck.config import logger
 from nck.readers.the_trade_desk.config import API_DATEFORMAT, BQ_DATEFORMAT
-
-
-class ReportTemplateNotFoundError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logger.error(message)
-
-
-class ReportScheduleNotReadyError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logger.error(message)
 
 
 def format_date(date_string):

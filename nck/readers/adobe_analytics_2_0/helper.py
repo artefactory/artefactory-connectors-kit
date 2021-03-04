@@ -18,14 +18,6 @@
 
 from datetime import datetime
 
-from nck.config import logger
-
-
-class APIRateLimitError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        logger.error(message)
-
 
 def add_metric_container_to_report_description(rep_desc, dimensions, metrics, breakdown_item_ids):
     """

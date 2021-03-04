@@ -23,9 +23,10 @@ from click import ClickException
 from nck.config import logger
 from nck.readers.reader import Reader
 from nck.readers.the_trade_desk.config import API_ENDPOINTS, API_HOST, DEFAULT_PAGING_ARGS, DEFAULT_REPORT_SCHEDULE_ARGS
-from nck.readers.the_trade_desk.helper import ReportScheduleNotReadyError, ReportTemplateNotFoundError, format_date
+from nck.readers.the_trade_desk.helper import format_date
 from nck.streams.json_stream import JSONStream
 from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.utils.exceptions import ReportScheduleNotReadyError, ReportTemplateNotFoundError
 from nck.utils.text import get_report_generator_from_flat_file
 from tenacity import retry, stop_after_delay, wait_exponential
 

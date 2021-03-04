@@ -23,11 +23,10 @@ from itertools import chain
 
 import requests
 from click.exceptions import ClickException
-from nck.config import logger
 from nck.clients.adobe_analytics.client import AdobeAnalyticsClient
+from nck.config import logger
 from nck.readers.adobe_analytics_2_0.config import API_REQUESTS_OVER_WINDOW_LIMIT, API_WINDOW_DURATION, DATEFORMAT
 from nck.readers.adobe_analytics_2_0.helper import (
-    APIRateLimitError,
     add_metric_container_to_report_description,
     get_item_ids_from_nodes,
     get_node_values_from_response,
@@ -36,6 +35,7 @@ from nck.readers.adobe_analytics_2_0.helper import (
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.date_handler import check_date_range_definition_conformity, get_date_start_and_date_stop_from_date_range
+from nck.utils.exceptions import APIRateLimitError
 from nck.utils.retry import retry
 
 
