@@ -22,7 +22,7 @@ from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.redis import RedisStateService
 from nck.utils.retry import retry
-from nck.utils.sql import build_custom_query, build_table_query
+from nck.readers.mysql.helper import build_custom_query, build_table_query
 
 
 class MySQLReader(Reader):

@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
+from nck.utils.processor import processor
 from nck.writers.local.writer import LocalWriter
 
 

@@ -18,10 +18,10 @@
 
 import click
 from click import ClickException
-from nck.commands.command import processor
 from nck.readers.facebook.config import ACTION_BREAKDOWNS, BREAKDOWNS, DATE_PRESETS, FACEBOOK_OBJECTS
 from nck.readers.facebook.reader import FacebookReader
 from nck.utils.args import extract_args
+from nck.utils.processor import processor
 
 
 def check_object_id(ctx, param, values):

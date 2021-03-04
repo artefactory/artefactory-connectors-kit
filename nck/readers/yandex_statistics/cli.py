@@ -20,10 +20,10 @@ import datetime
 import random
 
 import click
-from nck.commands.command import processor
 from nck.readers.yandex_statistics.config import DATE_RANGE_TYPES, LANGUAGES, OPERATORS, REPORT_TYPES, STATS_FIELDS
 from nck.readers.yandex_statistics.reader import YandexStatisticsReader
 from nck.utils.args import extract_args
+from nck.utils.processor import processor
 
 
 class StrList(click.ParamType):

@@ -17,9 +17,9 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
 from nck.readers.confluence.reader import ConfluenceReader
 from nck.utils.args import extract_args
+from nck.utils.processor import processor
 
 
 @click.command(name="read_confluence")

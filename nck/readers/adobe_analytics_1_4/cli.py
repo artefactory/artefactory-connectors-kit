@@ -17,9 +17,9 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
 from nck.readers.adobe_analytics_1_4.reader import AdobeAnalytics14Reader
 from nck.utils.args import extract_args
+from nck.utils.processor import processor
 
 
 def format_key_if_needed(ctx, param, value):

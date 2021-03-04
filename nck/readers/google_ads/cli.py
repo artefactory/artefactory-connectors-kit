@@ -17,10 +17,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
 from nck.readers.google_ads.config import DATE_RANGE_TYPE_POSSIBLE_VALUES, REPORT_TYPE_POSSIBLE_VALUES
 from nck.readers.google_ads.reader import GoogleAdsReader
 from nck.utils.args import extract_args
+from nck.utils.processor import processor
 
 
 @click.command(name="read_googleads")

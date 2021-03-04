@@ -17,10 +17,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
 from nck.readers.google_dbm.config import POSSIBLE_REQUEST_TYPES
 from nck.readers.google_dbm.reader import GoogleDBMReader
 from nck.utils.args import extract_args
+from nck.utils.processor import processor
 
 
 @click.command(name="read_dbm")

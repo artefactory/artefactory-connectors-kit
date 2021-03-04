@@ -17,10 +17,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
 from nck.readers.yandex_campaign.config import CAMPAIGN_FIELDS, CAMPAIGN_PAYMENT_STATUSES, CAMPAIGN_STATES, CAMPAIGN_STATUSES
 from nck.readers.yandex_campaign.reader import YandexCampaignReader
 from nck.utils.args import extract_args
+from nck.utils.processor import processor
 
 
 @click.command(name="read_yandex_campaigns")

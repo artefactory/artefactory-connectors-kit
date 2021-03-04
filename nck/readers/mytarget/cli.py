@@ -17,12 +17,11 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
+from nck.readers.mytarget.config import REQUEST_TYPES
 from nck.readers.mytarget.reader import MyTargetReader
 from nck.utils.args import extract_args
-
-from nck.readers.mytarget.config import REQUEST_TYPES
 from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
+from nck.utils.processor import processor
 
 
 @click.command(name="read_mytarget")

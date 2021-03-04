@@ -15,16 +15,23 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from nck.config import logger
-import re
+
 import csv
-from io import StringIO
+import re
 from collections import deque
+from io import StringIO
 from itertools import islice
+
+from nck.config import logger
 
 
 def get_report_generator_from_flat_file(
-    line_iterator, delimiter=",", skip_n_first=0, skip_n_last=0, add_column=False, column_dict={},
+    line_iterator,
+    delimiter=",",
+    skip_n_first=0,
+    skip_n_last=0,
+    add_column=False,
+    column_dict={},
 ):
     """
     From the line iterator of a flat file:
@@ -82,7 +89,13 @@ def decode_if_needed(line):
 
 def parse_decoded_line(line, delimiter=",", quotechar='"'):
     line_as_file = StringIO(line)
-    reader = csv.reader(line_as_file, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_ALL, skipinitialspace=True,)
+    reader = csv.reader(
+        line_as_file,
+        delimiter=delimiter,
+        quotechar=quotechar,
+        quoting=csv.QUOTE_ALL,
+        skipinitialspace=True,
+    )
     return next(reader)
 
 

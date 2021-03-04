@@ -17,10 +17,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from nck.commands.command import processor
 from nck.readers.adobe_analytics_2_0.reader import AdobeAnalytics20Reader
 from nck.utils.args import extract_args
 from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
+from nck.utils.processor import processor
 
 
 def format_key_if_needed(ctx, param, value):
