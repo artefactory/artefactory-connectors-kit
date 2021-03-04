@@ -16,14 +16,13 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from nck.writers.writer import Writer
+import click
+from nck.commands.command import processor
+from nck.utils.args import extract_args
+from nck.writers.console.writer import ConsoleWriter
 
-from nck.writers.amazon_s3.cli import amazon_s3
-from nck.writers.console.cli import console
-from nck.writers.google_bigquery.cli import google_bigquery
-from nck.writers.google_cloud_storage.cli import google_cloud_storage
-from nck.writers.local.cli import local
 
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
-
-__all__ = ["writers", "Writer"]
+@click.command(name="write_console")
+@processor()
+def console(**kwargs):
+    return ConsoleWriter(**extract_args("console_", kwargs))

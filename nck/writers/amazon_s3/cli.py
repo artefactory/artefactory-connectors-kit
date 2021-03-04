@@ -16,14 +16,19 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from nck.writers.writer import Writer
+import click
+from nck.commands.command import processor
+from nck.utils.args import extract_args
+from nck.writers.amazon_s3.writer import AmazonS3Writer
 
-from nck.writers.amazon_s3.cli import amazon_s3
-from nck.writers.console.cli import console
-from nck.writers.google_bigquery.cli import google_bigquery
-from nck.writers.google_cloud_storage.cli import google_cloud_storage
-from nck.writers.local.cli import local
 
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
-
-__all__ = ["writers", "Writer"]
+@click.command(name="write_s3")
+@click.option("--s3-bucket-name", help="S3 Bucket name", required=True)
+@click.option("--s3-bucket-region", required=True)
+@click.option("--s3-access-key-id", required=True)
+@click.option("--s3-access-key-secret", required=True)
+@click.option("--s3-prefix", help="s3 Prefix", default=None)
+@click.option("--s3-filename", help="Filename (without prefix). Be sure to add file extension.")
+@processor("s3_access_key_id", "s3_access_key_secret")
+def amazon_s3(**kwargs):
+    return AmazonS3Writer(**extract_args("s3_", kwargs))

@@ -15,31 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import click
-import sys
 
-from nck.writers.writer import Writer
-from nck.commands.command import processor
-from nck.utils.args import extract_args
+import unittest
+
+from nck.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
 
 
-@click.command(name="write_console")
-@processor()
-def console(**kwargs):
-    return ConsoleWriter(**extract_args("console_", kwargs))
-
-
-class ConsoleWriter(Writer):
-    def __init__(self):
-        pass
-
-    def write(self, stream):
-        """
-            Write file to console, mainly used for debugging
-        """
-        # this is how to read from a file as stream
-        file = stream.as_file()
-        buffer = "buf"
-        while len(buffer) > 0:
-            buffer = file.read(1024)
-            sys.stdout.buffer.write(buffer)
+class TestGoogleCloudStorageWriter(unittest.TestCase):
+    def test_extract_extension(self):
+        filename = "test.py"
+        print(GoogleCloudStorageWriter._extract_extension(filename))
+        assert GoogleCloudStorageWriter._extract_extension(filename) == ("test", ".py")

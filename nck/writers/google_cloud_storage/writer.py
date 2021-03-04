@@ -17,29 +17,15 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import os
 
-import click
+from click.exceptions import MissingParameter
 from google.cloud import storage
 from nck import config
-from nck.commands.command import processor
 from nck.config import logger
 from nck.helpers.google_base import GoogleBaseClass
-from nck.utils.args import extract_args
 from nck.writers.writer import Writer
 
 
-@click.command(name="write_gcs")
-@click.option("--gcs-bucket", help="GCS Bucket", required=True)
-@click.option("--gcs-prefix", help="GCS path to write the file.")
-@click.option("--gcs-project-id", help="GCS Project Id")
-@click.option(
-    "--gcs-file-name", help="Override the default name of the file (don't add the extension)",
-)
-@processor()
-def gcs(**kwargs):
-    return GCSWriter(**extract_args("gcs_", kwargs))
-
-
-class GCSWriter(Writer, GoogleBaseClass):
+class GoogleCloudStorageWriter(Writer, GoogleBaseClass):
     _client = None
 
     def __init__(self, bucket, project_id, prefix=None, file_name=None):
@@ -51,12 +37,12 @@ class GCSWriter(Writer, GoogleBaseClass):
 
     def write(self, stream):
         """
-            Write file into GCS Bucket
+        Write file into GCS Bucket
 
-            attr:
-                stream: Stream with the file content.
-            return:
-                gcs_path (str): Path to file {bucket}/{prefix}{file_name}
+        attr:
+            stream: Stream with the file content.
+        return:
+            gcs_path (str): Path to file {bucket}/{prefix}{file_name}
         """
         logger.info("Writing file to GCS")
         _, extension = self._extract_extension(stream.name)
@@ -93,7 +79,8 @@ class GCSWriter(Writer, GoogleBaseClass):
             try:
                 return config.PROJECT_ID
             except Exception:
-                raise click.exceptions.MissingParameter(
-                    "Please provide a project id in ENV var or params.", param_type="--gcs-project-id",
+                raise MissingParameter(
+                    "Please provide a project id in ENV var or params.",
+                    param_type="--gcs-project-id",
                 )
         return project_id

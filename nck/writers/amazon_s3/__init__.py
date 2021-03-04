@@ -15,15 +15,3 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-from nck.writers.writer import Writer
-
-from nck.writers.amazon_s3.cli import amazon_s3
-from nck.writers.console.cli import console
-from nck.writers.google_bigquery.cli import google_bigquery
-from nck.writers.google_cloud_storage.cli import google_cloud_storage
-from nck.writers.local.cli import local
-
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
-
-__all__ = ["writers", "Writer"]

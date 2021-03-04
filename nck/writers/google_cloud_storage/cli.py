@@ -16,14 +16,20 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from nck.writers.writer import Writer
+import click
+from nck.commands.command import processor
+from nck.utils.args import extract_args
+from nck.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
 
-from nck.writers.amazon_s3.cli import amazon_s3
-from nck.writers.console.cli import console
-from nck.writers.google_bigquery.cli import google_bigquery
-from nck.writers.google_cloud_storage.cli import google_cloud_storage
-from nck.writers.local.cli import local
 
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
-
-__all__ = ["writers", "Writer"]
+@click.command(name="write_gcs")
+@click.option("--gcs-bucket", help="GCS Bucket", required=True)
+@click.option("--gcs-prefix", help="GCS path to write the file.")
+@click.option("--gcs-project-id", help="GCS Project Id")
+@click.option(
+    "--gcs-file-name",
+    help="Override the default name of the file (don't add the extension)",
+)
+@processor()
+def google_cloud_storage(**kwargs):
+    return GoogleCloudStorageWriter(**extract_args("gcs_", kwargs))

@@ -15,12 +15,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import unittest
-from nck.writers.gcs_writer import GCSWriter
+
+import click
+from nck.commands.command import processor
+from nck.utils.args import extract_args
+from nck.writers.google_bigquery.writer import GoogleBigQueryWriter
 
 
-class TestGCSWriter(unittest.TestCase):
-    def test_extract_extension(self):
-        filename = "test.py"
-        print(GCSWriter._extract_extension(filename))
-        assert GCSWriter._extract_extension(filename) == ("test", ".py")
+@click.command(name="write_bq")
+@click.option("--bq-dataset", required=True)
+@click.option("--bq-table", required=True)
+@click.option("--bq-bucket", required=True)
+@click.option("--bq-partition-column")
+@click.option(
+    "--bq-write-disposition",
+    default="truncate",
+    type=click.Choice(["truncate", "append"]),
+)
+@click.option("--bq-location", default="EU", type=click.Choice(["EU", "US"]))
+@click.option("--bq-keep-files", is_flag=True, default=False)
+@processor()
+def google_bigquery(**kwargs):
+    return GoogleBigQueryWriter(**extract_args("bq_", kwargs))

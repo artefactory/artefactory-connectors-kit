@@ -16,14 +16,30 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import os
+
+from nck.config import logger
 from nck.writers.writer import Writer
 
-from nck.writers.amazon_s3.cli import amazon_s3
-from nck.writers.console.cli import console
-from nck.writers.google_bigquery.cli import google_bigquery
-from nck.writers.google_cloud_storage.cli import google_cloud_storage
-from nck.writers.local.cli import local
 
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
+class LocalWriter(Writer):
+    def __init__(self, local_directory, file_name):
+        self._local_directory = local_directory
+        self._file_name = file_name
 
-__all__ = ["writers", "Writer"]
+    def write(self, stream):
+        """
+        Write file to disk at location given as parameter.
+        """
+        file_name = self._file_name or stream.name
+        path = os.path.join(self._local_directory, file_name)
+
+        logger.info(f"Writing stream {file_name} to {path}")
+        file = stream.as_file()
+        with open(path, "wb") as h:
+            while True:
+                buffer = file.read(1024)
+                if len(buffer) > 0:
+                    h.write(buffer)
+                else:
+                    break

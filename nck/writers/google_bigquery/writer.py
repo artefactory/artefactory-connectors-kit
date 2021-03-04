@@ -15,39 +15,29 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import click
+
 from google.cloud import bigquery
 from nck import config
-from nck.commands.command import processor
 from nck.config import logger
 from nck.helpers.google_base import GoogleBaseClass
 from nck.streams.normalized_json_stream import NormalizedJSONStream
-from nck.utils.args import extract_args
 from nck.utils.retry import retry
-from nck.writers.gcs_writer import GCSWriter
+from nck.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
 from nck.writers.writer import Writer
 
 
-@click.command(name="write_bq")
-@click.option("--bq-dataset", required=True)
-@click.option("--bq-table", required=True)
-@click.option("--bq-bucket", required=True)
-@click.option("--bq-partition-column")
-@click.option(
-    "--bq-write-disposition", default="truncate", type=click.Choice(["truncate", "append"]),
-)
-@click.option("--bq-location", default="EU", type=click.Choice(["EU", "US"]))
-@click.option("--bq-keep-files", is_flag=True, default=False)
-@processor()
-def bq(**kwargs):
-    return BigQueryWriter(**extract_args("bq_", kwargs))
-
-
-class BigQueryWriter(Writer, GoogleBaseClass):
+class GoogleBigQueryWriter(Writer, GoogleBaseClass):
     _client = None
 
     def __init__(
-        self, dataset, table, bucket, partition_column, write_disposition, location, keep_files,
+        self,
+        dataset,
+        table,
+        bucket,
+        partition_column,
+        write_disposition,
+        location,
+        keep_files,
     ):
 
         self._project_id = config.PROJECT_ID
@@ -65,7 +55,7 @@ class BigQueryWriter(Writer, GoogleBaseClass):
 
         normalized_stream = NormalizedJSONStream.create_from_stream(stream)
 
-        gcs_writer = GCSWriter(self._bucket, self._project_id)
+        gcs_writer = GoogleCloudStorageWriter(self._bucket, self._project_id)
         gcs_uri, blob = gcs_writer.write(normalized_stream)
 
         table_ref = self._get_table_ref()

@@ -15,28 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from nck.config import logger
-import click
+
 import boto3
-from nck.writers.writer import Writer
-from nck.commands.command import processor
-from nck.utils.args import extract_args
+from nck.config import logger
 from nck.utils.retry import retry
+from nck.writers.writer import Writer
 
 
-@click.command(name="write_s3")
-@click.option("--s3-bucket-name", help="S3 Bucket name", required=True)
-@click.option("--s3-bucket-region", required=True)
-@click.option("--s3-access-key-id", required=True)
-@click.option("--s3-access-key-secret", required=True)
-@click.option("--s3-prefix", help="s3 Prefix", default=None)
-@click.option("--s3-filename", help="Filename (without prefix). Be sure to add file extension.")
-@processor("s3_access_key_id", "s3_access_key_secret")
-def s3(**kwargs):
-    return S3Writer(**extract_args("s3_", kwargs))
-
-
-class S3Writer(Writer):
+class AmazonS3Writer(Writer):
     def __init__(self, bucket_name, access_key_id, access_key_secret, bucket_region, **kwargs):
         boto_config = {
             "region_name": bucket_region,
@@ -56,7 +42,8 @@ class S3Writer(Writer):
 
         if bucket not in self._s3_resource.buckets.all():
             self._s3_resource.create_bucket(
-                Bucket=self._bucket_name, CreateBucketConfiguration={"LocationConstraint": self._bucket_region},
+                Bucket=self._bucket_name,
+                CreateBucketConfiguration={"LocationConstraint": self._bucket_region},
             )
 
         bucket_region = self._s3_resource.meta.client.get_bucket_location(Bucket=self._bucket_name)["LocationConstraint"]
@@ -73,7 +60,9 @@ class S3Writer(Writer):
         filename = f"{prefix}{self.kwargs['filename'] if self.kwargs['filename'] is not None else stream.name}"
         bucket.upload_fileobj(stream.as_file(), filename)
         url_file = self._s3_resource.meta.client.generate_presigned_url(
-            "get_object", Params={"Bucket": self._bucket_name, "Key": stream.name}, ExpiresIn=3600,
+            "get_object",
+            Params={"Bucket": self._bucket_name, "Key": stream.name},
+            ExpiresIn=3600,
         )
         logger.info(f"file written at location {url_file}")
         return url_file, bucket

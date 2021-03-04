@@ -16,14 +16,22 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import sys
+
 from nck.writers.writer import Writer
 
-from nck.writers.amazon_s3.cli import amazon_s3
-from nck.writers.console.cli import console
-from nck.writers.google_bigquery.cli import google_bigquery
-from nck.writers.google_cloud_storage.cli import google_cloud_storage
-from nck.writers.local.cli import local
 
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
+class ConsoleWriter(Writer):
+    def __init__(self):
+        pass
 
-__all__ = ["writers", "Writer"]
+    def write(self, stream):
+        """
+        Write file to console, mainly used for debugging
+        """
+        # this is how to read from a file as stream
+        file = stream.as_file()
+        buffer = "buf"
+        while len(buffer) > 0:
+            buffer = file.read(1024)
+            sys.stdout.buffer.write(buffer)
