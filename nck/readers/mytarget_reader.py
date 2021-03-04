@@ -27,11 +27,7 @@ from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.exceptions import MissingItemsInResponse
 from nck.utils.args import extract_args
-from nck.utils.date_handler import (
-    DEFAULT_DATE_RANGE_FUNCTIONS,
-    check_date_range_definition_conformity,
-    get_date_start_and_date_stop_from_date_range,
-)
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 
 
 @click.command(name="read_mytarget")
@@ -56,16 +52,11 @@ LIMIT_REQUEST_MYTARGET = 20
 
 class MyTargetReader(Reader):
     def __init__(self, client_id, client_secret, refresh_token, request_type, date_range, start_date, end_date, **kwargs):
-        check_date_range_definition_conformity(start_date, end_date, date_range)
-        if date_range is not None:
-            start_date, end_date = get_date_start_and_date_stop_from_date_range(date_range)
         self.client_id = client_id
         self.client_secret = client_secret
         self.agency_client_token = {"refresh_token": refresh_token}
         self.request_type = request_type
-        self.date_range = date_range
-        self.start_date = start_date
-        self.end_date = end_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         self.date_format = kwargs.get("date_format")
         self.date_are_valid = self.__check_date_input_validity()
         self.__retrieve_and_set_token()
