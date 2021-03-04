@@ -19,14 +19,14 @@
 from google.cloud import bigquery
 from nck import config
 from nck.config import logger
-from nck.helpers.google_base import GoogleBaseClass
+from nck.clients.google.client import GoogleClient
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.retry import retry
 from nck.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
 from nck.writers.writer import Writer
 
 
-class GoogleBigQueryWriter(Writer, GoogleBaseClass):
+class GoogleBigQueryWriter(Writer, GoogleClient):
     _client = None
 
     def __init__(

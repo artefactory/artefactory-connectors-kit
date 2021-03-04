@@ -20,9 +20,9 @@ import time
 from http import HTTPStatus
 from typing import Dict, Tuple
 
-import nck.helpers.api_client_helper as api_client_helper
+import nck.clients.api.helper as api_client_helper
 from click import ClickException
-from nck.clients.api_client import ApiClient
+from nck.clients.api.client import ApiClient
 from nck.config import logger
 from nck.readers.reader import Reader
 from nck.readers.yandex_statistics.config import YANDEX_DIRECT_API_BASE_URL

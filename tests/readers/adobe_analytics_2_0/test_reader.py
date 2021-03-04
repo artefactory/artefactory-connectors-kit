@@ -39,13 +39,13 @@ class AdobeReaderTest_2_0(TestCase):
         "date_range": None,
     }
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     def test_build_date_range(self, mock_adobe_client):
         output = AdobeAnalytics20Reader(**self.kwargs).build_date_range()
         expected = "2020-01-01T00:00:00/2020-01-03T00:00:00"
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     def test_build_report_description_one_dimension(self, mock_adobe_client):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"dimension": ["daterangeday"]})
@@ -72,7 +72,7 @@ class AdobeReaderTest_2_0(TestCase):
         }
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     def test_build_report_description_multiple_dimensions(self, mock_adobe_client):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"dimension": ["daterangeday", "campaign", "pagename"]})
@@ -125,7 +125,7 @@ class AdobeReaderTest_2_0(TestCase):
         }
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_analytics_2_0.reader.AdobeAnalytics20Reader.get_report_page",
         side_effect=[
@@ -172,7 +172,7 @@ class AdobeReaderTest_2_0(TestCase):
         for output_record, expected_record in zip(output, expected):
             self.assertEqual(output_record, expected_record)
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_analytics_2_0.reader.AdobeAnalytics20Reader.get_node_values",
         return_value={
@@ -199,7 +199,7 @@ class AdobeReaderTest_2_0(TestCase):
         }
         self.assertEqual(output, expected)
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_analytics_2_0.reader.AdobeAnalytics20Reader.get_parsed_report",
         return_value=[
@@ -219,7 +219,7 @@ class AdobeReaderTest_2_0(TestCase):
         for output_record, expected_output in zip(output.readlines(), iter(expected)):
             self.assertEqual(output_record, expected_output)
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_analytics_2_0.reader.AdobeAnalytics20Reader.add_child_nodes_to_graph",
         side_effect=[

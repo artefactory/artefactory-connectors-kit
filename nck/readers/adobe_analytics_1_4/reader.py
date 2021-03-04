@@ -26,7 +26,7 @@ from time import sleep
 
 import requests
 from click import ClickException
-from nck.clients.adobe_client import AdobeClient
+from nck.clients.adobe_analytics.client import AdobeAnalyticsClient
 from nck.config import logger
 from nck.readers.adobe_analytics_1_4.config import ADOBE_API_ENDPOINT, MAX_WAIT_REPORT_DELAY
 from nck.readers.adobe_analytics_1_4.helper import ReportDescriptionError, ReportNotReadyError, parse
@@ -47,7 +47,7 @@ class AdobeAnalytics14Reader(Reader):
         global_company_id,
         **kwargs,
     ):
-        self.adobe_client = AdobeClient(client_id, client_secret, tech_account_id, org_id, private_key)
+        self.adobe_client = AdobeAnalyticsClient(client_id, client_secret, tech_account_id, org_id, private_key)
         self.global_company_id = global_company_id
         self.kwargs = kwargs
 

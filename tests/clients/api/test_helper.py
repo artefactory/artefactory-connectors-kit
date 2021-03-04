@@ -17,9 +17,8 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import unittest
 
+from nck.clients.api.helper import get_dict_with_keys_converted_to_new_string_format, to_pascal_key
 from parameterized import parameterized
-
-from nck.helpers.api_client_helper import get_dict_with_keys_converted_to_new_string_format, to_pascal_key
 
 
 class ApiClientHelperTest(unittest.TestCase):

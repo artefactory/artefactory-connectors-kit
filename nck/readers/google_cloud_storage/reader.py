@@ -19,11 +19,11 @@
 import urllib
 
 from google.cloud import storage
-from nck.helpers.google_base import GoogleBaseClass
+from nck.clients.google.client import GoogleClient
 from nck.readers.object_storage.reader import ObjectStorageReader
 
 
-class GoogleCloudStorageReader(ObjectStorageReader, GoogleBaseClass):
+class GoogleCloudStorageReader(ObjectStorageReader, GoogleClient):
     def __init__(self, bucket, prefix, format, dest_key_split=-1, **kwargs):
         super().__init__(bucket, prefix, format, dest_key_split, platform="GCS", **kwargs)
 

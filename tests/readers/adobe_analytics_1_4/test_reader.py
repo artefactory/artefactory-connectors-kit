@@ -54,7 +54,7 @@ class AdobeReaderTest(TestCase):
         "end_date": datetime.datetime(2020, 1, 3),
     }
 
-    @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
+    @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_analytics_1_4.reader.AdobeAnalytics14Reader.query_report",
         return_value={"reportID": "XXXXX"},

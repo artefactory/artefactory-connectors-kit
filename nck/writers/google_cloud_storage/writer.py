@@ -21,11 +21,11 @@ from click.exceptions import MissingParameter
 from google.cloud import storage
 from nck import config
 from nck.config import logger
-from nck.helpers.google_base import GoogleBaseClass
+from nck.clients.google.client import GoogleClient
 from nck.writers.writer import Writer
 
 
-class GoogleCloudStorageWriter(Writer, GoogleBaseClass):
+class GoogleCloudStorageWriter(Writer, GoogleClient):
     _client = None
 
     def __init__(self, bucket, project_id, prefix=None, file_name=None):

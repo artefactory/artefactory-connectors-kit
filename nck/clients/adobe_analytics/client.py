@@ -16,17 +16,18 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from nck.config import logger
 from datetime import datetime, timedelta
-import requests
+
 import jwt
-from tenacity import retry, wait_exponential, stop_after_delay
+import requests
+from nck.config import logger
+from tenacity import retry, stop_after_delay, wait_exponential
 
 IMS_HOST = "ims-na1.adobelogin.com"
 IMS_EXCHANGE = "https://ims-na1.adobelogin.com/ims/exchange/jwt"
 
 
-class AdobeClient:
+class AdobeAnalyticsClient:
     """
     Create an Adobe Client for JWT Authentification.
     Doc: https://github.com/AdobeDocs/adobeio-auth/blob/stage/JWT/JWT.md

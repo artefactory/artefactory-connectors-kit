@@ -24,7 +24,7 @@ from itertools import chain
 import requests
 from click.exceptions import ClickException
 from nck.config import logger
-from nck.clients.adobe_client import AdobeClient
+from nck.clients.adobe_analytics.client import AdobeAnalyticsClient
 from nck.readers.adobe_analytics_2_0.config import API_REQUESTS_OVER_WINDOW_LIMIT, API_WINDOW_DURATION, DATEFORMAT
 from nck.readers.adobe_analytics_2_0.helper import (
     APIRateLimitError,
@@ -55,7 +55,7 @@ class AdobeAnalytics20Reader(Reader):
         end_date,
         date_range,
     ):
-        self.adobe_client = AdobeClient(client_id, client_secret, tech_account_id, org_id, private_key)
+        self.adobe_client = AdobeAnalyticsClient(client_id, client_secret, tech_account_id, org_id, private_key)
         self.global_company_id = global_company_id
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)

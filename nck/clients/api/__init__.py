@@ -15,24 +15,3 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from typing import Dict, Any
-
-from requests_toolbelt import sessions
-
-
-class ApiClient:
-    def __init__(self, token, base_url):
-        self.token = token
-        self.session = sessions.BaseUrlSession(base_url=base_url)
-
-    def execute_request(
-        self,
-        method: str = "GET",
-        url: str = "",
-        body: Dict[str, Any] = None,
-        headers: Dict[str, str] = None,
-        stream: bool = False,
-    ):
-        headers["Authorization"] = f"Bearer {self.token}"
-        response = self.session.request(method, url, json=body, headers=headers)
-        return response

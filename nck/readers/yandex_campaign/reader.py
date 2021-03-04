@@ -16,8 +16,8 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import nck.helpers.api_client_helper as api_client_helper
-from nck.clients.api_client import ApiClient
+import nck.clients.api.helper as api_client_helper
+from nck.clients.api.client import ApiClient
 from nck.readers.reader import Reader
 from nck.readers.yandex_campaign.config import YANDEX_DIRECT_API_BASE_URL
 from nck.streams.json_stream import JSONStream

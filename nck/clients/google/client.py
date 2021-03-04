@@ -15,38 +15,38 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-"""
-   This was adapted from airflow google Base Hook.
-
-   A base hook for Google cloud-related hooks. Google cloud has a shared REST
-   API client that is built in the same way no matter which service you use.
-   This class helps construct and authorize the credentials needed to then
-   call googleapiclient.discovery.build() to actually discover and build a client
-   for a Google cloud service.
 
 
-    Three ways of authentication are supported:
-   Default credentials: Only the 'Project Id' is required. You'll need to
-   have set up default credentials, such as by the
-   ``GOOGLE_APPLICATION_DEFAULT`` environment variable or from the metadata
-   server on Google Compute Engine.
-   JSON key file: Specify 'Project Id', 'Keyfile Path' and 'Scope'.
-   Legacy P12 key files are not supported.
-   JSON data provided the parameters
-"""
+# This was adapted from Airflow Google Base Hook.
 
-from nck.config import logger
+# A base hook for Google cloud-related hooks. Google cloud has a shared REST
+# API client that is built in the same way no matter which service you use.
+# This class helps construct and authorize the credentials needed to then
+# call googleapiclient.discovery.build() to actually discover and build a client
+# for a Google cloud service.
+
+# Three ways of authentication are supported:
+# - Default credentials: only the 'Project Id' is required. You'll need to
+#   have set up default credentials, such as by the
+# - GOOGLE_APPLICATION_DEFAULT environment variable or from the metadata
+#   server on Google Compute Engine.
+# - JSON key file: specify 'Project Id', 'Keyfile Path' and 'Scope'.
+# - Legacy P12 key files are not supported.
+# - JSON data provided the parameters
+
 import json
 import os
+from typing import Dict, Optional, Sequence
+
+from nck.config import logger
+
 import google.auth
 import google.oauth2.service_account
-
-from typing import Dict, Optional, Sequence
 
 _DEFAULT_SCOPES = ("https://www.googleapis.com/auth/cloud-platform",)  # type: Sequence[str]
 
 
-class GoogleBaseClass:
+class GoogleClient:
     scopes = _DEFAULT_SCOPES
 
     def _get_credentials_and_project_id(self) -> google.auth.credentials.Credentials:
