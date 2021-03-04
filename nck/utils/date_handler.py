@@ -2,7 +2,7 @@ import calendar
 from datetime import date, timedelta
 from typing import Tuple
 
-from nck.utils.exceptions import InconsistentDateDefinitionException, MissingDateDefinitionException, NoDateDefinitionException
+from nck.utils.exceptions import DateDefinitionException
 
 
 def __get_yesterday_date(current_date: date) -> Tuple[date, date]:
@@ -40,16 +40,15 @@ DEFAULT_DATE_RANGE_FUNCTIONS = {
 
 
 def check_date_range_definition_conformity(start_date: date, end_date: date, date_range: str):
-    if bool(start_date) != bool(end_date):
-        raise MissingDateDefinitionException("Both start_date and end_date must be defined")
+
     if date_range:
-        if all([start_date, end_date]):
-            raise InconsistentDateDefinitionException("You must define either (start_date, end_date) or date_range")
+        if any([start_date, end_date]):
+            raise DateDefinitionException("You must define either (start_date, end_date) or date_range")
     else:
-        if not any([start_date, end_date]):
-            raise NoDateDefinitionException("You must at least define a couple (start-date, end-date) or a date-range")
+        if not all([start_date, end_date]):
+            raise DateDefinitionException("You must at least define a couple (start-date, end-date) or a date-range")
         elif end_date < start_date:
-            raise InconsistentDateDefinitionException("Report end date should be equal or ulterior to report start date.")
+            raise DateDefinitionException("Report end date should be equal or ulterior to report start date.")
 
 
 def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date, date]:
