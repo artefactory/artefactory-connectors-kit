@@ -70,7 +70,6 @@ class ConfluenceReaderTest(TestCase):
         "content_type": "page",
         "spacekey": [],
         "field": ["title", "space.name", "label_names"],
-        "normalize_stream": False,
     }
 
     @mock.patch(

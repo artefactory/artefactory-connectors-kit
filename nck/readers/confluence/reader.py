@@ -28,7 +28,7 @@ from nck.streams.json_stream import JSONStream
 
 
 class ConfluenceReader(Reader):
-    def __init__(self, user_login, api_token, atlassian_domain, content_type, spacekey, field, normalize_stream):
+    def __init__(self, user_login, api_token, atlassian_domain, content_type, spacekey, field):
         self.user_login = user_login
         self.api_token = api_token
         self._build_headers()
@@ -36,7 +36,6 @@ class ConfluenceReader(Reader):
         self.content_type = content_type
         self.spacekeys = list(spacekey)
         self.fields = list(field)
-        self.normalize_stream = normalize_stream
 
         self._validate_spacekeys()
 

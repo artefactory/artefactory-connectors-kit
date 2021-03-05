@@ -56,8 +56,6 @@ from nck.utils.processor import processor
 )
 @click.option(
     "--dbm-day-range",
-    required=True,
-    default="LAST_7_DAYS",
     type=click.Choice(["PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK"]),
 )
 @processor("dbm_access_token", "dbm_refresh_token", "dbm_client_secret")

@@ -33,7 +33,6 @@ class TheTradeDeskReaderTest(TestCase):
         "report_schedule_name": "adgroup_performance_schedule",
         "start_date": datetime(2020, 1, 1),
         "end_date": datetime(2020, 3, 1),
-        "normalize_stream": False,
     }
 
     @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})

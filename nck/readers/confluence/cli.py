@@ -43,14 +43,6 @@ from nck.utils.processor import processor
     multiple=True,
     help="Fields that should be included in the report (path.to.field.value or custom_field)",
 )
-@click.option(
-    "--confluence-normalize-stream",
-    type=click.BOOL,
-    default=False,
-    help="If set to True, yields a NormalizedJSONStream (spaces and special "
-    "characters replaced by '_' in field names, which is useful for BigQuery). "
-    "Else, yields a standard JSONStream.",
-)
 @processor("confluence_user_login", "confluence_api_token")
 def confluence(**kwargs):
     return ConfluenceReader(**extract_args("confluence_", kwargs))

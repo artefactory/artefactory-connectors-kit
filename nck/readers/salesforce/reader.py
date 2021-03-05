@@ -20,7 +20,7 @@ import collections
 
 from nck.readers.reader import Reader
 from nck.readers.salesforce.client import SalesforceClient
-from nck.streams.normalized_json_stream import JSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.redis import RedisStateService
 from nck.utils.retry import retry
 

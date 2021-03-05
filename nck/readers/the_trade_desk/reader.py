@@ -31,17 +31,7 @@ from tenacity import retry, stop_after_delay, wait_exponential
 
 
 class TheTradeDeskReader(Reader):
-    def __init__(
-        self,
-        login,
-        password,
-        advertiser_id,
-        report_template_name,
-        report_schedule_name,
-        start_date,
-        end_date,
-        normalize_stream,
-    ):
+    def __init__(self, login, password, advertiser_id, report_template_name, report_schedule_name, start_date, end_date):
         self.login = login
         self.password = password
         self._build_headers()
@@ -51,7 +41,6 @@ class TheTradeDeskReader(Reader):
         self.start_date = start_date
         # Report end date is exclusive: to become inclusive, it should be incremented by 1 day
         self.end_date = end_date + timedelta(days=1)
-        self.normalize_stream = normalize_stream
 
         self._validate_dates()
 

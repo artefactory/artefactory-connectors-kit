@@ -54,14 +54,6 @@ from nck.utils.processor import processor
     type=click.DateTime(),
     help="End date of the period to request (format: YYYY-MM-DD)",
 )
-@click.option(
-    "--ttd-normalize-stream",
-    type=click.BOOL,
-    default=False,
-    help="If set to True, yields a NormalizedJSONStream (spaces and special "
-    "characters replaced by '_' in field names, which is useful for BigQuery). "
-    "Else, yields a standard JSONStream.",
-)
 @processor("ttd_login", "ttd_password")
 def the_trade_desk(**kwargs):
     return TheTradeDeskReader(**extract_args("ttd_", kwargs))
