@@ -181,21 +181,44 @@ How to develop a new reader
 
 To create a new reader, you should:
 
-1. Create the following modules: ``nck/readers/<SOURCE_NAME>_reader.py``` and ``nck/helpers/<SOURCE_NAME>_helper.py``
+1. Create a ``nck/readers/<SOURCE_NAME>/`` directory, having the following structure:
 
-The ``nck/readers/<SOURCE_NAME>_reader.py`` module should implement 2 components:
+.. code-block:: shell
 
-- A click-decorated reader function
+    - nck/
+    -- readers/
+    --- <SOURCE_NAME>/
+    ---- cli.py
+    ---- reader.py
+    ---- helper.py # Optional
+    ---- client.py # Optional
+    ---- config.py # Optional
 
-  - The reader function should be decorated with: a ``@click.command()`` decorator, several ``@click.option()`` decorators (*one for each input that should be provided by end-users*) and a ``@processor()`` decorator (*preventing secrets to appear in logs*). For further information on how to implement these decorators, please refer to `click documentation <https://click.palletsprojects.com/en/7.x/>`__.
-  - The reader function should return a reader class (*more details below*). A source name prefix should be added to the name of each class attribute, using the ``extract_args()`` function.
+``cli.py``
 
-- A reader class
+This module should implement a click-decorated reader function:
+
+  - The reader function should be decorated with: a ``@click.command()`` decorator, several ``@click.option()`` decorators (*one for each input provided by end-users*) and a ``@processor()`` decorator (*preventing secrets to appear in logs*). For further information on how to implement these decorators, please refer to `click documentation <https://click.palletsprojects.com/en/7.x/>`__.
+  - The reader function should return a reader class (*more details below*). The source prefix of each option will be removed when passed to the writer class, using the ``extract_args()`` function.
+
+``reader.py``
+
+This module should implement a reader class:
 
   - Class attributes should be the previously defined click options.
-  - The class should have a ``read()`` method, yielding a stream object. This stream object can be chosen from `available stream classes <https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/streams>`__, and has 2 attributes: a stream name and a source generator function named ``result_generator()``, and yielding individual source records.
+  - The class should have a ``read()`` method, yielding a stream object. This stream object can be chosen from `available stream classes <https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/streams>`__, and has 2 attributes: a stream name and a source generator function named ``result_generator()``, yielding individual source records.
 
-The ``nck/helpers/<SOURCE_NAME>_helper.py`` module should implement helper methods and configuration variables (*warning: we are planning to move configuration variables to a separate module for reasons of clarity*).
+``client.py`` (Optional)
+
+This module implements a client class, simplifying authentication to the source API.
+
+``helper.py`` (Optional)
+
+This module gathers all helper functions used in the ``reader.py`` or ``client.py`` modules.
+
+``config.py`` (Optional)
+
+This module gathers all configuration variables.
 
 2. In parallell, create unit tests for your methods under the ``tests/`` directory
 
@@ -204,8 +227,8 @@ The ``nck/helpers/<SOURCE_NAME>_helper.py`` module should implement helper metho
 4. Complete the documentation:
 
     - Add your reader to the list of existing readers in the :ref:`overview:Available Connectors` section.
+    - Add your reader to the list of existing readers in the repo's ``./README.md``.
     - Create dedicated documentation for your reader CLI command on the :ref:`readers:Readers` page. It should include the followings sections: *Source API - How to obtain credentials - Quickstart - Command name - Command options*
-    - Add your reader to the reader list in the README, at the root of the GitHub project
 
 ---------------------------
 How to develop a new stream
@@ -228,24 +251,51 @@ How to develop a new writer
 
 To develop a new writer, you should:
 
-1. Create the following module: ``nck/writers/<DESTINATION_NAME>_writer.py``
+1. Create a ``nck/writers/<DESTINATION_NAME>/`` directory, having the following structure:
 
-This module should implement 2 components:
+.. code-block:: shell
 
-- A click-decorated writer function
+    - nck/
+    -- writers/
+    --- <DESTINATION_NAME>/
+    ---- cli.py
+    ---- writer.py
+    ---- client.py # Optional
+    ---- helper.py # Optional
+    ---- config.py # Optional
 
-  - The writer function should be decorated with: a ``@click.command()`` decorator, several ``@click.option()`` decorators (*one for each input that should be provided by end-users*) and a ``@processor()`` decorator (*preventing secrets to appear in logs*). For further information on how to implement these decorators, please refer to `click documentation <https://click.palletsprojects.com/en/7.x/>`__.
-  - The writer function should return a writer class (*more details below*). A destination name prefix should be added to the name of each class attribute, using the `extract_args` function.
+``cli.py``
 
-- A writer class
+This module should implement a click-decorated writer function:
+
+  - The writer function should be decorated with: a ``@click.command()`` decorator, several ``@click.option()`` decorators (*one for each input provided by end-users*) and a ``@processor()`` decorator (*preventing secrets to appear in logs*). For further information on how to implement these decorators, please refer to `click documentation <https://click.palletsprojects.com/en/7.x/>`__.
+  - The writer function should return a writer class (*more details below*). The destination prefix of each option will be removed when passed to the writer class, using the ``extract_args()`` function.
+
+``writer.py``
+
+This module should implement a writer class:
 
   - Class attributes should be the previously defined click options.
   - The class should have a ``write()`` method, writing the stream object to the destination.
 
-2. Add your click-decorated writer function to the ``nck/writers/__init__.py`` file
+``client.py`` (Optional)
 
-3. Complete the documentation:
+This module implements a client class, simplifying authentication to the source API.
+
+``helper.py`` (Optional)
+
+This module gathers all helper functions used in the ``writer.py`` or ``client.py`` modules.
+
+``config.py`` (Optional)
+
+This module gathers all configuration variables.
+
+2. In parallell, create unit tests for your methods under the ``tests/`` directory
+
+3. Add your click-decorated writer function to the ``nck/writers/__init__.py`` file
+
+4. Complete the documentation:
 
     - Add your writer to the list of existing writers in the :ref:`overview:Available Connectors` section.
+    - Add your reader to the list of existing readers in the repo's ``./README.md``.
     - Create dedicated documentation for your writer CLI command on the :ref:`writers:Writers` page. It should include the followings sections: *Quickstart - Command name - Command options*
-    - Add your writer to the writer list in the README, at the root of the GitHub project
