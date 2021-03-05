@@ -7,7 +7,7 @@ from nck.utils.date_handler import (
     get_date_start_and_date_stop_from_date_range,
     build_date_range,
 )
-from nck.utils.exceptions import InconsistentDateDefinitionException, MissingDateDefinitionException, NoDateDefinitionException
+from nck.utils.exceptions import DateDefinitionException
 from parameterized import parameterized
 
 

@@ -20,7 +20,8 @@ from unittest import TestCase, mock
 from nck.readers.ttd_reader import TheTradeDeskReader
 
 from datetime import datetime
-from click import ClickException
+
+from nck.utils.exceptions import DateDefinitionException
 
 
 class TheTradeDeskReaderTest(TestCase):
@@ -42,7 +43,7 @@ class TheTradeDeskReaderTest(TestCase):
         temp_kwargs = self.kwargs.copy()
         params = {"start_date": datetime(2020, 1, 3), "end_date": datetime(2020, 1, 1)}
         temp_kwargs.update(params)
-        with self.assertRaises(ClickException):
+        with self.assertRaises(DateDefinitionException):
             TheTradeDeskReader(**temp_kwargs)
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
@@ -177,5 +178,3 @@ class TheTradeDeskReaderTest(TestCase):
         ]
         for output_record, expected_record in zip(output.readlines(), iter(expected)):
             self.assertEqual(output_record, expected_record)
-
-            

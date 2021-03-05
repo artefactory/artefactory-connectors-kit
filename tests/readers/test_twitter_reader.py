@@ -24,6 +24,7 @@ from datetime import datetime
 from twitter_ads.client import Client
 
 from nck.readers.twitter_reader import TwitterReader
+from nck.utils.exceptions import DateDefinitionException
 
 
 class TwitterReaderTest(TestCase):
@@ -55,7 +56,7 @@ class TwitterReaderTest(TestCase):
         temp_kwargs = self.kwargs.copy()
         params = {"start_date": datetime(2020, 1, 3), "end_date": datetime(2020, 1, 1)}
         temp_kwargs.update(params)
-        with self.assertRaises(ClickException):
+        with self.assertRaises(DateDefinitionException):
             TwitterReader(**temp_kwargs)
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
