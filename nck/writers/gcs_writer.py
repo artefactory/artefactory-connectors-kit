@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-# import os
 
 import click
 from google.cloud import storage
@@ -73,35 +72,3 @@ class GCSWriter(ObjectStorageWriter, GoogleBaseClass):
                     param_type="--gcs-project-id",
                 )
         return project_id
-
-    """def create_blob(self, name):
-        filename = self.path_for_name(name)
-        return self._bucket.blob(filename)
-
-    def uri_for_name(self, name):
-        path = self.path_for_name(name)
-        return f"gs://{self._bucket.name}/{path}"
-
-    def path_for_name(self, name):
-        if self._prefix:
-            return os.path.join(self._prefix, name)
-        return name
-
-    @staticmethod
-    def _extract_extension(full_file_name: str):
-        return os.path.splitext(full_file_name)
-
-
-
-    def _create_client(self):
-        return storage.Client(credentials=self._get_credentials(), project=self.project_id)
-
-    def _create_bucket(self):
-        client = self._create_client()
-
-
-    def _create_blob(self, file_name):
-        return NotImplementedError
-
-    def _get_uri(self, file_name):
-        return NotImplementedError"""
