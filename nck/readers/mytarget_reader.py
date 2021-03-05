@@ -93,12 +93,6 @@ class MyTargetReader(Reader):
         else:
             return True
 
-    def __get_valid_start_date_end_date(self, date_range: str, start_date: datetime, end_date: datetime):
-        if date_range is not None:
-            return get_date_start_and_date_stop_from_date_range(date_range)
-        else:
-            return (start_date.date(), end_date.date())
-
     def __retrieve_and_set_token(self):
         """In order to request the api, we need an active token. To do so we use the token which
         was provided to get a new one which is going to be active for a day. Once done we set it
@@ -158,9 +152,7 @@ class MyTargetReader(Reader):
             dict_banner.pop(unused_ban_id)
         return dict_banner
 
-    def map_budget_to_date_range(
-        self, dates: Dict[str, str], budgets: List[Dict[str, str]]
-    ) -> List[Dict[str, str]]:
+    def map_budget_to_date_range(self, dates: Dict[str, str], budgets: List[Dict[str, str]]) -> List[Dict[str, str]]:
         result = []
         dates_dict = self.__transform_list_dict_to_dict(dates)
         for budget in budgets:
