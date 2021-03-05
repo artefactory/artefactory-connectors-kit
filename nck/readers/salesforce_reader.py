@@ -23,7 +23,7 @@ import click
 import requests
 from nck.commands.command import processor
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args, has_arg, hasnt_arg
 from nck.utils.redis import RedisStateService
 from nck.utils.retry import retry
@@ -236,12 +236,12 @@ class SalesforceReader(Reader):
                 if self._watermark_column:
                     self._redis_state_service.set(self._name, row[self._watermark_column])
 
-        yield NormalizedJSONStream(self._name, result_generator())
+        yield JSONStream(self._name, result_generator())
 
     @classmethod
     def _clean_record(cls, record):
         """
-            Salesforces records contains metadata which we don't need during ingestion
+        Salesforces records contains metadata which we don't need during ingestion
         """
         return cls._flatten(cls._delete_metadata_from_record(record))
 

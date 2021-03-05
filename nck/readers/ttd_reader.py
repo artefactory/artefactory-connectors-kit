@@ -21,7 +21,6 @@ from nck.utils.args import extract_args
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
-from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.helpers.ttd_helper import (
     API_HOST,
     API_ENDPOINTS,
@@ -39,7 +38,10 @@ from nck.utils.text import get_report_generator_from_flat_file
 @click.option("--ttd-login", required=True, help="Login of your API account")
 @click.option("--ttd-password", required=True, help="Password of your API account")
 @click.option(
-    "--ttd-advertiser-id", required=True, multiple=True, help="Advertiser Ids for which report data should be fetched",
+    "--ttd-advertiser-id",
+    required=True,
+    multiple=True,
+    help="Advertiser Ids for which report data should be fetched",
 )
 @click.option(
     "--ttd-report-template-name",
@@ -57,12 +59,10 @@ from nck.utils.text import get_report_generator_from_flat_file
     "--ttd-end-date", type=click.DateTime(), help="End date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
-    "--ttd-normalize-stream",
-    type=click.BOOL,
-    default=False,
-    help="If set to True, yields a NormalizedJSONStream (spaces and special "
-    "characters replaced by '_' in field names, which is useful for BigQuery). "
-    "Else, yields a standard JSONStream.",
+    "--ttd-end-date",
+    required=True,
+    type=click.DateTime(),
+    help="End date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
     "--ttd-date-range",
@@ -161,7 +161,8 @@ class TheTradeDeskReader(Reader):
         self.report_schedule_id = json_response["ReportScheduleId"]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(36000),
     )
     def _wait_for_download_url(self):
         report_execution_details = self._get_report_execution_details()
@@ -205,9 +206,6 @@ class TheTradeDeskReader(Reader):
             for record in data:
                 yield {k: format_date(v) if k == "Date" else v for k, v in record.items()}
 
-        if self.normalize_stream:
-            yield NormalizedJSONStream("results_" + "_".join(self.advertiser_ids), result_generator())
-        else:
-            yield JSONStream("results_" + "_".join(self.advertiser_ids), result_generator())
+        yield JSONStream("results_" + "_".join(self.advertiser_ids), result_generator())
 
         self._delete_report_schedule()

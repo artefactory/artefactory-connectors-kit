@@ -62,15 +62,15 @@ class TestDateHandler(unittest.TestCase):
         ]
     )
     def test_check_date_range_definition_conformity_if_missing_date(self, start_date, end_date, date_range):
-        with self.assertRaises(MissingDateDefinitionException):
+        with self.assertRaises(DateDefinitionException):
             check_date_range_definition_conformity(start_date, end_date, date_range)
 
     def test_check_date_range_definition_conformity_if_no_date(self):
-        with self.assertRaises(NoDateDefinitionException):
+        with self.assertRaises(DateDefinitionException):
             check_date_range_definition_conformity(None, None, None)
 
     def test_check_date_range_definition_conformity_if_inconsistent(self):
-        with self.assertRaises(InconsistentDateDefinitionException):
+        with self.assertRaises(DateDefinitionException):
             check_date_range_definition_conformity(date(2021, 1, 12), date(2021, 1, 31), "YESTERDAY")
 
     @parameterized.expand([(date(2021, 1, 12), date(2021, 1, 31), None), (None, None, "YESTERDAY")])

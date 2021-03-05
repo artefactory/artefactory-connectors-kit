@@ -129,7 +129,7 @@ NCK commands can be broken down into 3 parts:
 
 .. code-block:: shell
 
-    read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03
+    read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric ga:sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03
 
 3. A writer command, and its options: in the below example, we are writing the output .nsjon stream into a Google Cloud Storage blob named ``google_analytics_report_2020-01-01.njson``, located under the Google Cloud Storage bucket ``nck_extracts``, with the path ``FR/google_analytics/``.
 
@@ -150,6 +150,18 @@ In the end, if we use ``write_console`` as a writer command, the combined NCK co
 You can now execute it into your terminal.
 
 **Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available** :ref:`readers:Readers` and :ref:`writers:Writers`.
+
+=====================
+Normalize field names
+=====================
+
+Some destinations have specific requirements for field names. This is the case of BigQuery, that only accepts letters, digits and underscores.
+
+To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option ``--normalize-keys true`` between ``python nck/entrypoint.py`` and the invocated reader command. If we keep using the previous Google Analytics example, it would give:
+
+.. code-block:: shell
+
+    python nck/entrypoint.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 ==========
 Contribute
@@ -189,10 +201,11 @@ The ``nck/helpers/<SOURCE_NAME>_helper.py`` module should implement helper metho
 
 3. Add your click-decorated reader function to the ``nck/readers/__init__.py`` file
 
-4. Complete the documentation
+4. Complete the documentation:
 
-- Add your reader to the list of existing readers in the :ref:`overview:Available Connectors` section.
-- Create dedicated documentation for your reader CLI command on the :ref:`readers:Readers` page. It should include the followings sections: *Source API - How to obtain credentials - Quickstart - Command name - Command options*
+    - Add your reader to the list of existing readers in the :ref:`overview:Available Connectors` section.
+    - Create dedicated documentation for your reader CLI command on the :ref:`readers:Readers` page. It should include the followings sections: *Source API - How to obtain credentials - Quickstart - Command name - Command options*
+    - Add your reader to the reader list in the README, at the root of the GitHub project
 
 ---------------------------
 How to develop a new stream
@@ -231,7 +244,8 @@ This module should implement 2 components:
 
 2. Add your click-decorated writer function to the ``nck/writers/__init__.py`` file
 
-3. Complete the documentation
+3. Complete the documentation:
 
-- Add your writer to the list of existing writers in the :ref:`overview:Available Connectors` section.
-- Create dedicated documentation for your writer CLI command on the :ref:`writers:Writers` page. It should include the followings sections: *Quickstart - Command name - Command options*
+    - Add your writer to the list of existing writers in the :ref:`overview:Available Connectors` section.
+    - Create dedicated documentation for your writer CLI command on the :ref:`writers:Writers` page. It should include the followings sections: *Quickstart - Command name - Command options*
+    - Add your writer to the writer list in the README, at the root of the GitHub project

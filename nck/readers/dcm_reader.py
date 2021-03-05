@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import csv
-import re
 import click
 
 from io import StringIO
@@ -24,13 +23,15 @@ from io import StringIO
 from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.utils.args import extract_args
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.clients.dcm_client import DCMClient
 from nck.helpers.dcm_helper import REPORT_TYPES
 from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
+from nck.utils.text import strip_prefix
 
 DATEFORMAT = "%Y-%m-%d"
 ENCODING = "utf-8"
+PREFIX = "^dfa:"
 
 
 @click.command(name="read_dcm")
@@ -112,7 +113,8 @@ class DcmReader(Reader):
                 is_main_data = False
 
             if is_main_data:
-                csv_reader = csv.DictReader(StringIO(decoded_row), self.dimensions + self.metrics)
+                formatted_keys = [strip_prefix(key, PREFIX) for key in self.dimensions + self.metrics]
+                csv_reader = csv.DictReader(StringIO(decoded_row), formatted_keys)
                 yield next(csv_reader)
 
     def result_generator(self):
@@ -130,12 +132,4 @@ class DcmReader(Reader):
             yield from self.format_response(report_generator)
 
     def read(self):
-        yield DCMStream("results" + "_".join(self.profile_ids), self.result_generator())
-
-
-class DCMStream(NormalizedJSONStream):
-    DCM_PREFIX = "^dfa:"
-
-    @staticmethod
-    def _normalize_key(key):
-        return re.split(DCMStream.DCM_PREFIX, key)[-1].replace(" ", "_").replace("-", "_")
+        yield JSONStream("results" + "_".join(self.profile_ids), self.result_generator())

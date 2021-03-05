@@ -19,7 +19,7 @@ from datetime import datetime
 from unittest import TestCase, mock
 from click import ClickException
 
-from nck.readers.ga_reader import GaReader, GaStream
+from nck.readers.ga_reader import GaReader
 
 
 class GaReaderTest(TestCase):
@@ -28,13 +28,6 @@ class GaReaderTest(TestCase):
     def mock_ga_reader(self, **kwargs):
         for param, value in kwargs.items():
             setattr(self, param, value)
-
-    def test_normalized_ga_stream(self):
-        rows = [{"ga:date": 0, "ga:dimension": "dim", "ga:metric": "met"}, {"ga:date-date": 0}, {"ga:date date": 0}]
-        expected = [{"date": 0, "dimension": "dim", "metric": "met"}, {"date_date": 0}, {"date_date": 0}]
-        ga_stream = GaStream("stream", iter(rows))
-        for row, output in zip(ga_stream.readlines(), iter(expected)):
-            assert row == output
 
     def test_format_date(self):
         test_date = "20190101"
@@ -60,7 +53,7 @@ class GaReaderTest(TestCase):
             "start_date": datetime(2019, 1, 1),
             "view_ids": ["0", "1"],
             "end_date": datetime(2019, 1, 1),
-            "add_view": False
+            "add_view": False,
         }
         reader = GaReader(**kwargs)
         kwargs["add_view"] = True
@@ -98,8 +91,10 @@ class GaReaderTest(TestCase):
             mock_query.return_value = format_data_return_value
 
             expected = [
-                {"date": "2019-01-01", "users": "2"}, {"date": "2019-01-01", "newUsers": "1"},
-                {"date": "2019-01-01", "users": "2"}, {"date": "2019-01-01", "newUsers": "1"}
+                {"date": "2019-01-01", "users": "2"},
+                {"date": "2019-01-01", "newUsers": "1"},
+                {"date": "2019-01-01", "users": "2"},
+                {"date": "2019-01-01", "newUsers": "1"},
             ]
 
             for data in reader.read():
@@ -113,7 +108,7 @@ class GaReaderTest(TestCase):
                 {"viewId": "0", "date": "2019-01-01", "users": "2"},
                 {"viewId": "0", "date": "2019-01-01", "newUsers": "1"},
                 {"viewId": "1", "date": "2019-01-01", "users": "2"},
-                {"viewId": "1", "date": "2019-01-01", "newUsers": "1"}
+                {"viewId": "1", "date": "2019-01-01", "newUsers": "1"},
             ]
 
             for data in reader_with_view_id.read():

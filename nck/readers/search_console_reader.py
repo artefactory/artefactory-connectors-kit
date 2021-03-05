@@ -26,7 +26,7 @@ from nck.config import logger
 
 from nck.commands.command import processor
 from nck.readers.reader import Reader
-from nck.streams.normalized_json_stream import NormalizedJSONStream
+from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
 from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 from nck.utils.retry import retry
@@ -172,4 +172,4 @@ class SearchConsoleReader(Reader):
                 return None
 
     def read(self):
-        yield NormalizedJSONStream("search_console_results", self.result_generator())
+        yield JSONStream("search_console_results", self.result_generator())

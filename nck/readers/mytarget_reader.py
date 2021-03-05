@@ -69,9 +69,11 @@ class MyTargetReader(Reader):
                 complete_daily_content = self.map_campaign_name_to_daily_stat(dict_stat, dict_camp, dict_banner)
                 yield JSONStream("mytarget_performance_", self.split_content_by_date(complete_daily_content))
             if self.request_type == "budget":
+                res_dates = self.__get_all_results("get_campaign_dates")
                 res_budgets = self.__get_all_results("get_campaign_budgets")
 
-                yield JSONStream("mytarget_budget_", self.__yield_from_list(res_budgets))
+                budget_with_dates = self.map_budget_to_date_range(res_dates, res_budgets)
+                yield JSONStream("mytarget_budget_", self.__yield_from_list(budget_with_dates))
 
     def __check_date_input_validity(self) -> bool:
         """The goal of this function is to check the validity of the date input parameters before retrieving the data."""
@@ -90,6 +92,12 @@ class MyTargetReader(Reader):
             raise ValueError(f"The start date {start_date} is posterior to end date {end_date}")
         else:
             return True
+
+    def __get_valid_start_date_end_date(self, date_range: str, start_date: datetime, end_date: datetime):
+        if date_range is not None:
+            return get_date_start_and_date_stop_from_date_range(date_range)
+        else:
+            return (start_date.date(), end_date.date())
 
     def __retrieve_and_set_token(self):
         """In order to request the api, we need an active token. To do so we use the token which
@@ -149,6 +157,18 @@ class MyTargetReader(Reader):
         for unused_ban_id in unused_banners:
             dict_banner.pop(unused_ban_id)
         return dict_banner
+
+    def map_budget_to_date_range(
+        self, dates: Dict[str, str], budgets: List[Dict[str, str]]
+    ) -> List[Dict[str, str]]:
+        result = []
+        dates_dict = self.__transform_list_dict_to_dict(dates)
+        for budget in budgets:
+            budget["date_start"] = dates_dict[budget["id"]]["date_start"]
+            budget["date_end"] = dates_dict[budget["id"]]["date_end"]
+            budget["status"] = dates_dict[budget["id"]]["status"]
+            result.append(budget)
+        return result
 
     def split_content_by_date(self, content: List[Dict[str, Any]]):
         """The goal of this function is to create a line for each date from the date range
@@ -266,7 +286,7 @@ class MyTargetReader(Reader):
         self.agency_client_token = agency_token
 
     def round_up_to_base(self, x: int, base: int) -> int:
-        return base * round(x / base)
+        return base * round(x / base) + 1
 
     def __yield_from_list(self, content: List[Dict[str, str]]):
         yield from content

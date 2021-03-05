@@ -234,7 +234,6 @@ Options                             Definition
 ``--confluence-content-type``       Type of content on which the report should be filtered. Possible values: page (default), blog_post.
 ``--confluence-spacekey``           (Optional) Space keys on which the report should be filtered
 ``--confluence-field``              Fields that should be included in the report (path.to.field.value or custom_field)
-``--confluence-normalize-stream``   If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by '_' in field names, which is useful for BigQuery). Else (default), yields a standard JSONStream.
 ==================================  ============================================================================================================================================================================================
 
 Please visit the following two pages for a better understanding of the `Authentification method <https://developer.atlassian.com/cloud/confluence/basic-auth-for-rest-apis/>`__, and of the parameters used in the `Get Content endpoint <https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get>`__.
@@ -385,7 +384,7 @@ If Facebook Object Type is...      Facebook Level can be...
 
 .. code-block:: shell
 
-    {"object_story_spec_video_data_call_to_action_value_link": "https://www.artefact.com"}
+    {"object_story_spec[video_data][call_to_action][value][link]": "https://www.artefact.com"}
 
 2.3 Action Breakdown filters can be applied to the fields of Ad Insights Requests using the following syntax: <FIELD_NAME>[<ACTION_BREAKDOWN>:<ACTION_BREAKDOWN_VALUE>]. You can combine multiple Action Breakdown filters on the same field by adding them in cascade next to each other.
 
@@ -423,7 +422,7 @@ If Facebook Object Type is...      Facebook Level can be...
 
 .. code-block:: shell
     
-    {"actions_action_type_video_view": "17", "actions_action_type_post_engagement": "25"}
+    {"actions[action_type:video_view]": "17", "actions[action_type:post_engagement]": "25"}
 
 ==============
 Google Readers
@@ -1223,7 +1222,6 @@ Options                         Definition
 ``--ttd-report-schedule-name``  Name of the Report Schedule to create
 ``--ttd-start-date``            Start date of the period to request (format: YYYY-MM-DD)
 ``--ttd-end-date``              End date of the period to request (format: YYYY-MM-DD)
-``--ttd-normalize-stream``      If set to True, yields a NormalizedJSONStream (spaces and special characters replaced by '_' in field names, which is useful for BigQuery). Else (default), yields a standard JSONStream.
 ==============================  ===========================================================================================================================================================================================
 
 If you need any further information, the documentation of The Trade Desk API can be found `here <https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview>`__.

@@ -27,7 +27,6 @@ from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.helpers.confluence_helper import parse_response, CUSTOM_FIELDS
 from nck.streams.json_stream import JSONStream
-from nck.streams.normalized_json_stream import NormalizedJSONStream
 
 RECORDS_PER_PAGE = 100
 CONTENT_ENDPOINT = "wiki/rest/api/content"
@@ -53,14 +52,6 @@ CONTENT_ENDPOINT = "wiki/rest/api/content"
     required=True,
     multiple=True,
     help="Fields that should be included in the report (path.to.field.value or custom_field)",
-)
-@click.option(
-    "--confluence-normalize-stream",
-    type=click.BOOL,
-    default=False,
-    help="If set to True, yields a NormalizedJSONStream (spaces and special "
-    "characters replaced by '_' in field names, which is useful for BigQuery). "
-    "Else, yields a standard JSONStream.",
 )
 @processor("confluence_user_login", "confluence_api_token")
 def confluence(**kwargs):
@@ -88,9 +79,7 @@ class ConfluenceReader(Reader):
         ]
         if len(requirements) > 0:
             inter_requirements = (
-                requirements[0]
-                if len(requirements) == 1
-                else list(set(requirements[0]).intersection(*requirements[1:]))
+                requirements[0] if len(requirements) == 1 else list(set(requirements[0]).intersection(*requirements[1:]))
             )
             if len(inter_requirements) == 0:
                 raise ClickException("Invalid request. No intersection found between spacekey requirements.")
@@ -104,9 +93,7 @@ class ConfluenceReader(Reader):
         self.headers = {"Authorization": f"Basic {encoded_string}", "Content-Type": "application/json"}
 
     def _build_params(self):
-        api_fields = [
-            CUSTOM_FIELDS[field]["source_field"] if field in CUSTOM_FIELDS else field for field in self.fields
-        ]
+        api_fields = [CUSTOM_FIELDS[field]["source_field"] if field in CUSTOM_FIELDS else field for field in self.fields]
         return {"type": self.content_type, "expand": ",".join(api_fields)}
 
     def _get_raw_response(self, page_nb, spacekey=None):
@@ -143,7 +130,4 @@ class ConfluenceReader(Reader):
             yield from self._get_report_generator()
 
     def read(self):
-        if self.normalize_stream:
-            yield NormalizedJSONStream("results_", self._get_aggregated_report_generator())
-        else:
-            yield JSONStream("results_", self._get_aggregated_report_generator())
+        yield JSONStream("results_", self._get_aggregated_report_generator())
