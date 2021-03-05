@@ -35,7 +35,7 @@ class ObjectStorageWriter(Writer):
         logger.info(f"Start writing file to {self._platform} ...")
         self._set_valid_file_name(stream.name)
         final_name = os.path.join(self._prefix, self._file_name)
-        # self._create_blob(final_name, stream)
+        self._create_blob(final_name, stream)
         logger.info(f"Wrote {final_name} file to {self._bucket_name} on  {self._platform} ...")
         uri = self._get_uri(final_name)
         logger.info(f"file can be found at {uri}")
@@ -46,10 +46,10 @@ class ObjectStorageWriter(Writer):
         list_buckets_names = [bucket.name for bucket in self._list_buckets(client)]
         try:
             assert self._bucket_name in list_buckets_names
-        except AssertionError:
+        except AssertionError as err:
             logger.exception(f"{self._bucket_name} bucket does not exist.")
             logger.exception(f"available buckets are {list_buckets_names}")
-
+            raise err
         return bucket
 
     def _get_file_path(self, file_name):
