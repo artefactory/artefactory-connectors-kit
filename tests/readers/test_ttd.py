@@ -33,7 +33,8 @@ class TheTradeDeskReaderTest(TestCase):
         "report_schedule_name": "adgroup_performance_schedule",
         "start_date": datetime(2020, 1, 1),
         "end_date": datetime(2020, 3, 1),
-        "normalize_stream": False
+        "normalize_stream": False,
+        "date_range": None,
     }
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
@@ -60,9 +61,7 @@ class TheTradeDeskReaderTest(TestCase):
             "ResultCount": 1,
         },
     )
-    def test_get_report_template_id_if_exactly_1_match(
-        self, mock_build_headers, mock_api_call
-    ):
+    def test_get_report_template_id_if_exactly_1_match(self, mock_build_headers, mock_api_call):
         reader = TheTradeDeskReader(**self.kwargs)
         reader._get_report_template_id()
         self.assertEqual(reader.report_template_id, 1234)
@@ -90,30 +89,22 @@ class TheTradeDeskReaderTest(TestCase):
             "ResultCount": 2,
         },
     )
-    def test_get_report_template_id_if_more_than_1_match(
-        self, mock_build_headers, mock_api_call
-    ):
+    def test_get_report_template_id_if_more_than_1_match(self, mock_build_headers, mock_api_call):
         with self.assertRaises(Exception):
             TheTradeDeskReader(**self.kwargs)._get_report_template_id()
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
-        "nck.readers.ttd_reader.TheTradeDeskReader._make_api_call",
-        return_value={"Result": [], "ResultCount": 0},
+        "nck.readers.ttd_reader.TheTradeDeskReader._make_api_call", return_value={"Result": [], "ResultCount": 0},
     )
-    def test_get_report_template_id_if_no_match(
-        self, mock_build_headers, mock_api_call
-    ):
+    def test_get_report_template_id_if_no_match(self, mock_build_headers, mock_api_call):
         with self.assertRaises(Exception):
             TheTradeDeskReader(**self.kwargs)._get_report_template_id()
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
         "nck.readers.ttd_reader.TheTradeDeskReader._make_api_call",
-        return_value={
-            "ReportScheduleId": 5678,
-            "ReportScheduleName": "adgroup_performance_schedule",
-        },
+        return_value={"ReportScheduleId": 5678, "ReportScheduleName": "adgroup_performance_schedule"},
     )
     def test_create_report_schedule(self, mock_build_headers, mock_api_call):
         reader = TheTradeDeskReader(**self.kwargs)
@@ -167,21 +158,9 @@ class TheTradeDeskReaderTest(TestCase):
         "nck.readers.ttd_reader.TheTradeDeskReader._download_report",
         return_value=iter(
             [
-                {
-                    "Date": "2020-01-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 10
-                },
-                {
-                    "Date": "2020-02-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 11
-                },
-                {
-                    "Date": "2020-02-03T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 12
-                },
+                {"Date": "2020-01-01T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 10},
+                {"Date": "2020-02-01T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 11},
+                {"Date": "2020-02-03T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 12},
             ]
         ),
     )
@@ -208,21 +187,9 @@ class TheTradeDeskReaderTest(TestCase):
         "nck.readers.ttd_reader.TheTradeDeskReader._download_report",
         return_value=iter(
             [
-                {
-                    "Date": "2020-01-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 10,
-                },
-                {
-                    "Date": "2020-02-01T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 11,
-                },
-                {
-                    "Date": "2020-02-03T00:00:00",
-                    "Advertiser ID": "XXXXX",
-                    "Impressions": 12,
-                },
+                {"Date": "2020-01-01T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 10},
+                {"Date": "2020-02-01T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 11},
+                {"Date": "2020-02-03T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 12},
             ]
         ),
     )

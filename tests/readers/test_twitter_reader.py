@@ -46,6 +46,7 @@ class TwitterReaderTest(TestCase):
         "add_request_date_to_report": None,
         "start_date": datetime(2020, 1, 1),
         "end_date": datetime(2020, 1, 3),
+        "date_range": None,
     }
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
@@ -158,18 +159,8 @@ class TwitterReaderTest(TestCase):
         raw_analytics_response = {
             "time_series_length": 1,
             "data": [
-                {
-                    "id": "XXXXX",
-                    "id_data": [
-                        {"segment": None, "metrics": {"retweets": [11], "likes": [12]}}
-                    ],
-                },
-                {
-                    "id": "YYYYY",
-                    "id_data": [
-                        {"segment": None, "metrics": {"retweets": [21], "likes": [22]}}
-                    ],
-                },
+                {"id": "XXXXX", "id_data": [{"segment": None, "metrics": {"retweets": [11], "likes": [12]}}]},
+                {"id": "YYYYY", "id_data": [{"segment": None, "metrics": {"retweets": [21], "likes": [22]}}]},
             ],
         }
         output = TwitterReader(**temp_kwargs).parse(raw_analytics_response)
@@ -194,30 +185,8 @@ class TwitterReaderTest(TestCase):
         raw_analytics_response = {
             "time_series_length": 3,
             "data": [
-                {
-                    "id": "XXXXX",
-                    "id_data": [
-                        {
-                            "segment": None,
-                            "metrics": {
-                                "retweets": [11, 12, 13],
-                                "likes": [14, 15, 16],
-                            },
-                        }
-                    ],
-                },
-                {
-                    "id": "YYYYY",
-                    "id_data": [
-                        {
-                            "segment": None,
-                            "metrics": {
-                                "retweets": [21, 22, 23],
-                                "likes": [24, 25, 26],
-                            },
-                        }
-                    ],
-                },
+                {"id": "XXXXX", "id_data": [{"segment": None, "metrics": {"retweets": [11, 12, 13], "likes": [14, 15, 16]}}]},
+                {"id": "YYYYY", "id_data": [{"segment": None, "metrics": {"retweets": [21, 22, 23], "likes": [24, 25, 26]}}]},
             ],
         }
         output = TwitterReader(**temp_kwargs).parse(raw_analytics_response)
@@ -244,27 +213,15 @@ class TwitterReaderTest(TestCase):
                 {
                     "id": "XXXXX",
                     "id_data": [
-                        {
-                            "segment": {"segment_name": "Male"},
-                            "metrics": {"retweets": [11], "likes": [12]},
-                        },
-                        {
-                            "segment": {"segment_name": "Female"},
-                            "metrics": {"retweets": [13], "likes": [14]},
-                        },
+                        {"segment": {"segment_name": "Male"}, "metrics": {"retweets": [11], "likes": [12]}},
+                        {"segment": {"segment_name": "Female"}, "metrics": {"retweets": [13], "likes": [14]}},
                     ],
                 },
                 {
                     "id": "YYYYY",
                     "id_data": [
-                        {
-                            "segment": {"segment_name": "Male"},
-                            "metrics": {"retweets": [21], "likes": [22]},
-                        },
-                        {
-                            "segment": {"segment_name": "Female"},
-                            "metrics": {"retweets": [23], "likes": [24]},
-                        },
+                        {"segment": {"segment_name": "Male"}, "metrics": {"retweets": [21], "likes": [22]}},
+                        {"segment": {"segment_name": "Female"}, "metrics": {"retweets": [23], "likes": [24]}},
                     ],
                 },
             ],
@@ -316,9 +273,7 @@ class TwitterReaderTest(TestCase):
 
     @mock.patch.object(Client, "__init__", lambda *args: None)
     @mock.patch.object(Client, "accounts", lambda *args: None)
-    @mock.patch.object(
-        TwitterReader, "get_active_entity_ids", lambda *args: ["XXXXX", "YYYYYY"]
-    )
+    @mock.patch.object(TwitterReader, "get_active_entity_ids", lambda *args: ["XXXXX", "YYYYYY"])
     @mock.patch.object(TwitterReader, "get_job_ids", lambda *args: ["123456789"])
     @mock.patch.object(TwitterReader, "get_job_result", mock_get_job_result)
     @mock.patch.object(TwitterReader, "get_raw_analytics_response", lambda *args: {})
