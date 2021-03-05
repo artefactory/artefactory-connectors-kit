@@ -23,6 +23,7 @@ from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.clients.sa360_client import SA360Client
 from nck.helpers.sa360_helper import REPORT_TYPES
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 from nck.utils.text import get_report_generator_from_flat_file
 
 DATEFORMAT = "%Y-%m-%d"
@@ -42,14 +43,9 @@ ENCODING = "utf-8"
     help="If empty, all advertisers from agency will be requested",
 )
 @click.option("--sa360-report-name", default="SA360 Report")
+@click.option("--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
-    "--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0]
-)
-@click.option(
-    "--sa360-column",
-    "sa360_columns",
-    multiple=True,
-    help="https://developers.google.com/search-ads/v2/report-types",
+    "--sa360-column", "sa360_columns", multiple=True, help="https://developers.google.com/search-ads/v2/report-types",
 )
 @click.option(
     "--sa360-saved-column",
@@ -57,8 +53,13 @@ ENCODING = "utf-8"
     multiple=True,
     help="https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns",
 )
-@click.option("--sa360-start-date", type=click.DateTime(), required=True)
-@click.option("--sa360-end-date", type=click.DateTime(), required=True)
+@click.option("--sa360-start-date", type=click.DateTime(), help="Start date of the report")
+@click.option("--sa360-end-date", type=click.DateTime(), help="End date of the report")
+@click.option(
+    "--sa360-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
 @processor("sa360_access_token", "sa360_refresh_token", "sa360_client_secret")
 def sa360_reader(**kwargs):
     return SA360Reader(**extract_args("sa360_", kwargs))
@@ -79,10 +80,9 @@ class SA360Reader(Reader):
         saved_columns,
         start_date,
         end_date,
+        date_range,
     ):
-        self.sa360_client = SA360Client(
-            access_token, client_id, client_secret, refresh_token
-        )
+        self.sa360_client = SA360Client(access_token, client_id, client_secret, refresh_token)
         self.agency_id = agency_id
         self.advertiser_ids = list(advertiser_ids)
         self.report_name = report_name
@@ -90,8 +90,7 @@ class SA360Reader(Reader):
         self.columns = list(columns)
         self.saved_columns = list(saved_columns)
         self.all_columns = self.columns + self.saved_columns
-        self.start_date = start_date
-        self.end_date = end_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
 
     def result_generator(self):
         for advertiser_id in self.advertiser_ids:
@@ -109,17 +108,11 @@ class SA360Reader(Reader):
 
             report_data = self.sa360_client.assert_report_file_ready(report_id)
 
-            for line_iterator in self.sa360_client.download_report_files(
-                report_data, report_id
-            ):
+            for line_iterator in self.sa360_client.download_report_files(report_data, report_id):
                 yield from get_report_generator_from_flat_file(line_iterator)
 
     def read(self):
         if not self.advertiser_ids:
-            self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(
-                self.agency_id
-            )
+            self.advertiser_ids = self.sa360_client.get_all_advertisers_of_agency(self.agency_id)
 
-        yield NormalizedJSONStream(
-            "results" + "_".join(self.advertiser_ids), self.result_generator()
-        )
+        yield NormalizedJSONStream("results" + "_".join(self.advertiser_ids), self.result_generator())

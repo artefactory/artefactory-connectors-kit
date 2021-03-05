@@ -31,6 +31,7 @@ from nck.helpers.ttd_helper import (
     ReportScheduleNotReadyError,
     format_date,
 )
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 from nck.utils.text import get_report_generator_from_flat_file
 
 
@@ -50,10 +51,10 @@ from nck.utils.text import get_report_generator_from_flat_file
     "--ttd-report-schedule-name", required=True, help="Name of the Report Schedule to create.",
 )
 @click.option(
-    "--ttd-start-date", required=True, type=click.DateTime(), help="Start date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-start-date", type=click.DateTime(), help="Start date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
-    "--ttd-end-date", required=True, type=click.DateTime(), help="End date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-end-date", type=click.DateTime(), help="End date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
     "--ttd-normalize-stream",
@@ -62,6 +63,11 @@ from nck.utils.text import get_report_generator_from_flat_file
     help="If set to True, yields a NormalizedJSONStream (spaces and special "
     "characters replaced by '_' in field names, which is useful for BigQuery). "
     "Else, yields a standard JSONStream.",
+)
+@click.option(
+    "--ttd-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
 @processor("ttd_login", "ttd_password")
 def the_trade_desk(**kwargs):
@@ -79,6 +85,7 @@ class TheTradeDeskReader(Reader):
         start_date,
         end_date,
         normalize_stream,
+        date_range,
     ):
         self.login = login
         self.password = password
@@ -86,9 +93,9 @@ class TheTradeDeskReader(Reader):
         self.advertiser_ids = list(advertiser_id)
         self.report_template_name = report_template_name
         self.report_schedule_name = report_schedule_name
-        self.start_date = start_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         # Report end date is exclusive: to become inclusive, it should be incremented by 1 day
-        self.end_date = end_date + timedelta(days=1)
+        self.end_date = self.end_date + timedelta(days=1)
         self.normalize_stream = normalize_stream
 
         self._validate_dates()

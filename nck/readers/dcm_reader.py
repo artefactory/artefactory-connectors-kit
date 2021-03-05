@@ -27,6 +27,7 @@ from nck.utils.args import extract_args
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.clients.dcm_client import DCMClient
 from nck.helpers.dcm_helper import REPORT_TYPES
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 
 DATEFORMAT = "%Y-%m-%d"
 ENCODING = "utf-8"
@@ -52,8 +53,8 @@ ENCODING = "utf-8"
     multiple=True,
     help="https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-dimensions",
 )
-@click.option("--dcm-start-date", type=click.DateTime(), required=True)
-@click.option("--dcm-end-date", type=click.DateTime(), required=True)
+@click.option("--dcm-start-date", type=click.DateTime(), help="Start date of the report")
+@click.option("--dcm-end-date", type=click.DateTime(), help="End date of the report")
 @click.option(
     "--dcm-filter",
     "dcm_filters",
@@ -61,6 +62,11 @@ ENCODING = "utf-8"
     multiple=True,
     help="A filter is a tuple following this pattern: (dimensionName, dimensionValue). "
     "https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-filters",
+)
+@click.option(
+    "--dcm-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
 @processor("dcm_access_token", "dcm_refresh_token", "dcm_client_secret")
 def dcm(**kwargs):
@@ -82,6 +88,7 @@ class DcmReader(Reader):
         start_date,
         end_date,
         filters,
+        date_range,
     ):
         self.dcm_client = DCMClient(access_token, client_id, client_secret, refresh_token)
         self.profile_ids = list(profile_ids)
@@ -89,8 +96,7 @@ class DcmReader(Reader):
         self.report_type = report_type
         self.metrics = list(metrics)
         self.dimensions = list(dimensions)
-        self.start_date = start_date
-        self.end_date = end_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         self.filters = list(filters)
 
     def format_response(self, report_generator):

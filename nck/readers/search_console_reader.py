@@ -28,6 +28,7 @@ from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.streams.normalized_json_stream import NormalizedJSONStream
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 from nck.utils.retry import retry
 
 
@@ -42,6 +43,11 @@ from nck.utils.retry import retry
 @click.option("--search-console-end-date", type=click.DateTime(), default=None)
 @click.option("--search-console-date-column", type=click.BOOL, default=False)
 @click.option("--search-console-row-limit", type=click.INT, default=25000)
+@click.option(
+    "--search-console-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
 @processor()
 def search_console(**params):
     return SearchConsoleReader(**extract_args("search_console_", params))
@@ -65,6 +71,7 @@ class SearchConsoleReader(Reader):
         end_date,
         date_column,
         row_limit,
+        date_range,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -72,8 +79,9 @@ class SearchConsoleReader(Reader):
         self.refresh_token = refresh_token
         self.dimensions = list(dimensions)
         self.site_url = site_url
-        self.start_date = datetime.strftime(start_date, DATEFORMAT)
-        self.end_date = datetime.strftime(self.check_end_date(end_date), DATEFORMAT)
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
+        self.start_date = datetime.strftime(self.start_date, DATEFORMAT)
+        self.end_date = datetime.strftime(self.check_end_date(self.end_date), DATEFORMAT)
         self.with_date_column = date_column
         self.row_limit = row_limit
 
@@ -101,7 +109,13 @@ class SearchConsoleReader(Reader):
 
     @staticmethod
     def check_end_date(end_date):
-        if end_date > MAX_END_DATE:
+        # adapt the class to be able to compare end_date with MAX_END_DATE (datetime)
+        if isinstance(end_date, datetime):
+            max_end_date = MAX_END_DATE
+        else:
+            max_end_date = MAX_END_DATE.date()
+
+        if end_date > max_end_date:
             logger.warning(f"The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)}")
         return end_date
 

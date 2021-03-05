@@ -40,6 +40,8 @@ from twitter_ads.cursor import Cursor
 # from twitter_ads.creative import TweetPreview
 from twitter_ads.creative import CardsFetch
 
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
+
 API_DATEFORMAT = "%Y-%m-%dT%H:%M:%SZ"
 REP_DATEFORMAT = "%Y-%m-%d"
 MAX_WAITING_SEC = 3600
@@ -136,6 +138,11 @@ MAX_CONCURRENT_JOBS = 100
     default=False,
     help="If set to 'True', the date on which the request is made will appear on each report record.",
 )
+@click.option(
+    "--twitter-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
 @processor(
     "twitter_consumer_key", "twitter_consumer_secret", "twitter_access_token", "twitter_access_token_secret",
 )
@@ -163,6 +170,7 @@ class TwitterReader(Reader):
         start_date,
         end_date,
         add_request_date_to_report,
+        date_range,
     ):
         # Authentication inputs
         self.client = Client(consumer_key, consumer_secret, access_token, access_token_secret)
@@ -171,8 +179,8 @@ class TwitterReader(Reader):
         # General inputs
         self.report_type = report_type
         self.entity = entity
-        self.start_date = start_date
-        self.end_date = end_date + timedelta(days=1)
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
+        self.end_date = self.end_date + timedelta(days=1)
         self.add_request_date_to_report = add_request_date_to_report
 
         # Report inputs: ENTITY
