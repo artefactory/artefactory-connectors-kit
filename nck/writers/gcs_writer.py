@@ -30,7 +30,7 @@ from nck.writers.objectstorage_writer import ObjectStorageWriter
 @click.option("--gcs-prefix", help="GCS path to write the file.")
 @click.option("--gcs-project-id", help="GCS Project Id")
 @click.option(
-    "--gcs-file-name",
+    "--gcs-filename",
     help="Override the default name of the file (don't add the extension)",
 )
 @processor()
@@ -39,11 +39,9 @@ def gcs(**kwargs):
 
 
 class GCSWriter(ObjectStorageWriter, GoogleBaseClass):
-    _client = None
-
-    def __init__(self, bucket, project_id, prefix=None, file_name=None, **kwargs):
+    def __init__(self, bucket, project_id, prefix=None, filename=None, **kwargs):
         self._project_id = self.get_project_id(project_id)
-        super().__init__(bucket, prefix, file_name, platform="GCS", **kwargs)
+        super().__init__(bucket, prefix, filename, platform="GCS", **kwargs)
 
     def _create_client(self):
         return storage.Client(credentials=self._get_credentials(), project=self._project_id)
@@ -59,7 +57,7 @@ class GCSWriter(ObjectStorageWriter, GoogleBaseClass):
         blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
 
     def _get_uri(self, file_name):
-        return f"gs{self._get_file_path}"
+        return f"gs{self._get_file_path(file_name)}"
 
     @staticmethod
     def get_project_id(project_id):

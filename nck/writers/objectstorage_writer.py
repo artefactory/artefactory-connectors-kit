@@ -23,34 +23,44 @@ from nck.utils.retry import retry
 
 
 class ObjectStorageWriter(Writer):
-    def __init__(self, bucket, prefix=None, file_name=None, platform=None, **kwargs):
-        self._bucket_name = bucket
+    def __init__(self, bucket_name, prefix=None, file_name=None, platform=None, **kwargs):
+        self._bucket_name = bucket_name
         self._prefix = prefix if prefix else ""
         self._file_name = file_name
         self._platform = platform
-        self.bucket = self._create_bucket()
+        self._bucket = self._get_bucket_if_exist()
 
     @retry
     def write(self, stream):
         logger.info(f"Start writing file to {self._platform} ...")
-        file_name = self._file_name if self._file_name else stream.name
-        final_name = os.path.join(self._prefix, file_name)
-        self._create_blob(final_name)
-        return self._get_uri(final_name)
+        print(self._file_name)
+        self._set_valid_file_name(stream.name)
+        print(self._file_name)
+        final_name = os.path.join(self._prefix, self._file_name)
+        self._create_blob(final_name, stream)
+        logger.info(f"Wrote {final_name} file to {self._bucket_name} on  {self._platform} ...")
+        uri = self._get_uri(final_name)
+        logger.info(f"file can be found at {uri}")
 
     def _get_bucket_if_exist(self):
-        client = self._create_client().Bucket(self._bucket_name)
+        client = self._create_client()
         bucket = self._create_bucket(client)
+        list_buckets_names = [bucket.name for bucket in self._list_buckets(client)]
         try:
-            assert bucket in self._list_buckets(client)
+            assert self._bucket_name in list_buckets_names
         except AssertionError as err:
             logger.exception(f"{self._bucket_name} bucket does not exist.")
+            logger.exception(f"available buckets are {list_buckets_names}")
             raise err
 
         return bucket
 
     def _get_file_path(self, file_name):
         return f"://{self._bucket_name}/{file_name}"
+
+    def _set_valid_file_name(self, stream_name):
+        file_format = os.path.splitext(stream_name)[-1]
+        self._file_name = f"{self._file_name}{file_format}" if self._file_name is not None else stream_name
 
     def _create_client(self):
         return NotImplementedError
@@ -61,7 +71,7 @@ class ObjectStorageWriter(Writer):
     def _list_buckets(self, client):
         return NotImplementedError
 
-    def _create_blob(self, file_name):
+    def _create_blob(self, file_name, stream):
         return NotImplementedError
 
     def _get_uri(self, file_name):

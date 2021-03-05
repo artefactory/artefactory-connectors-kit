@@ -28,20 +28,20 @@ from nck.utils.args import extract_args
 @click.option("--s3-access-key-id", required=True)
 @click.option("--s3-access-key-secret", required=True)
 @click.option("--s3-prefix", help="s3 Prefix", default=None)
-@click.option("--s3-filename", help="Filename (without prefix). Be sure to add file extension.")
+@click.option("--s3-filename", help="Override the default name of the file (don't add the extension)")
 @processor("s3_access_key_id", "s3_access_key_secret")
 def s3(**kwargs):
     return S3Writer(**extract_args("s3_", kwargs))
 
 
 class S3Writer(ObjectStorageWriter):
-    def __init__(self, bucket, access_key_id, access_key_secret, bucket_region, file_name=None, prefix=None, **kwargs):
+    def __init__(self, bucket_name, bucket_region, access_key_id, access_key_secret, prefix=None, filename=None, **kwargs):
         self.boto_config = {
             "region_name": bucket_region,
             "aws_access_key_id": access_key_id,
             "aws_secret_access_key": access_key_secret,
         }
-        super().__init__(bucket, prefix, file_name, platform="S3", **kwargs)
+        super().__init__(bucket_name=bucket_name, prefix=prefix, file_name=filename, platform="S3", **kwargs)
 
     def _create_client(self):
         return boto3.resource("s3", **self.boto_config)
@@ -56,4 +56,4 @@ class S3Writer(ObjectStorageWriter):
         self._bucket.upload_fileobj(stream.as_file(), file_name)
 
     def _get_uri(self, file_name):
-        return f"s3{self._get_file_path}"
+        return f"s3{self._get_file_path(file_name)}"
