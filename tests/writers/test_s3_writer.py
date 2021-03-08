@@ -29,7 +29,7 @@ class S3WriterTest(TestCase):
         client1.create_bucket(Bucket="test")
 
     def test_bucket_doesnt_exist(self):
-        with self.assertRaisesRegex(Exception, ".bucket does not exist."):
+        with self.assertRaisesRegex(Exception, "non-existing-bucket bucket does not exist. available buckets are \['test'\]"):
             S3Writer("non-existing-bucket", "us-east-1", "", "")
 
     @parameterized.expand(
