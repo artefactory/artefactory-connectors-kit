@@ -80,8 +80,6 @@ class SearchConsoleReader(Reader):
         self.dimensions = list(dimensions)
         self.site_url = site_url
         self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
-        self.start_date = datetime.strftime(self.start_date, DATEFORMAT)
-        self.end_date = datetime.strftime(self.check_end_date(self.end_date), DATEFORMAT)
         self.with_date_column = date_column
         self.row_limit = row_limit
 
@@ -109,21 +107,15 @@ class SearchConsoleReader(Reader):
 
     @staticmethod
     def check_end_date(end_date):
-        # adapt the class to be able to compare end_date with MAX_END_DATE (datetime)
-        if isinstance(end_date, datetime):
-            max_end_date = MAX_END_DATE
-        else:
-            max_end_date = MAX_END_DATE.date()
-
-        if end_date > max_end_date:
+        if end_date > MAX_END_DATE:
             logger.warning(f"The most recent date you can request is {datetime.strftime(MAX_END_DATE, DATEFORMAT)}")
         return end_date
 
     def build_query(self):
 
         query = {
-            "startDate": self.start_date,
-            "endDate": self.end_date,
+            "startDate": datetime.strftime(self.start_date, DATEFORMAT),
+            "endDate": datetime.strftime(self.check_end_date(self.end_date), DATEFORMAT),
             "dimensions": self.dimensions,
             "startRow": self.start_row,
             "rowLimit": self.row_limit,
@@ -156,7 +148,7 @@ class SearchConsoleReader(Reader):
 
             for dimension, key in zip(self.dimensions, keys):
                 if self.with_date_column:
-                    record["date"] = self.start_date
+                    record["date"] = datetime.strftime(self.start_date, DATEFORMAT)
                 record[dimension] = key
 
             for metric in metric_names:
