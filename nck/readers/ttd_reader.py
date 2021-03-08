@@ -12,7 +12,6 @@
 
 from nck.config import logger
 import click
-from click import ClickException
 import requests
 from datetime import timedelta
 from tenacity import retry, wait_exponential, stop_after_delay
@@ -30,6 +29,7 @@ from nck.helpers.ttd_helper import (
     ReportScheduleNotReadyError,
     format_date,
 )
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 from nck.utils.text import get_report_generator_from_flat_file
 
 
@@ -37,10 +37,7 @@ from nck.utils.text import get_report_generator_from_flat_file
 @click.option("--ttd-login", required=True, help="Login of your API account")
 @click.option("--ttd-password", required=True, help="Password of your API account")
 @click.option(
-    "--ttd-advertiser-id",
-    required=True,
-    multiple=True,
-    help="Advertiser Ids for which report data should be fetched",
+    "--ttd-advertiser-id", required=True, multiple=True, help="Advertiser Ids for which report data should be fetched",
 )
 @click.option(
     "--ttd-report-template-name",
@@ -49,21 +46,18 @@ from nck.utils.text import get_report_generator_from_flat_file
     "can be found within the MyReports section of The Trade Desk UI.",
 )
 @click.option(
-    "--ttd-report-schedule-name",
-    required=True,
-    help="Name of the Report Schedule to create.",
+    "--ttd-report-schedule-name", required=True, help="Name of the Report Schedule to create.",
 )
 @click.option(
-    "--ttd-start-date",
-    required=True,
-    type=click.DateTime(),
-    help="Start date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-start-date", type=click.DateTime(), help="Start date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
-    "--ttd-end-date",
-    required=True,
-    type=click.DateTime(),
-    help="End date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-end-date", type=click.DateTime(), help="End date of the period to request (format: YYYY-MM-DD)",
+)
+@click.option(
+    "--ttd-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
 @processor("ttd_login", "ttd_password")
 def the_trade_desk(**kwargs):
@@ -72,15 +66,7 @@ def the_trade_desk(**kwargs):
 
 class TheTradeDeskReader(Reader):
     def __init__(
-        self,
-        login,
-        password,
-        advertiser_id,
-        report_template_name,
-        report_schedule_name,
-        start_date,
-        end_date,
-        normalize_stream,
+        self, login, password, advertiser_id, report_template_name, report_schedule_name, start_date, end_date, date_range,
     ):
         self.login = login
         self.password = password
@@ -88,16 +74,9 @@ class TheTradeDeskReader(Reader):
         self.advertiser_ids = list(advertiser_id)
         self.report_template_name = report_template_name
         self.report_schedule_name = report_schedule_name
-        self.start_date = start_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         # Report end date is exclusive: to become inclusive, it should be incremented by 1 day
-        self.end_date = end_date + timedelta(days=1)
-        self.normalize_stream = normalize_stream
-
-        self._validate_dates()
-
-    def _validate_dates(self):
-        if self.end_date - timedelta(days=1) < self.start_date:
-            raise ClickException("Report end date should be equal or ulterior to report start date.")
+        self.end_date = self.end_date + timedelta(days=1)
 
     def _get_access_token(self):
         url = f"{API_HOST}/authentication"
@@ -156,8 +135,7 @@ class TheTradeDeskReader(Reader):
         self.report_schedule_id = json_response["ReportScheduleId"]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600),
-        stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
     )
     def _wait_for_download_url(self):
         report_execution_details = self._get_report_execution_details()

@@ -40,8 +40,8 @@ class AdobeReaderTest_2_0(TestCase):
     }
 
     @mock.patch("nck.clients.adobe_client.AdobeClient.__init__", return_value=None)
-    def test_build_date_range(self, mock_adobe_client):
-        output = AdobeReader_2_0(**self.kwargs).build_date_range()
+    def test_format_date_range(self, mock_adobe_client):
+        output = AdobeReader_2_0(**self.kwargs).format_date_range()
         expected = "2020-01-01T00:00:00/2020-01-03T00:00:00"
         self.assertEqual(output, expected)
 

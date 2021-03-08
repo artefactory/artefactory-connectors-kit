@@ -20,7 +20,8 @@ from unittest import TestCase, mock
 from nck.readers.ttd_reader import TheTradeDeskReader
 
 from datetime import datetime
-from click import ClickException
+
+from nck.utils.exceptions import DateDefinitionException
 
 
 class TheTradeDeskReaderTest(TestCase):
@@ -33,7 +34,7 @@ class TheTradeDeskReaderTest(TestCase):
         "report_schedule_name": "adgroup_performance_schedule",
         "start_date": datetime(2020, 1, 1),
         "end_date": datetime(2020, 3, 1),
-        "normalize_stream": False,
+        "date_range": None,
     }
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
@@ -41,7 +42,7 @@ class TheTradeDeskReaderTest(TestCase):
         temp_kwargs = self.kwargs.copy()
         params = {"start_date": datetime(2020, 1, 3), "end_date": datetime(2020, 1, 1)}
         temp_kwargs.update(params)
-        with self.assertRaises(ClickException):
+        with self.assertRaises(DateDefinitionException):
             TheTradeDeskReader(**temp_kwargs)
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
@@ -94,8 +95,7 @@ class TheTradeDeskReaderTest(TestCase):
 
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
-        "nck.readers.ttd_reader.TheTradeDeskReader._make_api_call",
-        return_value={"Result": [], "ResultCount": 0},
+        "nck.readers.ttd_reader.TheTradeDeskReader._make_api_call", return_value={"Result": [], "ResultCount": 0},
     )
     def test_get_report_template_id_if_no_match(self, mock_build_headers, mock_api_call):
         with self.assertRaises(Exception):
@@ -104,10 +104,7 @@ class TheTradeDeskReaderTest(TestCase):
     @mock.patch("nck.readers.ttd_reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
         "nck.readers.ttd_reader.TheTradeDeskReader._make_api_call",
-        return_value={
-            "ReportScheduleId": 5678,
-            "ReportScheduleName": "adgroup_performance_schedule",
-        },
+        return_value={"ReportScheduleId": 5678, "ReportScheduleName": "adgroup_performance_schedule"},
     )
     def test_create_report_schedule(self, mock_build_headers, mock_api_call):
         reader = TheTradeDeskReader(**self.kwargs)

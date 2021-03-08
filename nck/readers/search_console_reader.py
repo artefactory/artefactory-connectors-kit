@@ -28,6 +28,7 @@ from nck.commands.command import processor
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS, build_date_range
 from nck.utils.retry import retry
 
 
@@ -42,6 +43,11 @@ from nck.utils.retry import retry
 @click.option("--search-console-end-date", type=click.DateTime(), default=None)
 @click.option("--search-console-date-column", type=click.BOOL, default=False)
 @click.option("--search-console-row-limit", type=click.INT, default=25000)
+@click.option(
+    "--search-console-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
 @processor()
 def search_console(**params):
     return SearchConsoleReader(**extract_args("search_console_", params))
@@ -65,6 +71,7 @@ class SearchConsoleReader(Reader):
         end_date,
         date_column,
         row_limit,
+        date_range,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -72,8 +79,7 @@ class SearchConsoleReader(Reader):
         self.refresh_token = refresh_token
         self.dimensions = list(dimensions)
         self.site_url = site_url
-        self.start_date = datetime.strftime(start_date, DATEFORMAT)
-        self.end_date = datetime.strftime(self.check_end_date(end_date), DATEFORMAT)
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         self.with_date_column = date_column
         self.row_limit = row_limit
 
@@ -108,8 +114,8 @@ class SearchConsoleReader(Reader):
     def build_query(self):
 
         query = {
-            "startDate": self.start_date,
-            "endDate": self.end_date,
+            "startDate": datetime.strftime(self.start_date, DATEFORMAT),
+            "endDate": datetime.strftime(self.check_end_date(self.end_date), DATEFORMAT),
             "dimensions": self.dimensions,
             "startRow": self.start_row,
             "rowLimit": self.row_limit,
@@ -142,7 +148,7 @@ class SearchConsoleReader(Reader):
 
             for dimension, key in zip(self.dimensions, keys):
                 if self.with_date_column:
-                    record["date"] = self.start_date
+                    record["date"] = datetime.strftime(self.start_date, DATEFORMAT)
                 record[dimension] = key
 
             for metric in metric_names:
