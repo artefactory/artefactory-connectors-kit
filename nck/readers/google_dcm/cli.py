@@ -20,6 +20,7 @@ import click
 from nck.readers.google_dcm.config import REPORT_TYPES
 from nck.readers.google_dcm.reader import GoogleDCMReader
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 from nck.utils.processor import processor
 
 
@@ -43,8 +44,8 @@ from nck.utils.processor import processor
     multiple=True,
     help="https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-dimensions",
 )
-@click.option("--dcm-start-date", type=click.DateTime(), required=True)
-@click.option("--dcm-end-date", type=click.DateTime(), required=True)
+@click.option("--dcm-start-date", type=click.DateTime(), help="Start date of the report")
+@click.option("--dcm-end-date", type=click.DateTime(), help="End date of the report")
 @click.option(
     "--dcm-filter",
     "dcm_filters",
@@ -52,6 +53,11 @@ from nck.utils.processor import processor
     multiple=True,
     help="A filter is a tuple following this pattern: (dimensionName, dimensionValue). "
     "https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-filters",
+)
+@click.option(
+    "--dcm-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
 @processor("dcm_access_token", "dcm_refresh_token", "dcm_client_secret")
 def google_dcm(**kwargs):

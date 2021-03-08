@@ -16,9 +16,10 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+from nck.clients.google_sa360.client import GoogleSA360Client
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
-from nck.clients.google_sa360.client import GoogleSA360Client
+from nck.utils.date_handler import build_date_range
 from nck.utils.text import get_report_generator_from_flat_file
 
 
@@ -37,6 +38,7 @@ class GoogleSA360Reader(Reader):
         saved_columns,
         start_date,
         end_date,
+        date_range,
     ):
         self.sa360_client = GoogleSA360Client(access_token, client_id, client_secret, refresh_token)
         self.agency_id = agency_id
@@ -46,8 +48,7 @@ class GoogleSA360Reader(Reader):
         self.columns = list(columns)
         self.saved_columns = list(saved_columns)
         self.all_columns = self.columns + self.saved_columns
-        self.start_date = start_date
-        self.end_date = end_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
 
     def result_generator(self):
         for advertiser_id in self.advertiser_ids:

@@ -27,6 +27,7 @@ from nck.readers.twitter.config import (
 )
 from nck.readers.twitter.reader import TwitterReader
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 from nck.utils.processor import processor
 
 
@@ -52,9 +53,7 @@ from nck.utils.processor import processor
     help="Access token secret, available in the 'Keys and tokens' section of your Twitter Developper App.",
 )
 @click.option(
-    "--twitter-account-id",
-    required=True,
-    help="Specifies the Twitter Account ID for which the data should be returned.",
+    "--twitter-account-id", required=True, help="Specifies the Twitter Account ID for which the data should be returned.",
 )
 @click.option(
     "--twitter-report-type",
@@ -113,9 +112,7 @@ from nck.utils.processor import processor
 )
 @click.option("--twitter-start-date", type=click.DateTime(), help="Specifies report start date.")
 @click.option(
-    "--twitter-end-date",
-    type=click.DateTime(),
-    help="Specifies report end date (inclusive).",
+    "--twitter-end-date", type=click.DateTime(), help="Specifies report end date (inclusive).",
 )
 @click.option(
     "--twitter-add-request-date-to-report",
@@ -123,11 +120,13 @@ from nck.utils.processor import processor
     default=False,
     help="If set to 'True', the date on which the request is made will appear on each report record.",
 )
+@click.option(
+    "--twitter-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
 @processor(
-    "twitter_consumer_key",
-    "twitter_consumer_secret",
-    "twitter_access_token",
-    "twitter_access_token_secret",
+    "twitter_consumer_key", "twitter_consumer_secret", "twitter_access_token", "twitter_access_token_secret",
 )
 def twitter(**kwargs):
     return TwitterReader(**extract_args("twitter_", kwargs))

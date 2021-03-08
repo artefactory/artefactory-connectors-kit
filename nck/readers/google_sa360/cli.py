@@ -20,6 +20,7 @@ import click
 from nck.readers.google_sa360.config import REPORT_TYPES
 from nck.readers.google_sa360.reader import GoogleSA360Reader
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 from nck.utils.processor import processor
 
 
@@ -38,10 +39,7 @@ from nck.utils.processor import processor
 @click.option("--sa360-report-name", default="SA360 Report")
 @click.option("--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
-    "--sa360-column",
-    "sa360_columns",
-    multiple=True,
-    help="https://developers.google.com/search-ads/v2/report-types",
+    "--sa360-column", "sa360_columns", multiple=True, help="https://developers.google.com/search-ads/v2/report-types",
 )
 @click.option(
     "--sa360-saved-column",
@@ -49,8 +47,13 @@ from nck.utils.processor import processor
     multiple=True,
     help="https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns",
 )
-@click.option("--sa360-start-date", type=click.DateTime(), required=True)
-@click.option("--sa360-end-date", type=click.DateTime(), required=True)
+@click.option("--sa360-start-date", type=click.DateTime(), help="Start date of the report")
+@click.option("--sa360-end-date", type=click.DateTime(), help="End date of the report")
+@click.option(
+    "--sa360-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
 @processor("sa360_access_token", "sa360_refresh_token", "sa360_client_secret")
 def google_sa360(**kwargs):
     return GoogleSA360Reader(**extract_args("sa360_", kwargs))

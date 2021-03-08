@@ -28,7 +28,7 @@ from nck.writers.amazon_s3.writer import AmazonS3Writer
 @click.option("--s3-access-key-id", required=True)
 @click.option("--s3-access-key-secret", required=True)
 @click.option("--s3-prefix", help="s3 Prefix", default=None)
-@click.option("--s3-filename", help="Filename (without prefix). Be sure to add file extension.")
+@click.option("--s3-filename", help="Override the default name of the file (don't add the extension)")
 @processor("s3_access_key_id", "s3_access_key_secret")
 def amazon_s3(**kwargs):
     return AmazonS3Writer(**extract_args("s3_", kwargs))

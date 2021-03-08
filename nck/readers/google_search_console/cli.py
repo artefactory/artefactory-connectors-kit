@@ -19,6 +19,7 @@
 import click
 from nck.readers.google_search_console.reader import GoogleSearchConsoleReader
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 from nck.utils.processor import processor
 
 
@@ -33,6 +34,11 @@ from nck.utils.processor import processor
 @click.option("--search-console-end-date", type=click.DateTime(), default=None)
 @click.option("--search-console-date-column", type=click.BOOL, default=False)
 @click.option("--search-console-row-limit", type=click.INT, default=25000)
+@click.option(
+    "--search-console-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
+)
 @processor()
 def google_search_console(**params):
     return GoogleSearchConsoleReader(**extract_args("search_console_", params))

@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import calendar
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Tuple
 
 from nck.utils.exceptions import DateDefinitionException
@@ -81,3 +81,14 @@ def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date,
     """
     current_date = date.today()
     return DEFAULT_DATE_RANGE_FUNCTIONS[date_range](current_date)
+
+
+def build_date_range(start_date: date, end_date: date, date_range: str) -> Tuple[datetime, datetime]:
+    check_date_range_definition_conformity(start_date, end_date, date_range)
+
+    if date_range is not None:
+        start_date, end_date = get_date_start_and_date_stop_from_date_range(date_range)
+        start_date = datetime(start_date.year, start_date.month, start_date.day)
+        end_date = datetime(end_date.year, end_date.month, end_date.day)
+
+    return start_date, end_date

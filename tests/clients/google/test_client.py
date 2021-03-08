@@ -26,7 +26,7 @@ import nck.clients.google.client
 MODULE_NAME = "nck.clients.google.client"
 
 
-class TestGoogleCloudBaseClass(unittest.TestCase):
+class GoogleClientTest(unittest.TestCase):
     def setUp(self):
         self.instance = nck.clients.google.client.GoogleClient()
 

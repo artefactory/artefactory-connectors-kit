@@ -1,8 +1,12 @@
 import unittest
-from datetime import date
+from datetime import date, datetime
 
 from freezegun import freeze_time
-from nck.utils.date_handler import check_date_range_definition_conformity, get_date_start_and_date_stop_from_date_range
+from nck.utils.date_handler import (
+    check_date_range_definition_conformity,
+    get_date_start_and_date_stop_from_date_range,
+    build_date_range,
+)
 from nck.utils.exceptions import DateDefinitionException
 from parameterized import parameterized
 
@@ -72,3 +76,12 @@ class TestDateHandler(unittest.TestCase):
     @parameterized.expand([(date(2021, 1, 12), date(2021, 1, 31), None), (None, None, "YESTERDAY")])
     def test_check_date_range_definition_conformity(self, start_date, end_date, date_range):
         self.assertIsNone(check_date_range_definition_conformity(start_date, end_date, date_range))
+
+    @freeze_time("2021-02-11")
+    def test_build_date_range_without_dates(self):
+        self.assertTupleEqual(build_date_range(None, None, "PREVIOUS_MONTH"), (datetime(2021, 1, 1), datetime(2021, 1, 31)))
+
+    def test_build_date_range_with_dates(self):
+        self.assertTupleEqual(
+            build_date_range(datetime(2021, 1, 1), datetime(2021, 1, 31), None), (datetime(2021, 1, 1), datetime(2021, 1, 31))
+        )

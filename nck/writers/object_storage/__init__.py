@@ -15,14 +15,3 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-import unittest
-
-from nck.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
-
-
-class TestGoogleCloudStorageWriter(unittest.TestCase):
-    def test_extract_extension(self):
-        filename = "test.py"
-        print(GoogleCloudStorageWriter._extract_extension(filename))
-        assert GoogleCloudStorageWriter._extract_extension(filename) == ("test", ".py")

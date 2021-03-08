@@ -15,63 +15,34 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import os
 
-from click.exceptions import MissingParameter
+import click
 from google.cloud import storage
 from nck import config
-from nck.config import logger
 from nck.clients.google.client import GoogleClient
-from nck.writers.writer import Writer
+from nck.writers.object_storage.writer import ObjectStorageWriter
 
 
-class GoogleCloudStorageWriter(Writer, GoogleClient):
-    _client = None
+class GoogleCloudStorageWriter(ObjectStorageWriter, GoogleClient):
+    def __init__(self, bucket, project_id, prefix=None, filename=None, **kwargs):
+        self._project_id = self.get_project_id(project_id)
+        super().__init__(bucket, prefix, filename, platform="GCS", **kwargs)
 
-    def __init__(self, bucket, project_id, prefix=None, file_name=None):
-        project_id = self.get_project_id(project_id)
-        self._client = storage.Client(credentials=self._get_credentials(), project=project_id)
-        self._bucket = self._client.bucket(bucket)
-        self._prefix = prefix
-        self._file_name = file_name
+    def _create_client(self):
+        return storage.Client(credentials=self._get_credentials(), project=self._project_id)
 
-    def write(self, stream):
-        """
-        Write file into GCS Bucket
+    def _create_bucket(self, client):
+        return client.bucket(self._bucket_name)
 
-        attr:
-            stream: Stream with the file content.
-        return:
-            gcs_path (str): Path to file {bucket}/{prefix}{file_name}
-        """
-        logger.info("Writing file to GCS")
-        _, extension = self._extract_extension(stream.name)
-        file_name = self._extract_extension(self._file_name)[0] + extension if self._file_name is not None else stream.name
-        blob = self.create_blob(file_name)
+    def _list_buckets(self, client):
+        return client.list_buckets()
+
+    def _create_blob(self, file_name, stream):
+        blob = self._bucket.blob(file_name)
         blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
-        uri = self.uri_for_name(file_name)
 
-        logger.info(f"Uploaded file to {uri}")
-
-        return uri, blob
-
-    def create_blob(self, name):
-        filename = self.path_for_name(name)
-        return self._bucket.blob(filename)
-
-    def uri_for_name(self, name):
-        path = self.path_for_name(name)
-        return f"gs://{self._bucket.name}/{path}"
-
-    def path_for_name(self, name):
-        if self._prefix:
-            return os.path.join(self._prefix, name)
-        return name
-
-    @staticmethod
-    def _extract_extension(full_file_name: str):
-        """Returns a tuple: file_name, extension"""
-        return os.path.splitext(full_file_name)
+    def _get_uri(self, file_name):
+        return f"gs{self._get_file_path(file_name)}"
 
     @staticmethod
     def get_project_id(project_id):
@@ -79,8 +50,7 @@ class GoogleCloudStorageWriter(Writer, GoogleClient):
             try:
                 return config.PROJECT_ID
             except Exception:
-                raise MissingParameter(
-                    "Please provide a project id in ENV var or params.",
-                    param_type="--gcs-project-id",
+                raise click.exceptions.MissingParameter(
+                    "Please provide a project id in ENV var or params.", param_type="--gcs-project-id",
                 )
         return project_id

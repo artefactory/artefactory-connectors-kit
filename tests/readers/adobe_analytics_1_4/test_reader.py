@@ -22,7 +22,7 @@ from unittest import TestCase, mock
 from nck.readers.adobe_analytics_1_4.reader import AdobeAnalytics14Reader
 
 
-class AdobeReaderTest(TestCase):
+class AdobeAnalytics14ReaderTest(TestCase):
 
     DATEFORMAT = "%Y-%m-%d"
 
@@ -56,8 +56,7 @@ class AdobeReaderTest(TestCase):
 
     @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     @mock.patch(
-        "nck.readers.adobe_analytics_1_4.reader.AdobeAnalytics14Reader.query_report",
-        return_value={"reportID": "XXXXX"},
+        "nck.readers.adobe_analytics_1_4.reader.AdobeAnalytics14Reader.query_report", return_value={"reportID": "XXXXX"},
     )
     @mock.patch("nck.readers.adobe_analytics_1_4.reader.AdobeAnalytics14Reader.download_report", return_value=None)
     def test_read_empty_data(self, mock_adobe_client, mock_query_report, mock_download_report):

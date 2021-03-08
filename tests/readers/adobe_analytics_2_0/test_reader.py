@@ -22,7 +22,7 @@ from unittest import TestCase, mock
 from nck.readers.adobe_analytics_2_0.reader import AdobeAnalytics20Reader
 
 
-class AdobeReaderTest_2_0(TestCase):
+class AdobeAnalytics20ReaderTest(TestCase):
 
     kwargs = {
         "client_id": "",
@@ -40,8 +40,8 @@ class AdobeReaderTest_2_0(TestCase):
     }
 
     @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
-    def test_build_date_range(self, mock_adobe_client):
-        output = AdobeAnalytics20Reader(**self.kwargs).build_date_range()
+    def test_format_date_range(self, mock_adobe_client):
+        output = AdobeAnalytics20Reader(**self.kwargs).format_date_range()
         expected = "2020-01-01T00:00:00/2020-01-03T00:00:00"
         self.assertEqual(output, expected)
 
@@ -54,18 +54,10 @@ class AdobeReaderTest_2_0(TestCase):
         output = AdobeAnalytics20Reader(**temp_kwargs).build_report_description(metrics)
         expected = {
             "rsid": "XXXXXXXXX",
-            "globalFilters": [
-                {
-                    "type": "dateRange",
-                    "dateRange": "2020-01-01T00:00:00/2020-01-03T00:00:00",
-                }
-            ],
+            "globalFilters": [{"type": "dateRange", "dateRange": "2020-01-01T00:00:00/2020-01-03T00:00:00"}],
             "metricContainer": {
                 "metricFilters": [],
-                "metrics": [
-                    {"id": "metrics/visits", "filters": []},
-                    {"id": "metrics/bounces", "filters": []},
-                ],
+                "metrics": [{"id": "metrics/visits", "filters": []}, {"id": "metrics/bounces", "filters": []}],
             },
             "dimension": "variables/daterangeday",
             "settings": {"countRepeatInstances": "true", "limit": "5000"},
@@ -82,43 +74,15 @@ class AdobeReaderTest_2_0(TestCase):
         output = AdobeAnalytics20Reader(**temp_kwargs).build_report_description(metrics, breakdown_item_ids)
         expected = {
             "rsid": "XXXXXXXXX",
-            "globalFilters": [
-                {
-                    "type": "dateRange",
-                    "dateRange": "2020-01-01T00:00:00/2020-01-03T00:00:00",
-                }
-            ],
+            "globalFilters": [{"type": "dateRange", "dateRange": "2020-01-01T00:00:00/2020-01-03T00:00:00"}],
             "metricContainer": {
                 "metricFilters": [
-                    {
-                        "id": 0,
-                        "type": "breakdown",
-                        "dimension": "variables/daterangeday",
-                        "itemId": "000000000",
-                    },
-                    {
-                        "id": 1,
-                        "type": "breakdown",
-                        "dimension": "variables/campaign",
-                        "itemId": "111111111",
-                    },
-                    {
-                        "id": 2,
-                        "type": "breakdown",
-                        "dimension": "variables/daterangeday",
-                        "itemId": "000000000",
-                    },
-                    {
-                        "id": 3,
-                        "type": "breakdown",
-                        "dimension": "variables/campaign",
-                        "itemId": "111111111",
-                    },
+                    {"id": 0, "type": "breakdown", "dimension": "variables/daterangeday", "itemId": "000000000"},
+                    {"id": 1, "type": "breakdown", "dimension": "variables/campaign", "itemId": "111111111"},
+                    {"id": 2, "type": "breakdown", "dimension": "variables/daterangeday", "itemId": "000000000"},
+                    {"id": 3, "type": "breakdown", "dimension": "variables/campaign", "itemId": "111111111"},
                 ],
-                "metrics": [
-                    {"id": "metrics/visits", "filters": [0, 1]},
-                    {"id": "metrics/bounces", "filters": [2, 3]},
-                ],
+                "metrics": [{"id": "metrics/visits", "filters": [0, 1]}, {"id": "metrics/bounces", "filters": [2, 3]}],
             },
             "dimension": "variables/pagename",
             "settings": {"countRepeatInstances": "true", "limit": "5000"},
@@ -154,11 +118,7 @@ class AdobeReaderTest_2_0(TestCase):
     def test_get_parsed_report(self, mock_adobe_client, mock_get_report_page):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(
-            {
-                "dimension": ["daterangeday"],
-                "start_date": datetime.date(2020, 1, 1),
-                "end_date": datetime.date(2020, 1, 4),
-            }
+            {"dimension": ["daterangeday"], "start_date": datetime.date(2020, 1, 1), "end_date": datetime.date(2020, 1, 4)}
         )
         metrics = ["visits", "bounces"]
 
@@ -175,10 +135,7 @@ class AdobeReaderTest_2_0(TestCase):
     @mock.patch("nck.clients.adobe_analytics.client.AdobeAnalyticsClient.__init__", return_value=None)
     @mock.patch(
         "nck.readers.adobe_analytics_2_0.reader.AdobeAnalytics20Reader.get_node_values",
-        return_value={
-            "lasttouchchannel_1": "Paid Search",
-            "lasttouchchannel_2": "Natural_Search",
-        },
+        return_value={"lasttouchchannel_1": "Paid Search", "lasttouchchannel_2": "Natural_Search"},
     )
     def test_add_child_nodes_to_graph(self, mock_adobe_client, mock_get_node_values):
         graph = {
@@ -282,12 +239,7 @@ class AdobeReaderTest_2_0(TestCase):
     )
     def test_read_multiple_dimension_reports(self, mock_adobe_client, mock_add_child_nodes_to_graph, mock_get_parsed_report):
         temp_kwargs = self.kwargs.copy()
-        temp_kwargs.update(
-            {
-                "dimension": ["daterangeday", "lastouchchannel", "campaign"],
-                "metric": ["visits", "bounces"],
-            }
-        )
+        temp_kwargs.update({"dimension": ["daterangeday", "lastouchchannel", "campaign"], "metric": ["visits", "bounces"]})
         reader = AdobeAnalytics20Reader(**temp_kwargs)
         reader.node_values = {
             "daterangeday_1200201": "Jan 1, 2020",

@@ -38,6 +38,7 @@ class GoogleSearchConsoleReaderTest(TestCase):
             "end_date": datetime(2019, 1, 1),
             "date_column": False,
             "row_limit": "",
+            "date_range": None,
         }
         reader = GoogleSearchConsoleReader(**kwargs)
 

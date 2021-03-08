@@ -16,37 +16,34 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+
 from datetime import timedelta
 
 import requests
-from click import ClickException
 from nck.config import logger
 from nck.readers.reader import Reader
 from nck.readers.the_trade_desk.config import API_ENDPOINTS, API_HOST, DEFAULT_PAGING_ARGS, DEFAULT_REPORT_SCHEDULE_ARGS
 from nck.readers.the_trade_desk.helper import format_date
 from nck.streams.json_stream import JSONStream
+from nck.utils.date_handler import build_date_range
 from nck.utils.exceptions import ReportScheduleNotReadyError, ReportTemplateNotFoundError
 from nck.utils.text import get_report_generator_from_flat_file
 from tenacity import retry, stop_after_delay, wait_exponential
 
 
 class TheTradeDeskReader(Reader):
-    def __init__(self, login, password, advertiser_id, report_template_name, report_schedule_name, start_date, end_date):
+    def __init__(
+        self, login, password, advertiser_id, report_template_name, report_schedule_name, start_date, end_date, date_range,
+    ):
         self.login = login
         self.password = password
         self._build_headers()
         self.advertiser_ids = list(advertiser_id)
         self.report_template_name = report_template_name
         self.report_schedule_name = report_schedule_name
-        self.start_date = start_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         # Report end date is exclusive: to become inclusive, it should be incremented by 1 day
-        self.end_date = end_date + timedelta(days=1)
-
-        self._validate_dates()
-
-    def _validate_dates(self):
-        if self.end_date - timedelta(days=1) < self.start_date:
-            raise ClickException("Report end date should be equal or ulterior to report start date.")
+        self.end_date = self.end_date + timedelta(days=1)
 
     def _get_access_token(self):
         url = f"{API_HOST}/authentication"
@@ -105,8 +102,7 @@ class TheTradeDeskReader(Reader):
         self.report_schedule_id = json_response["ReportScheduleId"]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600),
-        stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
     )
     def _wait_for_download_url(self):
         report_execution_details = self._get_report_execution_details()

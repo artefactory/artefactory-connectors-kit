@@ -32,6 +32,7 @@ from nck.readers.twitter.config import (
     REP_DATEFORMAT,
 )
 from nck.streams.json_stream import JSONStream
+from nck.utils.date_handler import build_date_range
 from tenacity import retry, stop_after_delay, wait_exponential
 from twitter_ads import API_VERSION
 from twitter_ads.client import Client
@@ -63,6 +64,7 @@ class TwitterReader(Reader):
         start_date,
         end_date,
         add_request_date_to_report,
+        date_range,
     ):
         # Authentication inputs
         self.client = Client(consumer_key, consumer_secret, access_token, access_token_secret)
@@ -71,8 +73,8 @@ class TwitterReader(Reader):
         # General inputs
         self.report_type = report_type
         self.entity = entity
-        self.start_date = start_date
-        self.end_date = end_date + timedelta(days=1)
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
+        self.end_date = self.end_date + timedelta(days=1)
         self.add_request_date_to_report = add_request_date_to_report
 
         # Report inputs: ENTITY
@@ -94,17 +96,11 @@ class TwitterReader(Reader):
         Validate combination of input parameters (triggered in TwitterReader constructor).
         """
 
-        self.validate_dates()
         self.validate_analytics_segmentation()
         self.validate_analytics_metric_groups()
         self.validate_analytics_entity()
         self.validate_reach_entity()
         self.validate_entity_attributes()
-
-    def validate_dates(self):
-
-        if self.end_date - timedelta(days=1) < self.start_date:
-            raise ClickException("Report end date should be equal or ulterior to report start date.")
 
     def validate_analytics_segmentation(self):
 
@@ -213,8 +209,7 @@ class TwitterReader(Reader):
         ]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600),
-        stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
     )
     def _waiting_for_job_to_complete(self, job_id):
         """

@@ -23,6 +23,7 @@ from nck.clients.google_dcm.client import GoogleDCMClient
 from nck.readers.google_dcm.config import ENCODING, PREFIX
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
+from nck.utils.date_handler import build_date_range
 from nck.utils.text import strip_prefix
 
 
@@ -41,6 +42,7 @@ class GoogleDCMReader(Reader):
         start_date,
         end_date,
         filters,
+        date_range,
     ):
         self.dcm_client = GoogleDCMClient(access_token, client_id, client_secret, refresh_token)
         self.profile_ids = list(profile_ids)
@@ -48,8 +50,7 @@ class GoogleDCMReader(Reader):
         self.report_type = report_type
         self.metrics = list(metrics)
         self.dimensions = list(dimensions)
-        self.start_date = start_date
-        self.end_date = end_date
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         self.filters = list(filters)
 
     def format_response(self, report_generator):

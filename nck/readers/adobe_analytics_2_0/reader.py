@@ -22,7 +22,6 @@ from datetime import timedelta
 from itertools import chain
 
 import requests
-from click.exceptions import ClickException
 from nck.clients.adobe_analytics.client import AdobeAnalyticsClient
 from nck.config import logger
 from nck.readers.adobe_analytics_2_0.config import API_REQUESTS_OVER_WINDOW_LIMIT, API_WINDOW_DURATION, DATEFORMAT
@@ -34,7 +33,7 @@ from nck.readers.adobe_analytics_2_0.helper import (
 )
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
-from nck.utils.date_handler import check_date_range_definition_conformity, get_date_start_and_date_stop_from_date_range
+from nck.utils.date_handler import build_date_range
 from nck.utils.exceptions import APIRateLimitError
 from nck.utils.retry import retry
 
@@ -60,25 +59,13 @@ class AdobeAnalytics20Reader(Reader):
         self.report_suite_id = report_suite_id
         self.dimensions = list(dimension)
         self.metrics = list(metric)
-        self.start_date = start_date
-        if end_date is not None:
-            self.end_date = end_date + timedelta(days=1)
-        else:
-            self.end_date = end_date
-        self.date_range = date_range
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
+        self.end_date = self.end_date + timedelta(days=1)
         self.ingestion_tracker = []
         self.node_values = {}
 
-        check_date_range_definition_conformity(self.start_date, self.end_date, self.date_range)
-
-    def build_date_range(self):
-        if self.start_date is not None and self.end_date is not None and self.date_range is None:
-            return f"{self.start_date.strftime(DATEFORMAT)}/{self.end_date.strftime(DATEFORMAT)}"
-        elif self.start_date is None and self.end_date is None and self.date_range is not None:
-            start_date, end_date = get_date_start_and_date_stop_from_date_range(self.date_range)
-            return f"{start_date.strftime(DATEFORMAT)}/{(end_date + timedelta(days=1)).strftime(DATEFORMAT)}"
-        else:
-            raise ClickException("Dates are not defined properly. Please set start and end dates or a date range")
+    def format_date_range(self):
+        return f"{self.start_date.strftime(DATEFORMAT)}/{self.end_date.strftime(DATEFORMAT)}"
 
     def build_report_description(self, metrics, breakdown_item_ids=[]):
         """
@@ -90,17 +77,14 @@ class AdobeAnalytics20Reader(Reader):
 
         rep_desc = {
             "rsid": self.report_suite_id,
-            "globalFilters": [{"type": "dateRange", "dateRange": self.build_date_range()}],
+            "globalFilters": [{"type": "dateRange", "dateRange": self.format_date_range()}],
             "metricContainer": {},
             "dimension": f"variables/{self.dimensions[len(breakdown_item_ids)]}",
             "settings": {"countRepeatInstances": "true", "limit": "5000"},
         }
 
         rep_desc = add_metric_container_to_report_description(
-            rep_desc=rep_desc,
-            dimensions=self.dimensions,
-            metrics=metrics,
-            breakdown_item_ids=breakdown_item_ids,
+            rep_desc=rep_desc, dimensions=self.dimensions, metrics=metrics, breakdown_item_ids=breakdown_item_ids,
         )
 
         return rep_desc

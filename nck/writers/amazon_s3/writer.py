@@ -17,52 +17,29 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import boto3
-from nck.config import logger
-from nck.utils.retry import retry
-from nck.writers.writer import Writer
+from nck.writers.object_storage.writer import ObjectStorageWriter
 
 
-class AmazonS3Writer(Writer):
-    def __init__(self, bucket_name, access_key_id, access_key_secret, bucket_region, **kwargs):
-        boto_config = {
+class AmazonS3Writer(ObjectStorageWriter):
+    def __init__(self, bucket_name, bucket_region, access_key_id, access_key_secret, prefix=None, filename=None, **kwargs):
+        self.boto_config = {
             "region_name": bucket_region,
             "aws_access_key_id": access_key_id,
             "aws_secret_access_key": access_key_secret,
         }
-        self._bucket_name = bucket_name
-        self._bucket_region = bucket_region
-        self._s3_resource = boto3.resource("s3", **boto_config)
-        self.kwargs = kwargs
+        super().__init__(bucket_name=bucket_name, prefix=prefix, file_name=filename, platform="S3", **kwargs)
 
-    @retry
-    def write(self, stream):
+    def _create_client(self):
+        return boto3.resource("s3", **self.boto_config)
 
-        logger.info("Start writing file to S3 ...")
-        bucket = self._s3_resource.Bucket(self._bucket_name)
+    def _create_bucket(self, client):
+        return client.Bucket(self._bucket_name)
 
-        if bucket not in self._s3_resource.buckets.all():
-            self._s3_resource.create_bucket(
-                Bucket=self._bucket_name,
-                CreateBucketConfiguration={"LocationConstraint": self._bucket_region},
-            )
+    def _list_buckets(self, client):
+        return client.buckets.all()
 
-        bucket_region = self._s3_resource.meta.client.get_bucket_location(Bucket=self._bucket_name)["LocationConstraint"]
+    def _create_blob(self, file_name, stream):
+        self._bucket.upload_fileobj(stream.as_file(), file_name)
 
-        # if the bucket region doesn't match the presigned url generated, will not work
-        assert (
-            bucket_region == self._bucket_region
-        ), f"the region you provided ({self._bucket_region}) does'nt match the bucket's found region : ({bucket_region})"
-        if self.kwargs.get("prefix"):
-            prefix = self.kwargs.get("prefix") + "/"
-        else:
-            prefix = ""
-
-        filename = f"{prefix}{self.kwargs['filename'] if self.kwargs['filename'] is not None else stream.name}"
-        bucket.upload_fileobj(stream.as_file(), filename)
-        url_file = self._s3_resource.meta.client.generate_presigned_url(
-            "get_object",
-            Params={"Bucket": self._bucket_name, "Key": stream.name},
-            ExpiresIn=3600,
-        )
-        logger.info(f"file written at location {url_file}")
-        return url_file, bucket
+    def _get_uri(self, file_name):
+        return f"s3{self._get_file_path(file_name)}"

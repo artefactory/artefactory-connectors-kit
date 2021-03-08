@@ -21,9 +21,10 @@ from datetime import datetime, timedelta
 import httplib2
 from googleapiclient.discovery import build
 from nck.config import logger
-from nck.readers.reader import Reader
 from nck.readers.google_search_console.config import DATEFORMAT, GOOGLE_TOKEN_URI
+from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
+from nck.utils.date_handler import build_date_range
 from nck.utils.retry import retry
 from oauth2client import GOOGLE_REVOKE_URI
 from oauth2client.client import GoogleCredentials
@@ -45,6 +46,7 @@ class GoogleSearchConsoleReader(Reader):
         end_date,
         date_column,
         row_limit,
+        date_range,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -52,8 +54,7 @@ class GoogleSearchConsoleReader(Reader):
         self.refresh_token = refresh_token
         self.dimensions = list(dimensions)
         self.site_url = site_url
-        self.start_date = datetime.strftime(start_date, DATEFORMAT)
-        self.end_date = datetime.strftime(self.check_end_date(end_date), DATEFORMAT)
+        self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         self.with_date_column = date_column
         self.row_limit = row_limit
 
@@ -88,8 +89,8 @@ class GoogleSearchConsoleReader(Reader):
     def build_query(self):
 
         query = {
-            "startDate": self.start_date,
-            "endDate": self.end_date,
+            "startDate": datetime.strftime(self.start_date, DATEFORMAT),
+            "endDate": datetime.strftime(self.check_end_date(self.end_date), DATEFORMAT),
             "dimensions": self.dimensions,
             "startRow": self.start_row,
             "rowLimit": self.row_limit,
@@ -122,7 +123,7 @@ class GoogleSearchConsoleReader(Reader):
 
             for dimension, key in zip(self.dimensions, keys):
                 if self.with_date_column:
-                    record["date"] = self.start_date
+                    record["date"] = datetime.strftime(self.start_date, DATEFORMAT)
                 record[dimension] = key
 
             for metric in metric_names:

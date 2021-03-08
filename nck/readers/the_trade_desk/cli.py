@@ -19,6 +19,7 @@
 import click
 from nck.readers.the_trade_desk.reader import TheTradeDeskReader
 from nck.utils.args import extract_args
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 from nck.utils.processor import processor
 
 
@@ -26,10 +27,7 @@ from nck.utils.processor import processor
 @click.option("--ttd-login", required=True, help="Login of your API account")
 @click.option("--ttd-password", required=True, help="Password of your API account")
 @click.option(
-    "--ttd-advertiser-id",
-    required=True,
-    multiple=True,
-    help="Advertiser Ids for which report data should be fetched",
+    "--ttd-advertiser-id", required=True, multiple=True, help="Advertiser Ids for which report data should be fetched",
 )
 @click.option(
     "--ttd-report-template-name",
@@ -38,21 +36,18 @@ from nck.utils.processor import processor
     "can be found within the MyReports section of The Trade Desk UI.",
 )
 @click.option(
-    "--ttd-report-schedule-name",
-    required=True,
-    help="Name of the Report Schedule to create.",
+    "--ttd-report-schedule-name", required=True, help="Name of the Report Schedule to create.",
 )
 @click.option(
-    "--ttd-start-date",
-    required=True,
-    type=click.DateTime(),
-    help="Start date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-start-date", type=click.DateTime(), help="Start date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
-    "--ttd-end-date",
-    required=True,
-    type=click.DateTime(),
-    help="End date of the period to request (format: YYYY-MM-DD)",
+    "--ttd-end-date", type=click.DateTime(), help="End date of the period to request (format: YYYY-MM-DD)",
+)
+@click.option(
+    "--ttd-date-range",
+    type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
+    help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
 @processor("ttd_login", "ttd_password")
 def the_trade_desk(**kwargs):
