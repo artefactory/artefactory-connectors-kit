@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import date, datetime
 
 from freezegun import freeze_time
 from nck.utils.date_handler import (
@@ -79,9 +79,9 @@ class TestDateHandler(unittest.TestCase):
 
     @freeze_time("2021-02-11")
     def test_build_date_range_without_dates(self):
-        self.assertTupleEqual(build_date_range(None, None, "PREVIOUS_MONTH"), (date(2021, 1, 1), date(2021, 1, 31)))
+        self.assertTupleEqual(build_date_range(None, None, "PREVIOUS_MONTH"), (datetime(2021, 1, 1), datetime(2021, 1, 31)))
 
     def test_build_date_range_with_dates(self):
         self.assertTupleEqual(
-            build_date_range(date(2021, 1, 1), date(2021, 1, 31), None), (date(2021, 1, 1), date(2021, 1, 31))
+            build_date_range(datetime(2021, 1, 1), datetime(2021, 1, 31), None), (datetime(2021, 1, 1), datetime(2021, 1, 31))
         )

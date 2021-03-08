@@ -1,5 +1,5 @@
 import calendar
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Tuple
 
 from nck.utils.exceptions import DateDefinitionException
@@ -74,11 +74,13 @@ def build_date_range(start_date, end_date, date_range):
         date_range (str): One of the default date ranges that exist
 
     Returns:
-        Tuple[date, date]: date start and date stop that match the date range
+        Tuple[datetime, datetime]: date start and date stop that match the date range
     """
     check_date_range_definition_conformity(start_date, end_date, date_range)
 
     if date_range is not None:
         start_date, end_date = get_date_start_and_date_stop_from_date_range(date_range)
+        start_date = datetime.combine(start_date, datetime.min.time())
+        end_date = datetime.combine(end_date, datetime.min.time())
 
     return start_date, end_date
