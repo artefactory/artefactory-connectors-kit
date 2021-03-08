@@ -38,10 +38,7 @@ from nck.utils.text import get_report_generator_from_flat_file
 @click.option("--ttd-login", required=True, help="Login of your API account")
 @click.option("--ttd-password", required=True, help="Password of your API account")
 @click.option(
-    "--ttd-advertiser-id",
-    required=True,
-    multiple=True,
-    help="Advertiser Ids for which report data should be fetched",
+    "--ttd-advertiser-id", required=True, multiple=True, help="Advertiser Ids for which report data should be fetched",
 )
 @click.option(
     "--ttd-report-template-name",
@@ -59,12 +56,6 @@ from nck.utils.text import get_report_generator_from_flat_file
     "--ttd-end-date", type=click.DateTime(), help="End date of the period to request (format: YYYY-MM-DD)",
 )
 @click.option(
-    "--ttd-end-date",
-    required=True,
-    type=click.DateTime(),
-    help="End date of the period to request (format: YYYY-MM-DD)",
-)
-@click.option(
     "--ttd-date-range",
     type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
     help=f"One of the available NCK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
@@ -76,16 +67,7 @@ def the_trade_desk(**kwargs):
 
 class TheTradeDeskReader(Reader):
     def __init__(
-        self,
-        login,
-        password,
-        advertiser_id,
-        report_template_name,
-        report_schedule_name,
-        start_date,
-        end_date,
-        normalize_stream,
-        date_range,
+        self, login, password, advertiser_id, report_template_name, report_schedule_name, start_date, end_date, date_range,
     ):
         self.login = login
         self.password = password
@@ -96,7 +78,6 @@ class TheTradeDeskReader(Reader):
         self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         # Report end date is exclusive: to become inclusive, it should be incremented by 1 day
         self.end_date = self.end_date + timedelta(days=1)
-        self.normalize_stream = normalize_stream
 
         self._validate_dates()
 
@@ -161,8 +142,7 @@ class TheTradeDeskReader(Reader):
         self.report_schedule_id = json_response["ReportScheduleId"]
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600),
-        stop=stop_after_delay(36000),
+        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
     )
     def _wait_for_download_url(self):
         report_execution_details = self._get_report_execution_details()
