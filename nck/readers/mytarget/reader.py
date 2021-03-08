@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import itertools
-from datetime import date, datetime
+from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 import requests
@@ -61,10 +61,10 @@ class MyTargetReader(Reader):
         )
 
     def __check_date_not_in_future(self, end_date: datetime) -> bool:
-        if end_date <= date.today():
+        if end_date <= datetime.today():
             return True
         else:
-            raise ValueError(f"The end date {end_date} is posterior to current date {date.today()}")
+            raise ValueError(f"The end date {end_date} is posterior to current date {datetime.today()}")
 
     def __check_end_posterior_to_start(self, start_date: datetime, end_date: datetime) -> bool:
         if start_date > end_date:
