@@ -202,17 +202,11 @@ class TwitterReader(Reader):
         Validate combination of input parameters (triggered in TwitterReader constructor).
         """
 
-        self.validate_dates()
         self.validate_analytics_segmentation()
         self.validate_analytics_metric_groups()
         self.validate_analytics_entity()
         self.validate_reach_entity()
         self.validate_entity_attributes()
-
-    def validate_dates(self):
-
-        if self.end_date - timedelta(days=1) < self.start_date:
-            raise ClickException("Report end date should be equal or ulterior to report start date.")
 
     def validate_analytics_segmentation(self):
 

@@ -12,7 +12,6 @@
 
 from nck.config import logger
 import click
-from click import ClickException
 import requests
 from datetime import timedelta
 from tenacity import retry, wait_exponential, stop_after_delay
@@ -78,12 +77,6 @@ class TheTradeDeskReader(Reader):
         self.start_date, self.end_date = build_date_range(start_date, end_date, date_range)
         # Report end date is exclusive: to become inclusive, it should be incremented by 1 day
         self.end_date = self.end_date + timedelta(days=1)
-
-        self._validate_dates()
-
-    def _validate_dates(self):
-        if self.end_date - timedelta(days=1) < self.start_date:
-            raise ClickException("Report end date should be equal or ulterior to report start date.")
 
     def _get_access_token(self):
         url = f"{API_HOST}/authentication"
