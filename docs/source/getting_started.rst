@@ -191,7 +191,6 @@ To create a new reader, you should:
     ---- cli.py
     ---- reader.py
     ---- helper.py # Optional
-    ---- client.py # Optional
     ---- config.py # Optional
 
 ``cli.py``
@@ -208,13 +207,9 @@ This module should implement a reader class:
   - Class attributes should be the previously defined click options.
   - The class should have a ``read()`` method, yielding a stream object. This stream object can be chosen from `available stream classes <https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/streams>`__, and has 2 attributes: a stream name and a source generator function named ``result_generator()``, yielding individual source records.
 
-``client.py`` (Optional)
-
-This module implements a client class, simplifying authentication to the source API.
-
 ``helper.py`` (Optional)
 
-This module gathers all helper functions used in the ``reader.py`` or ``client.py`` modules.
+This module gathers all helper functions used in the ``reader.py`` module.
 
 ``config.py`` (Optional)
 
@@ -260,7 +255,6 @@ To develop a new writer, you should:
     --- <DESTINATION_NAME>/
     ---- cli.py
     ---- writer.py
-    ---- client.py # Optional
     ---- helper.py # Optional
     ---- config.py # Optional
 
@@ -278,13 +272,9 @@ This module should implement a writer class:
   - Class attributes should be the previously defined click options.
   - The class should have a ``write()`` method, writing the stream object to the destination.
 
-``client.py`` (Optional)
-
-This module implements a client class, simplifying authentication to the source API.
-
 ``helper.py`` (Optional)
 
-This module gathers all helper functions used in the ``writer.py`` or ``client.py`` modules.
+This module gathers all helper functions used in the ``writer.py`` module.
 
 ``config.py`` (Optional)
 

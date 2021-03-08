@@ -19,7 +19,7 @@
 from datetime import datetime
 from unittest import TestCase, mock
 
-from nck.readers.google_dcm.client import DCMClient
+from nck.clients.google_dcm.client import GoogleDCMClient
 
 
 class MockService:
@@ -37,20 +37,20 @@ def mock_service(*args, **kwargs):
     return MockService()
 
 
-class DCMClientTest(TestCase):
+class GoogleDCMClientTest(TestCase):
     def mock_dcm_client(self, **kwargs):
         for param, value in kwargs.items():
             setattr(self, param, value)
 
     kwargs = {"_service": mock_service()}
 
-    @mock.patch.object(DCMClient, "__init__", mock_dcm_client)
+    @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
     def test_add_report_criteria(self):
         report = {"name": "report"}
         start = datetime(year=2020, month=1, day=1)
         end = datetime(year=2020, month=2, day=1)
         elements = ["a", "b"]
-        DCMClient(**self.kwargs).add_report_criteria(report, start, end, elements, elements)
+        GoogleDCMClient(**self.kwargs).add_report_criteria(report, start, end, elements, elements)
         expected = {
             "name": "report",
             "criteria": {
@@ -61,13 +61,13 @@ class DCMClientTest(TestCase):
         }
         assert report == expected
 
-    @mock.patch.object(DCMClient, "__init__", mock_dcm_client)
+    @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
     @mock.patch.object(MockService, "execute", lambda *args: {"items": [{"value": "ok"}, {"value": "nok"}]})
-    @mock.patch("tests.readers.google_dcm.test_client.MockService")
+    @mock.patch("tests.clients.google_dcm.test_client.MockService")
     def test_add_dimension_filters(self, mock_filter):
         report = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}}}
         profile_id = ""
         filters = [("filter", "ok")]
-        DCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
+        GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
         expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "ok"}]}}
         assert report == expected

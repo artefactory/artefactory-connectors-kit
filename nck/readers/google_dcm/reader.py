@@ -19,7 +19,7 @@
 import csv
 from io import StringIO
 
-from nck.readers.google_dcm.client import DCMClient
+from nck.clients.google_dcm.client import GoogleDCMClient
 from nck.readers.google_dcm.config import ENCODING, PREFIX
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
@@ -42,7 +42,7 @@ class GoogleDCMReader(Reader):
         end_date,
         filters,
     ):
-        self.dcm_client = DCMClient(access_token, client_id, client_secret, refresh_token)
+        self.dcm_client = GoogleDCMClient(access_token, client_id, client_secret, refresh_token)
         self.profile_ids = list(profile_ids)
         self.report_name = report_name
         self.report_type = report_type

@@ -27,7 +27,7 @@ from googleapiclient import discovery
 DOWNLOAD_FORMAT = "CSV"
 
 
-class DCMClient:
+class GoogleDCMClient:
     API_NAME = "dfareporting"
     API_VERSION = "v3.3"
 

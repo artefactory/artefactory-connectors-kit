@@ -18,7 +18,7 @@
 
 from nck.readers.reader import Reader
 from nck.streams.json_stream import JSONStream
-from nck.readers.google_sa360.client import GoogleSA360Client
+from nck.clients.google_sa360.client import GoogleSA360Client
 from nck.utils.text import get_report_generator_from_flat_file
 
 
