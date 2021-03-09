@@ -10,7 +10,7 @@ As of now, the most common output format of data loaded by the application is .n
 Philosophy
 ==========
 
-The application is composed of **3 main components** (*implemented as Python classes*). When combined, these components act as an EL(T) pipeline, allowing you to stream data from a source to the destination of your choice:
+The application is composed of **3 main components** (*implemented as Python classes*). When combined, these components act as an E(T)L pipeline, allowing you to stream data from a source to the destination of your choice:
 
 - :ref:`readers:Readers` are reading data from an API source, and transform it into a stream object.
 - :ref:`streams:Streams` (*transparent to the end-user*) are local objects used by writers to process individual records collected from the source.

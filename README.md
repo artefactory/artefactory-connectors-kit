@@ -10,7 +10,7 @@ Official documentation is available [here](https://artefactory.github.io/nautilu
 
 ## Philosophy
 
-The application is composed of **3 main components** (*implemented as Python classes*). When combined, these components act as an EL(T) pipeline, allowing you to stream data from a source to the destination of your choice:
+The application is composed of **3 main components** (*implemented as Python classes*). When combined, these components act as an E(T)L pipeline, allowing you to stream data from a source to the destination of your choice:
 
 - [Readers](nck/readers) are reading data from an API source, and transform it into a stream object.
 - [Streams](nck/streams) (*transparent to the end-user*) are local objects used by writers to process individual records collected from the source.
