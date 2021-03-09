@@ -870,7 +870,7 @@
 </div>
 <div class="section" id="id19">
 <h3>Quickstart<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
-<p>The following command retrieves insights about the Ads of <code class="docutils literal notranslate"><span class="pre">my_first_campaign``and</span> <span class="pre">``my_second_campaign</span></code> in the Google Ads Account &lt;CLIENT_CUSTOMER_ID&gt;.</p>
+<p>The following command retrieves insights about the Ads of <code class="docutils literal notranslate"><span class="pre">my_first_campaign</span></code> and <code class="docutils literal notranslate"><span class="pre">my_second_campaign</span></code> in the Google Ads Account &lt;CLIENT_CUSTOMER_ID&gt;.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_googleads --googleads-developer-token &lt;DEVELOPER_TOKEN&gt; --googleads-client-id &lt;CLIENT_ID&gt; --googleads-client-secret &lt;CLIENT_SECRET&gt; --googleads-refresh-token &lt;REFRESH_TOKEN&gt; --googleads-client-customer-id &lt;XXX-XXX-XXXX CLIENT_CUSTOMER_ID&gt; --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter <span class="s2">&quot;{&#39;field&#39;:&#39;CampaignName&#39;,&#39;operator&#39;:&#39;IN&#39;,&#39;values&#39;:[&#39;my_first_campaign&#39;,&#39;my_second_campaign&#39;]}&quot;</span>
 </pre></div>
 </div>
@@ -1161,6 +1161,9 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-date-range</span></code></p></td>
+<td><p>Date range. By default, not available in DCM, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1382,10 +1385,13 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-date-column</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-date-range</span></code></p></td>
+<td><p>Date range. By default, not available in Search Console, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-date-column</span></code></p></td>
 <td><p>If set to True, a date column will be included in the report</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-row-limit</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-row-limit</span></code></p></td>
 <td><p>Row number by report page</p></td>
 </tr>
 </tbody>
@@ -1467,6 +1473,9 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-date-range</span></code></p></td>
+<td><p>Date range. By default, not available in SA360, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
 </table>
@@ -1575,8 +1584,8 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <h3>Command options<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 32%" />
-<col style="width: 68%" />
+<col style="width: 16%" />
+<col style="width: 84%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Options</p></th>
@@ -1601,6 +1610,9 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-date-range</span></code></p></td>
+<td><p>Date range. By default, not available in MyTarget, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
 </table>
@@ -1882,6 +1894,9 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-date-range</span></code></p></td>
+<td><p>Date range. By default, not available in The Trade Desk, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+</tr>
 </tbody>
 </table>
 <p>If you need any further information, the documentation of The Trade Desk API can be found <a class="reference external" href="https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview">here</a>.</p>
@@ -1989,7 +2004,10 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-end-date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-add-request-date-to-report</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-date-range</span></code></p></td>
+<td><p>Date range. By default, not available in Twitter, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-add-request-date-to-report</span></code></p></td>
 <td><p>If set to True (default: False), the date on which the request is made will appear on each report record.</p></td>
 </tr>
 </tbody>

@@ -306,24 +306,37 @@ You can launch a preview of these .html files in your brower with your code edit
 <p><em>Readers are reading data from an API source, and transform it into a stream object.</em></p>
 <p>To create a new reader, you should:</p>
 <ol class="arabic simple">
-<li><p>Create the following modules: <code class="docutils literal notranslate"><span class="pre">nck/readers/&lt;SOURCE_NAME&gt;_reader.py`</span></code> and <code class="docutils literal notranslate"><span class="pre">nck/helpers/&lt;SOURCE_NAME&gt;_helper.py</span></code></p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">nck/readers/&lt;SOURCE_NAME&gt;/</span></code> directory, having the following structure:</p></li>
 </ol>
-<p>The <code class="docutils literal notranslate"><span class="pre">nck/readers/&lt;SOURCE_NAME&gt;_reader.py</span></code> module should implement 2 components:</p>
-<ul class="simple">
-<li><p>A click-decorated reader function</p>
-<ul>
-<li><p>The reader function should be decorated with: a <code class="docutils literal notranslate"><span class="pre">&#64;click.command()</span></code> decorator, several <code class="docutils literal notranslate"><span class="pre">&#64;click.option()</span></code> decorators (<em>one for each input that should be provided by end-users</em>) and a <code class="docutils literal notranslate"><span class="pre">&#64;processor()</span></code> decorator (<em>preventing secrets to appear in logs</em>). For further information on how to implement these decorators, please refer to <a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click documentation</a>.</p></li>
-<li><p>The reader function should return a reader class (<em>more details below</em>). A source name prefix should be added to the name of each class attribute, using the <code class="docutils literal notranslate"><span class="pre">extract_args()</span></code> function.</p></li>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- nck/
+-- readers/
+--- &lt;SOURCE_NAME&gt;/
+---- cli.py
+---- reader.py
+---- helper.py <span class="c1"># Optional</span>
+---- config.py <span class="c1"># Optional</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code></p>
+<p>This module should implement a click-decorated reader function:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The reader function should be decorated with: a <code class="docutils literal notranslate"><span class="pre">&#64;click.command()</span></code> decorator, several <code class="docutils literal notranslate"><span class="pre">&#64;click.option()</span></code> decorators (<em>one for each input provided by end-users</em>) and a <code class="docutils literal notranslate"><span class="pre">&#64;processor()</span></code> decorator (<em>preventing secrets to appear in logs</em>). For further information on how to implement these decorators, please refer to <a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click documentation</a>.</p></li>
+<li><p>The reader function should return a reader class (<em>more details below</em>). The source prefix of each option will be removed when passed to the writer class, using the <code class="docutils literal notranslate"><span class="pre">extract_args()</span></code> function.</p></li>
 </ul>
-</li>
-<li><p>A reader class</p>
-<ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">reader.py</span></code></p>
+<p>This module should implement a reader class:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>Class attributes should be the previously defined click options.</p></li>
-<li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">read()</span></code> method, yielding a stream object. This stream object can be chosen from <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/streams">available stream classes</a>, and has 2 attributes: a stream name and a source generator function named <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code>, and yielding individual source records.</p></li>
+<li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">read()</span></code> method, yielding a stream object. This stream object can be chosen from <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/streams">available stream classes</a>, and has 2 attributes: a stream name and a source generator function named <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code>, yielding individual source records.</p></li>
 </ul>
-</li>
-</ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">nck/helpers/&lt;SOURCE_NAME&gt;_helper.py</span></code> module should implement helper methods and configuration variables (<em>warning: we are planning to move configuration variables to a separate module for reasons of clarity</em>).</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
+<p>This module gathers all helper functions used in the <code class="docutils literal notranslate"><span class="pre">reader.py</span></code> module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">config.py</span></code> (Optional)</p>
+<p>This module gathers all configuration variables.</p>
 <ol class="arabic" start="2">
 <li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
 <li><p>Add your click-decorated reader function to the <code class="docutils literal notranslate"><span class="pre">nck/readers/__init__.py</span></code> file</p></li>
@@ -331,8 +344,8 @@ You can launch a preview of these .html files in your brower with your code edit
 <blockquote>
 <div><ul class="simple">
 <li><p>Add your reader to the list of existing readers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
+<li><p>Add your reader to the list of existing readers in the repo’s <code class="docutils literal notranslate"><span class="pre">./README.md</span></code>.</p></li>
 <li><p>Create dedicated documentation for your reader CLI command on the <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> page. It should include the followings sections: <em>Source API - How to obtain credentials - Quickstart - Command name - Command options</em></p></li>
-<li><p>Add your reader to the reader list in the README, at the root of the GitHub project</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -353,31 +366,46 @@ You can launch a preview of these .html files in your brower with your code edit
 <p><em>Writers are writing the output stream object to the destination of your choice.</em></p>
 <p>To develop a new writer, you should:</p>
 <ol class="arabic simple">
-<li><p>Create the following module: <code class="docutils literal notranslate"><span class="pre">nck/writers/&lt;DESTINATION_NAME&gt;_writer.py</span></code></p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">nck/writers/&lt;DESTINATION_NAME&gt;/</span></code> directory, having the following structure:</p></li>
 </ol>
-<p>This module should implement 2 components:</p>
-<ul class="simple">
-<li><p>A click-decorated writer function</p>
-<ul>
-<li><p>The writer function should be decorated with: a <code class="docutils literal notranslate"><span class="pre">&#64;click.command()</span></code> decorator, several <code class="docutils literal notranslate"><span class="pre">&#64;click.option()</span></code> decorators (<em>one for each input that should be provided by end-users</em>) and a <code class="docutils literal notranslate"><span class="pre">&#64;processor()</span></code> decorator (<em>preventing secrets to appear in logs</em>). For further information on how to implement these decorators, please refer to <a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click documentation</a>.</p></li>
-<li><p>The writer function should return a writer class (<em>more details below</em>). A destination name prefix should be added to the name of each class attribute, using the <cite>extract_args</cite> function.</p></li>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- nck/
+-- writers/
+--- &lt;DESTINATION_NAME&gt;/
+---- cli.py
+---- writer.py
+---- helper.py <span class="c1"># Optional</span>
+---- config.py <span class="c1"># Optional</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code></p>
+<p>This module should implement a click-decorated writer function:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The writer function should be decorated with: a <code class="docutils literal notranslate"><span class="pre">&#64;click.command()</span></code> decorator, several <code class="docutils literal notranslate"><span class="pre">&#64;click.option()</span></code> decorators (<em>one for each input provided by end-users</em>) and a <code class="docutils literal notranslate"><span class="pre">&#64;processor()</span></code> decorator (<em>preventing secrets to appear in logs</em>). For further information on how to implement these decorators, please refer to <a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click documentation</a>.</p></li>
+<li><p>The writer function should return a writer class (<em>more details below</em>). The destination prefix of each option will be removed when passed to the writer class, using the <code class="docutils literal notranslate"><span class="pre">extract_args()</span></code> function.</p></li>
 </ul>
-</li>
-<li><p>A writer class</p>
-<ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">writer.py</span></code></p>
+<p>This module should implement a writer class:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>Class attributes should be the previously defined click options.</p></li>
 <li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">write()</span></code> method, writing the stream object to the destination.</p></li>
 </ul>
-</li>
-</ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
+<p>This module gathers all helper functions used in the <code class="docutils literal notranslate"><span class="pre">writer.py</span></code> module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">config.py</span></code> (Optional)</p>
+<p>This module gathers all configuration variables.</p>
 <ol class="arabic" start="2">
+<li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
 <li><p>Add your click-decorated writer function to the <code class="docutils literal notranslate"><span class="pre">nck/writers/__init__.py</span></code> file</p></li>
 <li><p>Complete the documentation:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Add your writer to the list of existing writers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
+<li><p>Add your reader to the list of existing readers in the repo’s <code class="docutils literal notranslate"><span class="pre">./README.md</span></code>.</p></li>
 <li><p>Create dedicated documentation for your writer CLI command on the <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a> page. It should include the followings sections: <em>Quickstart - Command name - Command options</em></p></li>
-<li><p>Add your writer to the writer list in the README, at the root of the GitHub project</p></li>
 </ul>
 </div></blockquote>
 </li>

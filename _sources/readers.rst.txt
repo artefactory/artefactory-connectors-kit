@@ -463,7 +463,7 @@ See the `documentation here <https://developers.google.com/adwords/api/docs/guid
 Quickstart
 ----------
 
-The following command retrieves insights about the Ads of ``my_first_campaign``and ``my_second_campaign`` in the Google Ads Account <CLIENT_CUSTOMER_ID>.
+The following command retrieves insights about the Ads of ``my_first_campaign`` and ``my_second_campaign`` in the Google Ads Account <CLIENT_CUSTOMER_ID>.
 
 .. code-block:: shell
 
@@ -662,6 +662,7 @@ Options                         Definition
 ``--dcm-filter``                <FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "dfa:advertiserId XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found `here <https://developers.google.com/doubleclick-advertisers/v3.3/dimensions>`__.
 ``--dcm-start-date``            Start date of the period to request (format: YYYY-MM-DD)
 ``--dcm-end-date``              End date of the period to request (format: YYYY-MM-DD)
+``--dcm-date-range``            Date range. By default, not available in DCM, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
 ==============================  =======================================================================================================================================================================================================================================================================================================================================
 
 ===========================================
@@ -830,6 +831,7 @@ Options                             Definition
 ``--search-console-site-url``       Site URL whose performance you want to request
 ``--search-console-start-date``     Start date of the period to request (format: YYYY-MM-DD)
 ``--search-console-end-date``       End date of the period to request (format: YYYY-MM-DD)
+``--search-console-date-range``     Date range. By default, not available in Search Console, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
 ``--search-console-date-column``    If set to True, a date column will be included in the report
 ``--search-console-row-limit``      Row number by report page
 ==================================  ============================================================================================================================================================================================================
@@ -879,9 +881,9 @@ Command name
 Command options
 ---------------
 
-==============================  =====================================================================================================================================================
+==============================  =======================================================================================================================================================
 Options                         Definition
-==============================  =====================================================================================================================================================
+==============================  =======================================================================================================================================================
 ``--sa360-client-id``           OAuth2 ID
 ``--sa360-client-secret``       OAuth2 secret
 ``--sa360-access-token``        (Optional) Access token
@@ -894,7 +896,8 @@ Options                         Definition
 ``--sa360-saved-column``        (Optional) Saved columns to report. Documentation can be found `here <https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns>`__.
 ``--sa360-start-date``          Start date of the period to request (format: YYYY-MM-DD)
 ``--sa360-end-date``            End date of the period to request (format: YYYY-MM-DD)
-==============================  =====================================================================================================================================================
+``--sa360-date-range``          Date range. By default, not available in SA360, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+==============================  =======================================================================================================================================================
 
 See documentation `here <https://developers.google.com/search-ads/v2/how-tos/reporting>`__ for a better understanding of the parameters.
 
@@ -1005,16 +1008,17 @@ Command name
 Command options
 ---------------
 
-==============================  ===============================================================
+==============================  ==========================================================================================================================================================
 Options                         Definition
-==============================  ===============================================================
+==============================  ==========================================================================================================================================================
 ``--mytarget-client-id``        Client ID you generated
 ``--mytarget-client-secret``    Client secret you generated. 
 ``--mytarget-refresh-token``    Secret token you retrieved during the process of getting tokens
 ``--mytarget-request-type``     Type of report you want to retrieve: performance or budgets.
 ``--mytarget-start-date``       Start date of the period to request (format: YYYY-MM-DD)
 ``--mytarget-end-date``         End date of the period to request (format: YYYY-MM-DD)
-==============================  ===============================================================
+``--mytarget-date-range``       Date range. By default, not available in MyTarget, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+==============================  ==========================================================================================================================================================
 
 ============
 MySQL Reader
@@ -1222,6 +1226,7 @@ Options                         Definition
 ``--ttd-report-schedule-name``  Name of the Report Schedule to create
 ``--ttd-start-date``            Start date of the period to request (format: YYYY-MM-DD)
 ``--ttd-end-date``              End date of the period to request (format: YYYY-MM-DD)
+``--ttd-date-range``            Date range. By default, not available in The Trade Desk, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
 ==============================  ===========================================================================================================================================================================================
 
 If you need any further information, the documentation of The Trade Desk API can be found `here <https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview>`__.
@@ -1304,6 +1309,7 @@ Options                                     Definition
 ``--twitter-country``                       Specific to ANALYTICS reports. Required if segmentation_type is set to CITIES, POSTAL_CODES, or REGION. Possible values can be identified through the GET targeting_criteria/platforms endpoint.
 ``--twitter-start-date``                    Start date of the period to request (format: YYYY-MM-DD).
 ``--twitter-end-date``                      End date of the period to request (format: YYYY-MM-DD).
+``--twitter-date-range``                    Date range. By default, not available in Twitter, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
 ``--twitter-add-request-date-to-report``    If set to True (default: False), the date on which the request is made will appear on each report record.
 ==========================================  =================================================================================================================================================================================================================================
 

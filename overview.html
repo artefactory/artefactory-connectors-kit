@@ -169,10 +169,11 @@
             
   <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
-<p><strong>NCK is a Command-Line Interface (CLI), allowing you to easily request, stream and store raw reports, from the API source to the destination of your choice.</strong> As of now, the most common output format of data extracted by the application is .njson (i.e. a file of n lines, where each line is a json-like dictionary).</p>
+<p><strong>NCK is an E(T)L tool specialized in API data ingestion. It is accessible through a Command-Line Interface. The application allows you to easily extract, stream and load data (with minimum transformations), from the API source to the destination of your choice.</strong></p>
+<p>As of now, the most common output format of data loaded by the application is .njson (i.e. a file of n lines, where each line is a json-like dictionary).</p>
 <div class="section" id="philosophy">
 <h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h2>
-<p>The application is composed of <strong>3 main components</strong> (<em>implemented as Python classes</em>). When combined, these components act as data connectors, allowing you to stream data from a source to the destination of your choice:</p>
+<p>The application is composed of <strong>3 main components</strong> (<em>implemented as Python classes</em>). When combined, these components act as an E(T)L pipeline, allowing you to stream data from a source to the destination of your choice:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> are reading data from an API source, and transform it into a stream object.</p></li>
 <li><p><a class="reference internal" href="streams.html#streams"><span class="std std-ref">Streams</span></a> (<em>transparent to the end-user</em>) are local objects used by writers to process individual records collected from the source.</p></li>
@@ -181,90 +182,114 @@
 </div>
 <div class="section" id="available-connectors">
 <h2>Available connectors<a class="headerlink" href="#available-connectors" title="Permalink to this headline">¶</a></h2>
-<p>As of now, the application is offering:</p>
+<p>As of now, the application is offering the following Readers &amp; Writers:</p>
 <div class="section" id="readers">
 <h3>Readers<a class="headerlink" href="#readers" title="Permalink to this headline">¶</a></h3>
-<p><strong>Analytics</strong></p>
 <ul class="simple">
+<li><dl class="simple">
+<dt><strong>Analytics</strong></dt><dd><ul>
 <li><p>Adobe Analytics 1.4</p></li>
 <li><p>Adobe Analytics 2.0</p></li>
 <li><p>Google Analytics</p></li>
 </ul>
-<p><strong>Advertising</strong></p>
-<ul>
-<li><p><strong>DSP</strong></p>
-<blockquote>
-<div><ul class="simple">
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Advertising - Adserver</strong></dt><dd><ul>
+<li><p>Google Campaign Manager</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Advertising - DSP</strong></dt><dd><ul>
 <li><p>Google Display &amp; Video 360</p></li>
 <li><p>The Trade Desk</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </li>
-<li><p><strong>Adserver</strong></p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Google Campaign Manager</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p><strong>Search</strong></p>
-<blockquote>
-<div><ul class="simple">
+<li><dl class="simple">
+<dt><strong>Advertising - Search</strong></dt><dd><ul>
 <li><p>Google Ads</p></li>
 <li><p>Google Search Ads 360</p></li>
 <li><p>Google Search Console</p></li>
 <li><p>Yandex Campaign</p></li>
 <li><p>Yandex Statistics</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </li>
-<li><p><strong>Social</strong></p>
-<blockquote>
-<div><ul class="simple">
+<li><dl class="simple">
+<dt><strong>Advertising - Social</strong></dt><dd><ul>
 <li><p>Facebook Marketing</p></li>
 <li><p>MyTarget</p></li>
 <li><p>Radarly</p></li>
 <li><p>Twitter Ads</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </li>
-</ul>
-<p><strong>CRM</strong></p>
-<ul class="simple">
+<li><dl class="simple">
+<dt><strong>CRM</strong></dt><dd><ul>
 <li><p>SalesForce</p></li>
 </ul>
-<p><strong>Databases</strong></p>
-<ul class="simple">
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Databases</strong></dt><dd><ul>
 <li><p>MySQL</p></li>
 </ul>
-<p><strong>Files (.csv, .njson)</strong></p>
-<ul class="simple">
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>DevTools</strong></dt><dd><ul>
+<li><p>Confluence</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Files (.csv, .njson)</strong></dt><dd><ul>
 <li><p>Amazon S3</p></li>
 <li><p>Google Cloud Storage</p></li>
 <li><p>Google Sheets</p></li>
 </ul>
-<p><strong>DevTools</strong></p>
-<ul class="simple">
-<li><p>Confluence</p></li>
+</dd>
+</dl>
+</li>
 </ul>
 </div>
 <div class="section" id="writers">
 <h3>Writers<a class="headerlink" href="#writers" title="Permalink to this headline">¶</a></h3>
-<p><strong>Files (.njson)</strong></p>
 <ul class="simple">
+<li><dl class="simple">
+<dt><strong>Data Warehouses</strong></dt><dd><ul>
+<li><p>Google BigQuery</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Debugging</strong></dt><dd><ul>
+<li><p>Console</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Files (.njson)</strong></dt><dd><ul>
 <li><p>Amazon S3</p></li>
 <li><p>Google Cloud Storage</p></li>
 <li><p>Local file</p></li>
 </ul>
-<p><strong>Data Warehouse</strong></p>
-<ul class="simple">
-<li><p>Google BigQuery</p></li>
+</dd>
+</dl>
+</li>
 </ul>
-<p><strong>Debugging</strong></p>
-<ul class="simple">
-<li><p>Console</p></li>
-</ul>
-<p><em>A data connector could be, for instance, the combination of a Google Analytics reader + a Google Cloud Storage writer, collecting data from the Google Analytics API, and storing output stream records into a Google Cloud Storage bucket.</em></p>
 </div>
 </div>
 </div>
