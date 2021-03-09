@@ -15,12 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from nck.config import logger
-import re
+
 import csv
-from io import StringIO
+import re
 from collections import deque
+from io import StringIO
 from itertools import islice
+
+from nck.config import logger
 
 
 def get_report_generator_from_flat_file(

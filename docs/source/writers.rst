@@ -137,7 +137,7 @@ The following command would allow you to write a file ``google_analytics_report_
 
 .. code-block:: shell
 
-    write_local --local-directory ~/Desktop/ --file-name google_analytics_report_2020-01-01.njson
+    write_local --local-directory ~/Desktop/ --local-file-name google_analytics_report_2020-01-01.njson
 
 ------------
 Command name
@@ -152,8 +152,8 @@ Command options
 ==============================  ===============================================================
 Options                         Definition
 ==============================  ===============================================================
-``--local-directory (-d)``      Local directory in which the destination file should be stored
-``--file-name (-n)``            Destination file name
+``--local-directory (-d)``      Directory in which the file should be stored
+``--local-file-name (-n)``      File name
 ==============================  ===============================================================
 
 ==============

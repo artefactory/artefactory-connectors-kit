@@ -57,3 +57,33 @@ class MissingItemsInResponse(Exception):
     """Raised when the body of the response is missing items"""
 
     pass
+
+
+class APIRateLimitError(Exception):
+    """Raised when the API rate limit is reached"""
+
+    pass
+
+
+class ReportDescriptionError(Exception):
+    """Raised when report description is not valid"""
+
+    pass
+
+
+class ReportNotReadyError(Exception):
+    """Raised when report is not ready yet"""
+
+    pass
+
+
+class ReportTemplateNotFoundError(Exception):
+    """Raised when The Trade Desk report template was not found"""
+
+    pass
+
+
+class ReportScheduleNotReadyError(Exception):
+    """Raised when The Trade Desk report schedule is not ready yet"""
+
+    pass

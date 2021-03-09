@@ -15,15 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from tenacity import (
-    retry as _retry,
-    wait_exponential,
-    before_sleep_log,
-    before_log,
-    stop_after_attempt,
-)
+
 import logging
+
 from nck.config import logger
+from tenacity import before_log, before_sleep_log
+from tenacity import retry as _retry
+from tenacity import stop_after_attempt, wait_exponential
 
 
 def retry(fn):
