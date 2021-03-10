@@ -65,7 +65,11 @@ def _validate_provided_commands(provided_readers, provided_writers):
         raise click.BadParameter("You must specify at least one writer")
 
 
-if __name__ == "__main__":
+def launch():
     available_commands = readers + writers
     build_commands(cli, available_commands)
     cli()
+
+
+if __name__ == "__main__":
+    launch()
