@@ -54,7 +54,11 @@ def _parse_reader_writer(data):
     res = [data.pop("name")]
 
     for key, value in data.items():
-        res.extend([key, value])
+        if isinstance(value, list):
+            for sub_value in value:
+                res.extend([key, sub_value])
+        else:
+            res.extend([key, value])
 
     return res
 
