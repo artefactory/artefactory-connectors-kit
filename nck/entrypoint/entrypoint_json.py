@@ -23,18 +23,9 @@ import nck.entrypoint.entrypoint as entrypoint
 
 @click.command()
 @click.option(
-    "--config-file",
-    help="Path of the json file used to build the command. Use this option or define an environment variable CONFIG_FILE.",
-    envvar="CONFIG_FILE",
-    type=click.Path(exists=True),
+    "--config-file", help="Path of the json file used to build the command.", required=True, type=click.Path(exists=True),
 )
 def add_json_args(config_file):
-    if config_file is None:
-        raise click.BadParameter(
-            "You must specify a config file with the option '--config-file' "
-            "or with an environment variable named CONFIG_FILE"
-        )
-
     with open(config_file) as f:
         data = json.load(f)
 
