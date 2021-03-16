@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-import sys 
+import sys
 import traceback
 from datetime import datetime, timedelta
 from itertools import chain
@@ -319,7 +319,7 @@ class TwitterReader(Reader):
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/
         """
         for tweet in self.get_published_tweets():
-            try: 
+            try:
                 if "card_uri" in tweet:
                     card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
                     card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
@@ -342,7 +342,6 @@ class TwitterReader(Reader):
 
         resource = f"/{API_VERSION}/accounts/{self.account.id}/tweets"
         params = {"tweet_type": "PUBLISHED"}
-        #twitter_ads.http request
         request = Request(self.client, "get", resource, params=params)
         yield from Cursor(None, request)
 
@@ -366,7 +365,7 @@ class TwitterReader(Reader):
         entity_ids = self.get_active_entity_ids()
 
         for chunk_entity_ids in split_list(entity_ids, MAX_ENTITY_IDS_PER_JOB):
-            try: 
+            try:
                 params = {
                     "account_id": self.account.id,
                     f"{self.entity.lower()}_ids": ",".join(entity_ids),
@@ -378,7 +377,7 @@ class TwitterReader(Reader):
             except Exception:
                 ex_type, ex, tb = sys.exc_info()
                 logger.warning(f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}")
-                
+
     def add_request_or_period_dates(self, record):
         """
         Add request_date, period_start_date and/or period_end_date to a JSON-like record.
