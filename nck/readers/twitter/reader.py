@@ -15,10 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+import sys 
+import traceback
 from datetime import datetime, timedelta
 from itertools import chain
-
 from click import ClickException
 from nck.config import logger
 from nck.readers.reader import Reader
@@ -311,23 +311,32 @@ class TwitterReader(Reader):
             for entity_obj in ACCOUNT_CHILD_OBJECTS[self.entity]
         ]
 
+    @retry(stop=stop_after_delay(901))
     def get_cards_report(self):
         """
         Get 'ENTITY' report through the 'Creatives' endpoint of Twitter Ads API.
         Supported entities: CARD
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/
         """
-
+        # loop break after 3686 iterations
+        i = 0 
         for tweet in self.get_published_tweets():
-            if "card_uri" in tweet:
-                card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
-                card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
-                record = {
-                    "tweet_id": tweet["tweet_id"],
-                    "card_uri": tweet["card_uri"],
-                    **card_attributes,
-                }
-                yield record
+            try: 
+                #tweet = self._waiting_for_job_to_complete(tweet)
+                i = i + 1 
+                print(i)
+                if "card_uri" in tweet:
+                    card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
+                    card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
+                    record = {
+                        "tweet_id": tweet["tweet_id"],
+                        "card_uri": tweet["card_uri"],
+                        **card_attributes,
+                    }
+                    yield record
+            except Exception:
+                ex_type, ex, tb = sys.exc_info()
+                logger.warning(f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}")
 
     def get_published_tweets(self):
         """
@@ -338,8 +347,8 @@ class TwitterReader(Reader):
 
         resource = f"/{API_VERSION}/accounts/{self.account.id}/tweets"
         params = {"tweet_type": "PUBLISHED"}
+        #twitter_ads.http request
         request = Request(self.client, "get", resource, params=params)
-
         yield from Cursor(None, request)
 
     def get_card_fetch(self, card_uri):
@@ -351,6 +360,7 @@ class TwitterReader(Reader):
 
         return CardsFetch.load(self.account, card_uris=[card_uri]).first
 
+    @retry(stop=stop_after_delay(901))
     def get_reach_report(self):
         """
         Get 'REACH' report through the 'Reach and Average Frequency' endpoint of Twitter Ads API.
@@ -361,15 +371,19 @@ class TwitterReader(Reader):
         entity_ids = self.get_active_entity_ids()
 
         for chunk_entity_ids in split_list(entity_ids, MAX_ENTITY_IDS_PER_JOB):
-            params = {
-                "account_id": self.account.id,
-                f"{self.entity.lower()}_ids": ",".join(entity_ids),
-                "start_time": self.start_date.strftime(API_DATEFORMAT),
-                "end_time": self.end_date.strftime(API_DATEFORMAT),
-            }
-            request = Request(self.client, "get", resource, params=params)
-            yield from Cursor(None, request)
-
+            try: 
+                params = {
+                    "account_id": self.account.id,
+                    f"{self.entity.lower()}_ids": ",".join(entity_ids),
+                    "start_time": self.start_date.strftime(API_DATEFORMAT),
+                    "end_time": self.end_date.strftime(API_DATEFORMAT),
+                }
+                request = Request(self.client, "get", resource, params=params)
+                yield from Cursor(None, request)
+            except Exception:
+                ex_type, ex, tb = sys.exc_info()
+                logger.warning(f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}")
+                
     def add_request_or_period_dates(self, record):
         """
         Add request_date, period_start_date and/or period_end_date to a JSON-like record.
@@ -388,7 +402,6 @@ class TwitterReader(Reader):
         return record
 
     def read(self):
-
         if self.report_type == "ANALYTICS":
             entity_ids = self.get_active_entity_ids()
 
