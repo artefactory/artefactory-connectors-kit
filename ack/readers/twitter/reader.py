@@ -318,13 +318,8 @@ class TwitterReader(Reader):
         Supported entities: CARD
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/
         """
-        # loop break after 3686 iterations
-        i = 0 
         for tweet in self.get_published_tweets():
             try: 
-                #tweet = self._waiting_for_job_to_complete(tweet)
-                i = i + 1 
-                print(i)
                 if "card_uri" in tweet:
                     card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
                     card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
