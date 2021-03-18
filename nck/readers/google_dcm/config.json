@@ -1,0 +1,58 @@
+{
+  "title": "Google DCM Reader",
+  "properties": {
+    "access_token": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_secret": {
+      "type": "string"
+    },
+    "refresh_token": {
+      "type": "string"
+    },
+    "profile_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "report_name": {
+      "type": "string",
+      "default": "DCM Report"
+    },
+    "report_type": {
+      "type": "string",
+      "default": "STANDARD"
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "start_date": {
+      "type": "datetime"
+    },
+    "end_date": {
+      "type": "datetime"
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "date_range": {
+      "type": "string"
+    }
+  }
+}
