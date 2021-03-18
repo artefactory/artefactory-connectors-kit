@@ -38,6 +38,12 @@ def sdf_to_njson_generator(path_to_file):
             yield line
 
 
+def read_json(path_to_file):
+    with open(path_to_file) as f:
+        data = json.load(f)
+    return data
+
+
 def format_csv_delimiter(csv_delimiter):
     _csv_delimiter = csv_delimiter.encode().decode("unicode_escape")
     if csv_delimiter == "newline":
