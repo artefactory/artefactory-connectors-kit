@@ -21,16 +21,17 @@ from nck.readers.object_storage.reader import ObjectStorageReader
 
 
 class AmazonS3Reader(ObjectStorageReader):
-    def __init__(self, bucket, prefix, format, dest_key_split=-1, **kwargs):
+    def __init__(self, bucket, bucket_region, access_key_id, access_key_secret, prefix, format, dest_key_split=-1, **kwargs):
+        self.boto_config = {
+            "region_name": bucket_region,
+            "aws_access_key_id": access_key_id,
+            "aws_secret_access_key": access_key_secret,
+        }
         super().__init__(bucket, prefix, format, dest_key_split, platform="S3", **kwargs)
 
     def create_client(self, config):
-        boto_config = {
-            "region_name": config.REGION_NAME,
-            "aws_access_key_id": config.AWS_ACCESS_KEY_ID,
-            "aws_secret_access_key": config.AWS_SECRET_ACCESS_KEY,
-        }
-        return boto3.resource("s3", **boto_config)
+
+        return boto3.resource("s3", **self.boto_config)
 
     def create_bucket(self, client, bucket):
         return client.Bucket(bucket)
@@ -51,5 +52,5 @@ class AmazonS3Reader(ObjectStorageReader):
         return _object.Object()
 
     @staticmethod
-    def download_object_to_file(_object, temp):
-        _object.download_fileobj(temp)
+    def download_object_to_file(_object, stream):
+        _object.download_fileobj(stream)

@@ -39,7 +39,7 @@ class AmazonS3Writer(ObjectStorageWriter):
         return client.buckets.all()
 
     def _create_blob(self, file_name, stream):
-        self._bucket.upload_fileobj(stream.as_file(), file_name)
+        self._bucket.upload_fileobj(stream.stream, file_name)
 
     def _get_uri(self, file_name):
         return f"s3{self._get_file_path(file_name)}"

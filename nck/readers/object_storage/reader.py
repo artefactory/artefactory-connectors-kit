@@ -16,13 +16,12 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import tempfile
+from io import BytesIO
 
 from nck import config
 from nck.config import logger
 from nck.readers.reader import Reader
-from nck.streams.json_stream import JSONStream
-from nck.utils.file_reader import create_file_reader
+from nck.streams.new_stream import NewStream
 
 
 class ObjectStorageReader(Reader):
@@ -33,19 +32,14 @@ class ObjectStorageReader(Reader):
         self._platform = platform
 
         self._format = file_format
-        self._reader = create_file_reader(self._format, **kwargs).get_reader()
         self._dest_key_split = dest_key_split
-
-        self.MAX_TIMESTAMP_STATE_KEY = f"{self._platform}_max_timestamp".lower()
-        self.MAX_FILES_STATE_KEY = f"{self._platform}_max_files".lower()
 
     def read(self):
 
         for prefix in self._prefix_list:
 
             objects_sorted_by_time = sorted(
-                self.list_objects(bucket=self._bucket, prefix=prefix),
-                key=lambda o: self.get_timestamp(o),
+                self.list_objects(bucket=self._bucket, prefix=prefix), key=lambda o: self.get_timestamp(o),
             )
 
             for _object in objects_sorted_by_time:
@@ -60,13 +54,12 @@ class ObjectStorageReader(Reader):
 
                 name = self.get_key(_object).split("/", self._dest_key_split)[-1]
 
-                yield JSONStream(name, self._result_generator(_object))
+                yield NewStream(name, self._dowload_to_stream(_object))
 
-    def _result_generator(self, _object):
-        with tempfile.TemporaryFile() as temp:
-            self.download_object_to_file(_object, temp)
-            for record in self._reader(temp):
-                yield record
+    def _dowload_to_stream(self, _object):
+        f = BytesIO()
+        self.download_object_to_file(_object, f)
+        return f
 
     def is_compatible_object(self, _object):
         return self.get_key(_object).endswith("." + self._format)
