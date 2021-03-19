@@ -15,17 +15,17 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from nck.readers import reader_classes
-from nck.writers import writer_classes
+from nck.readers import reader_classes, Reader
+from nck.writers import writer_classes, Writer
 
 
-def format_reader(reader):
+def format_reader(reader: dict) -> Reader:
     reader_name = reader.pop("name")
     config = reader_classes[reader_name][1](**reader)
     return reader_classes[reader_name][0](**config.dict())
 
 
-def format_writers(writers):
+def format_writers(writers: [dict]) -> [Writer]:
     writers_list = []
     for writer in writers:
         writer_name = writer.pop("name")
