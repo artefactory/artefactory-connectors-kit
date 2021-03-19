@@ -32,7 +32,7 @@ writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
 
 writer_classes = {
     "amazon-s3": AmazonS3Writer,
-    "console": ConsoleWriter,
+    "console": (ConsoleWriter,),
     "google-bigquery": GoogleBigQueryWriter,
     "google-cloud-storage": GoogleCloudStorageWriter,
     "local": LocalWriter,

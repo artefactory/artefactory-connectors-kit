@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from nck.readers.google_dcm.config import GoogleDCMReaderConfig
+from nck.readers.google_search_console.config import GoogleSearchConsoleReaderConfig
 from nck.readers.reader import Reader
 from nck.readers.adobe_analytics_1_4.reader import AdobeAnalytics14Reader
 from nck.readers.adobe_analytics_2_0.reader import AdobeAnalytics20Reader
@@ -57,6 +59,7 @@ from nck.readers.salesforce.reader import SalesforceReader
 from nck.readers.the_trade_desk.cli import the_trade_desk
 from nck.readers.the_trade_desk.reader import TheTradeDeskReader
 from nck.readers.twitter.cli import twitter
+from nck.readers.twitter.config import TwitterReaderConfig
 from nck.readers.twitter.reader import TwitterReader
 from nck.readers.yandex_campaign.cli import yandex_campaigns
 from nck.readers.yandex_campaign.reader import YandexCampaignReader
@@ -99,10 +102,10 @@ reader_classes = {
     "google_analytics": GoogleAnalyticsReader,
     "google_cloud_storage": GoogleCloudStorageReader,
     "google_dbm": GoogleDBMReader,
-    "google_dcm": GoogleDCMReader,
+    "google_dcm": (GoogleDCMReader, GoogleDCMReaderConfig),
     "google_dv360": GoogleDV360Reader,
     "google_sa360": GoogleSA360Reader,
-    "google_search_console": GoogleSearchConsoleReader,
+    "google_search_console": (GoogleSearchConsoleReader, GoogleSearchConsoleReaderConfig),
     "google_sheets": GoogleSheetsReader,
     "google_sheets_old": GoogleSheetsReaderOld,
     "mysql": MySQLReader,
@@ -110,7 +113,7 @@ reader_classes = {
     "radarly": RadarlyReader,
     "salesforce": SalesforceReader,
     "the_trade_desk": TheTradeDeskReader,
-    "twitter": TwitterReader,
+    "twitter": (TwitterReader, TwitterReaderConfig),
     "yandex_campaign": YandexCampaignReader,
     "yandex_statistics": YandexStatisticsReader,
 }

@@ -15,9 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from typing import List, Literal
 
 from twitter_ads.campaign import Campaign, FundingInstrument, LineItem
 from twitter_ads.creative import CardsFetch, MediaCreative, PromotedTweet
+from pydantic import BaseModel
+from datetime import datetime
+
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 
 API_DATEFORMAT = "%Y-%m-%dT%H:%M:%SZ"
 REP_DATEFORMAT = "%Y-%m-%d"
@@ -78,3 +83,24 @@ SEGMENTATION_TYPES = [
     "SIMILAR_TO_FOLLOWERS_OF_USER",
     "TV_SHOWS",
 ]
+
+
+class TwitterReaderConfig(BaseModel):
+    consumer_key: str
+    consumer_secret: str
+    access_token: str
+    access_token_secret: str
+    account_id: str
+    report_type: Literal[tuple(REPORT_TYPES)]
+    entity: Literal[tuple(ENTITY_ATTRIBUTES.keys())]
+    entity_attribute: List[str] = []
+    granularity: Literal[tuple(GRANULARITIES)] = "TOTAL"
+    metric_group: List[Literal[tuple(METRIC_GROUPS)]] = []
+    placement: Literal[tuple(PLACEMENTS)] = "ALL_ON_TWITTER"
+    segmentation_type: Literal[tuple(SEGMENTATION_TYPES)] = None
+    platform: str = None
+    country: str = None
+    start_date: datetime = None
+    end_date: datetime = None
+    add_request_date_to_report: bool = False
+    date_range: Literal[tuple(DEFAULT_DATE_RANGE_FUNCTIONS.keys())] = None
