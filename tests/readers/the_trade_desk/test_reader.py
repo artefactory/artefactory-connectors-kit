@@ -19,8 +19,8 @@
 from datetime import datetime
 from unittest import TestCase, mock
 
-from nck.readers.the_trade_desk.reader import TheTradeDeskReader
-from nck.utils.exceptions import DateDefinitionException
+from ack.readers.the_trade_desk.reader import TheTradeDeskReader
+from ack.utils.exceptions import DateDefinitionException
 
 
 class TheTradeDeskReaderTest(TestCase):
@@ -36,7 +36,7 @@ class TheTradeDeskReaderTest(TestCase):
         "date_range": None,
     }
 
-    @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
+    @mock.patch("ack.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
     def test_validate_dates(self, mock_build_headers):
         temp_kwargs = self.kwargs.copy()
         params = {"start_date": datetime(2020, 1, 3), "end_date": datetime(2020, 1, 1)}
@@ -44,9 +44,9 @@ class TheTradeDeskReaderTest(TestCase):
         with self.assertRaises(DateDefinitionException):
             TheTradeDeskReader(**temp_kwargs)
 
-    @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
+    @mock.patch("ack.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
-        "nck.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
+        "ack.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
         return_value={
             "Result": [
                 {
@@ -65,9 +65,9 @@ class TheTradeDeskReaderTest(TestCase):
         reader._get_report_template_id()
         self.assertEqual(reader.report_template_id, 1234)
 
-    @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
+    @mock.patch("ack.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
-        "nck.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
+        "ack.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
         return_value={
             "Result": [
                 {
@@ -92,17 +92,17 @@ class TheTradeDeskReaderTest(TestCase):
         with self.assertRaises(Exception):
             TheTradeDeskReader(**self.kwargs)._get_report_template_id()
 
-    @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
+    @mock.patch("ack.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
-        "nck.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call", return_value={"Result": [], "ResultCount": 0},
+        "ack.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call", return_value={"Result": [], "ResultCount": 0},
     )
     def test_get_report_template_id_if_no_match(self, mock_build_headers, mock_api_call):
         with self.assertRaises(Exception):
             TheTradeDeskReader(**self.kwargs)._get_report_template_id()
 
-    @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
+    @mock.patch("ack.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch(
-        "nck.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
+        "ack.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
         return_value={"ReportScheduleId": 5678, "ReportScheduleName": "adgroup_performance_schedule"},
     )
     def test_create_report_schedule(self, mock_build_headers, mock_api_call):
@@ -111,10 +111,10 @@ class TheTradeDeskReaderTest(TestCase):
         reader._create_report_schedule()
         self.assertEqual(reader.report_schedule_id, 5678)
 
-    @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
+    @mock.patch("ack.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch("tenacity.BaseRetrying.wait", side_effect=lambda *args, **kwargs: 0)
     @mock.patch(
-        "nck.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
+        "ack.readers.the_trade_desk.reader.TheTradeDeskReader._make_api_call",
         side_effect=[
             {
                 "Result": [
@@ -148,13 +148,13 @@ class TheTradeDeskReaderTest(TestCase):
         reader._wait_for_download_url()
         self.assertEqual(reader.download_url, "https://download.url")
 
-    @mock.patch("nck.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
+    @mock.patch("ack.readers.the_trade_desk.reader.TheTradeDeskReader._build_headers", return_value={})
     @mock.patch("tenacity.BaseRetrying.wait", side_effect=lambda *args, **kwargs: 0)
     @mock.patch.object(TheTradeDeskReader, "_get_report_template_id", lambda *args: None)
     @mock.patch.object(TheTradeDeskReader, "_create_report_schedule", lambda *args: None)
     @mock.patch.object(TheTradeDeskReader, "_wait_for_download_url", lambda *args: None)
     @mock.patch(
-        "nck.readers.the_trade_desk.reader.TheTradeDeskReader._download_report",
+        "ack.readers.the_trade_desk.reader.TheTradeDeskReader._download_report",
         return_value=iter(
             [
                 {"Date": "2020-01-01T00:00:00", "Advertiser ID": "XXXXX", "Impressions": 10},

@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "Nautilus Connectors Kit"
+project = "Artefactory Connectors Kit"
 copyright = "2021, Artefact"
 author = "Artefact"
 

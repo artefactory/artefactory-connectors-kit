@@ -22,7 +22,7 @@ from click import ClickException
 from facebook_business.adobjects.ad import Ad
 from facebook_business.adobjects.adsinsights import AdsInsights
 from facebook_business.api import FacebookAdsApi
-from nck.readers.facebook.reader import FacebookReader
+from ack.readers.facebook.reader import FacebookReader
 from parameterized import parameterized
 
 
@@ -56,38 +56,16 @@ class FacebookReaderTest(TestCase):
 
     @parameterized.expand(
         [
-            (
-                "object_type_and_level_combination",
-                {"object_type": "ad", "level": "account"},
-            ),
-            (
-                "ad_insights_level",
-                {"ad_insights": True, "object_type": "creative", "level": "creative"},
-            ),
-            (
-                "ad_insights_breakdowns",
-                {"ad_insights": True, "field": ["age"], "breakdown": []},
-            ),
+            ("object_type_and_level_combination", {"object_type": "ad", "level": "account"}),
+            ("ad_insights_level", {"ad_insights": True, "object_type": "creative", "level": "creative"}),
+            ("ad_insights_breakdowns", {"ad_insights": True, "field": ["age"], "breakdown": []}),
             (
                 "ad_insights_action_breakdowns",
-                {
-                    "ad_insights": True,
-                    "field": ["actions[action_type:link_click]"],
-                    "action_breakdown": [],
-                },
+                {"ad_insights": True, "field": ["actions[action_type:link_click]"], "action_breakdown": []},
             ),
-            (
-                "ad_management_inputs_breakdown_check",
-                {"ad_insights": False, "breakdown": ["age"]},
-            ),
-            (
-                "ad_management_inputs_action_breakdown_check",
-                {"ad_insights": False, "action_breakdown": ["action_type"]},
-            ),
-            (
-                "ad_management_inputs_time_increment_check",
-                {"ad_insights": False, "time_increment": "1"},
-            ),
+            ("ad_management_inputs_breakdown_check", {"ad_insights": False, "breakdown": ["age"]}),
+            ("ad_management_inputs_action_breakdown_check", {"ad_insights": False, "action_breakdown": ["action_type"]}),
+            ("ad_management_inputs_time_increment_check", {"ad_insights": False, "time_increment": "1"}),
         ]
     )
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
@@ -102,11 +80,7 @@ class FacebookReaderTest(TestCase):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(
             {
-                "field": [
-                    "impressions",
-                    "link_url_asset[website_url]",
-                    "actions[action_type:link_click]",
-                ],
+                "field": ["impressions", "link_url_asset[website_url]", "actions[action_type:link_click]"],
                 "breakdown": ["link_url_asset"],
                 "action_breakdown": ["action_type"],
             }
@@ -120,11 +94,7 @@ class FacebookReaderTest(TestCase):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update(
             {
-                "field": [
-                    "impressions",
-                    "link_url_asset[website_url]",
-                    "actions[action_type:link_click]",
-                ],
+                "field": ["impressions", "link_url_asset[website_url]", "actions[action_type:link_click]"],
                 "breakdown": ["link_url_asset"],
                 "action_breakdown": ["action_type"],
             }
@@ -136,7 +106,7 @@ class FacebookReaderTest(TestCase):
         ]
         self.assertEqual(FacebookReader(**temp_kwargs)._field_paths, expected)
 
-    @mock.patch("nck.readers.facebook.reader.FacebookReader.query_ad_insights")
+    @mock.patch("ack.readers.facebook.reader.FacebookReader.query_ad_insights")
     @mock.patch.object(FacebookReader, "get_params", lambda *args: {})
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
     def test_read_with_ad_insights_query(self, mock_query_ad_insights):
@@ -157,7 +127,7 @@ class FacebookReaderTest(TestCase):
         for record, report in zip(data.readlines(), iter(expected)):
             self.assertEqual(record, report)
 
-    @mock.patch("nck.readers.facebook.reader.FacebookReader.query_ad_management")
+    @mock.patch("ack.readers.facebook.reader.FacebookReader.query_ad_management")
     @mock.patch.object(FacebookReader, "get_params", lambda *args: {})
     @mock.patch.object(FacebookAdsApi, "init", lambda *args: None)
     def test_read_with_ad_management_query(self, mock_query_ad_management):
@@ -194,20 +164,9 @@ class FacebookReaderTest(TestCase):
             ),
             (
                 "action_breakdown_field_without_filters",
-                {
-                    "field": ["actions"],
-                    "action_breakdown": ["action_type", "action_device"],
-                },
-                {
-                    "actions": [
-                        {"action_type": "link_click", "value": "0"},
-                        {"action_type": "post_engagement", "value": "1"},
-                    ]
-                },
-                {
-                    "actions[action_type:link_click]": "0",
-                    "actions[action_type:post_engagement]": "1",
-                },
+                {"field": ["actions"], "action_breakdown": ["action_type", "action_device"]},
+                {"actions": [{"action_type": "link_click", "value": "0"}, {"action_type": "post_engagement", "value": "1"}]},
+                {"actions[action_type:link_click]": "0", "actions[action_type:post_engagement]": "1"},
             ),
             (
                 "action_breakdown_field_without_filters",
@@ -217,26 +176,10 @@ class FacebookReaderTest(TestCase):
                 },
                 {
                     "actions": [
-                        {
-                            "action_type": "link_click",
-                            "action_device": "iphone",
-                            "value": "0",
-                        },
-                        {
-                            "action_type": "post_engagement",
-                            "action_device": "iphone",
-                            "value": "1",
-                        },
-                        {
-                            "action_type": "link_click",
-                            "action_device": "desktop",
-                            "value": "2",
-                        },
-                        {
-                            "action_type": "post_engagement",
-                            "action_device": "desktop",
-                            "value": "3",
-                        },
+                        {"action_type": "link_click", "action_device": "iphone", "value": "0"},
+                        {"action_type": "post_engagement", "action_device": "iphone", "value": "1"},
+                        {"action_type": "link_click", "action_device": "desktop", "value": "2"},
+                        {"action_type": "post_engagement", "action_device": "desktop", "value": "3"},
                     ]
                 },
                 {"actions[action_type:link_click][action_device:iphone]": "0"},
@@ -287,7 +230,7 @@ class FacebookReaderTest(TestCase):
         ]
     )
     def test_obj_follows_action_breakdown_pattern(self, name, obj, expected):
-        from nck.readers.facebook.helper import obj_follows_action_breakdown_pattern
+        from ack.readers.facebook.helper import obj_follows_action_breakdown_pattern
 
         output = obj_follows_action_breakdown_pattern(obj)
         self.assertEqual(output, expected)
@@ -299,7 +242,7 @@ class FacebookReaderTest(TestCase):
         ]
     )
     def test_obj_is_list_of_single_values(self, name, obj, expected):
-        from nck.readers.facebook.helper import obj_is_list_of_single_values
+        from ack.readers.facebook.helper import obj_is_list_of_single_values
 
         output = obj_is_list_of_single_values(obj)
         self.assertEqual(output, expected)

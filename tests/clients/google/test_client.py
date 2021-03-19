@@ -21,14 +21,14 @@ import os
 import unittest
 from unittest import mock
 
-import nck.clients.google.client
+import ack.clients.google.client
 
-MODULE_NAME = "nck.clients.google.client"
+MODULE_NAME = "ack.clients.google.client"
 
 
 class GoogleClientTest(unittest.TestCase):
     def setUp(self):
-        self.instance = nck.clients.google.client.GoogleClient()
+        self.instance = ack.clients.google.client.GoogleClient()
 
     @mock.patch(MODULE_NAME + ".google.auth.default", return_value=("CREDENTIALS", "PROJECT_ID"))
     def test_get_credentials_and_project_id_with_default_auth(self, mock_auth_default):

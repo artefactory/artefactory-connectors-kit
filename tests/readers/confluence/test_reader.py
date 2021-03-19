@@ -19,12 +19,12 @@
 from unittest import TestCase, mock
 
 from click import ClickException
-from nck.readers.confluence.reader import ConfluenceReader
+from ack.readers.confluence.reader import ConfluenceReader
 
 KEY1_RAW_RESPONSE_PAGE0 = {
     "results": [
         {
-            "title": "Making API requests with NCK",
+            "title": "Making API requests with ACK",
             "space": {"name": "How To Guides"},
             "metadata": {"labels": {"results": [{"name": "api"}]}},
         },
@@ -49,7 +49,7 @@ KEY1_RAW_RESPONSE_PAGE1 = {
 }
 
 KEY1_FINAL_RECORDS = [
-    {"title": "Making API requests with NCK", "space.name": "How To Guides", "label_names": "api"},
+    {"title": "Making API requests with ACK", "space.name": "How To Guides", "label_names": "api"},
     {"title": "Writting a Client Case", "space.name": "How To Guides", "label_names": "confluence"},
     {"title": "Developping with Github", "space.name": "How To Guides", "label_names": "git"},
 ]
@@ -73,7 +73,7 @@ class ConfluenceReaderTest(TestCase):
     }
 
     @mock.patch(
-        "nck.readers.confluence.reader.CUSTOM_FIELDS",
+        "ack.readers.confluence.reader.CUSTOM_FIELDS",
         {
             "custom_field_A": {"specific_to_spacekeys": ["KEY1"]},
             "custom_field_B": {"specific_to_spacekeys": ["KEY1", "KEY2"]},

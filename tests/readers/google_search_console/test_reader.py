@@ -19,13 +19,13 @@
 from datetime import datetime
 from unittest import TestCase, mock
 
-from nck.readers.google_search_console.reader import GoogleSearchConsoleReader
+from ack.readers.google_search_console.reader import GoogleSearchConsoleReader
 
 
 class GoogleSearchConsoleReaderTest(TestCase):
     DATEFORMAT = "%Y-%m-%d"
 
-    @mock.patch("nck.readers.google_search_console.reader.GoogleSearchConsoleReader._run_query")
+    @mock.patch("ack.readers.google_search_console.reader.GoogleSearchConsoleReader._run_query")
     def test_read(self, mock_query):
         kwargs = {
             "client_id": "",

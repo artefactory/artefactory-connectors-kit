@@ -13,13 +13,13 @@ Update the values of the context variables featured in the .env module:
 - ``DOCKER_TAG``: tag name
 - ``DOCKER_REGISTRY``: registry hostname (e.g. eu.gcr.io for hosts located in the EU)
 
-Build NCK image:
+Build ACK image:
 
 .. code-block:: shell
 
     make build_base_image
 
-Push NCK image to GCP Container Registry:
+Push ACK image to GCP Container Registry:
 
 .. code-block:: shell
 

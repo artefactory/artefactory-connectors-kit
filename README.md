@@ -1,10 +1,10 @@
-# Nautilus Connectors Kit
+# Artefactory Connectors Kit
 
-**NCK is an E(T)L tool specialized in API data ingestion. It is accessible through a Command-Line Interface. The application allows you to easily extract, stream and load data (with minimum transformations), from the API source to the destination of your choice.**
+**ACK is an E(T)L tool specialized in API data ingestion. It is accessible through a Command-Line Interface. The application allows you to easily extract, stream and load data (with minimum transformations), from the API source to the destination of your choice.**
 
 As of now, the most common output format of data loaded by the application is .njson (i.e. a file of n lines, where each line is a json-like dictionary).
 
-Official documentation is available [here](https://artefactory.github.io/nautilus-connectors-kit/).
+Official documentation is available [here](https://artefactory.github.io/artefactory-connectors-kit/).
 
 ---
 
@@ -12,9 +12,9 @@ Official documentation is available [here](https://artefactory.github.io/nautilu
 
 The application is composed of **3 main components** (*implemented as Python classes*). When combined, these components act as an E(T)L pipeline, allowing you to stream data from a source to the destination of your choice:
 
-- [Readers](nck/readers) are reading data from an API source, and transform it into a stream object.
-- [Streams](nck/streams) (*transparent to the end-user*) are local objects used by writers to process individual records collected from the source.
-- [Writers](nck/writers) are writing the output stream object to the destination of your choice.
+- [Readers](ack/readers) are reading data from an API source, and transform it into a stream object.
+- [Streams](ack/streams) (*transparent to the end-user*) are local objects used by writers to process individual records collected from the source.
+- [Writers](ack/writers) are writing the output stream object to the destination of your choice.
 
 ## Available connectors
 

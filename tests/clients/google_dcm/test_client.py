@@ -19,7 +19,7 @@
 from datetime import datetime
 from unittest import TestCase, mock
 
-from nck.clients.google_dcm.client import GoogleDCMClient
+from ack.clients.google_dcm.client import GoogleDCMClient
 
 
 class MockService:

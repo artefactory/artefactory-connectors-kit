@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from unittest import TestCase
-from nck.clients.google_sa360.client import GoogleSA360Client
+from ack.clients.google_sa360.client import GoogleSA360Client
 
 
 class GoogleSA360ClientTest(TestCase):

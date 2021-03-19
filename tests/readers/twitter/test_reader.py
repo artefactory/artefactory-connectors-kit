@@ -21,8 +21,8 @@ from unittest import TestCase, mock
 
 from click import ClickException
 from freezegun import freeze_time
-from nck.readers.twitter.reader import TwitterReader
-from nck.utils.exceptions import DateDefinitionException
+from ack.readers.twitter.reader import TwitterReader
+from ack.utils.exceptions import DateDefinitionException
 from twitter_ads.client import Client
 
 
