@@ -11,4 +11,4 @@ ADD . /app
 
 ENV PYTHONPATH=${PYTHONPATH}:.
 
-ENTRYPOINT ["python", "nck/entrypoint.py"]
+ENTRYPOINT ["python", "nck/entrypoint/entrypoint.py"]
