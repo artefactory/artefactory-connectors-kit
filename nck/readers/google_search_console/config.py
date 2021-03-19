@@ -18,7 +18,7 @@
 from datetime import datetime
 from typing import List, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 
@@ -38,3 +38,12 @@ class GoogleSearchConsoleReaderConfig(BaseModel):
     date_column: bool = False
     row_limit: int = 25000
     date_range: Literal[tuple(DEFAULT_DATE_RANGE_FUNCTIONS.keys())] = None
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v

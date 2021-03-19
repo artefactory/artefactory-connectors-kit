@@ -19,7 +19,7 @@ from typing import List, Literal
 
 from twitter_ads.campaign import Campaign, FundingInstrument, LineItem
 from twitter_ads.creative import CardsFetch, MediaCreative, PromotedTweet
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime
 
 from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
@@ -104,3 +104,12 @@ class TwitterReaderConfig(BaseModel):
     end_date: datetime = None
     add_request_date_to_report: bool = False
     date_range: Literal[tuple(DEFAULT_DATE_RANGE_FUNCTIONS.keys())] = None
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v

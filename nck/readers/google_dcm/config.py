@@ -18,7 +18,7 @@
 from datetime import datetime
 from typing import List, Literal, Tuple
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 
@@ -70,3 +70,12 @@ class GoogleDCMReaderConfig(BaseModel):
     end_date: datetime = None
     filters: List[Tuple[str, str]] = []
     date_range: Literal[tuple(DEFAULT_DATE_RANGE_FUNCTIONS.keys())] = None
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v
