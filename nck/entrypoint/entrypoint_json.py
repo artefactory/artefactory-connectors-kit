@@ -28,15 +28,13 @@ from nck.utils.formatter import format_reader, format_writers
     "--config-file", help="Path of the json file used to build the command.", required=True, type=click.Path(exists=True),
 )
 def read_and_write(config_file):
-    # args = parse_json_config_file_to_text(config_file)
     data = read_json(config_file)
     if "normalize_keys" not in data.keys():
         data["normalize_keys"] = False
 
-    # get the instances for each reader/writer
     reader = format_reader(data["reader"])
     writers = format_writers(data["writers"])
-    # read and then write
+
     for stream in reader.read():
         for writer in writers:
             if data["normalize_keys"] and issubclass(stream.__class__, JSONStream):
@@ -46,5 +44,4 @@ def read_and_write(config_file):
 
 
 if __name__ == "__main__":
-    # we need to catch SystemExit as every Click command ends with this Exception
     read_and_write()
