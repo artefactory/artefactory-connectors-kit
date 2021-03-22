@@ -18,7 +18,7 @@
 
 import unittest
 
-from nck.readers.yandex_campaign.reader import YandexCampaignReader
+from ack.readers.yandex_campaign.reader import YandexCampaignReader
 from parameterized import parameterized
 
 

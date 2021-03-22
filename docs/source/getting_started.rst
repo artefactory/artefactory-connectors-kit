@@ -6,11 +6,11 @@ Getting started
 Set-up your developing environment
 ==================================
 
-To start using NCK and/or contributing, first clone the `dev` branch of the `GitHub repository <https://github.com/artefactory/nautilus-connectors-kit/tree/dev>`__:
+To start using ACK and/or contributing, first clone the `dev` branch of the `GitHub repository <https://github.com/artefactory/artefactory-connectors-kit/tree/dev>`__:
 
 .. code-block:: shell
 
-    git clone git@github.com:artefactory/nautilus-connectors-kit.git -b dev
+    git clone git@github.com:artefactory/artefactory-connectors-kit.git -b dev
 
 -------------------
 Virtual environment
@@ -20,8 +20,8 @@ Create a virtual environment at the root of your local repository:
 
 .. code-block:: shell
 
-    python3 -m venv nck-env
-    source nck-env/bin/activate
+    python3 -m venv ack-env
+    source ack-env/bin/activate
 
 Install dependencies:
 
@@ -75,7 +75,7 @@ We are using `Sphinx <https://www.sphinx-doc.org/en/master/>`__ with a ReadTheDo
 
 The Sphinx package has already been installed in your virtual environment with dependencies.
 
-Sphinx documentation is available under the ``docs/source/`` directory of the `GitHub repository <https://github.com/artefactory/nautilus-connectors-kit/tree/dev>`__ as .rst files (each file representing a page).
+Sphinx documentation is available under the ``docs/source/`` directory of the `GitHub repository <https://github.com/artefactory/artefactory-connectors-kit/tree/dev>`__ as .rst files (each file representing a page).
 It uses the reStructuredText (reST) syntax: to learn more about it, see the `official documentation <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`__.
 
 You can modify existing pages by editing the corresponding .rst files.
@@ -112,18 +112,18 @@ You can launch a preview of these .html files in your brower with your code edit
 Sphinx documentation is automatically deployed on GitHub Pages (by a dedicated GitHub workflow) each time code is pushed to the 'dev' branch of the repository.
 
 =============================
-Launch your first NCK command
+Launch your first ACK command
 =============================
 
 Once this preliminary set-up is finalized, you can start using the application.
 
-NCK commands can be broken down into 3 parts:
+ACK commands can be broken down into 3 parts:
 
-1. An entrypoint: all NCK commands are launched through the ``nck/entrypoint.py`` executable.
+1. An entrypoint: all ACK commands are launched through the ``ack/entrypoint.py`` executable.
 
 .. code-block:: shell
 
-    python nck/entrypoint.py
+    python ack/entrypoint.py
 
 2. A reader command, and its options: in the below example, we are reading Google Analytics data for the view <VIEW_ID>, retrieving sessions, pageviews and bounces by date from 2020-01-01 to 2020-01-03.
 
@@ -131,25 +131,25 @@ NCK commands can be broken down into 3 parts:
 
     read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric ga:sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03
 
-3. A writer command, and its options: in the below example, we are writing the output .nsjon stream into a Google Cloud Storage blob named ``google_analytics_report_2020-01-01.njson``, located under the Google Cloud Storage bucket ``nck_extracts``, with the path ``FR/google_analytics/``.
+3. A writer command, and its options: in the below example, we are writing the output .nsjon stream into a Google Cloud Storage blob named ``google_analytics_report_2020-01-01.njson``, located under the Google Cloud Storage bucket ``ack_extracts``, with the path ``FR/google_analytics/``.
 
 .. code-block:: shell
 
-    write_gcs --gcs-project-id <GCP_PROJECT_ID> --gcs-bucket nck_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
+    write_gcs --gcs-project-id <GCP_PROJECT_ID> --gcs-bucket ack_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
 
-To execute the NCK command as a whole, we just have to put these 3 parts together.
+To execute the ACK command as a whole, we just have to put these 3 parts together.
 
 To simplify your first test, instead of the writer command ``write_gcs``, we recommend you to use ``write_console`` (*it will write output stream records into your terminal*) or ``write_local --local-directory <PATH_TO_DESTINATION>`` (*it will write output stream records into a local file*). In practice, these writer commands are very convenient for debugging, as they are quite simple.
 
-In the end, if we use ``write_console`` as a writer command, the combined NCK command will be:
+In the end, if we use ``write_console`` as a writer command, the combined ACK command will be:
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+    python ack/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 You can now execute it into your terminal.
 
-**Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available** :ref:`readers:Readers` and :ref:`writers:Writers`.
+**Now that you understand how ack commands are structured, you can follow these links to find the full documentation on available** :ref:`readers:Readers` and :ref:`writers:Writers`.
 
 =====================
 Normalize field names
@@ -157,19 +157,19 @@ Normalize field names
 
 Some destinations have specific requirements for field names. This is the case of BigQuery, that only accepts letters, digits and underscores.
 
-To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option ``--normalize-keys true`` between ``python nck/entrypoint.py`` and the invocated reader command. If we keep using the previous Google Analytics example, it would give:
+To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option ``--normalize-keys true`` between ``python ack/entrypoint.py`` and the invocated reader command. If we keep using the previous Google Analytics example, it would give:
 
 .. code-block:: shell
 
-    python nck/entrypoint.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+    python ack/entrypoint.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 ==========
 Contribute
 ==========
 
-NCK is an open-source application initially developed by Artefact team: feel free to contribute!
+ACK is an open-source application initially developed by Artefact team: feel free to contribute!
 
-You can find open issues on `this GitHub page <https://github.com/artefactory/nautilus-connectors-kit/issues>`__. If you identify additional enhancements/fixes that could be beneficial to the application, don't hesitate to add them to the list.
+You can find open issues on `this GitHub page <https://github.com/artefactory/artefactory-connectors-kit/issues>`__. If you identify additional enhancements/fixes that could be beneficial to the application, don't hesitate to add them to the list.
 
 Here are a few tips/guidelines to help you efficiently contribute:
 
@@ -181,11 +181,11 @@ How to develop a new reader
 
 To create a new reader, you should:
 
-1. Create a ``nck/readers/<SOURCE_NAME>/`` directory, having the following structure:
+1. Create a ``ack/readers/<SOURCE_NAME>/`` directory, having the following structure:
 
 .. code-block:: shell
 
-    - nck/
+    - ack/
     -- readers/
     --- <SOURCE_NAME>/
     ---- cli.py
@@ -205,7 +205,7 @@ This module should implement a click-decorated reader function:
 This module should implement a reader class:
 
   - Class attributes should be the previously defined click options.
-  - The class should have a ``read()`` method, yielding a stream object. This stream object can be chosen from `available stream classes <https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/streams>`__, and has 2 attributes: a stream name and a source generator function named ``result_generator()``, yielding individual source records.
+  - The class should have a ``read()`` method, yielding a stream object. This stream object can be chosen from `available stream classes <https://github.com/artefactory/artefactory-connectors-kit/tree/dev/ack/streams>`__, and has 2 attributes: a stream name and a source generator function named ``result_generator()``, yielding individual source records.
 
 ``helper.py`` (Optional)
 
@@ -217,7 +217,7 @@ This module gathers all configuration variables.
 
 2. In parallell, create unit tests for your methods under the ``tests/`` directory
 
-3. Add your click-decorated reader function to the ``nck/readers/__init__.py`` file
+3. Add your click-decorated reader function to the ``ack/readers/__init__.py`` file
 
 4. Complete the documentation:
 
@@ -236,7 +236,7 @@ Each stream class should have:
 - 2 attributes : a stream name and a source generator function. Both values will be passed by the associated reader class (*the generator function is the* ``result_generator()`` *function defined in the reader class*).
 - a ``readlines()`` method, yielding individual source records.
 
-Currently, these components are defined in the parent ``Stream`` class (*defined in the* ``nck/streams/stream.py`` *module*), and are inherited by all stream subclasses.
+Currently, these components are defined in the parent ``Stream`` class (*defined in the* ``ack/streams/stream.py`` *module*), and are inherited by all stream subclasses.
 
 ---------------------------
 How to develop a new writer
@@ -246,11 +246,11 @@ How to develop a new writer
 
 To develop a new writer, you should:
 
-1. Create a ``nck/writers/<DESTINATION_NAME>/`` directory, having the following structure:
+1. Create a ``ack/writers/<DESTINATION_NAME>/`` directory, having the following structure:
 
 .. code-block:: shell
 
-    - nck/
+    - ack/
     -- writers/
     --- <DESTINATION_NAME>/
     ---- cli.py
@@ -282,7 +282,7 @@ This module gathers all configuration variables.
 
 2. In parallell, create unit tests for your methods under the ``tests/`` directory
 
-3. Add your click-decorated writer function to the ``nck/writers/__init__.py`` file
+3. Add your click-decorated writer function to the ``ack/writers/__init__.py`` file
 
 4. Complete the documentation:
 

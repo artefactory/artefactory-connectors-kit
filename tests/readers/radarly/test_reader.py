@@ -23,8 +23,8 @@ from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
 import numpy as np
-from nck.config import logger
-from nck.readers.radarly.reader import RadarlyReader
+from ack.config import logger
+from ack.readers.radarly.reader import RadarlyReader
 
 
 def create_mock_payload(start_date: datetime, end_date: datetime) -> Tuple[datetime, datetime, int]:
@@ -46,9 +46,9 @@ def create_mock_publications_iterator(param: Tuple[datetime, datetime, int]) -> 
 
 
 class RadarlyReaderTest(TestCase):
-    @mock.patch("nck.readers.radarly.reader.RadarlyApi")
-    @mock.patch("nck.readers.radarly.reader.Project")
-    @mock.patch("nck.readers.radarly.reader.RadarlyReader.get_payload")
+    @mock.patch("ack.readers.radarly.reader.RadarlyApi")
+    @mock.patch("ack.readers.radarly.reader.Project")
+    @mock.patch("ack.readers.radarly.reader.RadarlyReader.get_payload")
     def test_read(self, mock_get_payload, mock_Project, mock_RadarlyApi):
         mock_RadarlyApi.init.side_effect = lambda client_id, client_secret: logger.info(
             "Mock RadarlyApi successfully initiated"

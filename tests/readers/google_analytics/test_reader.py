@@ -20,7 +20,7 @@ from datetime import datetime
 from unittest import TestCase, mock
 
 from click import ClickException
-from nck.readers.google_analytics.reader import GoogleAnalyticsReader
+from ack.readers.google_analytics.reader import GoogleAnalyticsReader
 
 
 class GoogleAnalyticsReaderTest(TestCase):
@@ -44,7 +44,7 @@ class GoogleAnalyticsReaderTest(TestCase):
         fail = "PVRIOUES_DAY"
         self.assertRaises(ClickException, GoogleAnalyticsReader.get_days_delta, fail)
 
-    @mock.patch("nck.readers.google_analytics.reader.GoogleAnalyticsReader._run_query")
+    @mock.patch("ack.readers.google_analytics.reader.GoogleAnalyticsReader._run_query")
     @mock.patch.object(GoogleAnalyticsReader, "__init__", mock_ga_reader)
     def test_read(self, mock_query):
 
@@ -66,20 +66,14 @@ class GoogleAnalyticsReaderTest(TestCase):
                     "dimensions": ["ga:date"],
                     "metricHeader": {"metricHeaderEntries": [{"name": "ga:users", "type": "INTEGER"}]},
                 },
-                "data": {
-                    "rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["2"]}]}],
-                    "isDataGolden": True,
-                },
+                "data": {"rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["2"]}]}], "isDataGolden": True},
             },
             {
                 "columnHeader": {
                     "dimensions": ["ga:date"],
                     "metricHeader": {"metricHeaderEntries": [{"name": "ga:newUsers", "type": "INTEGER"}]},
                 },
-                "data": {
-                    "rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["1"]}]}],
-                    "isDataGolden": True,
-                },
+                "data": {"rows": [{"dimensions": ["20190101"], "metrics": [{"values": ["1"]}]}], "isDataGolden": True},
             },
         ]
 

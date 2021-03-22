@@ -2,7 +2,7 @@
 Overview
 ########
 
-**NCK is an E(T)L tool specialized in API data ingestion. It is accessible through a Command-Line Interface. The application allows you to easily extract, stream and load data (with minimum transformations), from the API source to the destination of your choice.**
+**ACK is an E(T)L tool specialized in API data ingestion. It is accessible through a Command-Line Interface. The application allows you to easily extract, stream and load data (with minimum transformations), from the API source to the destination of your choice.**
 
 As of now, the most common output format of data loaded by the application is .njson (i.e. a file of n lines, where each line is a json-like dictionary).
 

@@ -20,9 +20,9 @@ import datetime
 from unittest import TestCase, mock
 
 from click import ClickException
-from nck.readers.google_ads.reader import GoogleAdsReader
-from nck.readers.google_ads.config import DATEFORMAT
-from nck.utils.exceptions import InconsistentDateDefinitionException, NoDateDefinitionException
+from ack.readers.google_ads.reader import GoogleAdsReader
+from ack.readers.google_ads.config import DATEFORMAT
+from ack.utils.exceptions import InconsistentDateDefinitionException, NoDateDefinitionException
 from parameterized import parameterized
 
 
@@ -100,8 +100,8 @@ class GoogleAdsReaderTest(TestCase):
             temp_kwargs.update({"report_filter": not_a_dict})
             GoogleAdsReader(**temp_kwargs).add_report_filter(report_definition)
 
-    @mock.patch("nck.readers.google_ads.reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
-    @mock.patch("nck.readers.google_ads.reader.codecs.getreader", side_effect=mock_query)
+    @mock.patch("ack.readers.google_ads.reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
+    @mock.patch("ack.readers.google_ads.reader.codecs.getreader", side_effect=mock_query)
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
     def test_read_data(self, mock_report, mock_query):
         reader = GoogleAdsReader(**self.kwargs)
@@ -115,8 +115,8 @@ class GoogleAdsReaderTest(TestCase):
             for record, output in zip(data.readlines(), iter(expected)):
                 assert record == output
 
-    @mock.patch("nck.readers.google_ads.reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
-    @mock.patch("nck.readers.google_ads.reader.codecs.getreader", side_effect=mock_query)
+    @mock.patch("ack.readers.google_ads.reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
+    @mock.patch("ack.readers.google_ads.reader.codecs.getreader", side_effect=mock_query)
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
     def test_read_data_and_include_account_id(self, mock_report, mock_query):
         temp_kwargs = self.kwargs.copy()
@@ -133,18 +133,13 @@ class GoogleAdsReaderTest(TestCase):
             for record, output in zip(data.readlines(), iter(expected)):
                 assert record == output
 
-    @mock.patch("nck.readers.google_ads.reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
-    @mock.patch("nck.readers.google_ads.reader.codecs.getreader", side_effect=mock_video_query)
+    @mock.patch("ack.readers.google_ads.reader.GoogleAdsReader.fetch_report_from_gads_client_customer_obj")
+    @mock.patch("ack.readers.google_ads.reader.codecs.getreader", side_effect=mock_video_query)
     @mock.patch.object(GoogleAdsReader, "__init__", mock_googleads_reader)
     def test_list_video_campaign_ids(self, mock_report, mock_query):
         temp_kwargs = self.kwargs.copy()
         temp_kwargs.update({"filter_on_video_campaigns": True})
-        expected = set(
-            [
-                "1234567890",
-                "1111111111",
-            ]
-        )
+        expected = set(["1234567890", "1111111111"])
         set_ids = GoogleAdsReader(**temp_kwargs).list_video_campaign_ids()
         assert len(set_ids) != 0
         assert set_ids == expected
@@ -172,10 +167,7 @@ class GoogleAdsReaderTest(TestCase):
             "dateRangeType": "CUSTOM_DATE",
             "reportType": "VIDEO_PERFORMANCE_REPORT",
             "downloadFormat": "CSV",
-            "selector": {
-                "fields": "CampaignId",
-                "dateRange": {"min": "20190101", "max": "20190301"},
-            },
+            "selector": {"fields": "CampaignId", "dateRange": {"min": "20190101", "max": "20190301"}},
         }
         assert video_report_def == expected_output_custom_date
 

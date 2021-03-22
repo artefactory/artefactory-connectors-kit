@@ -3,8 +3,8 @@ from unittest import TestCase
 
 import boto3
 from moto import mock_s3
-from nck.streams.json_stream import JSONStream
-from nck.writers.amazon_s3.writer import AmazonS3Writer
+from ack.streams.json_stream import JSONStream
+from ack.writers.amazon_s3.writer import AmazonS3Writer
 from parameterized import parameterized
 
 list_dict = [{"a": "4", "b": "5", "c": "6"}, {"a": "7", "b": "8", "c": "9"}]

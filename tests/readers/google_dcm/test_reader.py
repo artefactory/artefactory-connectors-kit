@@ -18,8 +18,8 @@
 
 from unittest import TestCase, mock
 
-from nck.config import logger
-from nck.readers.google_dcm.reader import GoogleDCMReader
+from ack.config import logger
+from ack.readers.google_dcm.reader import GoogleDCMReader
 
 
 class GoogleDCMReaderTest(TestCase):

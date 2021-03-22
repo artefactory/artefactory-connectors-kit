@@ -2,12 +2,12 @@ import unittest
 from datetime import date, datetime
 
 from freezegun import freeze_time
-from nck.utils.date_handler import (
+from ack.utils.date_handler import (
     check_date_range_definition_conformity,
     get_date_start_and_date_stop_from_date_range,
     build_date_range,
 )
-from nck.utils.exceptions import DateDefinitionException
+from ack.utils.exceptions import DateDefinitionException
 from parameterized import parameterized
 
 
