@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Writers &mdash; Nautilus Connectors Kit  documentation</title>
+  <title>Writers &mdash; Artefactory Connectors Kit  documentation</title>
   
 
   
@@ -53,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Nautilus Connectors Kit
+            <a href="index.html" class="icon icon-home"> Artefactory Connectors Kit
           
 
           
@@ -139,7 +139,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Nautilus Connectors Kit</a>
+          <a href="index.html">Artefactory Connectors Kit</a>
         
       </nav>
 
@@ -203,10 +203,10 @@
 <p>The following command would allow you to:</p>
 <ul class="simple">
 <li><p>write output stream records to a blob named <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code></p></li>
-<li><p>under the Amazon S3 bucket <code class="docutils literal notranslate"><span class="pre">nck_extracts</span></code></p></li>
-<li><p>organized according to the following path: <code class="docutils literal notranslate"><span class="pre">nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson</span></code></p></li>
+<li><p>under the Amazon S3 bucket <code class="docutils literal notranslate"><span class="pre">ack_extracts</span></code></p></li>
+<li><p>organized according to the following path: <code class="docutils literal notranslate"><span class="pre">ack_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson</span></code></p></li>
 </ul>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_s3 --s3-bucket-name nck_extracts --s3-prefix FR/google_analytics --s3-filename google_analytics_report_2020-01-01.njson --s3-bucket-region &lt;BUCKET_REGION&gt; --s3-access-key-id &lt;ACCESS_KEY_ID&gt; --s3-access-key-secret &lt;ACCESS_KEY_SECRET&gt;
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_s3 --s3-bucket-name ack_extracts --s3-prefix FR/google_analytics --s3-filename google_analytics_report_2020-01-01.njson --s3-bucket-region &lt;BUCKET_REGION&gt; --s3-access-key-id &lt;ACCESS_KEY_ID&gt; --s3-access-key-secret &lt;ACCESS_KEY_SECRET&gt;
 </pre></div>
 </div>
 </div>
@@ -256,10 +256,10 @@
 <p>The following command would allow you to:</p>
 <ul class="simple">
 <li><p>store output stream records into the BigQuery table <code class="docutils literal notranslate"><span class="pre">google_analytics</span></code></p></li>
-<li><p>located under the BigQuery dataset <code class="docutils literal notranslate"><span class="pre">nck</span></code></p></li>
+<li><p>located under the BigQuery dataset <code class="docutils literal notranslate"><span class="pre">ack</span></code></p></li>
 </ul>
-<p>As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">nck_extracts</span></code>.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write bq --bq-dataset nck --bq-table google_analytics --bq-bucket nck-extracts
+<p>As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">ack_extracts</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write bq --bq-dataset ack --bq-table google_analytics --bq-bucket ack-extracts
 </pre></div>
 </div>
 </div>
@@ -312,10 +312,10 @@
 <p>The following command would allow you to:</p>
 <ul class="simple">
 <li><p>write output stream records to a blob named <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code></p></li>
-<li><p>located under the Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">nck_extracts</span></code></p></li>
-<li><p>organized according to the following path: <code class="docutils literal notranslate"><span class="pre">nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson</span></code></p></li>
+<li><p>located under the Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">ack_extracts</span></code></p></li>
+<li><p>organized according to the following path: <code class="docutils literal notranslate"><span class="pre">ack_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson</span></code></p></li>
 </ul>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_gcs --gcs-project-id &lt;GCP_PROJECT_ID&gt; --gcs-bucket nck_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_gcs --gcs-project-id &lt;GCP_PROJECT_ID&gt; --gcs-bucket ack_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
 </pre></div>
 </div>
 </div>

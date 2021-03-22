@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Getting started &mdash; Nautilus Connectors Kit  documentation</title>
+  <title>Getting started &mdash; Artefactory Connectors Kit  documentation</title>
   
 
   
@@ -53,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Nautilus Connectors Kit
+            <a href="index.html" class="icon icon-home"> Artefactory Connectors Kit
           
 
           
@@ -96,7 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#launch-your-first-nck-command">Launch your first NCK command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launch-your-first-ack-command">Launch your first ACK command</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#normalize-field-names">Normalize field names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contribute">Contribute</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-develop-a-new-reader">How to develop a new reader</a></li>
@@ -125,7 +125,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Nautilus Connectors Kit</a>
+          <a href="index.html">Artefactory Connectors Kit</a>
         
       </nav>
 
@@ -181,15 +181,15 @@
 <h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="set-up-your-developing-environment">
 <h2>Set-up your developing environment<a class="headerlink" href="#set-up-your-developing-environment" title="Permalink to this headline">¶</a></h2>
-<p>To start using NCK and/or contributing, first clone the <cite>dev</cite> branch of the <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev">GitHub repository</a>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:artefactory/nautilus-connectors-kit.git -b dev
+<p>To start using ACK and/or contributing, first clone the <cite>dev</cite> branch of the <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/tree/dev">GitHub repository</a>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:artefactory/artefactory-connectors-kit.git -b dev
 </pre></div>
 </div>
 <div class="section" id="virtual-environment">
 <h3>Virtual environment<a class="headerlink" href="#virtual-environment" title="Permalink to this headline">¶</a></h3>
 <p>Create a virtual environment at the root of your local repository:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3 -m venv nck-env
-<span class="nb">source</span> nck-env/bin/activate
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3 -m venv ack-env
+<span class="nb">source</span> ack-env/bin/activate
 </pre></div>
 </div>
 <p>Install dependencies:</p>
@@ -226,7 +226,7 @@ To run existing tests, execute:</p>
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
 <p>We are using <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> with a ReadTheDocs theme to document the application.</p>
 <p>The Sphinx package has already been installed in your virtual environment with dependencies.</p>
-<p>Sphinx documentation is available under the <code class="docutils literal notranslate"><span class="pre">docs/source/</span></code> directory of the <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev">GitHub repository</a> as .rst files (each file representing a page).
+<p>Sphinx documentation is available under the <code class="docutils literal notranslate"><span class="pre">docs/source/</span></code> directory of the <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/tree/dev">GitHub repository</a> as .rst files (each file representing a page).
 It uses the reStructuredText (reST) syntax: to learn more about it, see the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">official documentation</a>.</p>
 <p>You can modify existing pages by editing the corresponding .rst files.</p>
 <p>If you want to create a new page, you should:</p>
@@ -257,14 +257,14 @@ You can launch a preview of these .html files in your brower with your code edit
 <p>Sphinx documentation is automatically deployed on GitHub Pages (by a dedicated GitHub workflow) each time code is pushed to the ‘dev’ branch of the repository.</p>
 </div>
 </div>
-<div class="section" id="launch-your-first-nck-command">
-<h2>Launch your first NCK command<a class="headerlink" href="#launch-your-first-nck-command" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="launch-your-first-ack-command">
+<h2>Launch your first ACK command<a class="headerlink" href="#launch-your-first-ack-command" title="Permalink to this headline">¶</a></h2>
 <p>Once this preliminary set-up is finalized, you can start using the application.</p>
-<p>NCK commands can be broken down into 3 parts:</p>
+<p>ACK commands can be broken down into 3 parts:</p>
 <ol class="arabic simple">
-<li><p>An entrypoint: all NCK commands are launched through the <code class="docutils literal notranslate"><span class="pre">nck/entrypoint.py</span></code> executable.</p></li>
+<li><p>An entrypoint: all ACK commands are launched through the <code class="docutils literal notranslate"><span class="pre">ack/entrypoint.py</span></code> executable.</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
@@ -274,41 +274,41 @@ You can launch a preview of these .html files in your brower with your code edit
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li><p>A writer command, and its options: in the below example, we are writing the output .nsjon stream into a Google Cloud Storage blob named <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code>, located under the Google Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">nck_extracts</span></code>, with the path <code class="docutils literal notranslate"><span class="pre">FR/google_analytics/</span></code>.</p></li>
+<li><p>A writer command, and its options: in the below example, we are writing the output .nsjon stream into a Google Cloud Storage blob named <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code>, located under the Google Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">ack_extracts</span></code>, with the path <code class="docutils literal notranslate"><span class="pre">FR/google_analytics/</span></code>.</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_gcs --gcs-project-id &lt;GCP_PROJECT_ID&gt; --gcs-bucket nck_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_gcs --gcs-project-id &lt;GCP_PROJECT_ID&gt; --gcs-bucket ack_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
 </pre></div>
 </div>
-<p>To execute the NCK command as a whole, we just have to put these 3 parts together.</p>
+<p>To execute the ACK command as a whole, we just have to put these 3 parts together.</p>
 <p>To simplify your first test, instead of the writer command <code class="docutils literal notranslate"><span class="pre">write_gcs</span></code>, we recommend you to use <code class="docutils literal notranslate"><span class="pre">write_console</span></code> (<em>it will write output stream records into your terminal</em>) or <code class="docutils literal notranslate"><span class="pre">write_local</span> <span class="pre">--local-directory</span> <span class="pre">&lt;PATH_TO_DESTINATION&gt;</span></code> (<em>it will write output stream records into a local file</em>). In practice, these writer commands are very convenient for debugging, as they are quite simple.</p>
-<p>In the end, if we use <code class="docutils literal notranslate"><span class="pre">write_console</span></code> as a writer command, the combined NCK command will be:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
+<p>In the end, if we use <code class="docutils literal notranslate"><span class="pre">write_console</span></code> as a writer command, the combined ACK command will be:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p>You can now execute it into your terminal.</p>
-<p><strong>Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> and <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a>.</p>
+<p><strong>Now that you understand how ack commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> and <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a>.</p>
 </div>
 <div class="section" id="normalize-field-names">
 <h2>Normalize field names<a class="headerlink" href="#normalize-field-names" title="Permalink to this headline">¶</a></h2>
 <p>Some destinations have specific requirements for field names. This is the case of BigQuery, that only accepts letters, digits and underscores.</p>
-<p>To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option <code class="docutils literal notranslate"><span class="pre">--normalize-keys</span> <span class="pre">true</span></code> between <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">nck/entrypoint.py</span></code> and the invocated reader command. If we keep using the previous Google Analytics example, it would give:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py --normalize-keys <span class="nb">true</span> read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
+<p>To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option <code class="docutils literal notranslate"><span class="pre">--normalize-keys</span> <span class="pre">true</span></code> between <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">ack/entrypoint.py</span></code> and the invocated reader command. If we keep using the previous Google Analytics example, it would give:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py --normalize-keys <span class="nb">true</span> read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 </div>
 <div class="section" id="contribute">
 <h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h2>
-<p>NCK is an open-source application initially developed by Artefact team: feel free to contribute!</p>
-<p>You can find open issues on <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/issues">this GitHub page</a>. If you identify additional enhancements/fixes that could be beneficial to the application, don’t hesitate to add them to the list.</p>
+<p>ACK is an open-source application initially developed by Artefact team: feel free to contribute!</p>
+<p>You can find open issues on <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/issues">this GitHub page</a>. If you identify additional enhancements/fixes that could be beneficial to the application, don’t hesitate to add them to the list.</p>
 <p>Here are a few tips/guidelines to help you efficiently contribute:</p>
 <div class="section" id="how-to-develop-a-new-reader">
 <h3>How to develop a new reader<a class="headerlink" href="#how-to-develop-a-new-reader" title="Permalink to this headline">¶</a></h3>
 <p><em>Readers are reading data from an API source, and transform it into a stream object.</em></p>
 <p>To create a new reader, you should:</p>
 <ol class="arabic simple">
-<li><p>Create a <code class="docutils literal notranslate"><span class="pre">nck/readers/&lt;SOURCE_NAME&gt;/</span></code> directory, having the following structure:</p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">ack/readers/&lt;SOURCE_NAME&gt;/</span></code> directory, having the following structure:</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- nck/
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- ack/
 -- readers/
 --- &lt;SOURCE_NAME&gt;/
 ---- cli.py
@@ -330,7 +330,7 @@ You can launch a preview of these .html files in your brower with your code edit
 <blockquote>
 <div><ul class="simple">
 <li><p>Class attributes should be the previously defined click options.</p></li>
-<li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">read()</span></code> method, yielding a stream object. This stream object can be chosen from <a class="reference external" href="https://github.com/artefactory/nautilus-connectors-kit/tree/dev/nck/streams">available stream classes</a>, and has 2 attributes: a stream name and a source generator function named <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code>, yielding individual source records.</p></li>
+<li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">read()</span></code> method, yielding a stream object. This stream object can be chosen from <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/tree/dev/ack/streams">available stream classes</a>, and has 2 attributes: a stream name and a source generator function named <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code>, yielding individual source records.</p></li>
 </ul>
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
@@ -339,7 +339,7 @@ You can launch a preview of these .html files in your brower with your code edit
 <p>This module gathers all configuration variables.</p>
 <ol class="arabic" start="2">
 <li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
-<li><p>Add your click-decorated reader function to the <code class="docutils literal notranslate"><span class="pre">nck/readers/__init__.py</span></code> file</p></li>
+<li><p>Add your click-decorated reader function to the <code class="docutils literal notranslate"><span class="pre">ack/readers/__init__.py</span></code> file</p></li>
 <li><p>Complete the documentation:</p>
 <blockquote>
 <div><ul class="simple">
@@ -359,16 +359,16 @@ You can launch a preview of these .html files in your brower with your code edit
 <li><p>2 attributes : a stream name and a source generator function. Both values will be passed by the associated reader class (<em>the generator function is the</em> <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code> <em>function defined in the reader class</em>).</p></li>
 <li><p>a <code class="docutils literal notranslate"><span class="pre">readlines()</span></code> method, yielding individual source records.</p></li>
 </ul>
-<p>Currently, these components are defined in the parent <code class="docutils literal notranslate"><span class="pre">Stream</span></code> class (<em>defined in the</em> <code class="docutils literal notranslate"><span class="pre">nck/streams/stream.py</span></code> <em>module</em>), and are inherited by all stream subclasses.</p>
+<p>Currently, these components are defined in the parent <code class="docutils literal notranslate"><span class="pre">Stream</span></code> class (<em>defined in the</em> <code class="docutils literal notranslate"><span class="pre">ack/streams/stream.py</span></code> <em>module</em>), and are inherited by all stream subclasses.</p>
 </div>
 <div class="section" id="how-to-develop-a-new-writer">
 <h3>How to develop a new writer<a class="headerlink" href="#how-to-develop-a-new-writer" title="Permalink to this headline">¶</a></h3>
 <p><em>Writers are writing the output stream object to the destination of your choice.</em></p>
 <p>To develop a new writer, you should:</p>
 <ol class="arabic simple">
-<li><p>Create a <code class="docutils literal notranslate"><span class="pre">nck/writers/&lt;DESTINATION_NAME&gt;/</span></code> directory, having the following structure:</p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">ack/writers/&lt;DESTINATION_NAME&gt;/</span></code> directory, having the following structure:</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- nck/
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- ack/
 -- writers/
 --- &lt;DESTINATION_NAME&gt;/
 ---- cli.py
@@ -399,7 +399,7 @@ You can launch a preview of these .html files in your brower with your code edit
 <p>This module gathers all configuration variables.</p>
 <ol class="arabic" start="2">
 <li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
-<li><p>Add your click-decorated writer function to the <code class="docutils literal notranslate"><span class="pre">nck/writers/__init__.py</span></code> file</p></li>
+<li><p>Add your click-decorated writer function to the <code class="docutils literal notranslate"><span class="pre">ack/writers/__init__.py</span></code> file</p></li>
 <li><p>Complete the documentation:</p>
 <blockquote>
 <div><ul class="simple">

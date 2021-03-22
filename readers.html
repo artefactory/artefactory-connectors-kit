@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Readers &mdash; Nautilus Connectors Kit  documentation</title>
+  <title>Readers &mdash; Artefactory Connectors Kit  documentation</title>
   
 
   
@@ -53,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Nautilus Connectors Kit
+            <a href="index.html" class="icon icon-home"> Artefactory Connectors Kit
           
 
           
@@ -285,7 +285,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Nautilus Connectors Kit</a>
+          <a href="index.html">Artefactory Connectors Kit</a>
         
       </nav>
 
@@ -364,7 +364,7 @@
 <div class="section" id="quickstart">
 <h3>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h3>
 <p>Call example to Adobe Analytics Reader 1.4, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_adobe --adobe-client-id &lt;CLIENT_ID&gt; --adobe-client-secret &lt;CLIENT_SECRET&gt; --adobe-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-org-id &lt;ORG_ID&gt; --adobe-private-key &lt;PRIVATE_KEY&gt; --adobe-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date <span class="m">2020</span>-01-01 --adobe-end-date <span class="m">2020</span>-01-31 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_adobe --adobe-client-id &lt;CLIENT_ID&gt; --adobe-client-secret &lt;CLIENT_SECRET&gt; --adobe-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-org-id &lt;ORG_ID&gt; --adobe-private-key &lt;PRIVATE_KEY&gt; --adobe-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date <span class="m">2020</span>-01-01 --adobe-end-date <span class="m">2020</span>-01-31 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -446,7 +446,7 @@
 <div class="section" id="id2">
 <h3>Quickstart<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id &lt;CLIENT_ID&gt; --adobe-2-0-client-secret &lt;CLIENT_SECRET&gt; --adobe-2-0-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-2-0-org-id &lt;ORG_ID&gt; --adobe-2-0-private-key &lt;PRIVATE_KEY&gt; --adobe-2-0-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-2-0-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date <span class="m">2020</span>-01-01 --adobe-2-0-end-date <span class="m">2020</span>-01-31 --adobe-2-0-metric visits write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id &lt;CLIENT_ID&gt; --adobe-2-0-client-secret &lt;CLIENT_SECRET&gt; --adobe-2-0-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-2-0-org-id &lt;ORG_ID&gt; --adobe-2-0-private-key &lt;PRIVATE_KEY&gt; --adobe-2-0-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-2-0-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date <span class="m">2020</span>-01-01 --adobe-2-0-end-date <span class="m">2020</span>-01-31 --adobe-2-0-metric visits write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -502,7 +502,7 @@
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-date-range</span></code></p></td>
-<td><p>Date range. By default, not available in Adobe, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+<td><p>Date range. By default, not available in Adobe, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
 </table>
@@ -532,7 +532,7 @@
 </pre></div>
 </div>
 <p>Once done, launch your S3 reader command. The following command retrieves the blobs located under the Amazon S3 bucket <code class="docutils literal notranslate"><span class="pre">daily_reports</span></code> and the blob prefix <code class="docutils literal notranslate"><span class="pre">FR/offline_sales/</span></code>.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offline_sales --s3-format csv write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offline_sales --s3-format csv write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -586,7 +586,7 @@
 <h3>Quickstart<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>The Confluence Reader handles calls to the <strong>Get Content endpoint</strong> of Confluence Cloud REST API.</p>
 <p>The following command retrieves the titles, space names, tiny links and label names of all pages located under the Atlassian domain &lt;ATLASSIAN_DOMAIN&gt;, filtered on the spacekeys &lt;KEY_1&gt; and &lt;KEY_2&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_confluence --confluence-user-login &lt;USER_LOGIN&gt; --confluence-api-token &lt;API_TOKEN&gt; --confluence-atlassian-domain &lt;ATLASSIAN_DOMAIN&gt; --confluence-content-type <span class="s2">&quot;page&quot;</span> --confluence-field <span class="s2">&quot;title&quot;</span> --confluence-field <span class="s2">&quot;space.name&quot;</span> --confluence-field <span class="s2">&quot;tiny_link&quot;</span> --confluence-field <span class="s2">&quot;label_names&quot;</span> --confluence-spacekey &lt;KEY_1&gt; --confluence-spacekey &lt;KEY_2&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_confluence --confluence-user-login &lt;USER_LOGIN&gt; --confluence-api-token &lt;API_TOKEN&gt; --confluence-atlassian-domain &lt;ATLASSIAN_DOMAIN&gt; --confluence-content-type <span class="s2">&quot;page&quot;</span> --confluence-field <span class="s2">&quot;title&quot;</span> --confluence-field <span class="s2">&quot;space.name&quot;</span> --confluence-field <span class="s2">&quot;tiny_link&quot;</span> --confluence-field <span class="s2">&quot;label_names&quot;</span> --confluence-spacekey &lt;KEY_1&gt; --confluence-spacekey &lt;KEY_2&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -635,9 +635,9 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">RAW_API_RESPONSE</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;results&quot;</span>:
     <span class="o">[</span>
         <span class="o">{</span>
-            <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;Making API requests with NCK&quot;</span>,
+            <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;Making API requests with ACK&quot;</span>,
             <span class="s2">&quot;space&quot;</span>: <span class="o">{</span><span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;How To Guides&quot;</span><span class="o">}</span>,
-            <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span><span class="s2">&quot;labels&quot;</span>: <span class="o">{</span><span class="s2">&quot;results&quot;</span>: <span class="o">[{</span><span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;nck&quot;</span><span class="o">}</span>, <span class="o">{</span><span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;api&quot;</span><span class="o">}]}}</span>
+            <span class="s2">&quot;metadata&quot;</span>: <span class="o">{</span><span class="s2">&quot;labels&quot;</span>: <span class="o">{</span><span class="s2">&quot;results&quot;</span>: <span class="o">[{</span><span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;ack&quot;</span><span class="o">}</span>, <span class="o">{</span><span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;api&quot;</span><span class="o">}]}}</span>
         <span class="o">}</span>,
         <span class="o">{</span>
             <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;Samsung - Precision Marketing&quot;</span>,
@@ -648,8 +648,8 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-<p><strong>Custom fields</strong> - If the format of the raw API response does not match your needs, you can define a custom field. Available custom fields are described in the CUSTOM_FIELDS variable of the <code class="docutils literal notranslate"><span class="pre">nck.helpers.confluence_helper</span></code> module.</p>
-<p><em>Example</em> - The custom field <code class="docutils literal notranslate"><span class="pre">label_names</span></code> transforms the value of the source field <code class="docutils literal notranslate"><span class="pre">metadata.labels.results</span></code> using the function <code class="docutils literal notranslate"><span class="pre">_get_key_values_from_list_of_dct</span></code>. In other words, using the first record of the previous example, it will format <code class="docutils literal notranslate"><span class="pre">[{&quot;name&quot;:</span> <span class="pre">&quot;nck&quot;},</span> <span class="pre">{&quot;name&quot;:</span> <span class="pre">&quot;api&quot;}]</span></code> into <code class="docutils literal notranslate"><span class="pre">&quot;nck|api&quot;</span></code>.</p>
+<p><strong>Custom fields</strong> - If the format of the raw API response does not match your needs, you can define a custom field. Available custom fields are described in the CUSTOM_FIELDS variable of the <code class="docutils literal notranslate"><span class="pre">ack.helpers.confluence_helper</span></code> module.</p>
+<p><em>Example</em> - The custom field <code class="docutils literal notranslate"><span class="pre">label_names</span></code> transforms the value of the source field <code class="docutils literal notranslate"><span class="pre">metadata.labels.results</span></code> using the function <code class="docutils literal notranslate"><span class="pre">_get_key_values_from_list_of_dct</span></code>. In other words, using the first record of the previous example, it will format <code class="docutils literal notranslate"><span class="pre">[{&quot;name&quot;:</span> <span class="pre">&quot;ack&quot;},</span> <span class="pre">{&quot;name&quot;:</span> <span class="pre">&quot;api&quot;}]</span></code> into <code class="docutils literal notranslate"><span class="pre">&quot;ack|api&quot;</span></code>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">CUSTOM_FIELDS</span> <span class="o">=</span> <span class="o">{</span>
     <span class="s2">&quot;label_names&quot;</span>: <span class="o">{</span>
     <span class="s2">&quot;source_field&quot;</span>: <span class="s2">&quot;metadata.labels.results&quot;</span>,
@@ -672,11 +672,11 @@
 <h3>Quickstart<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <p>The Facebook Marketing Reader handles calls to 2 endpoints of the Facebook Marketing API: <strong>Facebook Ad Insights</strong> (to retrieve performance data), and <strong>Facebook Ad Management</strong> (to retrieve configuration data).</p>
 <p><em>Example of Ad Insights Request</em></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt; --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions<span class="o">[</span>action_type:post_engagement<span class="o">]</span> --facebook-field actions<span class="o">[</span>action_type:video_view<span class="o">]</span> --facebook-field age --facebook-field gender --facebook-time-increment <span class="m">1</span> --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt; --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions<span class="o">[</span>action_type:post_engagement<span class="o">]</span> --facebook-field actions<span class="o">[</span>action_type:video_view<span class="o">]</span> --facebook-field age --facebook-field gender --facebook-time-increment <span class="m">1</span> --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Example of Ad Management Request</em></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt;  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative<span class="o">[</span>id<span class="o">]</span> --facebook-add-date-to-report True --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2019</span>-01-01 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt;  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative<span class="o">[</span>id<span class="o">]</span> --facebook-add-date-to-report True --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2019</span>-01-01 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -871,7 +871,7 @@
 <div class="section" id="id19">
 <h3>Quickstart<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves insights about the Ads of <code class="docutils literal notranslate"><span class="pre">my_first_campaign</span></code> and <code class="docutils literal notranslate"><span class="pre">my_second_campaign</span></code> in the Google Ads Account &lt;CLIENT_CUSTOMER_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_googleads --googleads-developer-token &lt;DEVELOPER_TOKEN&gt; --googleads-client-id &lt;CLIENT_ID&gt; --googleads-client-secret &lt;CLIENT_SECRET&gt; --googleads-refresh-token &lt;REFRESH_TOKEN&gt; --googleads-client-customer-id &lt;XXX-XXX-XXXX CLIENT_CUSTOMER_ID&gt; --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter <span class="s2">&quot;{&#39;field&#39;:&#39;CampaignName&#39;,&#39;operator&#39;:&#39;IN&#39;,&#39;values&#39;:[&#39;my_first_campaign&#39;,&#39;my_second_campaign&#39;]}&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_googleads --googleads-developer-token &lt;DEVELOPER_TOKEN&gt; --googleads-client-id &lt;CLIENT_ID&gt; --googleads-client-secret &lt;CLIENT_SECRET&gt; --googleads-refresh-token &lt;REFRESH_TOKEN&gt; --googleads-client-customer-id &lt;XXX-XXX-XXXX CLIENT_CUSTOMER_ID&gt; --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter <span class="s2">&quot;{&#39;field&#39;:&#39;CampaignName&#39;,&#39;operator&#39;:&#39;IN&#39;,&#39;values&#39;:[&#39;my_first_campaign&#39;,&#39;my_second_campaign&#39;]}&quot;</span>
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -959,7 +959,7 @@
 <div class="section" id="id23">
 <h3>Quickstart<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves sessions, pageviews and bounces volumes by date from 2020-01-01 to 2020-01-03, for the Analytics View &lt;VIEW_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1050,7 +1050,7 @@
 </pre></div>
 </div>
 <p>Once done, launch your Google Cloud Storage reader command. The following command retrieves the blobs located under the Google Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">daily_reports</span></code> and the blob prefix <code class="docutils literal notranslate"><span class="pre">FR/offline_sales/</span></code>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/offline_sales --gcs-format csv write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/offline_sales --gcs-format csv write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1103,7 +1103,7 @@
 <div class="section" id="id31">
 <h3>Quickstart<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves impressions, clicks and cost volumes from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_dcm --dcm-client-id &lt;CLIENT_ID&gt; --dcm-client-secret &lt;CLIENT_SECRET&gt; --dcm-refresh-token &lt;REFRESH_TOKEN&gt; --dcm-profile-id &lt;PROFILE_ID&gt; --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date <span class="m">2020</span>-01-01 --dcm-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_dcm --dcm-client-id &lt;CLIENT_ID&gt; --dcm-client-secret &lt;CLIENT_SECRET&gt; --dcm-refresh-token &lt;REFRESH_TOKEN&gt; --dcm-profile-id &lt;PROFILE_ID&gt; --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date <span class="m">2020</span>-01-01 --dcm-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1162,7 +1162,7 @@
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-date-range</span></code></p></td>
-<td><p>Date range. By default, not available in DCM, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+<td><p>Date range. By default, not available in DCM, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
 </table>
@@ -1177,7 +1177,7 @@
 <div class="section" id="id35">
 <h3>Quickstart<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves impressions, clicks and cost volumes filtered on a specific &lt;ADVERTISER_ID&gt; from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_dbm --dbm-client-id &lt;CLIENT_ID&gt; --dbm-client-secret &lt;CLIENT_SECRET&gt; —dbm-refresh-token &lt;REFRESH_TOKEN&gt; —dbm-filter FILTER_ADVERTISER &lt;ADVERTISER_ID&gt; --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date <span class="m">2020</span>-01-01 --dbm-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_dbm --dbm-client-id &lt;CLIENT_ID&gt; --dbm-client-secret &lt;CLIENT_SECRET&gt; —dbm-refresh-token &lt;REFRESH_TOKEN&gt; —dbm-filter FILTER_ADVERTISER &lt;ADVERTISER_ID&gt; --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date <span class="m">2020</span>-01-01 --dbm-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1271,7 +1271,7 @@
 <div class="section" id="id40">
 <h3>Quickstart<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
 <p>Say you want to get a SDF file for all campaigns of a specific advertiser. You can run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_dv360 --dv360-client-id &lt;CLIENT_ID&gt; --dv360-client-secret &lt;CLIENT_SECRET&gt; --dv360-refresh-token &lt;REFRESH_TOKEN&gt; --dv360-access-token &lt;ACCESS_TOKEN&gt; --dv360-advertiser-id &lt;ADVERTISER_ID&gt; --dv360-filter-type <span class="s1">&#39;FILTER_TYPE_NONE&#39;</span> --dv360-file-type <span class="s1">&#39;FILE_TYPE_CAMPAIGN&#39;</span> write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_dv360 --dv360-client-id &lt;CLIENT_ID&gt; --dv360-client-secret &lt;CLIENT_SECRET&gt; --dv360-refresh-token &lt;REFRESH_TOKEN&gt; --dv360-access-token &lt;ACCESS_TOKEN&gt; --dv360-advertiser-id &lt;ADVERTISER_ID&gt; --dv360-filter-type <span class="s1">&#39;FILTER_TYPE_NONE&#39;</span> --dv360-file-type <span class="s1">&#39;FILE_TYPE_CAMPAIGN&#39;</span> write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1339,7 +1339,7 @@
 <div class="section" id="id45">
 <h3>Quickstart<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves insights about the URL &lt;SITE_URL&gt; from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_search_console --search-console-client-id &lt;CLIENT_ID&gt; --search-console-refresh-token &lt;REFRESH_TOKEN&gt; --search-console-site-url &lt;SITE_URL&gt; --search-console-dimensions country --search-console-dimensions device --search-console-start-date <span class="m">2020</span>-01-01 --search-console-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_search_console --search-console-client-id &lt;CLIENT_ID&gt; --search-console-refresh-token &lt;REFRESH_TOKEN&gt; --search-console-site-url &lt;SITE_URL&gt; --search-console-dimensions country --search-console-dimensions device --search-console-start-date <span class="m">2020</span>-01-01 --search-console-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1386,7 +1386,7 @@
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-date-range</span></code></p></td>
-<td><p>Date range. By default, not available in Search Console, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+<td><p>Date range. By default, not available in Search Console, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-date-column</span></code></p></td>
 <td><p>If set to True, a date column will be included in the report</p></td>
@@ -1416,7 +1416,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id50">
 <h3>Quickstart<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves insights about the Ads in the Search Ads 360 Account &lt;ADVERTISER_ID&gt; from the agency &lt;AGENCY_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_sa360 --sa360-client-id &lt;CLIENT_ID&gt; --sa360-client-secret &lt;CLIENT_SECRET&gt; --sa360-refresh-token &lt;REFRESH_TOKEN&gt; --sa360-agency-id &lt;AGENCY_ID&gt; --sa360-advertiser-id &lt;ADVERTISER_ID&gt; --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date <span class="m">2020</span>-01-01 --sa360-end-date <span class="m">2020</span>-01-01
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_sa360 --sa360-client-id &lt;CLIENT_ID&gt; --sa360-client-secret &lt;CLIENT_SECRET&gt; --sa360-refresh-token &lt;REFRESH_TOKEN&gt; --sa360-agency-id &lt;AGENCY_ID&gt; --sa360-advertiser-id &lt;ADVERTISER_ID&gt; --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date <span class="m">2020</span>-01-01 --sa360-end-date <span class="m">2020</span>-01-01
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1475,7 +1475,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-date-range</span></code></p></td>
-<td><p>Date range. By default, not available in SA360, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+<td><p>Date range. By default, not available in SA360, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
 </table>
@@ -1567,11 +1567,11 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id60">
 <h3>Quickstart<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
 <p>Say you want to retrieve for all campaigns and its associated banners and stats of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;general&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;general&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
 </pre></div>
 </div>
 <p>If you just want to get the budget instead of the general statistics of each campaign you can try the following:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;budget&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;budget&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1612,7 +1612,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-date-range</span></code></p></td>
-<td><p>Date range. By default, not available in MyTarget, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+<td><p>Date range. By default, not available in MyTarget, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
 </table>
@@ -1627,7 +1627,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id63">
 <h3>Quickstart<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves all records from the table &lt;TABLE_NAME&gt; (equivalent to <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">&lt;TABLE_NAME&gt;</span></code>).</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_mysql --mysql-user &lt;DATABASE_USER&gt; --mysql-password &lt;DATABASE_PASSWORD&gt; --mysql-host &lt;DATABASE_HOST&gt; --mysql-port &lt;DATABASE_PORT&gt; --mysql-database &lt;DATABASE_NAME&gt; --mysql-table &lt;TABLE_NAME&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_mysql --mysql-user &lt;DATABASE_USER&gt; --mysql-password &lt;DATABASE_PASSWORD&gt; --mysql-host &lt;DATABASE_HOST&gt; --mysql-port &lt;DATABASE_PORT&gt; --mysql-database &lt;DATABASE_NAME&gt; --mysql-table &lt;TABLE_NAME&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1701,7 +1701,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id67">
 <h3>Quickstart<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves data from posts located under the project <code class="docutils literal notranslate"><span class="pre">&lt;PROJECT_ID&gt;</span></code> and associated to the focus IDs <code class="docutils literal notranslate"><span class="pre">00001</span></code> and <code class="docutils literal notranslate"><span class="pre">00002</span></code>, from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_radarly --radarly-client-id &lt;CLIENT_ID&gt; --radarly-client-secret &lt;CLIENT_SECRET&gt; --radarly-pid &lt;PROJECT_ID&gt; --radarly-focus-id <span class="m">00001</span> --radarly-focus-id <span class="m">00002</span> --radarly-start-date <span class="m">2020</span>-01-01 --radarly-end-date <span class="m">2020</span>-01-03
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_radarly --radarly-client-id &lt;CLIENT_ID&gt; --radarly-client-secret &lt;CLIENT_SECRET&gt; --radarly-pid &lt;PROJECT_ID&gt; --radarly-focus-id <span class="m">00001</span> --radarly-focus-id <span class="m">00002</span> --radarly-start-date <span class="m">2020</span>-01-01 --radarly-end-date <span class="m">2020</span>-01-03
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1772,7 +1772,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id71">
 <h3>Quickstart<a class="headerlink" href="#id71" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves name field values from all Account records.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_salesforce --salesforce-consumer-key &lt;CONSUMER_KEY&gt; --salesforce-consumer-secret &lt;CONSUMER_SECRET&gt; --salesforce-user &lt;USERNAME&gt; --salesforce-password &lt;PASSWORD&gt; --salesforce-query <span class="s1">&#39;SELECT name FROM Account&#39;</span> --salesforce-query-name nck-account-name-query write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_salesforce --salesforce-consumer-key &lt;CONSUMER_KEY&gt; --salesforce-consumer-secret &lt;CONSUMER_SECRET&gt; --salesforce-user &lt;USERNAME&gt; --salesforce-password &lt;PASSWORD&gt; --salesforce-query <span class="s1">&#39;SELECT name FROM Account&#39;</span> --salesforce-query-name ack-account-name-query write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1853,7 +1853,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <li><p>Provide the exact name of the Report Template you have just created under the CLI option <code class="docutils literal notranslate"><span class="pre">--ttd-report-template-name</span></code> of The Trade Desk connector: the connector will “schedule” a report instance (which may take a few minutes to run), and fetch data to the location of your choice</p></li>
 </ul>
 <p>The following command retrieves the data associated to the Report template named “<em>adgroup_performance_report</em>” between 2020-01-01 and 2020-01-03, filtered on the PartnerId &lt;PARTNER_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_ttd --ttd-login &lt;LOGIN&gt; --ttd-password &lt;PASSWORD&gt; --ttd-partner-id &lt;PARTNER_ID&gt; --ttd-report-template-name adgroup_performance_report --ttd-start-date <span class="m">2020</span>-01-01  --ttd-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_ttd --ttd-login &lt;LOGIN&gt; --ttd-password &lt;PASSWORD&gt; --ttd-partner-id &lt;PARTNER_ID&gt; --ttd-report-template-name adgroup_performance_report --ttd-start-date <span class="m">2020</span>-01-01  --ttd-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p>Didn’t work? See [troubleshooting](#troubleshooting) section.</p>
@@ -1895,7 +1895,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-date-range</span></code></p></td>
-<td><p>Date range. By default, not available in The Trade Desk, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+<td><p>Date range. By default, not available in The Trade Desk, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
 </table>
@@ -1926,15 +1926,15 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <li><p><strong>ENTITY reports</strong>, making calls to <a class="reference external" href="https://developer.twitter.com/en/docs/ads/campaign-management/api-reference">Campaign Management endpoints</a> if the selected entity is Funding Instrument, Campaign, Line Item, Media Creative or Promoted Tweet, and to the <a class="reference external" href="https://developer.twitter.com/en/docs/ads/creatives/api-reference/">Creative endpoint</a> if the selected entity is Card. These reports return details on entity configuration since the creation of the Twitter Ads account.</p></li>
 </ul>
 <p><em>Call example for ANALYTICS reports</em>: this call will collect engagement metrics for Line Item entities, splitting the results by day, from 2020-01-01 to 2020-01-03:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Call example for REACH reports</em>: this call will collect reach metrics (<em>total_audience_reach, average_frequency</em>) for Campaign entities, from 2020-01-01 to 2020-01-03:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Call example for ENTITY reports</em>: this call collects details on the configuration of Campaign entities (id, name, total_budget_amount_local_micro, currency), since the creation of the Twitter Ads account:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1978,7 +1978,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <td><p>Specifies the entity type to retrieve data for. Possible values: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET, CARD.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-entity-attribute</span></code></p></td>
-<td><p>Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned. To get possible values, print the ENTITY_ATTRIBUTES variable on nck/helpers/twitter_helper.py</p></td>
+<td><p>Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned. To get possible values, print the ENTITY_ATTRIBUTES variable on ack/helpers/twitter_helper.py</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-granularity</span></code></p></td>
 <td><p>Specific to ANALYTICS reports. Specifies how granular the retrieved data should be. Possible values: TOTAL (default), DAY.</p></td>
@@ -2005,7 +2005,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <td><p>End date of the period to request (format: YYYY-MM-DD).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-date-range</span></code></p></td>
-<td><p>Date range. By default, not available in Twitter, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
+<td><p>Date range. By default, not available in Twitter, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-add-request-date-to-report</span></code></p></td>
 <td><p>If set to True (default: False), the date on which the request is made will appear on each report record.</p></td>
@@ -2041,7 +2041,7 @@ Here is the process:</p>
 <div class="section" id="id86">
 <h3>Quickstart<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves the daily budget of all your campaigns, since your account creation.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_yandex_campaigns --yandex-token &lt;TOKEN&gt; --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_yandex_campaigns --yandex-token &lt;TOKEN&gt; --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -2091,7 +2091,7 @@ Here is the process:</p>
 <div class="section" id="id89">
 <h3>Quickstart<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves a performance report for all your campaigns, since your account creation.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python nck/entrypoint.py read_yandex_statistics --yandex-token &lt;TOKEN&gt; --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_yandex_statistics --yandex-token &lt;TOKEN&gt; --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -2153,8 +2153,8 @@ Here is the process:</p>
 <p>You encountered an issue when running a Reader command and you don’t know what’s going on?
 You may find an answer in the troubleshooting guide below.</p>
 <ol class="arabic simple">
-<li><p>Have you installed NCK dependencies? In order to run NCK, you need to install all dependencies. First create a <a class="reference external" href="https://docs.python.org/3/library/venv.html">virtual environment</a> and then run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code>.</p></li>
-<li><p>Have you set <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable to the root of NCK folder?</p></li>
+<li><p>Have you installed ACK dependencies? In order to run ACK, you need to install all dependencies. First create a <a class="reference external" href="https://docs.python.org/3/library/venv.html">virtual environment</a> and then run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code>.</p></li>
+<li><p>Have you set <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable to the root of ACK folder?</p></li>
 <li><p>Have you checked logs? The code has been implemented so that every error is logged.</p></li>
 </ol>
 </div>
