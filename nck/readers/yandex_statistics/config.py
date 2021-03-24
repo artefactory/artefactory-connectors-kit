@@ -15,6 +15,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import random
+import datetime
+from typing import Literal, List, Tuple
+
+from pydantic import BaseModel, validator
 
 YANDEX_DIRECT_API_BASE_URL = "https://api.direct.yandex.com/json/v5/"
 
@@ -132,3 +137,33 @@ OPERATORS = [
     "STARTS_WITH_ANY_IGNORE_CASE",
     "DOES_NOT_START_WITH_ALL_IGNORE_CASE",
 ]
+
+
+class YandexStatisticsReaderConfig(BaseModel):
+    token: str
+    report_language: Literal[tuple(LANGUAGES)] = "en"
+    filters: List[Tuple[Literal[tuple(STATS_FIELDS)], Literal[tuple(OPERATORS)], str]] = []
+    max_rows: int = None
+    fields: List[Literal[tuple(STATS_FIELDS)]]
+    report_name: str = f"stats_report_{datetime.date.today()}_{random.randrange(10000)}"
+    report_type: Literal[tuple(REPORT_TYPES)]
+    date_range: Literal[tuple(DATE_RANGE_TYPES)]
+    include_vat: bool
+    date_start: datetime.datetime = None
+    date_stop: datetime.datetime = None
+
+    @validator("date_start", "date_stop", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v
+
+    @validator("filters")
+    def filters_str_to_list(cls, v):
+        for i in range(len(v)):
+            v[i] = list(v[i])
+            v[i][2] = v[i][2].split(",")
+        return v

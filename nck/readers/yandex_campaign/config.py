@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from typing import List, Literal
+
+from pydantic import BaseModel
 
 YANDEX_DIRECT_API_BASE_URL = "https://api.direct.yandex.com/json/v5/"
 
@@ -48,3 +51,12 @@ CAMPAIGN_STATES = ["ARCHIVED", "CONVERTED", "ENDED", "OFF", "ON", "SUSPENDED"]
 CAMPAIGN_STATUSES = ["ACCEPTED", "DRAFT", "MODERATION", "REJECTED"]
 
 CAMPAIGN_PAYMENT_STATUSES = ["ALLOWED", "DISALLOWED"]
+
+
+class YandexCampaignReaderConfig(BaseModel):
+    token: str
+    campaign_ids: List[str] = []
+    campaign_states: List[Literal[tuple(CAMPAIGN_STATES)]] = []
+    campaign_statuses: List[Literal[tuple(CAMPAIGN_STATUSES)]] = []
+    campaign_payment_statuses: List[Literal[tuple(CAMPAIGN_PAYMENT_STATUSES)]] = []
+    fields: List[Literal[tuple(CAMPAIGN_FIELDS)]] = []

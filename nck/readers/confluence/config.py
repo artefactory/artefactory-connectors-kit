@@ -15,6 +15,19 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from typing import Literal, List
+
+from pydantic import BaseModel
 
 RECORDS_PER_PAGE = 100
 CONTENT_ENDPOINT = "wiki/rest/api/content"
+CONTENT_TYPES = ("page", "blogpost")
+
+
+class ConfluenceReaderConfig(BaseModel):
+    user_login: str
+    api_token: str
+    atlassian_domain: str
+    content_type: Literal[CONTENT_TYPES] = "page"
+    spacekey: List[str] = []
+    field: List[str]

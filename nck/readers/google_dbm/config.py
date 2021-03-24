@@ -15,9 +15,14 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from datetime import datetime
+from typing import List, Literal, Tuple
+
+from pydantic import BaseModel, validator
 
 GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 
+DAY_RANGES = ("PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK")
 POSSIBLE_REQUEST_TYPES = [
     "existing_query",
     "custom_query",
@@ -26,3 +31,33 @@ POSSIBLE_REQUEST_TYPES = [
     "lineitems_objects",
     "list_reports",
 ]
+
+
+class GoogleDBMReaderConfig(BaseModel):
+    access_toekn: str = None
+    refresh_token: str
+    client_id: str
+    client_secret: str
+    metric: List[str] = []
+    dimension: List[str] = []
+    request_type: Literal[tuple(POSSIBLE_REQUEST_TYPES)]
+    query_id: str = None
+    query_title: str = None
+    query_frequency: str = "ONE_TIME"
+    query_param_type: str = "TYPE_TRUEVIEW"
+    start_date: datetime = None
+    end_date: datetime = None
+    add_date_to_report: bool = False
+    filter: List[Tuple[str, str]] = []
+    file_type: List[str] = []
+    date_format: str = "%Y-%m-%d"
+    day_range: Literal[DAY_RANGES] = None
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v

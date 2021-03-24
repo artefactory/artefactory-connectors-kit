@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from datetime import datetime
+from typing import List, Literal
 
 from facebook_business.adobjects.ad import Ad
 from facebook_business.adobjects.adaccount import AdAccount
@@ -23,6 +25,7 @@ from facebook_business.adobjects.adset import AdSet
 from facebook_business.adobjects.adsinsights import AdsInsights
 from facebook_business.adobjects.adspixel import AdsPixel
 from facebook_business.adobjects.campaign import Campaign
+from pydantic import BaseModel, validator
 
 DATEFORMAT = "%Y-%m-%d"
 BATCH_SIZE_LIMIT = 50
@@ -55,3 +58,30 @@ EDGE_QUERY_MAPPING = {
     "creative": lambda obj: obj.get_ad_creatives(),
     "pixel": lambda obj: obj.get_ads_pixels(),
 }
+
+
+class FacebookReaderConfig(BaseModel):
+    app_id: str = ""
+    app_secret: str = ""
+    access_token: str
+    object_id: List[str]
+    object_type: Literal[tuple(FACEBOOK_OBJECTS)] = "account"
+    level: Literal[tuple(FACEBOOK_OBJECTS)] = "ad"
+    ad_insights: bool = True
+    breakdown: List[Literal[tuple(BREAKDOWNS)]] = []
+    action_breakdown: List[Literal[tuple(ACTION_BREAKDOWNS)]] = []
+    field: List[str] = []
+    time_increment: str = None
+    start_date: datetime = None
+    end_date: datetime = None
+    date_preset: Literal[tuple(DATE_PRESETS)] = None
+    add_date_to_report: bool = False
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v

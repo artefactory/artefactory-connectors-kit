@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from typing import Literal, List
+
+from pydantic import BaseModel
 
 FILE_NAMES = {
     "FILE_TYPE_INSERTION_ORDER": "InsertionOrders",
@@ -38,3 +41,14 @@ FILTER_TYPES = [
 ]
 
 REQUEST_TYPES = ["sdf_request", "creative_request"]
+
+
+class GoogleDV360ReaderConfig(BaseModel):
+    access_token: str = None
+    refresh_token: str
+    client_id: str
+    client_secret: str
+    advertiser_id: str
+    request_type: Literal[tuple(REQUEST_TYPES)]
+    file_type: List[Literal[tuple(FILE_TYPES)]] = []
+    filter_type: Literal[tuple(FILTER_TYPES)] = None

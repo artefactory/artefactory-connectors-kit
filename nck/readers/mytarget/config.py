@@ -15,6 +15,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, validator
+
+from nck.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 
 LIMIT_REQUEST_MYTARGET = 20
 
@@ -70,3 +76,22 @@ REQUEST_CONFIG = {
         "ids": False,
     },
 }
+
+
+class MyTargetReaderConfig(BaseModel):
+    client_id: str
+    client_secret: str
+    refresh_token: str
+    request_type: Literal[tuple(REQUEST_TYPES)]
+    date_range: Literal[tuple(DEFAULT_DATE_RANGE_FUNCTIONS.keys())] = None
+    start_date: datetime = None
+    end_date: datetime = None
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v
