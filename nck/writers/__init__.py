@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from nck.writers.amazon_s3.config import AmazonS3WriterConfig
+from nck.writers.google_bigquery.config import GoogleBigQueryWriterConfig
+from nck.writers.google_cloud_storage.config import GoogleCloudStorageWriterConfig
+from nck.writers.local.config import LocalWriterConfig
 from nck.writers.writer import Writer
 from nck.writers.amazon_s3.writer import AmazonS3Writer
 from nck.writers.console.writer import ConsoleWriter
@@ -31,11 +35,11 @@ from nck.writers.local.cli import local
 writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
 
 writer_classes = {
-    "amazon-s3": AmazonS3Writer,
+    "amazon-s3": (AmazonS3Writer, AmazonS3WriterConfig),
     "console": (ConsoleWriter,),
-    "google-bigquery": GoogleBigQueryWriter,
-    "google-cloud-storage": GoogleCloudStorageWriter,
-    "local": LocalWriter,
+    "google-bigquery": (GoogleBigQueryWriter, GoogleBigQueryWriterConfig),
+    "google-cloud-storage": (GoogleCloudStorageWriter, GoogleCloudStorageWriterConfig),
+    "local": (LocalWriter, LocalWriterConfig),
 }
 
 __all__ = ["writers", "Writer", "writer_classes"]
