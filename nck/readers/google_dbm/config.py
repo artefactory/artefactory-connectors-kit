@@ -38,8 +38,8 @@ class GoogleDBMReaderConfig(BaseModel):
     refresh_token: str
     client_id: str
     client_secret: str
-    metric: List[str] = []
-    dimension: List[str] = []
+    query_metric: List[str] = []
+    query_dimension: List[str] = []
     request_type: Literal[tuple(POSSIBLE_REQUEST_TYPES)]
     query_id: str = None
     query_title: str = None

@@ -35,10 +35,10 @@ from nck.writers.local.cli import local
 writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
 
 writer_classes = {
-    "amazon-s3": (AmazonS3Writer, AmazonS3WriterConfig),
+    "amazon_s3": (AmazonS3Writer, AmazonS3WriterConfig),
     "console": (ConsoleWriter,),
-    "google-bigquery": (GoogleBigQueryWriter, GoogleBigQueryWriterConfig),
-    "google-cloud-storage": (GoogleCloudStorageWriter, GoogleCloudStorageWriterConfig),
+    "google_bigquery": (GoogleBigQueryWriter, GoogleBigQueryWriterConfig),
+    "google_cloud_storage": (GoogleCloudStorageWriter, GoogleCloudStorageWriterConfig),
     "local": (LocalWriter, LocalWriterConfig),
 }
 

@@ -51,7 +51,7 @@ from nck.utils.processor import processor
 @click.option(
     "--dbm-date-format",
     default="%Y-%m-%d",
-    help="And optional date format for the output stream. "
+    help="Add optional date format for the output stream. "
     "Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior",
 )
 @click.option(
