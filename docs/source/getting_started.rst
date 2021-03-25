@@ -119,11 +119,11 @@ Once this preliminary set-up is finalized, you can start using the application.
 
 NCK commands can be broken down into 3 parts:
 
-1. An entrypoint: all NCK commands are launched through the ``nck/entrypoint.py`` executable.
+1. An entrypoint: all NCK commands are launched through the ``nck/entrypoint/entrypoint.py`` executable.
 
 .. code-block:: shell
 
-    python nck/entrypoint.py
+    python nck/entrypoint/entrypoint.py
 
 2. A reader command, and its options: in the below example, we are reading Google Analytics data for the view <VIEW_ID>, retrieving sessions, pageviews and bounces by date from 2020-01-01 to 2020-01-03.
 
@@ -145,7 +145,7 @@ In the end, if we use ``write_console`` as a writer command, the combined NCK co
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 You can now execute it into your terminal.
 
@@ -157,11 +157,11 @@ Normalize field names
 
 Some destinations have specific requirements for field names. This is the case of BigQuery, that only accepts letters, digits and underscores.
 
-To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option ``--normalize-keys true`` between ``python nck/entrypoint.py`` and the invocated reader command. If we keep using the previous Google Analytics example, it would give:
+To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option ``--normalize-keys true`` between ``python nck/entrypoint/entrypoint.py`` and the invocated reader command. If we keep using the previous Google Analytics example, it would give:
 
 .. code-block:: shell
 
-    python nck/entrypoint.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 ==========
 Contribute

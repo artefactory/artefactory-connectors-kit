@@ -42,7 +42,7 @@ Call example to Adobe Analytics Reader 1.4, getting the number of visits per day
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 write_console
+    python nck/entrypoint/entrypoint.py read_adobe --adobe-client-id <CLIENT_ID> --adobe-client-secret <CLIENT_SECRET> --adobe-tech-account-id <TECH_ACCOUNT_ID> --adobe-org-id <ORG_ID> --adobe-private-key <PRIVATE_KEY> --adobe-global-company-id <GLOBAL_COMPANY_ID> --adobe-report-suite-id <REPORT_SUITE_ID> --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date 2020-01-01 --adobe-end-date 2020-01-31 write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -100,7 +100,7 @@ Call example to Adobe Analytics Reader 2.0, getting the number of visits per day
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adobe-2-0-client-secret <CLIENT_SECRET> --adobe-2-0-tech-account-id <TECH_ACCOUNT_ID> --adobe-2-0-org-id <ORG_ID> --adobe-2-0-private-key <PRIVATE_KEY> --adobe-2-0-global-company-id <GLOBAL_COMPANY_ID> --adobe-2-0-report-suite-id <REPORT_SUITE_ID> --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date 2020-01-01 --adobe-2-0-end-date 2020-01-31 --adobe-2-0-metric visits write_console
+    python nck/entrypoint/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id <CLIENT_ID> --adobe-2-0-client-secret <CLIENT_SECRET> --adobe-2-0-tech-account-id <TECH_ACCOUNT_ID> --adobe-2-0-org-id <ORG_ID> --adobe-2-0-private-key <PRIVATE_KEY> --adobe-2-0-global-company-id <GLOBAL_COMPANY_ID> --adobe-2-0-report-suite-id <REPORT_SUITE_ID> --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date 2020-01-01 --adobe-2-0-end-date 2020-01-31 --adobe-2-0-metric visits write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -166,7 +166,7 @@ Once done, launch your S3 reader command. The following command retrieves the bl
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offline_sales --s3-format csv write_console
+    python nck/entrypoint/entrypoint.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offline_sales --s3-format csv write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -211,7 +211,7 @@ The following command retrieves the titles, space names, tiny links and label na
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_confluence --confluence-user-login <USER_LOGIN> --confluence-api-token <API_TOKEN> --confluence-atlassian-domain <ATLASSIAN_DOMAIN> --confluence-content-type "page" --confluence-field "title" --confluence-field "space.name" --confluence-field "tiny_link" --confluence-field "label_names" --confluence-spacekey <KEY_1> --confluence-spacekey <KEY_2> write_console
+    python nck/entrypoint/entrypoint.py read_confluence --confluence-user-login <USER_LOGIN> --confluence-api-token <API_TOKEN> --confluence-atlassian-domain <ATLASSIAN_DOMAIN> --confluence-content-type "page" --confluence-field "title" --confluence-field "space.name" --confluence-field "tiny_link" --confluence-field "label_names" --confluence-spacekey <KEY_1> --confluence-spacekey <KEY_2> write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -296,13 +296,13 @@ The Facebook Marketing Reader handles calls to 2 endpoints of the Facebook Marke
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID> --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions[action_type:post_engagement] --facebook-field actions[action_type:video_view] --facebook-field age --facebook-field gender --facebook-time-increment 1 --facebook-start-date 2020-01-01 --facebook-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID> --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions[action_type:post_engagement] --facebook-field actions[action_type:video_view] --facebook-field age --facebook-field gender --facebook-time-increment 1 --facebook-start-date 2020-01-01 --facebook-end-date 2020-01-03 write_console
 
 *Example of Ad Management Request*
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID>  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative[id] --facebook-add-date-to-report True --facebook-start-date 2020-01-01 --facebook-end-date 2019-01-01 write_console
+    python nck/entrypoint/entrypoint.py read_facebook --facebook-access-token <ACCESS_TOKEN> --facebook-object-id <OBJECT_ID>  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative[id] --facebook-add-date-to-report True --facebook-start-date 2020-01-01 --facebook-end-date 2019-01-01 write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -467,7 +467,7 @@ The following command retrieves insights about the Ads of ``my_first_campaign`` 
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter "{'field':'CampaignName','operator':'IN','values':['my_first_campaign','my_second_campaign']}"
+    python nck/entrypoint/entrypoint.py read_googleads --googleads-developer-token <DEVELOPER_TOKEN> --googleads-client-id <CLIENT_ID> --googleads-client-secret <CLIENT_SECRET> --googleads-refresh-token <REFRESH_TOKEN> --googleads-client-customer-id <XXX-XXX-XXXX CLIENT_CUSTOMER_ID> --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter "{'field':'CampaignName','operator':'IN','values':['my_first_campaign','my_second_campaign']}"
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -525,7 +525,7 @@ The following command retrieves sessions, pageviews and bounces volumes by date 
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -590,7 +590,7 @@ Once done, launch your Google Cloud Storage reader command. The following comman
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/offline_sales --gcs-format csv write_console
+    python nck/entrypoint/entrypoint.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/offline_sales --gcs-format csv write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -633,7 +633,7 @@ The following command retrieves impressions, clicks and cost volumes from 2020-0
 
 .. code-block:: shell
     
-    python nck/entrypoint.py read_dcm --dcm-client-id <CLIENT_ID> --dcm-client-secret <CLIENT_SECRET> --dcm-refresh-token <REFRESH_TOKEN> --dcm-profile-id <PROFILE_ID> --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date 2020-01-01 --dcm-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_dcm --dcm-client-id <CLIENT_ID> --dcm-client-secret <CLIENT_SECRET> --dcm-refresh-token <REFRESH_TOKEN> --dcm-profile-id <PROFILE_ID> --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date 2020-01-01 --dcm-end-date 2020-01-03 write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -683,7 +683,7 @@ The following command retrieves impressions, clicks and cost volumes filtered on
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_dbm --dbm-client-id <CLIENT_ID> --dbm-client-secret <CLIENT_SECRET> —dbm-refresh-token <REFRESH_TOKEN> —dbm-filter FILTER_ADVERTISER <ADVERTISER_ID> --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date 2020-01-01 --dbm-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_dbm --dbm-client-id <CLIENT_ID> --dbm-client-secret <CLIENT_SECRET> —dbm-refresh-token <REFRESH_TOKEN> —dbm-filter FILTER_ADVERTISER <ADVERTISER_ID> --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date 2020-01-01 --dbm-end-date 2020-01-03 write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -751,7 +751,7 @@ Say you want to get a SDF file for all campaigns of a specific advertiser. You c
 
 .. code-block:: shell
     
-    python nck/entrypoint.py read_dv360 --dv360-client-id <CLIENT_ID> --dv360-client-secret <CLIENT_SECRET> --dv360-refresh-token <REFRESH_TOKEN> --dv360-access-token <ACCESS_TOKEN> --dv360-advertiser-id <ADVERTISER_ID> --dv360-filter-type 'FILTER_TYPE_NONE' --dv360-file-type 'FILE_TYPE_CAMPAIGN' write_console
+    python nck/entrypoint/entrypoint.py read_dv360 --dv360-client-id <CLIENT_ID> --dv360-client-secret <CLIENT_SECRET> --dv360-refresh-token <REFRESH_TOKEN> --dv360-access-token <ACCESS_TOKEN> --dv360-advertiser-id <ADVERTISER_ID> --dv360-filter-type 'FILTER_TYPE_NONE' --dv360-file-type 'FILE_TYPE_CAMPAIGN' write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -806,7 +806,7 @@ The following command retrieves insights about the URL <SITE_URL> from 2020-01-0
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_search_console --search-console-client-id <CLIENT_ID> --search-console-refresh-token <REFRESH_TOKEN> --search-console-site-url <SITE_URL> --search-console-dimensions country --search-console-dimensions device --search-console-start-date 2020-01-01 --search-console-end-date 2020-01-03 write_console 
+    python nck/entrypoint/entrypoint.py read_search_console --search-console-client-id <CLIENT_ID> --search-console-refresh-token <REFRESH_TOKEN> --search-console-site-url <SITE_URL> --search-console-dimensions country --search-console-dimensions device --search-console-start-date 2020-01-01 --search-console-end-date 2020-01-03 write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -867,7 +867,7 @@ The following command retrieves insights about the Ads in the Search Ads 360 Acc
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01 
+    python nck/entrypoint/entrypoint.py read_sa360 --sa360-client-id <CLIENT_ID> --sa360-client-secret <CLIENT_SECRET> --sa360-refresh-token <REFRESH_TOKEN> --sa360-agency-id <AGENCY_ID> --sa360-advertiser-id <ADVERTISER_ID> --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date 2020-01-01 --sa360-end-date 2020-01-01
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -986,14 +986,14 @@ Say you want to retrieve for all campaigns and its associated banners and stats 
 
 .. code-block:: shell
     
-    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'general' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+    python nck/entrypoint/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'general' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
 
 
 If you just want to get the budget instead of the general statistics of each campaign you can try the following:
 
 .. code-block:: shell
     
-    python nck/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'budget' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
+    python nck/entrypoint/entrypoint.py read_mytarget --mytarget-client-id <CLIENT_ID> --mytarget-client-secret <CLIENT_SECRET> --mytarget-refresh-token <REFRESH_TOKEN> --mytarget-request-type 'budget' --mytarget-start-date <START_DATE> --mytarget-end-date <END_DATE> write_console
 
 
 *Didn't work?* See the `Troubleshooting`_ section.
@@ -1038,7 +1038,7 @@ The following command retrieves all records from the table <TABLE_NAME> (equival
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_mysql --mysql-user <DATABASE_USER> --mysql-password <DATABASE_PASSWORD> --mysql-host <DATABASE_HOST> --mysql-port <DATABASE_PORT> --mysql-database <DATABASE_NAME> --mysql-table <TABLE_NAME> write_console
+    python nck/entrypoint/entrypoint.py read_mysql --mysql-user <DATABASE_USER> --mysql-password <DATABASE_PASSWORD> --mysql-host <DATABASE_HOST> --mysql-port <DATABASE_PORT> --mysql-database <DATABASE_NAME> --mysql-table <TABLE_NAME> write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -1088,7 +1088,7 @@ The following command retrieves data from posts located under the project ``<PRO
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_radarly --radarly-client-id <CLIENT_ID> --radarly-client-secret <CLIENT_SECRET> --radarly-pid <PROJECT_ID> --radarly-focus-id 00001 --radarly-focus-id 00002 --radarly-start-date 2020-01-01 --radarly-end-date 2020-01-03
+    python nck/entrypoint/entrypoint.py read_radarly --radarly-client-id <CLIENT_ID> --radarly-client-secret <CLIENT_SECRET> --radarly-pid <PROJECT_ID> --radarly-focus-id 00001 --radarly-focus-id 00002 --radarly-start-date 2020-01-01 --radarly-end-date 2020-01-03
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -1137,7 +1137,7 @@ The following command retrieves name field values from all Account records.
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_salesforce --salesforce-consumer-key <CONSUMER_KEY> --salesforce-consumer-secret <CONSUMER_SECRET> --salesforce-user <USERNAME> --salesforce-password <PASSWORD> --salesforce-query 'SELECT name FROM Account' --salesforce-query-name nck-account-name-query write_console
+    python nck/entrypoint/entrypoint.py read_salesforce --salesforce-consumer-key <CONSUMER_KEY> --salesforce-consumer-secret <CONSUMER_SECRET> --salesforce-user <USERNAME> --salesforce-password <PASSWORD> --salesforce-query 'SELECT name FROM Account' --salesforce-query-name nck-account-name-query write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -1204,7 +1204,7 @@ The following command retrieves the data associated to the Report template named
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_ttd --ttd-login <LOGIN> --ttd-password <PASSWORD> --ttd-partner-id <PARTNER_ID> --ttd-report-template-name adgroup_performance_report --ttd-start-date 2020-01-01  --ttd-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_ttd --ttd-login <LOGIN> --ttd-password <PASSWORD> --ttd-partner-id <PARTNER_ID> --ttd-report-template-name adgroup_performance_report --ttd-start-date 2020-01-01  --ttd-end-date 2020-01-03 write_console
 
 Didn't work? See [troubleshooting](#troubleshooting) section.
 
@@ -1264,19 +1264,19 @@ The Twitter Ads Reader can collect **3 types of reports**, making calls to 4 end
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
 
 *Call example for REACH reports*: this call will collect reach metrics (*total_audience_reach, average_frequency*) for Campaign entities, from 2020-01-01 to 2020-01-03:
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
+    python nck/entrypoint/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date 2020-01-01 --twitter-end-date 2020-01-03 write_console
 
 *Call example for ENTITY reports*: this call collects details on the configuration of Campaign entities (id, name, total_budget_amount_local_micro, currency), since the creation of the Twitter Ads account:
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
+    python nck/entrypoint/entrypoint.py read_twitter --twitter-consumer-key <API_KEY> --twitter-consumer-secret <API_SECRET_KEY> --twitter-access-token <ACCESS_TOKEN> --twitter-access-token-secret <ACCESS_TOKEN_SECRET> --twitter-account-id <ACCOUNT_ID> --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -1353,7 +1353,7 @@ The following command retrieves the daily budget of all your campaigns, since yo
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_yandex_campaigns --yandex-token <TOKEN> --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
+    python nck/entrypoint/entrypoint.py read_yandex_campaigns --yandex-token <TOKEN> --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
@@ -1392,7 +1392,7 @@ The following command retrieves a performance report for all your campaigns, sin
 
 .. code-block:: shell
 
-    python nck/entrypoint.py read_yandex_statistics --yandex-token <TOKEN> --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
+    python nck/entrypoint/entrypoint.py read_yandex_statistics --yandex-token <TOKEN> --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
 
 *Didn't work?* See the `Troubleshooting`_ section.
 
