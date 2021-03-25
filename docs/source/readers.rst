@@ -50,29 +50,31 @@ Call example to Adobe Analytics Reader 1.4, getting the number of visits per day
 Command name
 ------------
 
-``read_adobe``
+CMD: ``read_adobe``
+
+JSON: ``adobe_analytics_1_4``
 
 ---------------
 Command options
 ---------------
 
-==============================  =================================================================================================================================================================================
-Options                         Definition
-==============================  =================================================================================================================================================================================
-``--adobe-client-id``           Client ID, that you can find on Adobe Developer Console
-``--adobe-client-secret``       Client Secret, that you can find on Adobe Developer Console
-``--adobe-tech-account-id``     Technical Account ID, that you can find on Adobe Developer Console
-``--adobe-org-id``              Organization ID, that you can find on Adobe Developer Console
-``--adobe-private-key``         Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as ``\n``.
-``--adobe-global-company-id``   Global Company ID (to be requested to `Discovery API <https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md>`__)
-``--adobe-list-report-suite``   Should be set to True if you wish to request the list of available Adobe Report Suites (default: False). If set to True, the below parameters should be left empty.
-``--adobe-report-suite-id``     ID of the requested Adobe Report Suite
-``--adobe-report-element-id``   ID of the element (i.e. dimension) to include in the report
-``--adobe-report-metric-id``    ID of the metric to include in the report
-``--adobe-date-granularity``    Granularity of the report. Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS
-``--adobe-start-date``          Start date of the period to request (format: YYYY-MM-DD)
-``--adobe-end-date``            End date of the period to request (format: YYYY-MM-DD)
-==============================  =================================================================================================================================================================================
+==============================  ============================  =================================================================================================================================================================================
+CMD Options                     JSON Options                  Definition
+==============================  ============================  =================================================================================================================================================================================
+``--adobe-client-id``           ``client_id``                 Client ID, that you can find on Adobe Developer Console
+``--adobe-client-secret``       ``client_secret``             Client Secret, that you can find on Adobe Developer Console
+``--adobe-tech-account-id``     ``tech_account_id``           Technical Account ID, that you can find on Adobe Developer Console
+``--adobe-org-id``              ``org_id``                    Organization ID, that you can find on Adobe Developer Console
+``--adobe-private-key``         ``private_key``               Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as ``\n``.
+``--adobe-global-company-id``   ``global_company_id``         Global Company ID (to be requested to `Discovery API <https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md>`__)
+``--adobe-list-report-suite``   ``list_report_suite``         Should be set to True if you wish to request the list of available Adobe Report Suites (default: False). If set to True, the below parameters should be left empty.
+``--adobe-report-suite-id``     ``report_suite_id``           ID of the requested Adobe Report Suite
+``--adobe-report-element-id``   ``report_element_id`` (list)  ID of the element (i.e. dimension) to include in the report
+``--adobe-report-metric-id``    ``report_metric_id`` (list)   ID of the metric to include in the report
+``--adobe-date-granularity``    ``date_granularity``          Granularity of the report. Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS
+``--adobe-start-date``          ``start_date``                Start date of the period to request (format: YYYY-MM-DD)
+``--adobe-end-date``            ``end_date``                  End date of the period to request (format: YYYY-MM-DD)
+==============================  ============================  =================================================================================================================================================================================
 
 ---------------------
 Addtional information
@@ -108,28 +110,30 @@ Call example to Adobe Analytics Reader 2.0, getting the number of visits per day
 Command name
 ------------
 
-``read_adobe_2_0``
+CMD: ``read_adobe_2_0``
+
+JSON: ``adobe_analytics_2_0``
 
 ---------------
 Command options
 ---------------
 
-==================================  =================================================================================================================================================================================
-Options                             Definition
-==================================  =================================================================================================================================================================================
-``--adobe-2-0-client-id``           Client ID, that you can find on Adobe Developer Console
-``--adobe-2-0-client-secret``       Client Secret, that you can find on Adobe Developer Console
-``--adobe-2-0-tech-account-id``     Technical Account ID, that you can find on Adobe Developer Console
-``--adobe-2-0-org-id``              Organization ID, that you can find on Adobe Developer Console
-``--adobe-2-0-private-key``         Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as ``\n``.
-``--adobe-2-0-global-company-id``   Global Company ID (to be requested to `Discovery API <https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md>`__)
-``--adobe-2-0-report-suite-id``     ID of the requested Adobe Report Suite
-``--adobe-2-0-dimension``           Dimension to include in the report
-``--adobe-2-0-metric``              Metric to include in the report
-``--adobe-2-0-start-date``          Start date of the period to request (format: YYYY-MM-DD)
-``--adobe-2-0-end-date``            Start date of the period to request (format: YYYY-MM-DD)
-``--adobe-2-0-date-range``          Date range. By default, not available in Adobe, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
-==================================  =================================================================================================================================================================================
+==================================  =======================  =================================================================================================================================================================================
+CMD Options                         JSON Options             Definition
+==================================  =======================  =================================================================================================================================================================================
+``--adobe-2-0-client-id``           ``client_id``            Client ID, that you can find on Adobe Developer Console
+``--adobe-2-0-client-secret``       ``client_secret``        Client Secret, that you can find on Adobe Developer Console
+``--adobe-2-0-tech-account-id``     ``tech_account_id``      Technical Account ID, that you can find on Adobe Developer Console
+``--adobe-2-0-org-id``              ``org_id``               Organization ID, that you can find on Adobe Developer Console
+``--adobe-2-0-private-key``         ``private_key``          Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as ``\n``.
+``--adobe-2-0-global-company-id``   ``global_company_id``    Global Company ID (to be requested to `Discovery API <https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md>`__)
+``--adobe-2-0-report-suite-id``     ``report_suite_id``      ID of the requested Adobe Report Suite
+``--adobe-2-0-dimension``           ``dimension`` (list)     Dimension to include in the report
+``--adobe-2-0-metric``              ``metric`` (list)        Metric to include in the report
+``--adobe-2-0-start-date``          ``start_date``           Start date of the period to request (format: YYYY-MM-DD)
+``--adobe-2-0-end-date``            ``end_date``             Start date of the period to request (format: YYYY-MM-DD)
+``--adobe-2-0-date-range``          ``date_range``           Date range. By default, not available in Adobe, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+==================================  =======================  =================================================================================================================================================================================
 
 ----------------------
 Additional information
@@ -174,22 +178,24 @@ Once done, launch your S3 reader command. The following command retrieves the bl
 Command name
 ------------
 
-``read_s3``
+CMD: ``read_s3``
+
+JSON: ``amazon_s3``
 
 ---------------
 Command options
 ---------------
 
-==============================  =======================================================================================================================================================================================================================================================================================================================================================================================================================
-Options                         Definition
-==============================  =======================================================================================================================================================================================================================================================================================================================================================================================================================
-``--s3-bucket``                 S3 bucket name
-``--s3-prefix``                 S3 blob prefix. Several prefixes can be provided in a single command.
-``--s3-format``                 S3 blob format. Possible values: csv, gz.
-``--s3-dest-key-split``         Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. Default: -1 (split on all occurences).
-``--s3-csv-delimiter``          Delimiter that should be used to read the .csv file. Default: ,
-``--s3-csv-fieldnames``         List of field names. If set to None (default), the values in the first row of .csv file will be used as field names.
-==============================  =======================================================================================================================================================================================================================================================================================================================================================================================================================
+==============================  ====================  =======================================================================================================================================================================================================================================================================================================================================================================================================================
+CMD Options                     JSON Options                         Definition
+==============================  ====================  =======================================================================================================================================================================================================================================================================================================================================================================================================================
+``--s3-bucket``                 ``bucket``            S3 bucket name
+``--s3-prefix``                 ``prefix`` (list)     S3 blob prefix. Several prefixes can be provided in a single command.
+``--s3-format``                 ``format``            S3 blob format. Possible values: csv, gz.
+``--s3-dest-key-split``         ``dest_key_split``    Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. Default: -1 (split on all occurences).
+``--s3-csv-delimiter``          ``csv_delimiter``     Delimiter that should be used to read the .csv file. Default: ,
+``--s3-csv-fieldnames``         ``fieldnames``        List of field names. If set to None (default), the values in the first row of .csv file will be used as field names.
+==============================  ====================  =======================================================================================================================================================================================================================================================================================================================================================================================================================
 
 =================
 Confluence Reader
@@ -219,22 +225,24 @@ The following command retrieves the titles, space names, tiny links and label na
 Command name
 ------------
 
-``read_confluence``
+CMD: ``read_confluence``
+
+JSON: ``confluence``
 
 ---------------
 Command options
 ---------------
 
-==================================  ============================================================================================================================================================================================
-Options                             Definition
-==================================  ============================================================================================================================================================================================
-``--confluence-user-login``         User login associated with your Atlassian account
-``--confluence-api-token``          API token associated with your Atlassian account (can be generated on `this page <https://id.atlassian.com/manage-profile/security/api-tokens>`__)
-``--confluence-atlassian-domain``   Atlassian domain under which the content to request is located
-``--confluence-content-type``       Type of content on which the report should be filtered. Possible values: page (default), blog_post.
-``--confluence-spacekey``           (Optional) Space keys on which the report should be filtered
-``--confluence-field``              Fields that should be included in the report (path.to.field.value or custom_field)
-==================================  ============================================================================================================================================================================================
+==================================  ======================  ============================================================================================================================================================================================
+CMD Options                         JSON Options                 Definition
+==================================  ======================  ============================================================================================================================================================================================
+``--confluence-user-login``         ``user_login``          User login associated with your Atlassian account
+``--confluence-api-token``          ``api_token``           API token associated with your Atlassian account (can be generated on `this page <https://id.atlassian.com/manage-profile/security/api-tokens>`__)
+``--confluence-atlassian-domain``   ``atlassian_domain``    Atlassian domain under which the content to request is located
+``--confluence-content-type``       ``content_type``        Type of content on which the report should be filtered. Possible values: page (default), blog_post.
+``--confluence-spacekey``           ``spacekey`` (list)     (Optional) Space keys on which the report should be filtered
+``--confluence-field``              ``field`` (list)        Fields that should be included in the report (path.to.field.value or custom_field)
+==================================  ======================  ============================================================================================================================================================================================
 
 Please visit the following two pages for a better understanding of the `Authentification method <https://developer.atlassian.com/cloud/confluence/basic-auth-for-rest-apis/>`__, and of the parameters used in the `Get Content endpoint <https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-api-content-get>`__.
 
@@ -310,31 +318,33 @@ The Facebook Marketing Reader handles calls to 2 endpoints of the Facebook Marke
 Command name
 ------------
 
-``read_facebook``
+CMD: ``read_facebook``
+
+JSON: ``facebook``
 
 ---------------
 Command options
 ---------------
 
-==================================  ==============================================================================================================================================================================================================================
-Options                             Definition
-==================================  ==============================================================================================================================================================================================================================
-``--facebook-app-id``               Facebook App ID. Not mandatory if Facebook Access Token is provided.
-``--facebook-app-secret``           Facebook App Secret. Not mandatory if Facebook Access Token is provided.
-``--facebook-access-token``         Facebook App Access Token.
-``--facebook-object-type``          Nature of the root Facebook Object used to make the request. Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad, adset, campaign, account (default).
-``--facebook-object-id``            ID of the root Facebook Object used to make the request.
-``--facebook-level``                Granularity of the response. Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad (default), adset, campaign, account.
-``--facebook-ad-insights``          True (default) if Ad Insights request, False if Ad Management request.
-``--facebook-field``                Fields to be retrieved.
-``--facebook-start-date``           Start date of the period to request (format: YYYY-MM-DD). This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
-``--facebook-end-date``             Start date of the period to request (format: YYYY-MM-DD). This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
-``--facebook-date-preset``          Relative time range. Ignored if ``--facebook-start-date`` and ``--facebook-end-date`` are specified. This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
-``--facebook-time-increment``       Cuts the results between smaller time slices within the specified time range. This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
-``--facebook-add-date-to-report``   True if you wish to add the date of the request to each response record, False otherwise (default).
-``--facebook-breakdown``            How to break down the result. This parameter is only relevant for Ad Insights Requests.
-``--facebook-action-breakdown``     How to break down action results. This parameter is only relevant for Ad Insights Requests.
-==================================  ==============================================================================================================================================================================================================================
+==================================  ============================  ==============================================================================================================================================================================================================================
+CMD Options                         JSON Options                  Definition
+==================================  ============================  ==============================================================================================================================================================================================================================
+``--facebook-app-id``               ``app_id``                    Facebook App ID. Not mandatory if Facebook Access Token is provided.
+``--facebook-app-secret``           ``app_secret``                Facebook App Secret. Not mandatory if Facebook Access Token is provided.
+``--facebook-access-token``         ``access_token``              Facebook App Access Token.
+``--facebook-object-type``          ``object_type``               Nature of the root Facebook Object used to make the request. Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad, adset, campaign, account (default).
+``--facebook-object-id``            ``object_id`` (list)          ID of the root Facebook Object used to make the request.
+``--facebook-level``                ``level``                     Granularity of the response. Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad (default), adset, campaign, account.
+``--facebook-ad-insights``          ``ad_insights``               True (default) if Ad Insights request, False if Ad Management request.
+``--facebook-field``                ``field`` (list)              Fields to be retrieved.
+``--facebook-start-date``           ``start_date``                Start date of the period to request (format: YYYY-MM-DD). This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
+``--facebook-end-date``             ``end-date``                  End date of the period to request (format: YYYY-MM-DD). This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
+``--facebook-date-preset``          ``date_preset``               Relative time range. Ignored if ``--facebook-start-date`` and ``--facebook-end-date`` are specified. This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
+``--facebook-time-increment``       ``time_increment``            Cuts the results between smaller time slices within the specified time range. This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.
+``--facebook-add-date-to-report``   ``add_date_to_report``        True if you wish to add the date of the request to each response record, False otherwise (default).
+``--facebook-breakdown``            ``breakdown`` (list)          How to break down the result. This parameter is only relevant for Ad Insights Requests.
+``--facebook-action-breakdown``     ``action_breakdown`` (list)   How to break down action results. This parameter is only relevant for Ad Insights Requests.
+==================================  ============================  ==============================================================================================================================================================================================================================
 
 1. Make sure to select the appropriate ``--facebook-level``
 
@@ -349,7 +359,7 @@ If Facebook Object Type is...      Facebook Level can be...
 ``pixel``                          pixel
 ================================== =============================================
 
-2. Format Facebook Marketing Reader response using ``--facebook-fields``
+2. Format Facebook Marketing Reader response using ``--facebook-field``
 
 2.1. The list of applicable fields can be found on the links below:
 
@@ -475,32 +485,34 @@ The following command retrieves insights about the Ads of ``my_first_campaign`` 
 Command name
 ------------
 
-``read_googleads``
+CMD: ``read_googleads``
+
+JSON: ``google_ads``
 
 ---------------
 Command options
 ---------------
 
-==========================================  ==========================================================================================================================================================================================================
-Options                                     Definition
-==========================================  ==========================================================================================================================================================================================================
-``--googleads-developer-token``             Company Developer token for Google Ads API
-``--googleads-client-id``                   OAuth2 ID
-``--googleads-client-secret``               OAuth2 secret
-``--googleads-refresh-token``               Refresh token for OAuth2
-``--googleads-manager-id``                  (Optional) Manager_Account_ID (XXX-XXX-XXXX identifier)
-``--googleads-client-customer-id``          GAds_Account_ID (ignored if a manager account ID was given)
-``--googleads-report-name``                 (Optional) Name of your output stream ("Custom Report" by default)
-``--googleads-report-type``                 Type of report to be called
-``--googleads-date-range-type``             Type of date range to apply (if "CUSTOM_RANGE", a min and max date must be specified). Possible values can be found `here <https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges>`__.
-``--googleads-start-date``                  (Optional) Start date for "CUSTOM_RANGE" date range (format: YYYY-MM-DD)
-``--googleads-end-date``                    (Optional) End date for "CUSTOM_RANGE" date range (format: YYYY-MM-DD)
-``--googleads-field``                       Fields to include in the report
-``--googleads-report-filter``               Filter to apply on a chosen field (Dictionary as String "{'field':,'operator':,'values':}")
-``--googleads-include-zero-impressions``    Boolean specifying whether or not rows with zero impressions should be included in the report
-``--googleads-filter-on-video-campaigns``   Boolean used to filter the report on Video Campaigns only (require CampaignId to be listed as a field)
-``--googleads-include-client-customer-id``  Boolean used to add "AccountId" as a field in the output stream. AccountId is not available in the API, but is known since it's a requirement to call the API (= Client Customer ID)
-==========================================  ==========================================================================================================================================================================================================
+==========================================  ================================  ==========================================================================================================================================================================================================
+CMD Options                                 JSON Options                      Definition
+==========================================  ================================  ==========================================================================================================================================================================================================
+``--googleads-developer-token``             ``developer_token``               Company Developer token for Google Ads API
+``--googleads-client-id``                   ``client_id``                     OAuth2 ID
+``--googleads-client-secret``               ``client_secret``                 OAuth2 secret
+``--googleads-refresh-token``               ``refresh_token``                 Refresh token for OAuth2
+``--googleads-manager-id``                  ``manager_id``                    (Optional) Manager_Account_ID (XXX-XXX-XXXX identifier)
+``--googleads-client-customer-id``          ``client_customer-ids`` (list)    GAds_Account_ID (ignored if a manager account ID was given)
+``--googleads-report-name``                 ``report_name``                   (Optional) Name of your output stream ("Custom Report" by default)
+``--googleads-report-type``                 ``report_type``                   Type of report to be called
+``--googleads-date-range-type``             ``date_range_type``               Type of date range to apply (if "CUSTOM_RANGE", a min and max date must be specified). Possible values can be found `here <https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges>`__.
+``--googleads-start-date``                  ``start_date``                    (Optional) Start date for "CUSTOM_RANGE" date range (format: YYYY-MM-DD)
+``--googleads-end-date``                    ``end_date``                      (Optional) End date for "CUSTOM_RANGE" date range (format: YYYY-MM-DD)
+``--googleads-field``                       ``fields`` (list)                 Fields to include in the report
+``--googleads-report-filter``               ``report_filter``                 Filter to apply on a chosen field (Dictionary as String "{'field':,'operator':,'values':}")
+``--googleads-include-zero-impressions``    ``include_zero_impressions``      Boolean specifying whether or not rows with zero impressions should be included in the report
+``--googleads-filter-on-video-campaigns``   ``filter_on_video_campaigns``     Boolean used to filter the report on Video Campaigns only (require CampaignId to be listed as a field)
+``--googleads-include-client-customer-id``  ``include_client_customer_id``    Boolean used to add "AccountId" as a field in the output stream. AccountId is not available in the API, but is known since it's a requirement to call the API (= Client Customer ID)
+==========================================  ================================  ==========================================================================================================================================================================================================
 
 See documentation below for a better understanding of the parameters:
 
@@ -533,31 +545,33 @@ The following command retrieves sessions, pageviews and bounces volumes by date 
 Command name
 ------------
 
-``read_ga``
+CMD: ``read_ga``
+
+JSON: ``google_analytics``
 
 ---------------
 Command options
 ---------------
 
-==============================  ===============================================================================================================================================================================================================
-Options                         Definition
-==============================  ===============================================================================================================================================================================================================
-``--ga-client-id``              OAuth2 ID
-``--ga-client-secret``          OAuth2 secret
-``--ga-access-token``           (Optional) Access token for OAuth2
-``--ga-refresh-token``          Refresh token for OAuth2
-``--ga-view-id``                Analytics View ID from which to retrieve data. See documentation `here <https://support.google.com/analytics/answer/1009618>`__ for a better understanding of Google Analytics hierrarchy.
-``--ga-account-id``             Analytics Account ID from which to retrieve data. See documentation `here <https://support.google.com/analytics/answer/1009618>`__ for a better understanding of Google Analytics hierrarchy.
-``--ga-dimension``              Dimensions to include in the report (max 9). Possible values can be found `here <https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/>`__.
-``--ga-metric``                 Metrics to include in the report (min 1, max 10). Possible values can be found `here <https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/>`__.
-``--ga-segment-id``             Segment ID of a built-in or custom segment (for example gaid::-3) on which report data should be segmented.
-``--ga-start-date``             Start date of the period to request (format: YYYY-MM-DD)
-``--ga-end-date``               End date of the period to request (format: YYYY-MM-DD)
-``--ga-date-range``             <START_DATE> <END_DATE> of the period to request, specified as a unique argument (format: YYYY-MM-DD YYYY-MM-DD)
-``--ga-day-range``              Relative time range. Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS.
-``--ga-sampling-level``         Desired sample size. See documentation `here <https://support.google.com/analytics/answer/2637192>`__ for a better understanding of Google Analytics sampling. Possible values: SMALL, DEFAULT, LARGE (default).
-``--ga-add-view``               If set to True (default: False), adds a "ga:viewId" field to the output stream.
-==============================  ===============================================================================================================================================================================================================
+==============================  ======================  ===============================================================================================================================================================================================================
+CMD Options                     JSON Options            Definition
+==============================  ======================  ===============================================================================================================================================================================================================
+``--ga-client-id``              ``client_id``           OAuth2 ID
+``--ga-client-secret``          ``client_secret``       OAuth2 secret
+``--ga-access-token``           ``access_token``        (Optional) Access token for OAuth2
+``--ga-refresh-token``          ``refresh_token``       Refresh token for OAuth2
+``--ga-view-id``                ``view_id`` (list)      Analytics View ID from which to retrieve data. See documentation `here <https://support.google.com/analytics/answer/1009618>`__ for a better understanding of Google Analytics hierrarchy.
+``--ga-account-id``             ``account_id`` (list)   Analytics Account ID from which to retrieve data. See documentation `here <https://support.google.com/analytics/answer/1009618>`__ for a better understanding of Google Analytics hierrarchy.
+``--ga-dimension``              ``dimension`` (list)    Dimensions to include in the report (max 9). Possible values can be found `here <https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/>`__.
+``--ga-metric``                 ``metric`` (list)       Metrics to include in the report (min 1, max 10). Possible values can be found `here <https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/>`__.
+``--ga-segment-id``             ``segment_id`` (list)   Segment ID of a built-in or custom segment (for example gaid::-3) on which report data should be segmented.
+``--ga-start-date``             ``start_date``          Start date of the period to request (format: YYYY-MM-DD)
+``--ga-end-date``               ``end_date``            End date of the period to request (format: YYYY-MM-DD)
+``--ga-date-range``             ``date_range``          <START_DATE> <END_DATE> of the period to request, specified as a unique argument (format: YYYY-MM-DD YYYY-MM-DD)
+``--ga-day-range``              ``day_range``           Relative time range. Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS.
+``--ga-sampling-level``         ``sampling_level``      Desired sample size. See documentation `here <https://support.google.com/analytics/answer/2637192>`__ for a better understanding of Google Analytics sampling. Possible values: SMALL, DEFAULT, LARGE (default).
+``--ga-add-view``               ``add_view``            If set to True (default: False), adds a "ga:viewId" field to the output stream.
+==============================  ======================  ===============================================================================================================================================================================================================
 
 See documentation `here <https://developers.google.com/analytics/devguides/reporting/core/v4/basics>`__ for a better understanding of the parameters.
 
@@ -578,7 +592,7 @@ Quickstart
 Follow these steps to set your credentials:
 
 - In your GCP project, create a Service Account with a 'Storage Object Viewer' role
-- Create a .json key for this Service Account, and download the key file locally
+- Create a .JSON key for this Service Account, and download the key file locally
 - Execute the following commands:
 
 .. code-block:: shell
@@ -598,22 +612,24 @@ Once done, launch your Google Cloud Storage reader command. The following comman
 Command name
 ------------
 
-``read_gcs``
+CMD: ``read_gcs``
+
+JSON: ``google_cloud_storage``
 
 ---------------
 Command options
 ---------------
 
-==============================  ========================================================================================================================================================================================================================================================================================================================================================================================================================
-Options                         Definition
-==============================  ========================================================================================================================================================================================================================================================================================================================================================================================================================
-``--gcs-bucket``                Cloud Storage bucket name
-``--gcs-prefix``                Cloud Storage blob prefix. Several prefixes can be provided in a single command.
-``--gcs-format``                Cloud Storage blob format. *Possible values: csv, gz*
-``--gcs-dest-key-split``        Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. *Default: -1 (split on all occurences)*
-``--gcs-csv-delimiter``         Delimiter that should be used to read the .csv file. *Default: ,*
-``--gcs-csv-fieldnames``        List of field names. If set to *None* (*default*), the values in the first row of .csv file will be used as field names.
-==============================  ========================================================================================================================================================================================================================================================================================================================================================================================================================
+==============================  ===================  ========================================================================================================================================================================================================================================================================================================================================================================================================================
+CMD Options                     JSON Options         Definition
+==============================  ===================  ========================================================================================================================================================================================================================================================================================================================================================================================================================
+``--gcs-bucket``                ``bucket``           Cloud Storage bucket name
+``--gcs-prefix``                ``prefix`` (list)    Cloud Storage blob prefix. Several prefixes can be provided in a single command.
+``--gcs-format``                ``format``           Cloud Storage blob format. *Possible values: csv, gz*
+``--gcs-dest-key-split``        ``dest_key-split``   Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. *Default: -1 (split on all occurences)*
+``--gcs-csv-delimiter``         ``csv_delimiter``    Delimiter that should be used to read the .csv file. *Default: ,*
+``--gcs-csv-fieldnames``        ``csv_fieldnames``   List of field names. If set to *None* (*default*), the values in the first row of .csv file will be used as field names.
+==============================  ===================  ========================================================================================================================================================================================================================================================================================================================================================================================================================
 
 ==============================
 Google Campaign Manager Reader
@@ -641,29 +657,31 @@ The following command retrieves impressions, clicks and cost volumes from 2020-0
 Command name
 ------------
 
-``read_dcm``
+CMD: ``read_dcm``
+
+JSON: ``google_dcm``
 
 ---------------
 Command options
 ---------------
 
-==============================  =======================================================================================================================================================================================================================================================================================================================================
-Options                         Definition
-==============================  =======================================================================================================================================================================================================================================================================================================================================
-``--dcm-client-id``             OAuth2 ID
-``--dcm-client-secret``         OAuth2 secret
-``--dcm-access-token``          (Optional) Access token for OAuth2
-``--dcm-refresh-token``         Refresh token for OAuth2
-``--dcm-profile-id``            ID of the DFA user profile that has been granted permissions to the CM account for which you want to retrieve data. You should have 1 DFA user profile per CM account that you can access. The associated ID can be found directly on your Campaign Manager UI (when accessing your list of CM accounts, on the top right hand corner).
-``--dcm-report-name``           Name of the report, that will appear in CM UI.
-``--dcm-report-type``           Type of the report. Possible values: CROSS_DIMENSION_REACH, FLOODLIGHT, PATH_TO_CONVERSION, REACH, STANDARD.
-``--dcm-dimension``             Dimensions to include in the report. Possible values can be found `here <https://developers.google.com/doubleclick-advertisers/v3.3/dimensions>`__.
-``--dcm-metric``                Metrics to include in the report. Possible values can be found `here <https://developers.google.com/doubleclick-advertisers/v3.3/dimensions>`__.
-``--dcm-filter``                <FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "dfa:advertiserId XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found `here <https://developers.google.com/doubleclick-advertisers/v3.3/dimensions>`__.
-``--dcm-start-date``            Start date of the period to request (format: YYYY-MM-DD)
-``--dcm-end-date``              End date of the period to request (format: YYYY-MM-DD)
-``--dcm-date-range``            Date range. By default, not available in DCM, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
-==============================  =======================================================================================================================================================================================================================================================================================================================================
+==============================  ==========================  =======================================================================================================================================================================================================================================================================================================================================
+CMD Options                     JSON Options                Definition
+==============================  ==========================  =======================================================================================================================================================================================================================================================================================================================================
+``--dcm-client-id``             ``client_id``               OAuth2 ID
+``--dcm-client-secret``         ``client_secret``           OAuth2 secret
+``--dcm-access-token``          ``access_token``            (Optional) Access token for OAuth2
+``--dcm-refresh-token``         ``refresh_token``           Refresh token for OAuth2
+``--dcm-profile-id``            ``profile_ids`` (list)      ID of the DFA user profile that has been granted permissions to the CM account for which you want to retrieve data. You should have 1 DFA user profile per CM account that you can access. The associated ID can be found directly on your Campaign Manager UI (when accessing your list of CM accounts, on the top right hand corner).
+``--dcm-report-name``           ``report_name``             Name of the report, that will appear in CM UI.
+``--dcm-report-type``           ``report_type``             Type of the report. Possible values: CROSS_DIMENSION_REACH, FLOODLIGHT, PATH_TO_CONVERSION, REACH, STANDARD.
+``--dcm-dimension``             ``dimensions`` (list)       Dimensions to include in the report. Possible values can be found `here <https://developers.google.com/doubleclick-advertisers/v3.3/dimensions>`__.
+``--dcm-metric``                ``metrics`` (list)          Metrics to include in the report. Possible values can be found `here <https://developers.google.com/doubleclick-advertisers/v3.3/dimensions>`__.
+``--dcm-filter``                ``filters`` (list(tuple))   <FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "dfa:advertiserId XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found `here <https://developers.google.com/doubleclick-advertisers/v3.3/dimensions>`__.
+``--dcm-start-date``            ``start_date``              Start date of the period to request (format: YYYY-MM-DD)
+``--dcm-end-date``              ``end_date``                End date of the period to request (format: YYYY-MM-DD)
+``--dcm-date-range``            ``date_range``              Date range. By default, not available in DCM, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+==============================  ==========================  =======================================================================================================================================================================================================================================================================================================================================
 
 ===========================================
 Google DoubleClick Bid Manager Reader (DBM)
@@ -691,30 +709,36 @@ The following command retrieves impressions, clicks and cost volumes filtered on
 Command name
 ------------
 
-``read_dbm``
+CMD: ``read_dbm``
+
+JSON: ``google_dbm``
 
 ---------------
 Command options
 ---------------
 
-==============================  ================================================================================================================================================================================================================================================================================================================
-Options                         Definition
-==============================  ================================================================================================================================================================================================================================================================================================================
-``--dbm-client-id``             OAuth2 ID
-``--dbm-client-secret``         OAuth2 secret
-``--dbm-access-token``          (Optional) Access token for OAuth2
-``--dbm-refresh-token``         Refresh token for OAuth2
-``--dbm-query-request-type``    Doubleclick Bid Manager API request type. Possible values: existing_query, custom_query, existing_query_report, custom_query_report, lineitems_objects, sdf_objects and list_reports.
-``--dbm-query-id``              Query ID.
-``--dbm-query-title``           Query title, used to name the reports generated from this query in DV360 UI.
-``--dbm-query-frequency``       How often the query is run. Possible values can be found `here <https://developers.google.com/bid-manager/v1/queries#schedule.frequency>`__. Default: ONE_TIME.
-``--dbm-filter``                <FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "FILTER_ADVERTISER XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#filters)>`__.
-``--dbm-query-dimension``       Dimensions to include in the report. Possible values can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#filters>`__.
-``--dbm-query-metric``          Metrics to include in the report. Possible values can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#metrics>`__.
-``--dbm-query-param-type``      Report type. Possible values can be found `here <https://developers.google.com/bid-manager/v1/queries#params.type>`__. Default: TYPE_TRUEVIEW.
-``--dbm-start-date``            Start date of the period to request (format: YYYY-MM-DD)
-``--dbm-end-date``              End date of the period to request (format: YYYY-MM-DD)
-==============================  ================================================================================================================================================================================================================================================================================================================
+==============================  ===========================  ================================================================================================================================================================================================================================================================================================================
+CMD Options                     JSON Options                 Definition
+==============================  ===========================  ================================================================================================================================================================================================================================================================================================================
+``--dbm-client-id``             ``client_id``                OAuth2 ID
+``--dbm-client-secret``         ``client_secret``            OAuth2 secret
+``--dbm-access-token``          ``access_token``             (Optional) Access token for OAuth2
+``--dbm-refresh-token``         ``refresh_token``            Refresh token for OAuth2
+``--dbm-query-request-type``    ``query_request_type``       Doubleclick Bid Manager API request type. Possible values: existing_query, custom_query, existing_query_report, custom_query_report, lineitems_objects, sdf_objects and list_reports.
+``--dbm-query-id``              ``query_id``                 Query ID.
+``--dbm-query-title``           ``query_title``              Query title, used to name the reports generated from this query in DV360 UI.
+``--dbm-query-frequency``       ``query_frequency``          How often the query is run. Possible values can be found `here <https://developers.google.com/bid-manager/v1/queries#schedule.frequency>`__. Default: ONE_TIME.
+``--dbm-filter``                ``filter`` (list(tuple))     <FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "FILTER_ADVERTISER XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#filters)>`__.
+``--dbm-query-dimension``       ``query_dimension`` (list)   Dimensions to include in the report. Possible values can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#filters>`__.
+``--dbm-query-metric``          ``query_metric`` (list)      Metrics to include in the report. Possible values can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#metrics>`__.
+``--dbm-query-param-type``      ``query_param_type``         Report type. Possible values can be found `here <https://developers.google.com/bid-manager/v1/queries#params.type>`__. Default: TYPE_TRUEVIEW.
+``--dbm-start-date``            ``start_date``               Start date of the period to request (format: YYYY-MM-DD)
+``--dbm-end-date``              ``end_date``                 End date of the period to request (format: YYYY-MM-DD)
+``--dbm-add-date-to-report``    ``add_date_to_report``       Sometimes the date range on which metrics are computed is missing from the report. If this option is set to True (default: False), this range will be added.
+``--dbm-file-type``             ``file_type`` (list)         File types
+``--dbm-date-format``           ``date_format``              Add optional date format for the output stream. Follow the syntax of https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior
+``--dbm-day-range``             ``day_range``                Day range chosen across these values: PREVIOUS_DAY, LAST_30_DAYS, LAST_90_DAYS, LAST_7_DAYS, PREVIOUS_MONTH, PREVIOUS_WEEK
+==============================  ===========================  ================================================================================================================================================================================================================================================================================================================
 
 ===================
 Google DV360 Reader
@@ -759,24 +783,26 @@ Say you want to get a SDF file for all campaigns of a specific advertiser. You c
 Command name
 ------------
 
-``read_dv360``
+CMD: ``read_dv360``
+
+JSON: ``google_dv360``
 
 ---------------
 Command options
 ---------------
 
-==============================  ===============================================================
-Options                         Definition
-==============================  ===============================================================
-``--dv360-access-token``        Access token you during the process of getting tokens
-``--dv360-refresh-token``       Refresh token you during the process of getting tokens
-``--dv360-client-id``           Client ID you generated in the GCP environment
-``--dv360-client-secret``       Client secret you generated in the GCP environment
-``--dv360-advertiser-id``       One of the advertiser IDs you have access to
-``--dv360-request-type``        Request type. Choose among 'sdf_request' and 'creative_request'
-``--dv360-file-type``           SDF level
-``--dv360-filter-type``         SDF filter. Depends on the level.
-==============================  ===============================================================
+==============================  =====================  ===============================================================
+CMD Options                     JSON Options           Definition
+==============================  =====================  ===============================================================
+``--dv360-access-token``        ``access_token``       Access token you during the process of getting tokens
+``--dv360-refresh-token``       ``refresh_token``      Refresh token you during the process of getting tokens
+``--dv360-client-id``           ``client_id``          Client ID you generated in the GCP environment
+``--dv360-client-secret``       ``client_secret``      Client secret you generated in the GCP environment
+``--dv360-advertiser-id``       ``advertiser_id``      One of the advertiser IDs you have access to
+``--dv360-request-type``        ``request_type``       Request type. Choose among 'sdf_request' and 'creative_request'
+``--dv360-file-type``           ``file_type`` (list)   SDF level
+``--dv360-filter-type``         ``filter_type``        SDF filter. Depends on the level.
+==============================  =====================  ===============================================================
 
 ============================
 Google Search Console Reader
@@ -814,27 +840,29 @@ The following command retrieves insights about the URL <SITE_URL> from 2020-01-0
 Command name
 ------------
 
-``read_search_console``
+CMD: ``read_search_console``
+
+JSON: ``google_search_console``
 
 ---------------
 Command options
 ---------------
 
-==================================  ============================================================================================================================================================================================================
-Options                             Definition
-==================================  ============================================================================================================================================================================================================
-``--search-console-client-id``      OAuth2 ID
-``--search-console-client-secret``  OAuth2 secret
-``--search-console-access-token``   Access token for OAuth2
-``--search-console-refresh-token``  Refresh token for OAuth2
-``--search-console-dimensions``     Dimensions of the report. Possible values can be found `here <https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension>`__.
-``--search-console-site-url``       Site URL whose performance you want to request
-``--search-console-start-date``     Start date of the period to request (format: YYYY-MM-DD)
-``--search-console-end-date``       End date of the period to request (format: YYYY-MM-DD)
-``--search-console-date-range``     Date range. By default, not available in Search Console, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
-``--search-console-date-column``    If set to True, a date column will be included in the report
-``--search-console-row-limit``      Row number by report page
-==================================  ============================================================================================================================================================================================================
+==================================  ======================  ============================================================================================================================================================================================================
+CMD Options                         JSON Options            Definition
+==================================  ======================  ============================================================================================================================================================================================================
+``--search-console-client-id``      ``client_id``           OAuth2 ID
+``--search-console-client-secret``  ``client_secret``       OAuth2 secret
+``--search-console-access-token``   ``access_token``        Access token for OAuth2
+``--search-console-refresh-token``  ``refresh_token``       Refresh token for OAuth2
+``--search-console-dimensions``     ``dimensions`` (list)   Dimensions of the report. Possible values can be found `here <https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension>`__.
+``--search-console-site-url``       ``site_url``            Site URL whose performance you want to request
+``--search-console-start-date``     ``start_date``          Start date of the period to request (format: YYYY-MM-DD)
+``--search-console-end-date``       ``end_date``            End date of the period to request (format: YYYY-MM-DD)
+``--search-console-date-range``     ``date_range``          Date range. By default, not available in Search Console, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+``--search-console-date-column``    ``date_column``         If set to True, a date column will be included in the report
+``--search-console-row-limit``      ``row_limit``           Row number by report page
+==================================  ======================  ============================================================================================================================================================================================================
 
 See documentation `here <https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query>`__ for a better understanding of the parameters.
 
@@ -875,29 +903,31 @@ The following command retrieves insights about the Ads in the Search Ads 360 Acc
 Command name
 ------------
 
-``read_sa360``
+CMD: ``read_sa360``
+
+JSON: ``google_sa360``
 
 ---------------
 Command options
 ---------------
 
-==============================  =======================================================================================================================================================
-Options                         Definition
-==============================  =======================================================================================================================================================
-``--sa360-client-id``           OAuth2 ID
-``--sa360-client-secret``       OAuth2 secret
-``--sa360-access-token``        (Optional) Access token
-``--sa360-refresh-token``       Refresh token
-``--sa360-agency-id``           Agency ID to request in SA360
-``--sa360-advertiser-id``       (Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested
-``--sa360-report-name``         (Optional) Name of the output report
-``--sa360-report-type``         Type of the report to request. Possible values can be found `here <https://developers.google.com/search-ads/v2/report-types>`__.
-``--sa360-column``              Dimensions and metrics to include in the report
-``--sa360-saved-column``        (Optional) Saved columns to report. Documentation can be found `here <https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns>`__.
-``--sa360-start-date``          Start date of the period to request (format: YYYY-MM-DD)
-``--sa360-end-date``            End date of the period to request (format: YYYY-MM-DD)
-``--sa360-date-range``          Date range. By default, not available in SA360, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
-==============================  =======================================================================================================================================================
+==============================  ==========================  =======================================================================================================================================================
+CMD Options                     JSON Options                Definition
+==============================  ==========================  =======================================================================================================================================================
+``--sa360-client-id``           ``client_id``               OAuth2 ID
+``--sa360-client-secret``       ``client_secret``           OAuth2 secret
+``--sa360-access-token``        ``access_token``            (Optional) Access token
+``--sa360-refresh-token``       ``refresh_token``           Refresh token
+``--sa360-agency-id``           ``agency_id``               Agency ID to request in SA360
+``--sa360-advertiser-id``       ``advertiser_ids`` (list)   Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested
+``--sa360-report-name``         ``report_name``             (Optional) Name of the output report
+``--sa360-report-type``         ``report_type``             Type of the report to request. Possible values can be found `here <https://developers.google.com/search-ads/v2/report-types>`__.
+``--sa360-column``              ``columns`` (list)          Dimensions and metrics to include in the report
+``--sa360-saved-column``        ``saved_columns`` (list)    (Optional) Saved columns to report. Documentation can be found `here <https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns>`__.
+``--sa360-start-date``          ``start_date``              Start date of the period to request (format: YYYY-MM-DD)
+``--sa360-end-date``            ``end_date``                End date of the period to request (format: YYYY-MM-DD)
+``--sa360-date-range``          ``date_range``              Date range. By default, not available in SA360, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+==============================  ==========================  =======================================================================================================================================================
 
 See documentation `here <https://developers.google.com/search-ads/v2/how-tos/reporting>`__ for a better understanding of the parameters.
 
@@ -922,7 +952,7 @@ To use the Google Sheets Reader you must first retrieve your credentials. In ord
 - What data will you be accessing? > Application data
 - Are you planning to use this API with App Engine or Compute Engine? > No, I'm not using them
 
-Click on *What credentials do I need* and complete the form. You will find the credentials you need in the .json file that will start downloading automatically right after.
+Click on *What credentials do I need* and complete the form. You will find the credentials you need in the .JSON file that will start downloading automatically right after.
 
 ----------
 Quickstart
@@ -939,24 +969,26 @@ This command allows you to retrieve the desired information from a Google Sheet 
 Command name
 ------------
 
-``read_gs``
+CMD: ``read_gs``
+
+JSON: ``google_sheets``
 
 ---------------
 Command options
 ---------------
 
-==============================  ==============================================================================================================================================================
-Options                         Definition
-==============================  ==============================================================================================================================================================
-``--gs-project-id``             Project ID that is given by Google services once you have created your project in the Google Cloud Console. You can retrieve it in the .json credential file.
-``--gs-private-key-id``         Private key ID given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.
-``--gs-private-key-path``       The path to the private key that is stored in a txt file. You can retrieve it first in the .json credential file.
-``--gs-client-email``           Client e-mail given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.
-``--gs-client-id``              Client ID given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.
-``--gs-client-cert``            Client certificate given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.
-``--gs-file-name``              The name you have given to your Google Sheet file
-``--gs-page-number``            The page number you want to access. The number pages starts at 0.
-==============================  ==============================================================================================================================================================
+==============================  =====================  ==============================================================================================================================================================
+CMD Options                     JSON Options           Definition
+==============================  =====================  ==============================================================================================================================================================
+``--gs-project-id``             ``project_id``         Project ID that is given by Google services once you have created your project in the Google Cloud Console. You can retrieve it in the .JSON credential file.
+``--gs-private-key-id``         ``private_key_id``     Private key ID given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.
+``--gs-private-key-path``       ``private_key_path``   The path to the private key that is stored in a txt file. You can retrieve it first in the .JSON credential file.
+``--gs-client-email``           ``client_email``       Client e-mail given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.
+``--gs-client-id``              ``client_id``          Client ID given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.
+``--gs-client-cert``            ``client_cert``        Client certificate given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.
+``--gs-file-name``              ``file_name``          The name you have given to your Google Sheet file
+``--gs-page-number``            ``page_number``        The page number you want to access. The number pages starts at 0.
+==============================  =====================  ==============================================================================================================================================================
 
 ===================
 MyTarget Reader
@@ -1002,23 +1034,25 @@ If you just want to get the budget instead of the general statistics of each cam
 Command name
 ------------
 
-``read_mytarget``
+CMD: ``read_mytarget``
+
+JSON: ``mytarget``
 
 ---------------
 Command options
 ---------------
 
-==============================  ==========================================================================================================================================================
-Options                         Definition
-==============================  ==========================================================================================================================================================
-``--mytarget-client-id``        Client ID you generated
-``--mytarget-client-secret``    Client secret you generated. 
-``--mytarget-refresh-token``    Secret token you retrieved during the process of getting tokens
-``--mytarget-request-type``     Type of report you want to retrieve: performance or budgets.
-``--mytarget-start-date``       Start date of the period to request (format: YYYY-MM-DD)
-``--mytarget-end-date``         End date of the period to request (format: YYYY-MM-DD)
-``--mytarget-date-range``       Date range. By default, not available in MyTarget, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
-==============================  ==========================================================================================================================================================
+==============================  ==================  ==========================================================================================================================================================
+CMD Options                     JSON Options        Definition
+==============================  ==================  ==========================================================================================================================================================
+``--mytarget-client-id``        ``client_id``       Client ID you generated
+``--mytarget-client-secret``    ``client_secret``   Client secret you generated.
+``--mytarget-refresh-token``    ``refresh_token``   Secret token you retrieved during the process of getting tokens
+``--mytarget-request-type``     ``request_type``    Type of report you want to retrieve: performance or budgets.
+``--mytarget-start-date``       ``start_date``      Start date of the period to request (format: YYYY-MM-DD)
+``--mytarget-end-date``         ``end_date``        End date of the period to request (format: YYYY-MM-DD)
+``--mytarget-date-range``       ``date_range``      Date range. By default, not available in MyTarget, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+==============================  ==================  ==========================================================================================================================================================
 
 ============
 MySQL Reader
@@ -1046,29 +1080,31 @@ The following command retrieves all records from the table <TABLE_NAME> (equival
 Command name
 ------------
 
-``read_mysql``
+CMD: ``read_mysql``
+
+JSON: ``mysql``
 
 ---------------
 Command options
 ---------------
 
-=====================================  =========================================================================================================
-Options                                Definition
-=====================================  =========================================================================================================
-``--mysql-user``                       Database user
-``--mysql-password``                   Database password
-``--mysql-host``                       Database host
-``--mysql-port``                       Database port
-``--mysql-database``                   Database name
-``--mysql-query``                      SQL query (you must specify either a query or a table)
-``--mysql-query-name``                 SQL query name (required if you specify a query)
-``--mysql-table``                      Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)
-``--mysql-watermark-column``           Watermark column (required when using state management)
-``--mysql-watermark-init``             Initial watermark column value (required when using state management)
-``--mysql-redis-state-service-name``   Redis state service hash name
-``--mysql-redis-state-service-host``   Redis state service host
-``--mysql-redis-state-service-port``   Redis state service port
-=====================================  =========================================================================================================
+=====================================  =============================  =========================================================================================================
+CMD Options                            JSON Options                   Definition
+=====================================  =============================  =========================================================================================================
+``--mysql-user``                       ``user``                       Database user
+``--mysql-password``                   ``password``                   Database password
+``--mysql-host``                       ``host``                       Database host
+``--mysql-port``                       ``port``                       Database port
+``--mysql-database``                   ``database``                   Database name
+``--mysql-query``                      ``query``                      SQL query (you must specify either a query or a table)
+``--mysql-query-name``                 ``query-name``                 SQL query name (required if you specify a query)
+``--mysql-table``                      ``table``                      Database table on which you want to run a `SELECT *` query (you must specify either a query or a table)
+``--mysql-watermark-column``           ``watermark-column``           Watermark column (required when using state management)
+``--mysql-watermark-init``             ``watermark-init``             Initial watermark column value (required when using state management)
+``--mysql-redis-state-service-name``   ``redis-state-service-name``   Redis state service hash name
+``--mysql-redis-state-service-host``   ``redis-state-service-host``   Redis state service host
+``--mysql-redis-state-service-port``   ``redis-state-service-port``   Redis state service port
+=====================================  =============================  =========================================================================================================
 
 ==============
 Radarly Reader
@@ -1096,28 +1132,30 @@ The following command retrieves data from posts located under the project ``<PRO
 Command name
 ------------
 
-``read_radarly``
+CMD: ``read_radarly``
+
+JSON: ``radarly``
 
 ---------------
 Command options
 ---------------
 
-==============================================  ======================================================================================================================================================================================================================
-Options                                         Definition
-==============================================  ======================================================================================================================================================================================================================
-``--radarly-client-id``                         Radarly Client ID
-``--radarly-client-secret``                     Radarly Client Secret
-``--radarly-pid``                               Radarly Project ID
-``--radarly-focus-id``                          Focus IDs (several can be provided)
-``--radarly-start-date``                        Start date of the period to request
-``--radarly-end-date``                          End date of the period to request
-``--radarly-api-request-limit``                 Max number of posts to be requested in a single API request
-``--radarly-api-date-period-limit``             Max number of posts to be requested in a single Search query
-``--radarly-api-window``                        Duration of the rate limit window
-``--radarly-api-quaterly-posts-limit``          Max number of posts to be requested over the rate limit window
-``--radarly-api-throttle``                      If set to True (default), forces the reader to abide by `official API rate limits <https://github.com/linkfluence/radarly-py/blob/master/docs/officialdoc/introduction/rates.rst>`__, using the 2 above parameters.
-``--radarly-throttling-threshold-coefficient``  Throttling threshold coefficient
-==============================================  ======================================================================================================================================================================================================================
+==============================================  ======================================  ======================================================================================================================================================================================================================
+CMD Options                                     JSON Options                            Definition
+==============================================  ======================================  ======================================================================================================================================================================================================================
+``--radarly-client-id``                         ``client_id``                           Radarly Client ID
+``--radarly-client-secret``                     ``client_secret``                       Radarly Client Secret
+``--radarly-pid``                               ``pid``                                 Radarly Project ID
+``--radarly-focus-id``                          ``focus_id`` (list)                           Focus IDs (several can be provided)
+``--radarly-start-date``                        ``start_date``                          Start date of the period to request
+``--radarly-end-date``                          ``end_date``                            End date of the period to request
+``--radarly-api-request-limit``                 ``api_request_limit``                   Max number of posts to be requested in a single API request
+``--radarly-api-date-period-limit``             ``api_date_period_limit``               Max number of posts to be requested in a single Search query
+``--radarly-api-window``                        ``api_window``                          Duration of the rate limit window
+``--radarly-api-quaterly-posts-limit``          ``api_quaterly_posts_limit``            Max number of posts to be requested over the rate limit window
+``--radarly-api-throttle``                      ``api_throttle``                        If set to True (default), forces the reader to abide by `official API rate limits <https://github.com/linkfluence/radarly-py/blob/master/docs/officialdoc/introduction/rates.rst>`__, using the 2 above parameters.
+``--radarly-throttling-threshold-coefficient``  ``throttling_threshold_coefficient``    Throttling threshold coefficient
+==============================================  ======================================  ======================================================================================================================================================================================================================
 
 =================
 Salesforce Reader
@@ -1151,25 +1189,27 @@ Create a Connected App by following the instructions detailed `on this page <htt
 Command name
 ------------
 
-``read_salesforce``
+CMD: ``read_salesforce``
+
+JSON: ``salesforce``
 
 ---------------
 Command options
 ---------------
 
-==================================  =================================================================================================================================================================================================================================================================================================
-Options                             Definition
-==================================  =================================================================================================================================================================================================================================================================================================
-``--salesforce-consumer-key``       Client ID of your Salesforce Connected App
-``--salesforce-consumer-secret``    Client Secret of your Salesforce Connected App
-``--salesforce-user``               Salesforce username
-``--salesforce-password``           Salesforce password
-``--salesforce-object-type``        Salesforce object type (you must specify either a Salesforce object type or a SOQL query). With this configuration, the command will retrieve the values of all the fields from the given object records (equivalent to the SOQL query: `SELECT <LIST OF ALL OBJECT FIELDS> FROM <OBJECT TYPE>`).
-``--salesforce-query``              SOQL query (you must specify either a Salesforce object type or a SOQL query). You can find documentation on Salesforce Object Query Language (SOQL) `here <https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.html>`__.
-``--salesforce-query-name``         SOQL query name (required if you specify a SOQL query)
-``--salesforce-watermark-column``   Salesforce watermark column (required when using state management)
-``--salesforce-watermark-init``     Initial Salesforce watermark column value (required when using state management)
-==================================  =================================================================================================================================================================================================================================================================================================
+==================================  =====================  =================================================================================================================================================================================================================================================================================================
+CMD Options                         JSON Options           Definition
+==================================  =====================  =================================================================================================================================================================================================================================================================================================
+``--salesforce-consumer-key``       ``consumer_key``       Client ID of your Salesforce Connected App
+``--salesforce-consumer-secret``    ``consumer_secret``    Client Secret of your Salesforce Connected App
+``--salesforce-user``               ``user``               Salesforce username
+``--salesforce-password``           ``password``           Salesforce password
+``--salesforce-object-type``        ``object_type``        Salesforce object type (you must specify either a Salesforce object type or a SOQL query). With this configuration, the command will retrieve the values of all the fields from the given object records (equivalent to the SOQL query: `SELECT <LIST OF ALL OBJECT FIELDS> FROM <OBJECT TYPE>`).
+``--salesforce-query``              ``query``              SOQL query (you must specify either a Salesforce object type or a SOQL query). You can find documentation on Salesforce Object Query Language (SOQL) `here <https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.html>`__.
+``--salesforce-query-name``         ``query_name``         SOQL query name (required if you specify a SOQL query)
+``--salesforce-watermark-column``   ``watermark_column``   Salesforce watermark column (required when using state management)
+``--salesforce-watermark-init``     ``watermark_init``     Initial Salesforce watermark column value (required when using state management)
+==================================  =====================  =================================================================================================================================================================================================================================================================================================
 
 =====================
 The Trade Desk Reader
@@ -1208,26 +1248,30 @@ The following command retrieves the data associated to the Report template named
 
 Didn't work? See [troubleshooting](#troubleshooting) section.
 
-#### Command the name
+------------
+Command name 
+------------
 
-``read_ttd``
+CMD: ``read_ttd``
+
+JSON: ``the_trade_desk``
 
 ---------------
 Command options
 ---------------
 
-==============================  ===========================================================================================================================================================================================
-Options                         Definition
-==============================  ===========================================================================================================================================================================================
-``--ttd-login``                 Login of your API account
-``--ttd-password``              Password of your API account
-``--ttd-advertiser-id``         Advertiser Ids for which report data should be fetched
-``--ttd-report-template-name``  Exact name of the Report Template to request. Existing Report Templates can be found within the `MyReports section <https://desk.thetradedesk.com/MyReports>`__ of The Trade Desk UI.
-``--ttd-report-schedule-name``  Name of the Report Schedule to create
-``--ttd-start-date``            Start date of the period to request (format: YYYY-MM-DD)
-``--ttd-end-date``              End date of the period to request (format: YYYY-MM-DD)
-``--ttd-date-range``            Date range. By default, not available in The Trade Desk, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
-==============================  ===========================================================================================================================================================================================
+==============================  =========================  ===========================================================================================================================================================================================
+CMD Options                     JSON Options                    Definition
+==============================  =========================  ===========================================================================================================================================================================================
+``--ttd-login``                 ``login``                  Login of your API account
+``--ttd-password``              ``password``               Password of your API account
+``--ttd-advertiser-id``         ``advertiser_id`` (list)   Advertiser Ids for which report data should be fetched
+``--ttd-report-template-name``  ``report_template_name``   Exact name of the Report Template to request. Existing Report Templates can be found within the `MyReports section <https://desk.thetradedesk.com/MyReports>`__ of The Trade Desk UI.
+``--ttd-report-schedule-name``  ``report_schedule_name``   Name of the Report Schedule to create
+``--ttd-start-date``            ``start_date``             Start date of the period to request (format: YYYY-MM-DD)
+``--ttd-end-date``              ``end_date``               End date of the period to request (format: YYYY-MM-DD)
+``--ttd-date-range``            ``date_range``             Date range. By default, not available in The Trade Desk, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+==============================  =========================  ===========================================================================================================================================================================================
 
 If you need any further information, the documentation of The Trade Desk API can be found `here <https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview>`__.
 
@@ -1284,34 +1328,36 @@ The Twitter Ads Reader can collect **3 types of reports**, making calls to 4 end
 Command name
 ------------
 
-``read_twitter``
+CMD: ``read_twitter``
+
+JSON: ``twitter``
 
 ---------------
 Command options
 ---------------
 
-==========================================  =================================================================================================================================================================================================================================
-Options                                     Definition
-==========================================  =================================================================================================================================================================================================================================
-``--twitter-consumer-key``                  API key, available in the 'Keys and tokens' section of your Twitter Developer App.
-``--twitter-consumer-secret``               API secret key, available in the 'Keys and tokens' section of your Twitter Developer App.
-``--twitter-access-token``                  Access token, available in the 'Keys and tokens' section of your Twitter Developer App.
-``--twitter-access-token-secret``           Access token secret, available in the 'Keys and tokens' section of your Twitter Developer App.
-``--twitter-account-id``                    Specifies the Twitter Account ID for which the data should be returned.
-``--twitter-report-type``                   Specifies the type of report to collect. Possible values: ANALYTICS, REACH, ENTITY.
-``--twitter-entity``                        Specifies the entity type to retrieve data for. Possible values: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET, CARD.
-``--twitter-entity-attribute``              Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned. To get possible values, print the ENTITY_ATTRIBUTES variable on nck/helpers/twitter_helper.py
-``--twitter-granularity``                   Specific to ANALYTICS reports. Specifies how granular the retrieved data should be. Possible values: TOTAL (default), DAY.
-``--twitter-metric-group``                  Specific to ANALYTICS reports. Specifies the list of metrics (as a group) that should be returned. Possible values can be found `here <https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation>`__.
-``--twitter-placement``                     Specific to ANALYTICS reports. Scopes the retrieved data to a particular placement. Possible values: ALL_ON_TWITTER (default), PUBLISHER_NETWORK.
-``--twitter-segmentation-type``             Specific to ANALYTICS reports. Specifies how the retrieved data should be segmented. Possible values can be found `here <https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation>`__.
-``--twitter-platform``                      Specific to ANALYTICS reports. Required if segmentation_type is set to DEVICES or PLATFORM_VERSION. Possible values can be identified through the targeting_criteria/locations
-``--twitter-country``                       Specific to ANALYTICS reports. Required if segmentation_type is set to CITIES, POSTAL_CODES, or REGION. Possible values can be identified through the GET targeting_criteria/platforms endpoint.
-``--twitter-start-date``                    Start date of the period to request (format: YYYY-MM-DD).
-``--twitter-end-date``                      End date of the period to request (format: YYYY-MM-DD).
-``--twitter-date-range``                    Date range. By default, not available in Twitter, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
-``--twitter-add-request-date-to-report``    If set to True (default: False), the date on which the request is made will appear on each report record.
-==========================================  =================================================================================================================================================================================================================================
+==========================================  ================================  =================================================================================================================================================================================================================================
+CMD Options                                 JSON Options                           Definition
+==========================================  ================================  =================================================================================================================================================================================================================================
+``--twitter-consumer-key``                  ``consumer_key``                  API key, available in the 'Keys and tokens' section of your Twitter Developer App.
+``--twitter-consumer-secret``               ``consumer_secret``               API secret key, available in the 'Keys and tokens' section of your Twitter Developer App.
+``--twitter-access-token``                  ``access_token``                  Access token, available in the 'Keys and tokens' section of your Twitter Developer App.
+``--twitter-access-token-secret``           ``access_token_secret``           Access token secret, available in the 'Keys and tokens' section of your Twitter Developer App.
+``--twitter-account-id``                    ``account_id``                    Specifies the Twitter Account ID for which the data should be returned.
+``--twitter-report-type``                   ``report_type``                   Specifies the type of report to collect. Possible values: ANALYTICS, REACH, ENTITY.
+``--twitter-entity``                        ``entity``                        Specifies the entity type to retrieve data for. Possible values: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET, CARD.
+``--twitter-entity-attribute``              ``entity_attribute`` (list)       Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned. To get possible values, print the ENTITY_ATTRIBUTES variable on nck/helpers/twitter_helper.py
+``--twitter-granularity``                   ``granularity``                   Specific to ANALYTICS reports. Specifies how granular the retrieved data should be. Possible values: TOTAL (default), DAY.
+``--twitter-metric-group``                  ``metric_group`` (list)           Specific to ANALYTICS reports. Specifies the list of metrics (as a group) that should be returned. Possible values can be found `here <https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation>`__.
+``--twitter-placement``                     ``placement``                     Specific to ANALYTICS reports. Scopes the retrieved data to a particular placement. Possible values: ALL_ON_TWITTER (default), PUBLISHER_NETWORK.
+``--twitter-segmentation-type``             ``segmentation_type``             Specific to ANALYTICS reports. Specifies how the retrieved data should be segmented. Possible values can be found `here <https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation>`__.
+``--twitter-platform``                      ``platform``                      Specific to ANALYTICS reports. Required if segmentation_type is set to DEVICES or PLATFORM_VERSION. Possible values can be identified through the targeting_criteria/locations
+``--twitter-country``                       ``country``                       Specific to ANALYTICS reports. Required if segmentation_type is set to CITIES, POSTAL_CODES, or REGION. Possible values can be identified through the GET targeting_criteria/platforms endpoint.
+``--twitter-start-date``                    ``start_date``                    Start date of the period to request (format: YYYY-MM-DD).
+``--twitter-end-date``                      ``end_date``                      End date of the period to request (format: YYYY-MM-DD).
+``--twitter-date-range``                    ``date_range``                    Date range. By default, not available in Twitter, so choose among NCK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS
+``--twitter-add-request-date-to-report``    ``add_request_date_to_report``    If set to True (default: False), the date on which the request is made will appear on each report record.
+==========================================  ================================  =================================================================================================================================================================================================================================
 
 If you need any further information, the documentation of Twitter Ads API can be found `here <https://developer.twitter.com/en/docs/ads/general/overview>`__. To get a better understanding of **Twitter Ads Hierrarchy and Terminology**, we advise you to have a look at `this page <https://developer.twitter.com/en/docs/tutorials/ads-api-hierarchy-terminology>`__.
 
@@ -1336,7 +1382,7 @@ Here is the process:
 2. Create and register an app that will access Yandex Direct API via `Yandex OAuth <https://oauth.yandex.com/client/new>`__.
 3. Keep app client id safe. Log in with your advertiser account and `give permission to the app to access your data <https://tech.yandex.com/oauth/doc/dg/tasks/get-oauth-token-docpage/>`__.
 4. Store your token very carefully.
-5. Log out and log in as a developer and `ask permission to access Yandex Direct API <https://direct.yandex.com/registered/main.pl?cmd=apiSettings>`__ (ask for Full access). Fill in the form.
+5. Log out and log in as a developer and `ask permission to access Yandex Direct API <https://direct.yandex.com/registered/main.pl?CMD=apiSettings>`__ (ask for Full access). Fill in the form.
 6. Wait for Yandex support to reply but it should be within a week.
 
 ======================
@@ -1361,22 +1407,24 @@ The following command retrieves the daily budget of all your campaigns, since yo
 Command name
 ------------
 
-``read_yandex_campaigns``
+CMD: ``read_yandex_campaigns``
+
+JSON: ``yandex_campaign``
 
 ---------------
 Command options
 ---------------
 
-======================================  ========================================================================================================================================================================
-Options                                 Definition
-======================================  ========================================================================================================================================================================
-``--yandex-token``                      Bear token that allows you to authenticate to the API
-``--yandex-campaign-id``                (Optional) Selects campaigns with the specified IDs.
-``--yandex-campaign-state``             (Optional) Selects campaigns with the specified states. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
-``--yandex-campaign-status``            (Optional) Selects campaigns with the specified statuses. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
-``--yandex-campaign-payment-status``    (Optional) Selects campaigns with the specified payment `statuses <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
-``--yandex-field-name``                 Parameters to get that are common to all types of campaigns.
-======================================  ========================================================================================================================================================================
+======================================  ===================================  ========================================================================================================================================================================
+CMD Options                             JSON Options                         Definition
+======================================  ===================================  ========================================================================================================================================================================
+``--yandex-token``                      ``token``                            Bear token that allows you to authenticate to the API
+``--yandex-campaign-id``                ``campaign_id`` (list)               (Optional) Selects campaigns with the specified IDs.
+``--yandex-campaign-state``             ``campaign_state`` (list)            (Optional) Selects campaigns with the specified states. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
+``--yandex-campaign-status``            ``campaign_status`` (list)           (Optional) Selects campaigns with the specified statuses. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
+``--yandex-campaign-payment-status``    ``campaign_payment_status`` (list)   (Optional) Selects campaigns with the specified payment `statuses <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
+``--yandex-field-name``                 ``field_name`` (list)                Parameters to get that are common to all types of campaigns.
+======================================  ===================================  ========================================================================================================================================================================
 
 ========================
 Yandex Statistics Reader
@@ -1400,7 +1448,9 @@ The following command retrieves a performance report for all your campaigns, sin
 Command name
 ------------
 
-``read_yandex_statistics``
+CMD: ``read_yandex_statistics``
+
+JSON: ``yandex_statistics``
 
 ---------------
 Command options
@@ -1408,20 +1458,20 @@ Command options
 
 Detailed version `here <https://tech.yandex.com/direct/doc/reports/spec-docpage/>`__.
 
-==============================  =====================================================================================================================================================================
-Options                         Definition
-==============================  =====================================================================================================================================================================
-``--yandex-token``              Bear token that allows you to authenticate to the API
-``--yandex-report-language``    (Optional) Language of the report. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language>`__.
-``--yandex-filter``             (Optional) Filters on a particular field.
-``--yandex-max-rows``           (Optional) The maximum number of rows in the report.
-``--yandex-field-name``         Information you want to collect. Possible values can be found `here <https://tech.yandex.com/direct/doc/reports/fields-list-docpage/>`__.
-``--yandex-report-type``        Type of report. Linked to the fields you want to select.
-``--yandex-date-range``         Possible values can be found `here <https://tech.yandex.com/direct/doc/reports/period-docpage/>`__.
-``--yandex-include-vat``        Adds VAT to your expenses if set to True
-``--yandex-date-start``         (Optional) Selects data on a specific period of time. Combined with ``--yandex-date-stop`` and  ``--yandex-date-range`` set to CUSTOM_DATE.
-``--yandex-date-stop``          (Optional) Selects data on a specific period of time. Combined with ``--yandex-date-start`` and  ``--yandex-date-range`` set to CUSTOM_DATE.
-==============================  =====================================================================================================================================================================
+==============================  ====================  =====================================================================================================================================================================
+CMD Options                     JSON Options          Definition
+==============================  ====================  =====================================================================================================================================================================
+``--yandex-token``              ``token``             Bear token that allows you to authenticate to the API
+``--yandex-report-language``    ``report_language``   (Optional) Language of the report. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language>`__.
+``--yandex-filter``             ``filters`` (list)    (Optional) Filters on a particular field.
+``--yandex-max-rows``           ``max_rows``          (Optional) The maximum number of rows in the report.
+``--yandex-field-name``         ``fields`` (list)     Information you want to collect. Possible values can be found `here <https://tech.yandex.com/direct/doc/reports/fields-list-docpage/>`__.
+``--yandex-report-type``        ``report_type``       Type of report. Linked to the fields you want to select.
+``--yandex-date-range``         ``date_range``        Possible values can be found `here <https://tech.yandex.com/direct/doc/reports/period-docpage/>`__.
+``--yandex-include-vat``        ``include_vat``       Adds VAT to your expenses if set to True
+``--yandex-date-start``         ``date_start``        (Optional) Selects data on a specific period of time. Combined with ``--yandex-date-stop`` and  ``--yandex-date-range`` set to CUSTOM_DATE.
+``--yandex-date-stop``          ``date_stop``         (Optional) Selects data on a specific period of time. Combined with ``--yandex-date-start`` and  ``--yandex-date-range`` set to CUSTOM_DATE.
+==============================  ====================  =====================================================================================================================================================================
 
 ===============
 Troubleshooting

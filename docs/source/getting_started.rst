@@ -117,6 +117,12 @@ Launch your first NCK command
 
 Once this preliminary set-up is finalized, you can start using the application.
 
+There is two different way to use NCK commands. You can either build a full command by passing every argument you want or build a .json config file and pass it to NCK. Both ways are described below.
+
+---------------------
+NCK full command line
+---------------------
+
 NCK commands can be broken down into 3 parts:
 
 1. An entrypoint: all NCK commands are launched through the ``nck/entrypoint/entrypoint.py`` executable.
@@ -148,6 +154,39 @@ In the end, if we use ``write_console`` as a writer command, the combined NCK co
     python nck/entrypoint/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 You can now execute it into your terminal.
+
+----------------------------
+NCK with a .json config file
+----------------------------
+
+NCK can also use a .json config file to get all arguments. You can broke this command in 3 parts:
+
+1. An entrypoint: all NCK commands are launched through the ``nck/entrypoint/entrypoint_json.py`` executable.
+
+.. code-block:: shell
+
+    python nck/entrypoint/entrypoint_json.py
+
+2. A path argument ``--config-file`` that will give to the entrypoint where to find the .json file with all the information.
+
+3. A .json config file organized as followed, with one reader and at least one writer:
+
+.. code-block:: JSON
+
+    {
+      "option_name": "value",
+      "reader": {
+        "name": "reader_name",
+        "option_name": "value",
+        "option_name": ["value1", "value2"],
+      },
+      "writers": [
+        {
+          "name": "writer_name",
+          "option_name": "value",
+        },
+      ]
+    }
 
 **Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available** :ref:`readers:Readers` and :ref:`writers:Writers`.
 
