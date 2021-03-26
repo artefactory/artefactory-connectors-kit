@@ -188,6 +188,33 @@ NCK can also use a .json config file to get all arguments. You can broke this co
       ]
     }
 
+Here is a good example of a .json config file:
+
+.. code-block:: JSON
+
+    {
+      "reader": {
+        "name": "twitter",
+        "consumer_key": "****",
+        "consumer_secret": "****",
+        "access_token": "****",
+        "access_token_secret": "*****",
+        "account_id": "*****",
+        "report_type": "ANALYTICS",
+        "entity": "PROMOTED_TWEET",
+        "metric_group": ["ENGAGEMENT"],
+        "segmentation_type": "AGE",
+        "granularity": "DAY",
+        "start_date": "2021-02-25",
+        "end_date": "2021-03-04"
+      },
+      "writers": [
+        {
+          "name": "console"
+        }
+      ]
+    }
+
 **Now that you understand how NCK commands are structured, you can follow these links to find the full documentation on available** :ref:`readers:Readers` and :ref:`writers:Writers`.
 
 =====================
