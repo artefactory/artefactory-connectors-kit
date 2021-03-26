@@ -1419,11 +1419,11 @@ Command options
 CMD Options                             JSON Options                         Definition
 ======================================  ===================================  ========================================================================================================================================================================
 ``--yandex-token``                      ``token``                            Bear token that allows you to authenticate to the API
-``--yandex-campaign-id``                ``campaign_id`` (list)               (Optional) Selects campaigns with the specified IDs.
-``--yandex-campaign-state``             ``campaign_state`` (list)            (Optional) Selects campaigns with the specified states. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
-``--yandex-campaign-status``            ``campaign_status`` (list)           (Optional) Selects campaigns with the specified statuses. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
-``--yandex-campaign-payment-status``    ``campaign_payment_status`` (list)   (Optional) Selects campaigns with the specified payment `statuses <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
-``--yandex-field-name``                 ``field_name`` (list)                Parameters to get that are common to all types of campaigns.
+``--yandex-campaign-id``                ``campaign_ids`` (list)               (Optional) Selects campaigns with the specified IDs.
+``--yandex-campaign-state``             ``campaign_states`` (list)            (Optional) Selects campaigns with the specified states. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
+``--yandex-campaign-status``            ``campaign_statuses`` (list)           (Optional) Selects campaigns with the specified statuses. Possible values can be found `here <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
+``--yandex-campaign-payment-status``    ``campaign_payment_statuses`` (list)   (Optional) Selects campaigns with the specified payment `statuses <https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status>`__.
+``--yandex-field-name``                 ``fields`` (list)                Parameters to get that are common to all types of campaigns.
 ======================================  ===================================  ========================================================================================================================================================================
 
 ========================

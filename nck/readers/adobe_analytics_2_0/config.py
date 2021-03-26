@@ -31,7 +31,7 @@ class AdobeAnalytics20ReaderConfig(BaseModel):
     client_id: str
     client_secret: str
     tech_account_id: str
-    ord_id: str
+    org_id: str
     private_key: str
     global_company_id: str
     report_suite_id: str

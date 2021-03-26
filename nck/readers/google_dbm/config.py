@@ -34,7 +34,7 @@ POSSIBLE_REQUEST_TYPES = [
 
 
 class GoogleDBMReaderConfig(BaseModel):
-    access_toekn: str = None
+    access_token: str = None
     refresh_token: str
     client_id: str
     client_secret: str

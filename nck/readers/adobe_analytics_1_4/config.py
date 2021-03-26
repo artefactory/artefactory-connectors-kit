@@ -30,7 +30,7 @@ class AdobeAnalytics14ReaderConfig(BaseModel):
     client_id: str
     client_secret: str
     tech_account_id: str
-    ord_id: str
+    org_id: str
     private_key: str
     global_company_id: str
     list_report_suite: bool = False
