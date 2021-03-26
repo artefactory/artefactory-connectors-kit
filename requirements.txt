@@ -12,7 +12,7 @@ docutils==0.15.2
 facebook-business==8.0.5
 google-api-core==1.14.3
 google-api-python-client==1.4.2
-google-auth==1.7.2
+google-auth==1.28.0
 google-auth-httplib2==0.0.3
 google-cloud-bigquery==1.22.0
 google-cloud-core==1.1.0
@@ -48,7 +48,7 @@ radarly-py==1.0.10
 redis==3.3.11
 requests==2.22.0
 requests-toolbelt==0.9.1
-rsa==4.1
+rsa==4.7.2
 s3transfer==0.2.1
 six==1.13.0
 snakify==1.1.1
