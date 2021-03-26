@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import unittest
-from nck.streams.format_date_stream import FormatDateStream
+from ack.streams.format_date_stream import FormatDateStream
 import json
 
 
@@ -29,7 +29,7 @@ class TestStreamBaseClassMethods(unittest.TestCase):
 
     @staticmethod
     def data_generator(data):
-        for elem in data.split('\n'):
+        for elem in data.split("\n"):
             yield json.loads(elem)
 
     def test_usage(self):

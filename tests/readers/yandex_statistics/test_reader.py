@@ -20,7 +20,7 @@ import datetime
 import unittest
 
 import click
-from nck.readers.yandex_statistics.reader import YandexStatisticsReader
+from ack.readers.yandex_statistics.reader import YandexStatisticsReader
 from parameterized import parameterized
 
 

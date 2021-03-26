@@ -20,7 +20,7 @@ import datetime
 import unittest
 from unittest import mock
 
-from nck.readers.google_dbm.reader import GoogleDBMReader
+from ack.readers.google_dbm.reader import GoogleDBMReader
 
 
 class TestGoogleDBMReader(unittest.TestCase):

@@ -19,12 +19,12 @@ Quickstart
 The following command would allow you to:
 
 - write output stream records to a blob named ``google_analytics_report_2020-01-01.njson``
-- under the Amazon S3 bucket ``nck_extracts``
-- organized according to the following path: ``nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson``
+- under the Amazon S3 bucket ``ack_extracts``
+- organized according to the following path: ``ack_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson``
 
 .. code-block:: shell
 
-    write_s3 --s3-bucket-name nck_extracts --s3-prefix FR/google_analytics --s3-filename google_analytics_report_2020-01-01.njson --s3-bucket-region <BUCKET_REGION> --s3-access-key-id <ACCESS_KEY_ID> --s3-access-key-secret <ACCESS_KEY_SECRET>
+    write_s3 --s3-bucket-name ack_extracts --s3-prefix FR/google_analytics --s3-filename google_analytics_report_2020-01-01.njson --s3-bucket-region <BUCKET_REGION> --s3-access-key-id <ACCESS_KEY_ID> --s3-access-key-secret <ACCESS_KEY_SECRET>
 
 ------------
 Command name
@@ -60,13 +60,13 @@ Quickstart
 The following command would allow you to:
 
 - store output stream records into the BigQuery table ``google_analytics``
-- located under the BigQuery dataset ``nck``
+- located under the BigQuery dataset ``ack``
 
-As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket ``nck_extracts``.
+As a preliminary step, stream data would be uploaded into a temporary blob located under the Cloud Storage bucket ``ack_extracts``.
 
 .. code-block:: shell
 
-    write bq --bq-dataset nck --bq-table google_analytics --bq-bucket nck-extracts
+    write bq --bq-dataset ack --bq-table google_analytics --bq-bucket ack-extracts
 
 ------------
 Command name
@@ -103,12 +103,12 @@ Quickstart
 The following command would allow you to:
 
 - write output stream records to a blob named ``google_analytics_report_2020-01-01.njson``
-- located under the Cloud Storage bucket ``nck_extracts``
-- organized according to the following path: ``nck_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson``
+- located under the Cloud Storage bucket ``ack_extracts``
+- organized according to the following path: ``ack_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson``
 
 .. code-block:: shell
 
-    write_gcs --gcs-project-id <GCP_PROJECT_ID> --gcs-bucket nck_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
+    write_gcs --gcs-project-id <GCP_PROJECT_ID> --gcs-bucket ack_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
 
 ------------
 Command name

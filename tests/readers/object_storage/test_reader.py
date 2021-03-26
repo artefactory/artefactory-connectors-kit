@@ -21,7 +21,7 @@ import io
 import json
 from unittest import TestCase, mock
 
-from nck.readers.object_storage.reader import ObjectStorageReader
+from ack.readers.object_storage.reader import ObjectStorageReader
 from parameterized import parameterized
 
 mock_csv_names = ["a.csv", "a.njson", "b.csv", "b.njson"]
@@ -76,8 +76,8 @@ def mock_get_key(self, _object, **kwargs):
     return _object[0]
 
 
-@mock.patch("nck.readers.object_storage.reader.ObjectStorageReader.create_client")
-@mock.patch("nck.readers.object_storage.reader.ObjectStorageReader.create_bucket")
+@mock.patch("ack.readers.object_storage.reader.ObjectStorageReader.create_client")
+@mock.patch("ack.readers.object_storage.reader.ObjectStorageReader.create_bucket")
 @mock.patch.object(ObjectStorageReader, "download_object_to_file", write_to_file)
 @mock.patch.object(ObjectStorageReader, "to_object", mock_to_object)
 @mock.patch.object(ObjectStorageReader, "get_timestamp", mock_get_timestamp)

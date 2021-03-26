@@ -114,7 +114,7 @@ tmp/
 .idea/
 credentials/*
 
-.nck.egg-info
+.ack.egg-info
 .DS_Store
 
 # Pipenv

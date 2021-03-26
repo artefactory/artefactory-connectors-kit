@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import unittest
-from nck.streams.stream import Stream
+from ack.streams.stream import Stream
 
 
 class TestStreamBaseClassMethods(unittest.TestCase):

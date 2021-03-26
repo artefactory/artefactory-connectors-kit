@@ -55,9 +55,9 @@ HTML_BODY = (
 CONTENT_DCT = {
     "id": "00001",
     "type": "page",
-    "title": "Making API requests with NCK",
+    "title": "Making API requests with ACK",
     "space": {"name": "How To Guides"},
-    "metadata": {"labels": {"results": [{"name": "nck"}, {"name": "api"}]}},
+    "metadata": {"labels": {"results": [{"name": "ack"}, {"name": "api"}]}},
     "_links": {"self": "https://your-domain.com/wiki/rest/api/content/00001", "tinyui": "/x/aBcD"},
     "body": {"storage": {"value": HTML_BODY}},
 }
@@ -88,25 +88,25 @@ EXPECTED_CLIENT_COMPLETION = {
 
 class CustomFieldsTest(TestCase):
     def test__get_tiny_link(self):
-        from nck.readers.confluence.helper import _get_tiny_link
+        from ack.readers.confluence.helper import _get_tiny_link
 
         field_value = {"self": "https://your-domain.com/wiki/rest/api/content/00001", "tinyui": "/x/aBcD"}
         expected = "https://your-domain.com/wiki/x/aBcD"
         self.assertEqual(_get_tiny_link(field_value), expected)
 
-    @parameterized.expand([([{"name": "nck"}, {"name": "api"}], "name", "nck|api"), ([], "name", "")])
+    @parameterized.expand([([{"name": "ack"}, {"name": "api"}], "name", "ack|api"), ([], "name", "")])
     def test__get_key_values_from_list_of_dct(self, field_value, key, expected):
-        from nck.readers.confluence.helper import _get_key_values_from_list_of_dct
+        from ack.readers.confluence.helper import _get_key_values_from_list_of_dct
 
         self.assertEqual(_get_key_values_from_list_of_dct(field_value, key), expected)
 
     def test__get_client_properties(self):
-        from nck.readers.confluence.helper import _get_client_properties
+        from ack.readers.confluence.helper import _get_client_properties
 
         self.assertDictEqual(_get_client_properties(HTML_BODY), EXPECTED_CLIENT_PROPERTIES)
 
     def test__get_client_completion(self):
-        from nck.readers.confluence.helper import _get_client_completion
+        from ack.readers.confluence.helper import _get_client_completion
 
         self.assertDictEqual(_get_client_completion(HTML_BODY), EXPECTED_CLIENT_COMPLETION)
 
@@ -129,7 +129,7 @@ class CustomFieldsTest(TestCase):
         ]
     )
     def test__get_section_by_title(self, html_body, expected):
-        from nck.readers.confluence.helper import _get_section_by_title
+        from ack.readers.confluence.helper import _get_section_by_title
 
         searched_title = "APPROACH"
         html_soup = BeautifulSoup(html_body, "lxml")
@@ -139,7 +139,7 @@ class CustomFieldsTest(TestCase):
 
 class DictToCleanTest(TestCase):
     def test__clean(self):
-        from nck.readers.confluence.helper import DictToClean
+        from ack.readers.confluence.helper import DictToClean
 
         dct = {"CLIENT COMPANY": "Michelin", "SCOPE": "France", "TEAM SIZE": 10}
         expected_keys = ["CLIENT COMPANY", "AMOUNT SOLD", "SCOPE"]
@@ -156,46 +156,46 @@ class ParseResponseTest(TestCase):
         [("title", ["title"]), ("space.name", ["space", "name"]), ("label_names", ["metadata", "labels", "results"])]
     )
     def test__get_field_path(self, field, expected):
-        from nck.readers.confluence.helper import _get_field_path
+        from ack.readers.confluence.helper import _get_field_path
 
         self.assertListEqual(_get_field_path(field), expected)
 
     @parameterized.expand(
         [
-            (["title"], "Making API requests with NCK"),
+            (["title"], "Making API requests with ACK"),
             (["space", "name"], "How To Guides"),
-            (["metadata", "labels"], {"results": [{"name": "nck"}, {"name": "api"}]}),
+            (["metadata", "labels"], {"results": [{"name": "ack"}, {"name": "api"}]}),
             (["invalid_key"], None),
         ]
     )
     def test__get_field_value(self, field_path, expected):
-        from nck.readers.confluence.helper import _get_field_value
+        from ack.readers.confluence.helper import _get_field_value
 
         self.assertEqual(_get_field_value(CONTENT_DCT, field_path), expected)
 
     @parameterized.expand(
         [
-            ("title", "Making API requests with NCK", {"title": "Making API requests with NCK"}),
+            ("title", "Making API requests with ACK", {"title": "Making API requests with ACK"}),
             ("space.name", "How To Guides", {"space.name": "How To Guides"}),
-            ("label_names", [{"name": "nck"}, {"name": "api"}], {"label_names": "nck|api"}),
+            ("label_names", [{"name": "ack"}, {"name": "api"}], {"label_names": "ack|api"}),
         ]
     )
     def test__format_field_as_dct(self, field, field_value, expected):
-        from nck.readers.confluence.helper import _format_field_as_dct
+        from ack.readers.confluence.helper import _format_field_as_dct
 
         self.assertDictEqual(_format_field_as_dct(field, field_value), expected)
 
     def test__parse_response(self):
-        from nck.readers.confluence.helper import parse_response
+        from ack.readers.confluence.helper import parse_response
 
         raw_response = {
             "results": [
                 {
                     "id": "00001",
                     "type": "page",
-                    "title": "Making API requests with NCK",
+                    "title": "Making API requests with ACK",
                     "space": {"name": "How To Guides"},
-                    "metadata": {"labels": {"results": [{"name": "nck"}, {"name": "api"}]}},
+                    "metadata": {"labels": {"results": [{"name": "ack"}, {"name": "api"}]}},
                 },
                 {
                     "id": "00002",
@@ -215,7 +215,7 @@ class ParseResponseTest(TestCase):
         }
         fields = ["title", "space.name", "label_names"]
         expected = [
-            {"title": "Making API requests with NCK", "space.name": "How To Guides", "label_names": "nck|api"},
+            {"title": "Making API requests with ACK", "space.name": "How To Guides", "label_names": "ack|api"},
             {"title": "Writting a Client Case", "space.name": "How To Guides", "label_names": "confluence"},
             {"title": "Developping with Github", "space.name": "How To Guides", "label_names": "git"},
         ]
@@ -225,6 +225,6 @@ class ParseResponseTest(TestCase):
 
     @parameterized.expand([("\u2705 Title with \ud83d\udd36 emoji \ud83d\udd34", "Title with emoji"), (0, 0)])
     def test__decode(self, raw_value, expected):
-        from nck.readers.confluence.helper import _decode
+        from ack.readers.confluence.helper import _decode
 
         self.assertEqual(_decode(raw_value), expected)
