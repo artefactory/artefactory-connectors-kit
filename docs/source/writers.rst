@@ -125,6 +125,43 @@ Options                         Definition
 ``--gcs-file-name``             Cloud Storage blob name
 ==============================  ==============================
 
+=========================
+Azure Blob Storage Writer
+=========================
+
+----------
+Quickstart
+----------
+
+The following command would allow you to:
+
+- write output stream records to a blob named ``azure_report_2020-01-01.njson``
+- located under the container ``ack_extracts``
+- organized according to the following path: ``ack_extracts/FR/analytics/azure_report_2020-01-01.njson``
+
+.. code-block:: shell
+
+    write_azure_blob --azure-blob-connection-string <CONNECTION_STRING> --azure-blob-container ack_extracts --azure-prefix FR/analytics --gcs-filename azure_report_2020-01-01.njson
+
+------------
+Command name
+------------
+
+``write_azure_blob``
+
+---------------
+Command options
+---------------
+
+====================================  =====================================================================================================================
+Options                               Definition
+====================================  =====================================================================================================================
+``--azure-blob-connection-string``    Azure connection string, if not given it will try to get the environment variable 'AZURE_STORAGE_CONNECTION_STRING'
+``--azure-blob-container``            Azure Storage container name
+``--azure-blob-prefix``               Azure Storage blob prefix
+``--azure-blob-file-name``            Azure Storage blob name
+====================================  =====================================================================================================================
+
 ============
 Local Writer
 ============
