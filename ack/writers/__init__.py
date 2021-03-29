@@ -23,7 +23,8 @@ from ack.writers.console.cli import console
 from ack.writers.google_bigquery.cli import google_bigquery
 from ack.writers.google_cloud_storage.cli import google_cloud_storage
 from ack.writers.local.cli import local
+from ack.writers.azure_blob_storage.cli import azure_blob_storage
 
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local]
+writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local, azure_blob_storage]
 
 __all__ = ["writers", "Writer"]
