@@ -256,8 +256,8 @@ To create a new reader, you should:
     --- <SOURCE_NAME>/
     ---- cli.py
     ---- reader.py
+    ---- config.py
     ---- helper.py # Optional
-    ---- config.py # Optional
 
 ``cli.py``
 
@@ -273,23 +273,33 @@ This module should implement a reader class:
   - Class attributes should be the previously defined click options.
   - The class should have a ``read()`` method, yielding a stream object. This stream object can be chosen from `available stream classes <https://github.com/artefactory/artefactory-connectors-kit/tree/dev/ack/streams>`__, and has 2 attributes: a stream name and a source generator function named ``result_generator()``, yielding individual source records.
 
+``config.py``
+
+This module gathers all configuration variables.
+
+In addition, it's also managing reader's data validation thanks to Pydantic. Each reader must have a configuration class complying with:
+
+    - Class name should be ``<ReaderName>Config()``.
+    - It should inherit from ``BaseModel`` from Pydantic.
+    - Each class attribute should be declared with its name, its type and its default value if the attribute isn't required.
+    - If the reader has date inputs that follow the format 'YYYY-MM-DD', the class should have a ``@validator`` function to support this format (an example can be found in some readers as ``AdobeAnalytics14Reader``).
+    - If some attributes need additional processing, other ``@validator`` functions should be created for each of them.
+
 ``helper.py`` (Optional)
 
 This module gathers all helper functions used in the ``reader.py`` module.
-
-``config.py`` (Optional)
-
-This module gathers all configuration variables.
 
 2. In parallell, create unit tests for your methods under the ``tests/`` directory
 
 3. Add your click-decorated reader function to the ``ack/readers/__init__.py`` file
 
-4. Complete the documentation:
+4. Add your reader class and your config class to the ``ack/readers/readers_classes.py`` file as ``(ClassReader, ClassConfig)``
+
+5. Complete the documentation:
 
     - Add your reader to the list of existing readers in the :ref:`overview:Available Connectors` section.
     - Add your reader to the list of existing readers in the repo's ``./README.md``.
-    - Create dedicated documentation for your reader CLI command on the :ref:`readers:Readers` page. It should include the followings sections: *Source API - How to obtain credentials - Quickstart - Command name - Command options*
+    - Create dedicated documentation for your reader CLI and JSON command on the :ref:`readers:Readers` page. It should include the followings sections: *Source API - How to obtain credentials - Quickstart - Command name - Command options*
 
 ---------------------------
 How to develop a new stream
@@ -321,8 +331,8 @@ To develop a new writer, you should:
     --- <DESTINATION_NAME>/
     ---- cli.py
     ---- writer.py
-    ---- helper.py # Optional
     ---- config.py # Optional
+    ---- helper.py # Optional
 
 ``cli.py``
 
@@ -338,20 +348,29 @@ This module should implement a writer class:
   - Class attributes should be the previously defined click options.
   - The class should have a ``write()`` method, writing the stream object to the destination.
 
-``helper.py`` (Optional)
-
-This module gathers all helper functions used in the ``writer.py`` module.
-
 ``config.py`` (Optional)
 
 This module gathers all configuration variables.
+
+In addition, it's also managing reader's data validation thanks to Pydantic. Each writer needing attributes to work, must have a configuration class complying with:
+
+    - Class name should be ``<WriterName>Config()``.
+    - It should inherit from ``BaseModel`` from Pydantic.
+    - Each class attribute should be declared with its name, its type and its default value if the attribute isn't required.
+    - If some attributes need additional processing, other ``@validator`` functions should be created for each of them.
+
+``helper.py`` (Optional)
+
+This module gathers all helper functions used in the ``writer.py`` module.
 
 2. In parallell, create unit tests for your methods under the ``tests/`` directory
 
 3. Add your click-decorated writer function to the ``ack/writers/__init__.py`` file
 
-4. Complete the documentation:
+4. Add your writer class and your config class to the ``ack/writers/writers_classes.py`` file as ``(ClassWriter, ClassConfig)``. If there is no config class, it should be ``(ClassWriter,)``
+
+5. Complete the documentation:
 
     - Add your writer to the list of existing writers in the :ref:`overview:Available Connectors` section.
     - Add your reader to the list of existing readers in the repo's ``./README.md``.
-    - Create dedicated documentation for your writer CLI command on the :ref:`writers:Writers` page. It should include the followings sections: *Quickstart - Command name - Command options*
+    - Create dedicated documentation for your writer CLI and JSON command on the :ref:`writers:Writers` page. It should include the followings sections: *Quickstart - Command name - Command options*
