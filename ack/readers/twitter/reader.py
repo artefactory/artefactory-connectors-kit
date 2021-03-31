@@ -20,7 +20,7 @@ import traceback
 from datetime import datetime, timedelta
 from itertools import chain
 from click import ClickException
-from ack.config import logger
+from ack.config import LEVEL, logger
 from ack.readers.reader import Reader
 from ack.readers.twitter.config import (
     API_DATEFORMAT,
@@ -33,7 +33,7 @@ from ack.readers.twitter.config import (
 )
 from ack.streams.json_stream import JSONStream
 from ack.utils.date_handler import build_date_range
-from tenacity import retry, stop_after_delay, wait_exponential
+from tenacity import retry, stop_after_delay, wait_exponential, retry_if_exception_type, before_sleep_log
 from twitter_ads import API_VERSION
 from twitter_ads.client import Client
 
@@ -42,6 +42,7 @@ from twitter_ads.creative import CardsFetch
 from twitter_ads.cursor import Cursor
 from twitter_ads.http import Request
 from twitter_ads.utils import split_list
+from twitter_ads.error import RateLimit
 
 
 class TwitterReader(Reader):
@@ -208,9 +209,7 @@ class TwitterReader(Reader):
             for chunk_entity_ids in split_list(entity_ids, MAX_ENTITY_IDS_PER_JOB)
         ]
 
-    @retry(
-        wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000),
-    )
+    @retry(wait=wait_exponential(multiplier=1, min=60, max=3600), stop=stop_after_delay(36000))
     def _waiting_for_job_to_complete(self, job_id):
         """
         Retrying to get job_result until job status is 'COMPLETED'.
@@ -311,50 +310,54 @@ class TwitterReader(Reader):
             for entity_obj in ACCOUNT_CHILD_OBJECTS[self.entity]
         ]
 
-    @retry(stop=stop_after_delay(901))
     def get_cards_report(self):
         """
         Get 'ENTITY' report through the 'Creatives' endpoint of Twitter Ads API.
         Supported entities: CARD
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/
         """
-        for tweet in self.get_published_tweets():
-            try:
-                if "card_uri" in tweet:
-                    card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
-                    card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
-                    record = {
-                        "tweet_id": tweet["tweet_id"],
-                        "card_uri": tweet["card_uri"],
-                        **card_attributes,
-                    }
-                    yield record
-            except Exception:
-                ex_type, ex, tb = sys.exc_info()
-                logger.warning(f"Failed to ingest post with error: {ex}. Traceback: {traceback.print_tb(tb)}")
+        for tweet in self.get_published_tweets_generator():
+            if "card_uri" in tweet:
+                card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
+                card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
+                record = {
+                    "tweet_id": tweet["tweet_id"],
+                    "card_uri": tweet["card_uri"],
+                    **card_attributes,
+                }
+                yield record
+
+    @retry(wait=wait_exponential(multiplier=60, max=300), stop=stop_after_delay(1200))
+    def get_published_tweets_generator(self):
+        return self.get_published_tweets()
 
     def get_published_tweets(self):
         """
         Step 1 of 'ENTITY - CARD' report generation process:
-        Returns details on 'PUBLISHED' tweets, as a generator of dictionnaries
+        Returns details on 'PUBLISHED' tweets, as a generator of dictionaries
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/tweets
         """
+        try:
+            resource = f"/{API_VERSION}/accounts/{self.account.id}/tweets"
+            params = {"tweet_type": "PUBLISHED"}
+            request = Request(self.client, "get", resource, params=params)
+            yield from Cursor(None, request)
+        except RateLimit as error:
+            logger.info(error)
+            raise error
 
-        resource = f"/{API_VERSION}/accounts/{self.account.id}/tweets"
-        params = {"tweet_type": "PUBLISHED"}
-        request = Request(self.client, "get", resource, params=params)
-        yield from Cursor(None, request)
-
+    @retry(wait=wait_exponential(multiplier=60, max=600), stop=stop_after_delay(1200),
+           retry=retry_if_exception_type(RateLimit),
+           before_sleep=before_sleep_log(logger, LEVEL))
     def get_card_fetch(self, card_uri):
         """
         Step 2 of 'ENTITY - CARD' report generation process:
         Returns the CartFetch object associated with a specific card_uri
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/cards-fetch
         """
-
         return CardsFetch.load(self.account, card_uris=[card_uri]).first
 
-    @retry(stop=stop_after_delay(901))
+    @retry(wait=wait_exponential(multiplier=60, max=600), stop=stop_after_delay(3600), before_sleep=before_sleep_log(logger, LEVEL))
     def get_reach_report(self):
         """
         Get 'REACH' report through the 'Reach and Average Frequency' endpoint of Twitter Ads API.

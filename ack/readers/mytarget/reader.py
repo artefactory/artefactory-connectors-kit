@@ -170,7 +170,7 @@ class MyTargetReader(Reader):
 
     @retry(wait=wait_exponential(multiplier=1, min=1, max=600), stop=stop_after_delay(600))
     def __get_response(self, name_content: str, offset=0) -> Dict[str, Any]:
-        """This function makes a request to the api after building eveything necessary to get the
+        """This function makes a request to the api after building everything necessary to get the
         desired results for a specific need which is defined by name_content.
 
         Args:
