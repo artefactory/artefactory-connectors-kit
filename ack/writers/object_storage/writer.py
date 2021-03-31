@@ -19,7 +19,8 @@ import os
 
 from ack.config import logger
 from ack.writers import Writer
-from ack.utils.retry import retry
+
+# from ack.utils.retry import retry
 
 
 class ObjectStorageWriter(Writer):
@@ -36,7 +37,6 @@ class ObjectStorageWriter(Writer):
         final_name = os.path.join(self._prefix, self._file_name)
         self._write_aux(stream, final_name)
 
-    @retry
     def _write_aux(self, stream, final_name):
         self._create_blob(final_name, stream)
         logger.info(f"Wrote {final_name} file to {self._bucket_name} on  {self._platform} ...")
