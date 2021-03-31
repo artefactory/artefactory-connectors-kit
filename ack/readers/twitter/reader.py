@@ -346,9 +346,12 @@ class TwitterReader(Reader):
             logger.info(error)
             raise error
 
-    @retry(wait=wait_exponential(multiplier=60, max=600), stop=stop_after_delay(1200),
-           retry=retry_if_exception_type(RateLimit),
-           before_sleep=before_sleep_log(logger, LEVEL))
+    @retry(
+        wait=wait_exponential(multiplier=60, max=600),
+        stop=stop_after_delay(1200),
+        retry=retry_if_exception_type(RateLimit),
+        before_sleep=before_sleep_log(logger, LEVEL),
+    )
     def get_card_fetch(self, card_uri):
         """
         Step 2 of 'ENTITY - CARD' report generation process:
@@ -357,7 +360,11 @@ class TwitterReader(Reader):
         """
         return CardsFetch.load(self.account, card_uris=[card_uri]).first
 
-    @retry(wait=wait_exponential(multiplier=60, max=600), stop=stop_after_delay(3600), before_sleep=before_sleep_log(logger, LEVEL))
+    @retry(
+        wait=wait_exponential(multiplier=60, max=600),
+        stop=stop_after_delay(3600),
+        before_sleep=before_sleep_log(logger, LEVEL),
+    )
     def get_reach_report(self):
         """
         Get 'REACH' report through the 'Reach and Average Frequency' endpoint of Twitter Ads API.
