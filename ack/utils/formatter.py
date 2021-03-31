@@ -17,14 +17,14 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from typing import Dict, List
 
-from ack.readers import reader_classes, Reader
-from ack.writers import writer_classes, Writer
+from ack.entrypoints.json.readers import readers_classes, Reader
+from ack.entrypoints.json.writers import writers_classes, Writer
 
 
 def format_reader(reader: Dict) -> Reader:
     reader_name = reader.pop("name")
-    config = reader_classes[reader_name][1](**reader)
-    return reader_classes[reader_name][0](**config.dict())
+    config = readers_classes[reader_name][1](**reader)
+    return readers_classes[reader_name][0](**config.dict())
 
 
 def format_writers(writers: List[Dict]) -> [Writer]:
@@ -32,10 +32,10 @@ def format_writers(writers: List[Dict]) -> [Writer]:
     for writer in writers:
         writer_name = writer.pop("name")
         # if there is a config class/file => there is arguments
-        if len(writer_classes[writer_name]) > 1:
-            config = writer_classes[writer_name][1](**writer)
-            writers_list.append(writer_classes[writer_name][0](**config.dict()))
+        if len(writers_classes[writer_name]) > 1:
+            config = writers_classes[writer_name][1](**writer)
+            writers_list.append(writers_classes[writer_name][0](**config.dict()))
         else:
-            writers_list.append(writer_classes[writer_name][0]())
+            writers_list.append(writers_classes[writer_name][0]())
 
     return writers_list

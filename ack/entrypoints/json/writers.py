@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from ack.writers.writer import Writer
 from ack.writers.amazon_s3.config import AmazonS3WriterConfig
 from ack.writers.google_bigquery.config import GoogleBigQueryWriterConfig
 from ack.writers.google_cloud_storage.config import GoogleCloudStorageWriterConfig
@@ -26,10 +27,12 @@ from ack.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
 from ack.writers.local.writer import LocalWriter
 
 
-writer_classes = {
+writers_classes = {
     "amazon_s3": (AmazonS3Writer, AmazonS3WriterConfig),
     "console": (ConsoleWriter,),
     "google_bigquery": (GoogleBigQueryWriter, GoogleBigQueryWriterConfig),
     "google_cloud_storage": (GoogleCloudStorageWriter, GoogleCloudStorageWriterConfig),
     "local": (LocalWriter, LocalWriterConfig),
 }
+
+__all__ = ["writers_classes", "Writer"]

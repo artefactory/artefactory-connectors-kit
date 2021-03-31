@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from ack.readers.reader import Reader
 from ack.readers.adobe_analytics_1_4.config import AdobeAnalytics14ReaderConfig
 from ack.readers.adobe_analytics_2_0.config import AdobeAnalytics20ReaderConfig
 from ack.readers.amazon_s3.config import AmazonS3ReaderConfig
@@ -63,7 +64,7 @@ from ack.readers.yandex_statistics.config import YandexStatisticsReaderConfig
 from ack.readers.yandex_statistics.reader import YandexStatisticsReader
 
 
-reader_classes = {
+readers_classes = {
     "adobe_analytics_1_4": (AdobeAnalytics14Reader, AdobeAnalytics14ReaderConfig),
     "adobe_analytics_2_0": (AdobeAnalytics20Reader, AdobeAnalytics20ReaderConfig),
     "amazon_s3": (AmazonS3Reader, AmazonS3ReaderConfig),
@@ -88,3 +89,5 @@ reader_classes = {
     "yandex_campaign": (YandexCampaignReader, YandexCampaignReaderConfig),
     "yandex_statistics": (YandexStatisticsReader, YandexStatisticsReaderConfig),
 }
+
+__all__ = ["readers_classes", "Reader"]

@@ -18,7 +18,7 @@
 import os
 
 from ack.config import logger
-from ack.writers import Writer
+from ack.writers.writer import Writer
 from ack.utils.retry import retry
 
 
