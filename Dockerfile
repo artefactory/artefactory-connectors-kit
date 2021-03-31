@@ -11,4 +11,4 @@ ADD . /app
 
 ENV PYTHONPATH=${PYTHONPATH}:.
 
-ENTRYPOINT ["python", "ack/entrypoint/entrypoint.py"]
+ENTRYPOINT ["python", "ack/entrypoints/cli/main.py"]
