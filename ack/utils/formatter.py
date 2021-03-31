@@ -17,8 +17,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from typing import Dict, List
 
-from ack.entrypoints.json.readers import readers_classes, Reader
-from ack.entrypoints.json.writers import writers_classes, Writer
+from ack.readers.reader import Reader
+from ack.entrypoints.json.readers import readers_classes
+from ack.writers.writer import Writer
+from ack.entrypoints.json.writers import writers_classes
 
 
 def format_reader(reader: Dict) -> Reader:

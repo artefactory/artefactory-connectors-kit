@@ -17,8 +17,10 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import click
 
-from ack.entrypoints.cli.writers import writers, Writer
-from ack.entrypoints.cli.readers import readers, Reader
+from ack.writers.writer import Writer
+from ack.entrypoints.cli.writers import writers
+from ack.readers.reader import Reader
+from ack.entrypoints.cli.readers import readers
 from ack.streams.json_stream import JSONStream
 from ack.streams.normalized_json_stream import NormalizedJSONStream
 

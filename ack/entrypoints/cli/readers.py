@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from ack.readers.reader import Reader
 from ack.readers.adobe_analytics_1_4.cli import adobe_analytics_1_4
 from ack.readers.adobe_analytics_2_0.cli import adobe_analytics_2_0
 from ack.readers.amazon_s3.cli import amazon_s3
@@ -66,5 +65,3 @@ readers = [
     yandex_campaigns,
     yandex_statistics,
 ]
-
-__all__ = ["readers", "Reader"]
