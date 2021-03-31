@@ -125,11 +125,11 @@ ACK full command line
 
 ACK commands can be broken down into 3 parts:
 
-1. An entrypoint: all ACK commands are launched through the ``ack/entrypoint/entrypoint.py`` executable.
+1. An entrypoint: all ACK cli commands are launched through the ``ack/entrypoints/cli/main.py`` executable.
 
 .. code-block:: shell
 
-    python ack/entrypoint/entrypoint.py
+    python ack/entrypoints/cli/main.py
 
 2. A reader command, and its options: in the below example, we are reading Google Analytics data for the view <VIEW_ID>, retrieving sessions, pageviews and bounces by date from 2020-01-01 to 2020-01-03.
 
@@ -151,7 +151,7 @@ In the end, if we use ``write_console`` as a writer command, the combined ACK co
 
 .. code-block:: shell
 
-    python ack/entrypoint/entrypoint.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+    python ack/entrypoints/cli/main.py read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 You can now execute it into your terminal.
 
@@ -161,11 +161,11 @@ ACK with a .json config file
 
 ACK can also use a .json config file to get all arguments. You can broke this command in 3 parts:
 
-1. An entrypoint: all ACK commands are launched through the ``ack/entrypoint/entrypoint_json.py`` executable.
+1. An entrypoint: all ACK commands are launched through the ``ack/entrypoints/json/main.py`` executable.
 
 .. code-block:: shell
 
-    python ack/entrypoint/entrypoint_json.py
+    python ack/entrypoints/json/main.py
 
 2. A path argument ``--config-file`` that will give to the entrypoint where to find the .json file with all the information.
 
@@ -227,7 +227,7 @@ To normalize field names (i.e. replace any special character or white space by a
 
 .. code-block:: shell
 
-    python ack/entrypoint/entrypoint.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
+    python ack/entrypoints/cli/main.py --normalize-keys true read_ga --ga-client-id <CLIENT_ID> --ga-client-secret <CLIENT_SECRET> --ga-view-id <VIEW_ID> --ga-refresh-token <REFRESH_TOKEN> --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date 2020-01-01 --ga-end-date 2020-01-03 write_console
 
 ==========
 Contribute
@@ -291,9 +291,9 @@ This module gathers all helper functions used in the ``reader.py`` module.
 
 2. In parallell, create unit tests for your methods under the ``tests/`` directory
 
-3. Add your click-decorated reader function to the ``ack/readers/__init__.py`` file
+3. Add your click-decorated reader function to the ``ack/entrypoints/cli/readers.py`` file
 
-4. Add your reader class and your config class to the ``ack/readers/readers_classes.py`` file as ``(ClassReader, ClassConfig)``
+4. Add your reader class and your config class to the ``ack/entrypoints/json/readers.py`` file as ``(ClassReader, ClassConfig)``
 
 5. Complete the documentation:
 
@@ -365,9 +365,9 @@ This module gathers all helper functions used in the ``writer.py`` module.
 
 2. In parallell, create unit tests for your methods under the ``tests/`` directory
 
-3. Add your click-decorated writer function to the ``ack/writers/__init__.py`` file
+3. Add your click-decorated writer function to the ``ack/entrypoints/cli/writers.py`` file
 
-4. Add your writer class and your config class to the ``ack/writers/writers_classes.py`` file as ``(ClassWriter, ClassConfig)``. If there is no config class, it should be ``(ClassWriter,)``
+4. Add your writer class and your config class to the ``ack/entrypoints/json/writers.py`` file as ``(ClassWriter, ClassConfig)``. If there is no config class, it should be ``(ClassWriter,)``
 
 5. Complete the documentation:
 
