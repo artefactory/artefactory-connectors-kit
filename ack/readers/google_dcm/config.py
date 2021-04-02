@@ -15,6 +15,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from datetime import datetime
+from typing import List, Literal, Tuple
+
+from pydantic import BaseModel, validator
+
+from ack.utils.date_handler import DEFAULT_DATE_RANGE_FUNCTIONS
 
 ENCODING = "utf-8"
 PREFIX = "^dfa:"
@@ -48,3 +54,28 @@ DATE_RANGES = [
     "YEAR_TO_DATE",
     "YESTERDAY",
 ]
+
+
+class GoogleDCMReaderConfig(BaseModel):
+    access_token: str = None
+    client_id: str
+    client_secret: str
+    refresh_token: str
+    profile_ids: List[str]
+    report_name: str = "DCM Report"
+    report_type: Literal[tuple(REPORT_TYPES)] = REPORT_TYPES[0]
+    metrics: List[str] = []
+    dimensions: List[str] = []
+    start_date: datetime = None
+    end_date: datetime = None
+    filters: List[Tuple[str, str]] = []
+    date_range: Literal[tuple(DEFAULT_DATE_RANGE_FUNCTIONS.keys())] = None
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v

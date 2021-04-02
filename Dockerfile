@@ -1,4 +1,4 @@
-FROM python:3.7-slim-buster
+FROM python:3.8-slim-buster
 
 ENV PYTHONDONTWRITEBYTECODE True
 ENV PYTHONUNBUFFERED True
@@ -11,4 +11,4 @@ ADD . /app
 
 ENV PYTHONPATH=${PYTHONPATH}:.
 
-ENTRYPOINT ["python", "ack/entrypoint.py"]
+ENTRYPOINT ["python", "ack/entrypoints/cli/main.py"]

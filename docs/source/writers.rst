@@ -30,22 +30,24 @@ The following command would allow you to:
 Command name
 ------------
 
-``write_s3``
+CMD: ``write_s3``
+
+JSON: ``amazon_s3``
 
 ---------------
 Command options
 ---------------
 
-==============================  ==============================
-Options                         Definition
-==============================  ==============================
-``--s3-bucket-name``            S3 bucket name
-``--s3-prefix``                 S3 blob prefix
-``--s3-filename``               S3 blob name
-``--s3-bucket-region``          S3 bucket region
-``--s3-access-key-id``          S3 access key ID
-``--s3-access-key-secret``      S3 access key secret
-==============================  ==============================
+==============================  ======================  ==============================
+CMD Options                     JSON Options            Definition
+==============================  ======================  ==============================
+``--s3-bucket-name``            ``bucket_name``         S3 bucket name
+``--s3-prefix``                 ``prefix``              S3 blob prefix
+``--s3-filename``               ``filename``            S3 blob name
+``--s3-bucket-region``          ``bucket_region``       S3 bucket region
+``--s3-access-key-id``          ``access_key_id``       S3 access key ID
+``--s3-access-key-secret``      ``access_key_secret``   S3 access key secret
+==============================  ======================  ==============================
 
 ======================
 Google BigQuery Writer
@@ -70,23 +72,25 @@ As a preliminary step, stream data would be uploaded into a temporary blob locat
 Command name
 ------------
 
-``write_bq``
+CMD: ``write_bq``
+
+JSON: ``google_bigquery``
 
 ---------------
 Command options
 ---------------
 
-==============================  =================================================================================================================================================
-Options                         Definition
-==============================  =================================================================================================================================================
-``--bq-dataset``                BigQuery dataset name
-``--bq-table``                  BigQuery table name
-``--bq-write-disposition``      BigQuery write disposition. Possible values: TRUNCATE (default), APPEND
-``--bq-partition-column``       (Optional) Field to be used as a partition column (more information on `this page <https://cloud.google.com/bigquery/docs/partitioned-tables>`__)
-``--bq-location``               BigQuery dataset location. Possible values: EU (default), US.
-``--bq-bucket``                 Cloud Storage bucket in which stream data should be written as a first step, before being uploaded into the BigQuery destination table
-``--bq-keep-files``             False (default) if Cloud Storage blob should be deleted once the data has been uploaded into the BigQuery destination table, True otherwise
-==============================  =================================================================================================================================================
+==============================  ======================  =================================================================================================================================================
+CMD Options                     JSON Options            Definition
+==============================  ======================  =================================================================================================================================================
+``--bq-dataset``                ``dataset``             BigQuery dataset name
+``--bq-table``                  ``table``               BigQuery table name
+``--bq-write-disposition``      ``write-disposition``   BigQuery write disposition. Possible values: TRUNCATE (default), APPEND
+``--bq-partition-column``       ``partition-column``    (Optional) Field to be used as a partition column (more information on `this page <https://cloud.google.com/bigquery/docs/partitioned-tables>`__)
+``--bq-location``               ``location``            BigQuery dataset location. Possible values: EU (default), US.
+``--bq-bucket``                 ``bucket``              Cloud Storage bucket in which stream data should be written as a first step, before being uploaded into the BigQuery destination table
+``--bq-keep-files``             ``keep-files``          False (default) if Cloud Storage blob should be deleted once the data has been uploaded into the BigQuery destination table, True otherwise
+==============================  ======================  =================================================================================================================================================
 
 ===========================
 Google Cloud Storage Writer
@@ -110,20 +114,22 @@ The following command would allow you to:
 Command name
 ------------
 
-``write_gcs``
+CMD: ``write_gcs``
+
+JSON: ``google_cloud_storage``
 
 ---------------
 Command options
 ---------------
 
-==============================  ==============================
-Options                         Definition
-==============================  ==============================
-``--gcs-project-id``            GCP project ID
-``--gcs-bucket``                Cloud Storage bucket name
-``--gcs-prefix``                Cloud Storage blob prefix
-``--gcs-file-name``             Cloud Storage blob name
-==============================  ==============================
+==============================  ===============  ==============================
+CMD Options                     JSON Options     Definition
+==============================  ===============  ==============================
+``--gcs-project-id``            ``project_id``   GCP project ID
+``--gcs-bucket``                ``bucket``       Cloud Storage bucket name
+``--gcs-prefix``                ``prefix``       Cloud Storage blob prefix
+``--gcs-file-name``             ``file_name``    Cloud Storage blob name
+==============================  ===============  ==============================
 
 =========================
 Azure Blob Storage Writer
@@ -180,18 +186,20 @@ The following command would allow you to write a file ``google_analytics_report_
 Command name
 ------------
 
-``write_local``
+CMD: ``write_local``
+
+JSON: ``local``
 
 ---------------
 Command options
 ---------------
 
-==============================  ===============================================================
-Options                         Definition
-==============================  ===============================================================
-``--local-directory (-d)``      Directory in which the file should be stored
-``--local-file-name (-n)``      File name
-==============================  ===============================================================
+==============================  ==============  ===============================================================
+CMD Options                     JSON Options    Definition
+==============================  ==============  ===============================================================
+``--local-directory (-d)``      ``directory``   Directory in which the file should be stored
+``--local-file-name (-n)``      ``file_name``   File name
+==============================  ==============  ===============================================================
 
 ==============
 Console Writer
@@ -211,7 +219,9 @@ The following command would allow you to write stream output records directly in
 Command name
 ------------
 
-``write_console``
+CMD: ``write_console``
+
+JSON: ``console``
 
 ---------------
 Command options

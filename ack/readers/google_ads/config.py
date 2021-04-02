@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from datetime import datetime
+from typing import List, Literal
+
+from pydantic import BaseModel, validator
 
 DATEFORMAT = "%Y%m%d"
 ENCODING = "utf-8"
@@ -87,3 +91,31 @@ DATE_RANGE_TYPE_POSSIBLE_VALUES = [
     "LAST_WEEK_SUN_SAT",
     "CUSTOM_DATE",
 ]
+
+
+class GoogleAdsReaderConfig(BaseModel):
+    developer_token: str
+    client_id: str
+    client_secret: str
+    refresh_token: str
+    manager_id: str = None
+    client_customers_ids: List[str] = []
+    report_name: str = "CustomReport"
+    report_type: Literal[tuple(REPORT_TYPE_POSSIBLE_VALUES)] = REPORT_TYPE_POSSIBLE_VALUES[0]
+    date_range_type: Literal[tuple(DATE_RANGE_TYPE_POSSIBLE_VALUES)] = None
+    start_date: datetime = None
+    end_date: datetime = None
+    fields: List[str] = []
+    report_filter: str = "{}"
+    include_zero_impressions: bool = True
+    filter_on_video_campaigns: bool = False
+    include_client_customer_id: bool = False
+
+    @validator("start_date", "end_date", pre=True)
+    def date_format(cls, v):
+        if isinstance(v, str):
+            try:
+                return datetime.strptime(v, "%Y-%m-%d")
+            except ValueError:
+                raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
+        return v
