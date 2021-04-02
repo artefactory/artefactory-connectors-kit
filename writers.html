@@ -124,6 +124,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="to_go_further.html">To go further</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_to_v2.html">Migration to v2 from v1</a></li>
 </ul>
 
             
@@ -212,37 +213,46 @@
 </div>
 <div class="section" id="command-name">
 <h3>Command name<a class="headerlink" href="#command-name" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">write_s3</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_s3</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">amazon_s3</span></code></p>
 </div>
 <div class="section" id="command-options">
 <h3>Command options<a class="headerlink" href="#command-options" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 37%" />
+<col style="width: 27%" />
+<col style="width: 37%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-bucket-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bucket_name</span></code></p></td>
 <td><p>S3 bucket name</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-prefix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code></p></td>
 <td><p>S3 blob prefix</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-filename</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filename</span></code></p></td>
 <td><p>S3 blob name</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-bucket-region</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bucket_region</span></code></p></td>
 <td><p>S3 bucket region</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-access-key-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_key_id</span></code></p></td>
 <td><p>S3 access key ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-access-key-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_key_secret</span></code></p></td>
 <td><p>S3 access key secret</p></td>
 </tr>
 </tbody>
@@ -265,40 +275,50 @@
 </div>
 <div class="section" id="id2">
 <h3>Command name<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">write_bq</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_bq</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_bigquery</span></code></p>
 </div>
 <div class="section" id="id3">
 <h3>Command options<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 17%" />
-<col style="width: 83%" />
+<col style="width: 15%" />
+<col style="width: 11%" />
+<col style="width: 74%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-dataset</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dataset</span></code></p></td>
 <td><p>BigQuery dataset name</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-table</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">table</span></code></p></td>
 <td><p>BigQuery table name</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-write-disposition</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">write-disposition</span></code></p></td>
 <td><p>BigQuery write disposition. Possible values: TRUNCATE (default), APPEND</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-partition-column</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">partition-column</span></code></p></td>
 <td><p>(Optional) Field to be used as a partition column (more information on <a class="reference external" href="https://cloud.google.com/bigquery/docs/partitioned-tables">this page</a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-location</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">location</span></code></p></td>
 <td><p>BigQuery dataset location. Possible values: EU (default), US.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-bucket</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bucket</span></code></p></td>
 <td><p>Cloud Storage bucket in which stream data should be written as a first step, before being uploaded into the BigQuery destination table</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bq-keep-files</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">keep-files</span></code></p></td>
 <td><p>False (default) if Cloud Storage blob should be deleted once the data has been uploaded into the BigQuery destination table, True otherwise</p></td>
 </tr>
 </tbody>
@@ -321,31 +341,38 @@
 </div>
 <div class="section" id="id5">
 <h3>Command name<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">write_gcs</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_gcs</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_cloud_storage</span></code></p>
 </div>
 <div class="section" id="id6">
 <h3>Command options<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
+<col style="width: 40%" />
+<col style="width: 20%" />
+<col style="width: 40%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-project-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
 <td><p>GCP project ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-bucket</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bucket</span></code></p></td>
 <td><p>Cloud Storage bucket name</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-prefix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code></p></td>
 <td><p>Cloud Storage blob prefix</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-file-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code></p></td>
 <td><p>Cloud Storage blob name</p></td>
 </tr>
 </tbody>
@@ -363,25 +390,30 @@
 </div>
 <div class="section" id="id8">
 <h3>Command name<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">write_local</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_local</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">local</span></code></p>
 </div>
 <div class="section" id="id9">
 <h3>Command options<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 32%" />
-<col style="width: 68%" />
+<col style="width: 28%" />
+<col style="width: 13%" />
+<col style="width: 59%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--local-directory</span> <span class="pre">(-d)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">directory</span></code></p></td>
 <td><p>Directory in which the file should be stored</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--local-file-name</span> <span class="pre">(-n)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code></p></td>
 <td><p>File name</p></td>
 </tr>
 </tbody>
@@ -399,7 +431,8 @@
 </div>
 <div class="section" id="id11">
 <h3>Command name<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">write_console</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_console</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">console</span></code></p>
 </div>
 <div class="section" id="id12">
 <h3>Command options<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>

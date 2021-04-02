@@ -236,32 +236,33 @@
 <li class="toctree-l3"><a class="reference internal" href="#id75">Source API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id76">How to obtain credentials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id77">Quickstart</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id78">Command options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id78">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id79">Command options</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#twitter-ads-reader">Twitter Ads Reader</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id79">Source API</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id80">How to obtain credentials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id81">Quickstart</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id82">Command name</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id83">Command options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id80">Source API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id81">How to obtain credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id82">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id83">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id84">Command options</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#yandex-readers">Yandex Readers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id84">Source API</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id85">How to obtain credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id85">Source API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id86">How to obtain credentials</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#yandex-campaign-reader">Yandex Campaign Reader</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id86">Quickstart</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id87">Command name</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id88">Command options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id87">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id88">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id89">Command options</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#yandex-statistics-reader">Yandex Statistics Reader</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id89">Quickstart</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id90">Command name</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id91">Command options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id90">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id91">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id92">Command options</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
@@ -270,6 +271,7 @@
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="writers.html">Writers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="to_go_further.html">To go further</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_to_v2.html">Migration to v2 from v1</a></li>
 </ul>
 
             
@@ -364,65 +366,81 @@
 <div class="section" id="quickstart">
 <h3>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h3>
 <p>Call example to Adobe Analytics Reader 1.4, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_adobe --adobe-client-id &lt;CLIENT_ID&gt; --adobe-client-secret &lt;CLIENT_SECRET&gt; --adobe-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-org-id &lt;ORG_ID&gt; --adobe-private-key &lt;PRIVATE_KEY&gt; --adobe-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date <span class="m">2020</span>-01-01 --adobe-end-date <span class="m">2020</span>-01-31 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_adobe --adobe-client-id &lt;CLIENT_ID&gt; --adobe-client-secret &lt;CLIENT_SECRET&gt; --adobe-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-org-id &lt;ORG_ID&gt; --adobe-private-key &lt;PRIVATE_KEY&gt; --adobe-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date <span class="m">2020</span>-01-01 --adobe-end-date <span class="m">2020</span>-01-31 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="command-name">
 <h3>Command name<a class="headerlink" href="#command-name" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_adobe</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_adobe</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">adobe_analytics_1_4</span></code></p>
 </div>
 <div class="section" id="command-options">
 <h3>Command options<a class="headerlink" href="#command-options" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 14%" />
-<col style="width: 86%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 75%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>Client ID, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>Client Secret, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-tech-account-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tech_account_id</span></code></p></td>
 <td><p>Technical Account ID, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-org-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">org_id</span></code></p></td>
 <td><p>Organization ID, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-private-key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">private_key</span></code></p></td>
 <td><p>Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-global-company-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">global_company_id</span></code></p></td>
 <td><p>Global Company ID (to be requested to <a class="reference external" href="https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md">Discovery API</a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-list-report-suite</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list_report_suite</span></code></p></td>
 <td><p>Should be set to True if you wish to request the list of available Adobe Report Suites (default: False). If set to True, the below parameters should be left empty.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-report-suite-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_suite_id</span></code></p></td>
 <td><p>ID of the requested Adobe Report Suite</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-report-element-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_element_id</span></code> (list)</p></td>
 <td><p>ID of the element (i.e. dimension) to include in the report</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-report-metric-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_metric_id</span></code> (list)</p></td>
 <td><p>ID of the metric to include in the report</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-date-granularity</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_granularity</span></code></p></td>
 <td><p>Granularity of the report. Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 </tbody>
@@ -446,62 +464,77 @@
 <div class="section" id="id2">
 <h3>Quickstart<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_adobe_2_0 --adobe-2-0-client-id &lt;CLIENT_ID&gt; --adobe-2-0-client-secret &lt;CLIENT_SECRET&gt; --adobe-2-0-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-2-0-org-id &lt;ORG_ID&gt; --adobe-2-0-private-key &lt;PRIVATE_KEY&gt; --adobe-2-0-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-2-0-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date <span class="m">2020</span>-01-01 --adobe-2-0-end-date <span class="m">2020</span>-01-31 --adobe-2-0-metric visits write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_adobe_2_0 --adobe-2-0-client-id &lt;CLIENT_ID&gt; --adobe-2-0-client-secret &lt;CLIENT_SECRET&gt; --adobe-2-0-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-2-0-org-id &lt;ORG_ID&gt; --adobe-2-0-private-key &lt;PRIVATE_KEY&gt; --adobe-2-0-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-2-0-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date <span class="m">2020</span>-01-01 --adobe-2-0-end-date <span class="m">2020</span>-01-31 --adobe-2-0-metric visits write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id3">
 <h3>Command name<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_adobe_2_0</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_adobe_2_0</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">adobe_analytics_2_0</span></code></p>
 </div>
 <div class="section" id="id4">
 <h3>Command options<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 84%" />
+<col style="width: 15%" />
+<col style="width: 10%" />
+<col style="width: 76%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>Client ID, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>Client Secret, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-tech-account-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tech_account_id</span></code></p></td>
 <td><p>Technical Account ID, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-org-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">org_id</span></code></p></td>
 <td><p>Organization ID, that you can find on Adobe Developer Console</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-private-key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">private_key</span></code></p></td>
 <td><p>Content of the private.key file, that you had to provide to create the integration. Make sure to enter the parameter in quotes, include headers, and indicate newlines as <code class="docutils literal notranslate"><span class="pre">\n</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-global-company-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">global_company_id</span></code></p></td>
 <td><p>Global Company ID (to be requested to <a class="reference external" href="https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md">Discovery API</a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-report-suite-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_suite_id</span></code></p></td>
 <td><p>ID of the requested Adobe Report Suite</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-dimension</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dimension</span></code> (list)</p></td>
 <td><p>Dimension to include in the report</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-metric</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">metric</span></code> (list)</p></td>
 <td><p>Metric to include in the report</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--adobe-2-0-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Date range. By default, not available in Adobe, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
@@ -532,44 +565,53 @@
 </pre></div>
 </div>
 <p>Once done, launch your S3 reader command. The following command retrieves the blobs located under the Amazon S3 bucket <code class="docutils literal notranslate"><span class="pre">daily_reports</span></code> and the blob prefix <code class="docutils literal notranslate"><span class="pre">FR/offline_sales/</span></code>.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offline_sales --s3-format csv write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_s3 --s3-bucket daily_reports --s3-prefix FR/offline_sales --s3-format csv write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id7">
 <h3>Command name<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_s3</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_s3</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">amazon_s3</span></code></p>
 </div>
 <div class="section" id="id8">
 <h3>Command options<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 7%" />
-<col style="width: 93%" />
+<col style="width: 4%" />
+<col style="width: 89%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-bucket</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bucket</span></code></p></td>
 <td><p>S3 bucket name</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-prefix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code> (list)</p></td>
 <td><p>S3 blob prefix. Several prefixes can be provided in a single command.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
 <td><p>S3 blob format. Possible values: csv, gz.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-dest-key-split</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dest_key_split</span></code></p></td>
 <td><p>Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: &lt;BLOB_PREFIX&gt;/&lt;BLOB_NAME&gt;). The reader splits the blob key on the “/” character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. Default: -1 (split on all occurences).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-csv-delimiter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">csv_delimiter</span></code></p></td>
 <td><p>Delimiter that should be used to read the .csv file. Default: ,</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--s3-csv-fieldnames</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fieldnames</span></code></p></td>
 <td><p>List of field names. If set to None (default), the values in the first row of .csv file will be used as field names.</p></td>
 </tr>
 </tbody>
@@ -586,44 +628,53 @@
 <h3>Quickstart<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <p>The Confluence Reader handles calls to the <strong>Get Content endpoint</strong> of Confluence Cloud REST API.</p>
 <p>The following command retrieves the titles, space names, tiny links and label names of all pages located under the Atlassian domain &lt;ATLASSIAN_DOMAIN&gt;, filtered on the spacekeys &lt;KEY_1&gt; and &lt;KEY_2&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_confluence --confluence-user-login &lt;USER_LOGIN&gt; --confluence-api-token &lt;API_TOKEN&gt; --confluence-atlassian-domain &lt;ATLASSIAN_DOMAIN&gt; --confluence-content-type <span class="s2">&quot;page&quot;</span> --confluence-field <span class="s2">&quot;title&quot;</span> --confluence-field <span class="s2">&quot;space.name&quot;</span> --confluence-field <span class="s2">&quot;tiny_link&quot;</span> --confluence-field <span class="s2">&quot;label_names&quot;</span> --confluence-spacekey &lt;KEY_1&gt; --confluence-spacekey &lt;KEY_2&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_confluence --confluence-user-login &lt;USER_LOGIN&gt; --confluence-api-token &lt;API_TOKEN&gt; --confluence-atlassian-domain &lt;ATLASSIAN_DOMAIN&gt; --confluence-content-type <span class="s2">&quot;page&quot;</span> --confluence-field <span class="s2">&quot;title&quot;</span> --confluence-field <span class="s2">&quot;space.name&quot;</span> --confluence-field <span class="s2">&quot;tiny_link&quot;</span> --confluence-field <span class="s2">&quot;label_names&quot;</span> --confluence-spacekey &lt;KEY_1&gt; --confluence-spacekey &lt;KEY_2&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id11">
 <h3>Command name<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_confluence</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_confluence</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">confluence</span></code></p>
 </div>
 <div class="section" id="id12">
 <h3>Command options<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 15%" />
-<col style="width: 85%" />
+<col style="width: 14%" />
+<col style="width: 9%" />
+<col style="width: 77%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-user-login</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">user_login</span></code></p></td>
 <td><p>User login associated with your Atlassian account</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-api-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">api_token</span></code></p></td>
 <td><p>API token associated with your Atlassian account (can be generated on <a class="reference external" href="https://id.atlassian.com/manage-profile/security/api-tokens">this page</a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-atlassian-domain</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">atlassian_domain</span></code></p></td>
 <td><p>Atlassian domain under which the content to request is located</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-content-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">content_type</span></code></p></td>
 <td><p>Type of content on which the report should be filtered. Possible values: page (default), blog_post.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-spacekey</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">spacekey</span></code> (list)</p></td>
 <td><p>(Optional) Space keys on which the report should be filtered</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--confluence-field</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">field</span></code> (list)</p></td>
 <td><p>Fields that should be included in the report (path.to.field.value or custom_field)</p></td>
 </tr>
 </tbody>
@@ -672,75 +723,93 @@
 <h3>Quickstart<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <p>The Facebook Marketing Reader handles calls to 2 endpoints of the Facebook Marketing API: <strong>Facebook Ad Insights</strong> (to retrieve performance data), and <strong>Facebook Ad Management</strong> (to retrieve configuration data).</p>
 <p><em>Example of Ad Insights Request</em></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt; --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions<span class="o">[</span>action_type:post_engagement<span class="o">]</span> --facebook-field actions<span class="o">[</span>action_type:video_view<span class="o">]</span> --facebook-field age --facebook-field gender --facebook-time-increment <span class="m">1</span> --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt; --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions<span class="o">[</span>action_type:post_engagement<span class="o">]</span> --facebook-field actions<span class="o">[</span>action_type:video_view<span class="o">]</span> --facebook-field age --facebook-field gender --facebook-time-increment <span class="m">1</span> --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Example of Ad Management Request</em></p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt;  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative<span class="o">[</span>id<span class="o">]</span> --facebook-add-date-to-report True --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2019</span>-01-01 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt;  --facebook-ad-insights False --facebook-level ad --facebook-field id --facebook-field creative<span class="o">[</span>id<span class="o">]</span> --facebook-add-date-to-report True --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2019</span>-01-01 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id15">
 <h3>Command name<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_facebook</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_facebook</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">facebook</span></code></p>
 </div>
 <div class="section" id="id16">
 <h3>Command options<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 13%" />
-<col style="width: 87%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 78%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-app-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app_id</span></code></p></td>
 <td><p>Facebook App ID. Not mandatory if Facebook Access Token is provided.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-app-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app_secret</span></code></p></td>
 <td><p>Facebook App Secret. Not mandatory if Facebook Access Token is provided.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>Facebook App Access Token.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-object-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object_type</span></code></p></td>
 <td><p>Nature of the root Facebook Object used to make the request. Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad, adset, campaign, account (default).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-object-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object_id</span></code> (list)</p></td>
 <td><p>ID of the root Facebook Object used to make the request.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-level</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">level</span></code></p></td>
 <td><p>Granularity of the response. Possible values: pixel (Ad Management requests only), creative (Ad Management requests only), ad (default), adset, campaign, account.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-ad-insights</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ad_insights</span></code></p></td>
 <td><p>True (default) if Ad Insights request, False if Ad Management request.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-field</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">field</span></code> (list)</p></td>
 <td><p>Fields to be retrieved.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD). This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-end-date</span></code></p></td>
-<td><p>Start date of the period to request (format: YYYY-MM-DD). This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end-date</span></code></p></td>
+<td><p>End date of the period to request (format: YYYY-MM-DD). This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-date-preset</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_preset</span></code></p></td>
 <td><p>Relative time range. Ignored if <code class="docutils literal notranslate"><span class="pre">--facebook-start-date</span></code> and <code class="docutils literal notranslate"><span class="pre">--facebook-end-date</span></code> are specified. This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-time-increment</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">time_increment</span></code></p></td>
 <td><p>Cuts the results between smaller time slices within the specified time range. This parameter is only relevant for Ad Insights Requests, and Ad Management requests at the Campaign, Adset and Ad levels.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-add-date-to-report</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">add_date_to_report</span></code></p></td>
 <td><p>True if you wish to add the date of the request to each response record, False otherwise (default).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-breakdown</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">breakdown</span></code> (list)</p></td>
 <td><p>How to break down the result. This parameter is only relevant for Ad Insights Requests.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--facebook-action-breakdown</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">action_breakdown</span></code> (list)</p></td>
 <td><p>How to break down action results. This parameter is only relevant for Ad Insights Requests.</p></td>
 </tr>
 </tbody>
@@ -780,7 +849,7 @@
 </tbody>
 </table>
 <ol class="arabic simple" start="2">
-<li><p>Format Facebook Marketing Reader response using <code class="docutils literal notranslate"><span class="pre">--facebook-fields</span></code></p></li>
+<li><p>Format Facebook Marketing Reader response using <code class="docutils literal notranslate"><span class="pre">--facebook-field</span></code></p></li>
 </ol>
 <p>2.1. The list of applicable fields can be found on the links below:</p>
 <ul class="simple">
@@ -871,74 +940,93 @@
 <div class="section" id="id19">
 <h3>Quickstart<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves insights about the Ads of <code class="docutils literal notranslate"><span class="pre">my_first_campaign</span></code> and <code class="docutils literal notranslate"><span class="pre">my_second_campaign</span></code> in the Google Ads Account &lt;CLIENT_CUSTOMER_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_googleads --googleads-developer-token &lt;DEVELOPER_TOKEN&gt; --googleads-client-id &lt;CLIENT_ID&gt; --googleads-client-secret &lt;CLIENT_SECRET&gt; --googleads-refresh-token &lt;REFRESH_TOKEN&gt; --googleads-client-customer-id &lt;XXX-XXX-XXXX CLIENT_CUSTOMER_ID&gt; --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter <span class="s2">&quot;{&#39;field&#39;:&#39;CampaignName&#39;,&#39;operator&#39;:&#39;IN&#39;,&#39;values&#39;:[&#39;my_first_campaign&#39;,&#39;my_second_campaign&#39;]}&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_googleads --googleads-developer-token &lt;DEVELOPER_TOKEN&gt; --googleads-client-id &lt;CLIENT_ID&gt; --googleads-client-secret &lt;CLIENT_SECRET&gt; --googleads-refresh-token &lt;REFRESH_TOKEN&gt; --googleads-client-customer-id &lt;XXX-XXX-XXXX CLIENT_CUSTOMER_ID&gt; --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter <span class="s2">&quot;{&#39;field&#39;:&#39;CampaignName&#39;,&#39;operator&#39;:&#39;IN&#39;,&#39;values&#39;:[&#39;my_first_campaign&#39;,&#39;my_second_campaign&#39;]}&quot;</span>
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id20">
 <h3>Command name<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_googleads</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_googleads</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_ads</span></code></p>
 </div>
 <div class="section" id="id21">
 <h3>Command options<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 17%" />
-<col style="width: 83%" />
+<col style="width: 15%" />
+<col style="width: 12%" />
+<col style="width: 73%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-developer-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">developer_token</span></code></p></td>
 <td><p>Company Developer token for Google Ads API</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>OAuth2 ID</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>OAuth2 secret</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Refresh token for OAuth2</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-manager-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">manager_id</span></code></p></td>
 <td><p>(Optional) Manager_Account_ID (XXX-XXX-XXXX identifier)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-client-customer-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_customer-ids</span></code> (list)</p></td>
 <td><p>GAds_Account_ID (ignored if a manager account ID was given)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-report-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_name</span></code></p></td>
 <td><p>(Optional) Name of your output stream (“Custom Report” by default)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-report-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_type</span></code></p></td>
 <td><p>Type of report to be called</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-date-range-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range_type</span></code></p></td>
 <td><p>Type of date range to apply (if “CUSTOM_RANGE”, a min and max date must be specified). Possible values can be found <a class="reference external" href="https://developers.google.com/adwords/api/docs/guides/reporting#date_ranges">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>(Optional) Start date for “CUSTOM_RANGE” date range (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>(Optional) End date for “CUSTOM_RANGE” date range (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-field</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fields</span></code> (list)</p></td>
 <td><p>Fields to include in the report</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-report-filter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_filter</span></code></p></td>
 <td><p>Filter to apply on a chosen field (Dictionary as String “{‘field’:,’operator’:,’values’:}”)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-include-zero-impressions</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">include_zero_impressions</span></code></p></td>
 <td><p>Boolean specifying whether or not rows with zero impressions should be included in the report</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-filter-on-video-campaigns</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filter_on_video_campaigns</span></code></p></td>
 <td><p>Boolean used to filter the report on Video Campaigns only (require CampaignId to be listed as a field)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--googleads-include-client-customer-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">include_client_customer_id</span></code></p></td>
 <td><p>Boolean used to add “AccountId” as a field in the output stream. AccountId is not available in the API, but is known since it’s a requirement to call the API (= Client Customer ID)</p></td>
 </tr>
 </tbody>
@@ -959,71 +1047,89 @@
 <div class="section" id="id23">
 <h3>Quickstart<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves sessions, pageviews and bounces volumes by date from 2020-01-01 to 2020-01-03, for the Analytics View &lt;VIEW_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id24">
 <h3>Command name<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_ga</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_ga</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_analytics</span></code></p>
 </div>
 <div class="section" id="id25">
 <h3>Command options<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 13%" />
-<col style="width: 87%" />
+<col style="width: 12%" />
+<col style="width: 8%" />
+<col style="width: 80%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>OAuth2 ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>OAuth2 secret</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>(Optional) Access token for OAuth2</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Refresh token for OAuth2</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-view-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">view_id</span></code> (list)</p></td>
 <td><p>Analytics View ID from which to retrieve data. See documentation <a class="reference external" href="https://support.google.com/analytics/answer/1009618">here</a> for a better understanding of Google Analytics hierrarchy.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-account-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">account_id</span></code> (list)</p></td>
 <td><p>Analytics Account ID from which to retrieve data. See documentation <a class="reference external" href="https://support.google.com/analytics/answer/1009618">here</a> for a better understanding of Google Analytics hierrarchy.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-dimension</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dimension</span></code> (list)</p></td>
 <td><p>Dimensions to include in the report (max 9). Possible values can be found <a class="reference external" href="https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-metric</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">metric</span></code> (list)</p></td>
 <td><p>Metrics to include in the report (min 1, max 10). Possible values can be found <a class="reference external" href="https://ga-dev-tools.appspot.com/dimensions-metrics-explorer/">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-segment-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">segment_id</span></code> (list)</p></td>
 <td><p>Segment ID of a built-in or custom segment (for example gaid::-3) on which report data should be segmented.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>&lt;START_DATE&gt; &lt;END_DATE&gt; of the period to request, specified as a unique argument (format: YYYY-MM-DD YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-day-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">day_range</span></code></p></td>
 <td><p>Relative time range. Possible values: PREVIOUS_DAY, LAST_30_DAYS, LAST_7_DAYS, LAST_90_DAYS.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-sampling-level</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sampling_level</span></code></p></td>
 <td><p>Desired sample size. See documentation <a class="reference external" href="https://support.google.com/analytics/answer/2637192">here</a> for a better understanding of Google Analytics sampling. Possible values: SMALL, DEFAULT, LARGE (default).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ga-add-view</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">add_view</span></code></p></td>
 <td><p>If set to True (default: False), adds a “ga:viewId” field to the output stream.</p></td>
 </tr>
 </tbody>
@@ -1042,7 +1148,7 @@
 <p>Follow these steps to set your credentials:</p>
 <ul class="simple">
 <li><p>In your GCP project, create a Service Account with a ‘Storage Object Viewer’ role</p></li>
-<li><p>Create a .json key for this Service Account, and download the key file locally</p></li>
+<li><p>Create a .JSON key for this Service Account, and download the key file locally</p></li>
 <li><p>Execute the following commands:</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">project_id</span><span class="o">=</span>&lt;GCP project ID&gt;
@@ -1050,44 +1156,53 @@
 </pre></div>
 </div>
 <p>Once done, launch your Google Cloud Storage reader command. The following command retrieves the blobs located under the Google Cloud Storage bucket <code class="docutils literal notranslate"><span class="pre">daily_reports</span></code> and the blob prefix <code class="docutils literal notranslate"><span class="pre">FR/offline_sales/</span></code>:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/offline_sales --gcs-format csv write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_gcs --gcs-bucket daily_reports --gcs-prefix FR/offline_sales --gcs-format csv write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id28">
 <h3>Command name<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_gcs</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_gcs</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_cloud_storage</span></code></p>
 </div>
 <div class="section" id="id29">
 <h3>Command options<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 7%" />
-<col style="width: 93%" />
+<col style="width: 4%" />
+<col style="width: 89%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-bucket</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bucket</span></code></p></td>
 <td><p>Cloud Storage bucket name</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-prefix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code> (list)</p></td>
 <td><p>Cloud Storage blob prefix. Several prefixes can be provided in a single command.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
 <td><p>Cloud Storage blob format. <em>Possible values: csv, gz</em></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-dest-key-split</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dest_key-split</span></code></p></td>
 <td><p>Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: &lt;BLOB_PREFIX&gt;/&lt;BLOB_NAME&gt;). The reader splits the blob key on the “/” character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. <em>Default: -1 (split on all occurences)</em></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-csv-delimiter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">csv_delimiter</span></code></p></td>
 <td><p>Delimiter that should be used to read the .csv file. <em>Default: ,</em></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gcs-csv-fieldnames</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">csv_fieldnames</span></code></p></td>
 <td><p>List of field names. If set to <em>None</em> (<em>default</em>), the values in the first row of .csv file will be used as field names.</p></td>
 </tr>
 </tbody>
@@ -1103,65 +1218,81 @@
 <div class="section" id="id31">
 <h3>Quickstart<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves impressions, clicks and cost volumes from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_dcm --dcm-client-id &lt;CLIENT_ID&gt; --dcm-client-secret &lt;CLIENT_SECRET&gt; --dcm-refresh-token &lt;REFRESH_TOKEN&gt; --dcm-profile-id &lt;PROFILE_ID&gt; --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date <span class="m">2020</span>-01-01 --dcm-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_dcm --dcm-client-id &lt;CLIENT_ID&gt; --dcm-client-secret &lt;CLIENT_SECRET&gt; --dcm-refresh-token &lt;REFRESH_TOKEN&gt; --dcm-profile-id &lt;PROFILE_ID&gt; --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date <span class="m">2020</span>-01-01 --dcm-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id32">
 <h3>Command name<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_dcm</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_dcm</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_dcm</span></code></p>
 </div>
 <div class="section" id="id33">
 <h3>Command options<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 8%" />
-<col style="width: 92%" />
+<col style="width: 7%" />
+<col style="width: 85%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>OAuth2 ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>OAuth2 secret</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>(Optional) Access token for OAuth2</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Refresh token for OAuth2</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-profile-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">profile_ids</span></code> (list)</p></td>
 <td><p>ID of the DFA user profile that has been granted permissions to the CM account for which you want to retrieve data. You should have 1 DFA user profile per CM account that you can access. The associated ID can be found directly on your Campaign Manager UI (when accessing your list of CM accounts, on the top right hand corner).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-report-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_name</span></code></p></td>
 <td><p>Name of the report, that will appear in CM UI.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-report-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_type</span></code></p></td>
 <td><p>Type of the report. Possible values: CROSS_DIMENSION_REACH, FLOODLIGHT, PATH_TO_CONVERSION, REACH, STANDARD.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-dimension</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dimensions</span></code> (list)</p></td>
 <td><p>Dimensions to include in the report. Possible values can be found <a class="reference external" href="https://developers.google.com/doubleclick-advertisers/v3.3/dimensions">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-metric</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">metrics</span></code> (list)</p></td>
 <td><p>Metrics to include in the report. Possible values can be found <a class="reference external" href="https://developers.google.com/doubleclick-advertisers/v3.3/dimensions">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-filter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filters</span></code> (list(tuple))</p></td>
 <td><p>&lt;FILTER_TYPE&gt; &lt;FILTER_VALUE&gt; association, used to narrow the scope of the report. For instance “dfa:advertiserId XXXXX” will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found <a class="reference external" href="https://developers.google.com/doubleclick-advertisers/v3.3/dimensions">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dcm-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Date range. By default, not available in DCM, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
@@ -1177,69 +1308,102 @@
 <div class="section" id="id35">
 <h3>Quickstart<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves impressions, clicks and cost volumes filtered on a specific &lt;ADVERTISER_ID&gt; from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_dbm --dbm-client-id &lt;CLIENT_ID&gt; --dbm-client-secret &lt;CLIENT_SECRET&gt; —dbm-refresh-token &lt;REFRESH_TOKEN&gt; —dbm-filter FILTER_ADVERTISER &lt;ADVERTISER_ID&gt; --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date <span class="m">2020</span>-01-01 --dbm-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_dbm --dbm-client-id &lt;CLIENT_ID&gt; --dbm-client-secret &lt;CLIENT_SECRET&gt; —dbm-refresh-token &lt;REFRESH_TOKEN&gt; —dbm-filter FILTER_ADVERTISER &lt;ADVERTISER_ID&gt; --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date <span class="m">2020</span>-01-01 --dbm-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id36">
 <h3>Command name<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_dbm</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_dbm</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_dbm</span></code></p>
 </div>
 <div class="section" id="id37">
 <h3>Command options<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 9%" />
-<col style="width: 91%" />
+<col style="width: 8%" />
+<col style="width: 7%" />
+<col style="width: 84%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>OAuth2 ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>OAuth2 secret</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>(Optional) Access token for OAuth2</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Refresh token for OAuth2</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-query-request-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_request_type</span></code></p></td>
 <td><p>Doubleclick Bid Manager API request type. Possible values: existing_query, custom_query, existing_query_report, custom_query_report, lineitems_objects, sdf_objects and list_reports.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-query-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_id</span></code></p></td>
 <td><p>Query ID.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-query-title</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_title</span></code></p></td>
 <td><p>Query title, used to name the reports generated from this query in DV360 UI.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-query-frequency</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_frequency</span></code></p></td>
 <td><p>How often the query is run. Possible values can be found <a class="reference external" href="https://developers.google.com/bid-manager/v1/queries#schedule.frequency">here</a>. Default: ONE_TIME.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-filter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filter</span></code> (list(tuple))</p></td>
 <td><p>&lt;FILTER_TYPE&gt; &lt;FILTER_VALUE&gt; association, used to narrow the scope of the report. For instance “FILTER_ADVERTISER XXXXX” will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found <a class="reference external" href="https://developers.google.com/bid-manager/v1/filters-metrics#filters)">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-query-dimension</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_dimension</span></code> (list)</p></td>
 <td><p>Dimensions to include in the report. Possible values can be found <a class="reference external" href="https://developers.google.com/bid-manager/v1/filters-metrics#filters">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-query-metric</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_metric</span></code> (list)</p></td>
 <td><p>Metrics to include in the report. Possible values can be found <a class="reference external" href="https://developers.google.com/bid-manager/v1/filters-metrics#metrics">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-query-param-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_param_type</span></code></p></td>
 <td><p>Report type. Possible values can be found <a class="reference external" href="https://developers.google.com/bid-manager/v1/queries#params.type">here</a>. Default: TYPE_TRUEVIEW.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-add-date-to-report</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">add_date_to_report</span></code></p></td>
+<td><p>Sometimes the date range on which metrics are computed is missing from the report. If this option is set to True (default: False), this range will be added.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-file-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">file_type</span></code> (list)</p></td>
+<td><p>File types</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-date-format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_format</span></code></p></td>
+<td><p>Add optional date format for the output stream. Follow the syntax of <a class="reference external" href="https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior">https://docs.python.org/3.8/library/datetime.html#strftime-strptime-behavior</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dbm-day-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">day_range</span></code></p></td>
+<td><p>Day range chosen across these values: PREVIOUS_DAY, LAST_30_DAYS, LAST_90_DAYS, LAST_7_DAYS, PREVIOUS_MONTH, PREVIOUS_WEEK</p></td>
 </tr>
 </tbody>
 </table>
@@ -1271,50 +1435,61 @@
 <div class="section" id="id40">
 <h3>Quickstart<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
 <p>Say you want to get a SDF file for all campaigns of a specific advertiser. You can run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_dv360 --dv360-client-id &lt;CLIENT_ID&gt; --dv360-client-secret &lt;CLIENT_SECRET&gt; --dv360-refresh-token &lt;REFRESH_TOKEN&gt; --dv360-access-token &lt;ACCESS_TOKEN&gt; --dv360-advertiser-id &lt;ADVERTISER_ID&gt; --dv360-filter-type <span class="s1">&#39;FILTER_TYPE_NONE&#39;</span> --dv360-file-type <span class="s1">&#39;FILE_TYPE_CAMPAIGN&#39;</span> write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_dv360 --dv360-client-id &lt;CLIENT_ID&gt; --dv360-client-secret &lt;CLIENT_SECRET&gt; --dv360-refresh-token &lt;REFRESH_TOKEN&gt; --dv360-access-token &lt;ACCESS_TOKEN&gt; --dv360-advertiser-id &lt;ADVERTISER_ID&gt; --dv360-filter-type <span class="s1">&#39;FILTER_TYPE_NONE&#39;</span> --dv360-file-type <span class="s1">&#39;FILE_TYPE_CAMPAIGN&#39;</span> write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id41">
 <h3>Command name<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_dv360</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_dv360</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_dv360</span></code></p>
 </div>
 <div class="section" id="id42">
 <h3>Command options<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 32%" />
-<col style="width: 68%" />
+<col style="width: 26%" />
+<col style="width: 18%" />
+<col style="width: 55%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>Access token you during the process of getting tokens</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Refresh token you during the process of getting tokens</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>Client ID you generated in the GCP environment</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>Client secret you generated in the GCP environment</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-advertiser-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">advertiser_id</span></code></p></td>
 <td><p>One of the advertiser IDs you have access to</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-request-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request_type</span></code></p></td>
 <td><p>Request type. Choose among ‘sdf_request’ and ‘creative_request’</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-file-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">file_type</span></code> (list)</p></td>
 <td><p>SDF level</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--dv360-filter-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filter_type</span></code></p></td>
 <td><p>SDF filter. Depends on the level.</p></td>
 </tr>
 </tbody>
@@ -1339,59 +1514,73 @@
 <div class="section" id="id45">
 <h3>Quickstart<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves insights about the URL &lt;SITE_URL&gt; from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_search_console --search-console-client-id &lt;CLIENT_ID&gt; --search-console-refresh-token &lt;REFRESH_TOKEN&gt; --search-console-site-url &lt;SITE_URL&gt; --search-console-dimensions country --search-console-dimensions device --search-console-start-date <span class="m">2020</span>-01-01 --search-console-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_search_console --search-console-client-id &lt;CLIENT_ID&gt; --search-console-refresh-token &lt;REFRESH_TOKEN&gt; --search-console-site-url &lt;SITE_URL&gt; --search-console-dimensions country --search-console-dimensions device --search-console-start-date <span class="m">2020</span>-01-01 --search-console-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id46">
 <h3>Command name<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_search_console</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_search_console</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_search_console</span></code></p>
 </div>
 <div class="section" id="id47">
 <h3>Command options<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 14%" />
-<col style="width: 86%" />
+<col style="width: 13%" />
+<col style="width: 8%" />
+<col style="width: 79%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>OAuth2 ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>OAuth2 secret</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>Access token for OAuth2</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Refresh token for OAuth2</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-dimensions</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dimensions</span></code> (list)</p></td>
 <td><p>Dimensions of the report. Possible values can be found <a class="reference external" href="https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-site-url</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">site_url</span></code></p></td>
 <td><p>Site URL whose performance you want to request</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Date range. By default, not available in Search Console, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-date-column</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_column</span></code></p></td>
 <td><p>If set to True, a date column will be included in the report</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--search-console-row-limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">row_limit</span></code></p></td>
 <td><p>Row number by report page</p></td>
 </tr>
 </tbody>
@@ -1416,65 +1605,81 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id50">
 <h3>Quickstart<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves insights about the Ads in the Search Ads 360 Account &lt;ADVERTISER_ID&gt; from the agency &lt;AGENCY_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_sa360 --sa360-client-id &lt;CLIENT_ID&gt; --sa360-client-secret &lt;CLIENT_SECRET&gt; --sa360-refresh-token &lt;REFRESH_TOKEN&gt; --sa360-agency-id &lt;AGENCY_ID&gt; --sa360-advertiser-id &lt;ADVERTISER_ID&gt; --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date <span class="m">2020</span>-01-01 --sa360-end-date <span class="m">2020</span>-01-01
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_sa360 --sa360-client-id &lt;CLIENT_ID&gt; --sa360-client-secret &lt;CLIENT_SECRET&gt; --sa360-refresh-token &lt;REFRESH_TOKEN&gt; --sa360-agency-id &lt;AGENCY_ID&gt; --sa360-advertiser-id &lt;ADVERTISER_ID&gt; --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date <span class="m">2020</span>-01-01 --sa360-end-date <span class="m">2020</span>-01-01
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id51">
 <h3>Command name<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_sa360</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_sa360</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_sa360</span></code></p>
 </div>
 <div class="section" id="id52">
 <h3>Command options<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 17%" />
-<col style="width: 83%" />
+<col style="width: 14%" />
+<col style="width: 13%" />
+<col style="width: 73%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>OAuth2 ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>OAuth2 secret</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>(Optional) Access token</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Refresh token</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-agency-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agency_id</span></code></p></td>
 <td><p>Agency ID to request in SA360</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-advertiser-id</span></code></p></td>
-<td><p>(Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">advertiser_ids</span></code> (list)</p></td>
+<td><p>Optional) Advertiser ids to request. If not provided, every advertiser of the agency will be requested</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-report-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_name</span></code></p></td>
 <td><p>(Optional) Name of the output report</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-report-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_type</span></code></p></td>
 <td><p>Type of the report to request. Possible values can be found <a class="reference external" href="https://developers.google.com/search-ads/v2/report-types">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-column</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">columns</span></code> (list)</p></td>
 <td><p>Dimensions and metrics to include in the report</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-saved-column</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">saved_columns</span></code> (list)</p></td>
 <td><p>(Optional) Saved columns to report. Documentation can be found <a class="reference external" href="https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--sa360-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Date range. By default, not available in SA360, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
@@ -1497,7 +1702,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <li><p>What data will you be accessing? &gt; Application data</p></li>
 <li><p>Are you planning to use this API with App Engine or Compute Engine? &gt; No, I’m not using them</p></li>
 </ul>
-<p>Click on <em>What credentials do I need</em> and complete the form. You will find the credentials you need in the .json file that will start downloading automatically right after.</p>
+<p>Click on <em>What credentials do I need</em> and complete the form. You will find the credentials you need in the .JSON file that will start downloading automatically right after.</p>
 </div>
 <div class="section" id="id55">
 <h3>Quickstart<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
@@ -1509,43 +1714,54 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </div>
 <div class="section" id="id56">
 <h3>Command name<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_gs</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_gs</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">google_sheets</span></code></p>
 </div>
 <div class="section" id="id57">
 <h3>Command options<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 84%" />
+<col style="width: 14%" />
+<col style="width: 10%" />
+<col style="width: 76%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-project-id</span></code></p></td>
-<td><p>Project ID that is given by Google services once you have created your project in the Google Cloud Console. You can retrieve it in the .json credential file.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p>Project ID that is given by Google services once you have created your project in the Google Cloud Console. You can retrieve it in the .JSON credential file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-private-key-id</span></code></p></td>
-<td><p>Private key ID given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">private_key_id</span></code></p></td>
+<td><p>Private key ID given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-private-key-path</span></code></p></td>
-<td><p>The path to the private key that is stored in a txt file. You can retrieve it first in the .json credential file.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">private_key_path</span></code></p></td>
+<td><p>The path to the private key that is stored in a txt file. You can retrieve it first in the .JSON credential file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-client-email</span></code></p></td>
-<td><p>Client e-mail given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_email</span></code></p></td>
+<td><p>Client e-mail given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-client-id</span></code></p></td>
-<td><p>Client ID given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
+<td><p>Client ID given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-client-cert</span></code></p></td>
-<td><p>Client certificate given by Google services once you have added credentials to the project. You can retrieve it in the .json credential file.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_cert</span></code></p></td>
+<td><p>Client certificate given by Google services once you have added credentials to the project. You can retrieve it in the .JSON credential file.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-file-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code></p></td>
 <td><p>The name you have given to your Google Sheet file</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--gs-page-number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">page_number</span></code></p></td>
 <td><p>The page number you want to access. The number pages starts at 0.</p></td>
 </tr>
 </tbody>
@@ -1567,51 +1783,61 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id60">
 <h3>Quickstart<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
 <p>Say you want to retrieve for all campaigns and its associated banners and stats of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;general&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;general&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
 </pre></div>
 </div>
 <p>If you just want to get the budget instead of the general statistics of each campaign you can try the following:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;budget&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;budget&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id61">
 <h3>Command name<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_mytarget</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_mytarget</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">mytarget</span></code></p>
 </div>
 <div class="section" id="id62">
 <h3>Command options<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 84%" />
+<col style="width: 15%" />
+<col style="width: 9%" />
+<col style="width: 76%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>Client ID you generated</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>Client secret you generated.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-refresh-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">refresh_token</span></code></p></td>
 <td><p>Secret token you retrieved during the process of getting tokens</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-request-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">request_type</span></code></p></td>
 <td><p>Type of report you want to retrieve: performance or budgets.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mytarget-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Date range. By default, not available in MyTarget, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
@@ -1627,65 +1853,81 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id63">
 <h3>Quickstart<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves all records from the table &lt;TABLE_NAME&gt; (equivalent to <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">&lt;TABLE_NAME&gt;</span></code>).</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_mysql --mysql-user &lt;DATABASE_USER&gt; --mysql-password &lt;DATABASE_PASSWORD&gt; --mysql-host &lt;DATABASE_HOST&gt; --mysql-port &lt;DATABASE_PORT&gt; --mysql-database &lt;DATABASE_NAME&gt; --mysql-table &lt;TABLE_NAME&gt; write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_mysql --mysql-user &lt;DATABASE_USER&gt; --mysql-password &lt;DATABASE_PASSWORD&gt; --mysql-host &lt;DATABASE_HOST&gt; --mysql-port &lt;DATABASE_PORT&gt; --mysql-database &lt;DATABASE_NAME&gt; --mysql-table &lt;TABLE_NAME&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id64">
 <h3>Command name<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_mysql</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_mysql</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">mysql</span></code></p>
 </div>
 <div class="section" id="id65">
 <h3>Command options<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 74%" />
+<col style="width: 22%" />
+<col style="width: 17%" />
+<col style="width: 61%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-user</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p></td>
 <td><p>Database user</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
 <td><p>Database password</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-host</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">host</span></code></p></td>
 <td><p>Database host</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-port</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
 <td><p>Database port</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-database</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">database</span></code></p></td>
 <td><p>Database name</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-query</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query</span></code></p></td>
 <td><p>SQL query (you must specify either a query or a table)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-query-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query-name</span></code></p></td>
 <td><p>SQL query name (required if you specify a query)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-table</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">table</span></code></p></td>
 <td><p>Database table on which you want to run a <cite>SELECT *</cite> query (you must specify either a query or a table)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-watermark-column</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">watermark-column</span></code></p></td>
 <td><p>Watermark column (required when using state management)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-watermark-init</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">watermark-init</span></code></p></td>
 <td><p>Initial watermark column value (required when using state management)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-redis-state-service-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">redis-state-service-name</span></code></p></td>
 <td><p>Redis state service hash name</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-redis-state-service-host</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">redis-state-service-host</span></code></p></td>
 <td><p>Redis state service host</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--mysql-redis-state-service-port</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">redis-state-service-port</span></code></p></td>
 <td><p>Redis state service port</p></td>
 </tr>
 </tbody>
@@ -1701,62 +1943,77 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id67">
 <h3>Quickstart<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves data from posts located under the project <code class="docutils literal notranslate"><span class="pre">&lt;PROJECT_ID&gt;</span></code> and associated to the focus IDs <code class="docutils literal notranslate"><span class="pre">00001</span></code> and <code class="docutils literal notranslate"><span class="pre">00002</span></code>, from 2020-01-01 to 2020-01-03.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_radarly --radarly-client-id &lt;CLIENT_ID&gt; --radarly-client-secret &lt;CLIENT_SECRET&gt; --radarly-pid &lt;PROJECT_ID&gt; --radarly-focus-id <span class="m">00001</span> --radarly-focus-id <span class="m">00002</span> --radarly-start-date <span class="m">2020</span>-01-01 --radarly-end-date <span class="m">2020</span>-01-03
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_radarly --radarly-client-id &lt;CLIENT_ID&gt; --radarly-client-secret &lt;CLIENT_SECRET&gt; --radarly-pid &lt;PROJECT_ID&gt; --radarly-focus-id <span class="m">00001</span> --radarly-focus-id <span class="m">00002</span> --radarly-start-date <span class="m">2020</span>-01-01 --radarly-end-date <span class="m">2020</span>-01-03
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
 <div class="section" id="id68">
 <h3>Command name<a class="headerlink" href="#id68" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_radarly</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_radarly</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">radarly</span></code></p>
 </div>
 <div class="section" id="id69">
 <h3>Command options<a class="headerlink" href="#id69" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 18%" />
-<col style="width: 82%" />
+<col style="width: 15%" />
+<col style="width: 13%" />
+<col style="width: 72%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-client-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_id</span></code></p></td>
 <td><p>Radarly Client ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-client-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">client_secret</span></code></p></td>
 <td><p>Radarly Client Secret</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-pid</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pid</span></code></p></td>
 <td><p>Radarly Project ID</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-focus-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">focus_id</span></code> (list)</p></td>
 <td><p>Focus IDs (several can be provided)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-api-request-limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">api_request_limit</span></code></p></td>
 <td><p>Max number of posts to be requested in a single API request</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-api-date-period-limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">api_date_period_limit</span></code></p></td>
 <td><p>Max number of posts to be requested in a single Search query</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-api-window</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">api_window</span></code></p></td>
 <td><p>Duration of the rate limit window</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-api-quaterly-posts-limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">api_quaterly_posts_limit</span></code></p></td>
 <td><p>Max number of posts to be requested over the rate limit window</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-api-throttle</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">api_throttle</span></code></p></td>
 <td><p>If set to True (default), forces the reader to abide by <a class="reference external" href="https://github.com/linkfluence/radarly-py/blob/master/docs/officialdoc/introduction/rates.rst">official API rate limits</a>, using the 2 above parameters.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--radarly-throttling-threshold-coefficient</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">throttling_threshold_coefficient</span></code></p></td>
 <td><p>Throttling threshold coefficient</p></td>
 </tr>
 </tbody>
@@ -1772,7 +2029,7 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <div class="section" id="id71">
 <h3>Quickstart<a class="headerlink" href="#id71" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves name field values from all Account records.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_salesforce --salesforce-consumer-key &lt;CONSUMER_KEY&gt; --salesforce-consumer-secret &lt;CONSUMER_SECRET&gt; --salesforce-user &lt;USERNAME&gt; --salesforce-password &lt;PASSWORD&gt; --salesforce-query <span class="s1">&#39;SELECT name FROM Account&#39;</span> --salesforce-query-name ack-account-name-query write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_salesforce --salesforce-consumer-key &lt;CONSUMER_KEY&gt; --salesforce-consumer-secret &lt;CONSUMER_SECRET&gt; --salesforce-user &lt;USERNAME&gt; --salesforce-password &lt;PASSWORD&gt; --salesforce-query <span class="s1">&#39;SELECT name FROM Account&#39;</span> --salesforce-query-name ack-account-name-query write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
@@ -1783,46 +2040,58 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </div>
 <div class="section" id="id73">
 <h3>Command name<a class="headerlink" href="#id73" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_salesforce</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_salesforce</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">salesforce</span></code></p>
 </div>
 <div class="section" id="id74">
 <h3>Command options<a class="headerlink" href="#id74" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 11%" />
-<col style="width: 89%" />
+<col style="width: 10%" />
+<col style="width: 6%" />
+<col style="width: 84%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-consumer-key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">consumer_key</span></code></p></td>
 <td><p>Client ID of your Salesforce Connected App</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-consumer-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">consumer_secret</span></code></p></td>
 <td><p>Client Secret of your Salesforce Connected App</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-user</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p></td>
 <td><p>Salesforce username</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
 <td><p>Salesforce password</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-object-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object_type</span></code></p></td>
 <td><p>Salesforce object type (you must specify either a Salesforce object type or a SOQL query). With this configuration, the command will retrieve the values of all the fields from the given object records (equivalent to the SOQL query: <cite>SELECT &lt;LIST OF ALL OBJECT FIELDS&gt; FROM &lt;OBJECT TYPE&gt;</cite>).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-query</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query</span></code></p></td>
 <td><p>SOQL query (you must specify either a Salesforce object type or a SOQL query). You can find documentation on Salesforce Object Query Language (SOQL) <a class="reference external" href="https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.html">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-query-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">query_name</span></code></p></td>
 <td><p>SOQL query name (required if you specify a SOQL query)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-watermark-column</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">watermark_column</span></code></p></td>
 <td><p>Salesforce watermark column (required when using state management)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--salesforce-watermark-init</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">watermark_init</span></code></p></td>
 <td><p>Initial Salesforce watermark column value (required when using state management)</p></td>
 </tr>
 </tbody>
@@ -1853,48 +2122,61 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <li><p>Provide the exact name of the Report Template you have just created under the CLI option <code class="docutils literal notranslate"><span class="pre">--ttd-report-template-name</span></code> of The Trade Desk connector: the connector will “schedule” a report instance (which may take a few minutes to run), and fetch data to the location of your choice</p></li>
 </ul>
 <p>The following command retrieves the data associated to the Report template named “<em>adgroup_performance_report</em>” between 2020-01-01 and 2020-01-03, filtered on the PartnerId &lt;PARTNER_ID&gt;.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_ttd --ttd-login &lt;LOGIN&gt; --ttd-password &lt;PASSWORD&gt; --ttd-partner-id &lt;PARTNER_ID&gt; --ttd-report-template-name adgroup_performance_report --ttd-start-date <span class="m">2020</span>-01-01  --ttd-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_ttd --ttd-login &lt;LOGIN&gt; --ttd-password &lt;PASSWORD&gt; --ttd-partner-id &lt;PARTNER_ID&gt; --ttd-report-template-name adgroup_performance_report --ttd-start-date <span class="m">2020</span>-01-01  --ttd-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p>Didn’t work? See [troubleshooting](#troubleshooting) section.</p>
-<p>#### Command the name</p>
-<p><code class="docutils literal notranslate"><span class="pre">read_ttd</span></code></p>
 </div>
 <div class="section" id="id78">
-<h3>Command options<a class="headerlink" href="#id78" title="Permalink to this headline">¶</a></h3>
+<h3>Command name<a class="headerlink" href="#id78" title="Permalink to this headline">¶</a></h3>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_ttd</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">the_trade_desk</span></code></p>
+</div>
+<div class="section" id="id79">
+<h3>Command options<a class="headerlink" href="#id79" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 14%" />
-<col style="width: 86%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 77%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-login</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">login</span></code></p></td>
 <td><p>Login of your API account</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
 <td><p>Password of your API account</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-advertiser-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">advertiser_id</span></code> (list)</p></td>
 <td><p>Advertiser Ids for which report data should be fetched</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-report-template-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_template_name</span></code></p></td>
 <td><p>Exact name of the Report Template to request. Existing Report Templates can be found within the <a class="reference external" href="https://desk.thetradedesk.com/MyReports">MyReports section</a> of The Trade Desk UI.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-report-schedule-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_schedule_name</span></code></p></td>
 <td><p>Name of the Report Schedule to create</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--ttd-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Date range. By default, not available in The Trade Desk, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 </tbody>
@@ -1904,12 +2186,12 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </div>
 <div class="section" id="twitter-ads-reader">
 <h2>Twitter Ads Reader<a class="headerlink" href="#twitter-ads-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id79">
-<h3>Source API<a class="headerlink" href="#id79" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id80">
+<h3>Source API<a class="headerlink" href="#id80" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://developer.twitter.com/en/docs/ads/general/overview">Twitter Ads API</a></p>
 </div>
-<div class="section" id="id80">
-<h3>How to obtain credentials<a class="headerlink" href="#id80" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id81">
+<h3>How to obtain credentials<a class="headerlink" href="#id81" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><strong>Apply for a developer account</strong> through <a class="reference external" href="https://developer.twitter.com/en/apply">this link</a>.</p></li>
 <li><p><strong>Create a Twitter app</strong> on the developer portal: it will generate your authentication credentials.</p></li>
@@ -1917,8 +2199,8 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <li><p><strong>Get access to the Twitter Ads account</strong> you wish to retrieve data for, on the &#64;handle that you used to create your Twitter App. Be careful, access levels matter: with an <em>Ad Manager</em> access, you will be able to request all report types; with a <em>Campaign Analyst</em> access, you will be able to request all report types, except ENTITY reports on Card entities.</p></li>
 </ul>
 </div>
-<div class="section" id="id81">
-<h3>Quickstart<a class="headerlink" href="#id81" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id82">
+<h3>Quickstart<a class="headerlink" href="#id82" title="Permalink to this headline">¶</a></h3>
 <p>The Twitter Ads Reader can collect <strong>3 types of reports</strong>, making calls to 4 endpoints of the Twitter Ads API:</p>
 <ul class="simple">
 <li><p><strong>ANALYTICS reports</strong>, making calls to the <a class="reference external" href="https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous">Asynchronous Analytics endpoint</a>. These reports return performance data for a wide range of metrics, that <strong>can be aggregated over time</strong>. Output data <strong>can be splitted by day</strong> when requested over a larger time period.</p></li>
@@ -1926,88 +2208,109 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <li><p><strong>ENTITY reports</strong>, making calls to <a class="reference external" href="https://developer.twitter.com/en/docs/ads/campaign-management/api-reference">Campaign Management endpoints</a> if the selected entity is Funding Instrument, Campaign, Line Item, Media Creative or Promoted Tweet, and to the <a class="reference external" href="https://developer.twitter.com/en/docs/ads/creatives/api-reference/">Creative endpoint</a> if the selected entity is Card. These reports return details on entity configuration since the creation of the Twitter Ads account.</p></li>
 </ul>
 <p><em>Call example for ANALYTICS reports</em>: this call will collect engagement metrics for Line Item entities, splitting the results by day, from 2020-01-01 to 2020-01-03:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type ANALYTICS --twitter-entity LINE_ITEM --twitter-metric-group ENGAGEMENT --twitter-segmentation-type AGE --twitter-granularity DAY --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Call example for REACH reports</em>: this call will collect reach metrics (<em>total_audience_reach, average_frequency</em>) for Campaign entities, from 2020-01-01 to 2020-01-03:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-start-date <span class="m">2020</span>-01-01 --twitter-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Call example for ENTITY reports</em>: this call collects details on the configuration of Campaign entities (id, name, total_budget_amount_local_micro, currency), since the creation of the Twitter Ads account:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_twitter --twitter-consumer-key &lt;API_KEY&gt; --twitter-consumer-secret &lt;API_SECRET_KEY&gt; --twitter-access-token &lt;ACCESS_TOKEN&gt; --twitter-access-token-secret &lt;ACCESS_TOKEN_SECRET&gt; --twitter-account-id &lt;ACCOUNT_ID&gt; --twitter-report-type REACH --twitter-entity CAMPAIGN --twitter-entity-attribute id --twitter-entity-attribute name --twitter-entity-attribute total_budget_amount_local_micro --twitter-entity-attribute currency write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
-<div class="section" id="id82">
-<h3>Command name<a class="headerlink" href="#id82" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_twitter</span></code></p>
-</div>
 <div class="section" id="id83">
-<h3>Command options<a class="headerlink" href="#id83" title="Permalink to this headline">¶</a></h3>
+<h3>Command name<a class="headerlink" href="#id83" title="Permalink to this headline">¶</a></h3>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_twitter</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">twitter</span></code></p>
+</div>
+<div class="section" id="id84">
+<h3>Command options<a class="headerlink" href="#id84" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 84%" />
+<col style="width: 14%" />
+<col style="width: 11%" />
+<col style="width: 75%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-consumer-key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">consumer_key</span></code></p></td>
 <td><p>API key, available in the ‘Keys and tokens’ section of your Twitter Developer App.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-consumer-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">consumer_secret</span></code></p></td>
 <td><p>API secret key, available in the ‘Keys and tokens’ section of your Twitter Developer App.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-access-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token</span></code></p></td>
 <td><p>Access token, available in the ‘Keys and tokens’ section of your Twitter Developer App.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-access-token-secret</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">access_token_secret</span></code></p></td>
 <td><p>Access token secret, available in the ‘Keys and tokens’ section of your Twitter Developer App.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-account-id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">account_id</span></code></p></td>
 <td><p>Specifies the Twitter Account ID for which the data should be returned.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-report-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_type</span></code></p></td>
 <td><p>Specifies the type of report to collect. Possible values: ANALYTICS, REACH, ENTITY.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-entity</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">entity</span></code></p></td>
 <td><p>Specifies the entity type to retrieve data for. Possible values: FUNDING_INSTRUMENT, CAMPAIGN, LINE_ITEM, MEDIA_CREATIVE, PROMOTED_TWEET, CARD.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-entity-attribute</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">entity_attribute</span></code> (list)</p></td>
 <td><p>Specific to ENTITY reports. Specifies the entity attribute (configuration detail) that should be returned. To get possible values, print the ENTITY_ATTRIBUTES variable on ack/helpers/twitter_helper.py</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-granularity</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">granularity</span></code></p></td>
 <td><p>Specific to ANALYTICS reports. Specifies how granular the retrieved data should be. Possible values: TOTAL (default), DAY.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-metric-group</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">metric_group</span></code> (list)</p></td>
 <td><p>Specific to ANALYTICS reports. Specifies the list of metrics (as a group) that should be returned. Possible values can be found <a class="reference external" href="https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-placement</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">placement</span></code></p></td>
 <td><p>Specific to ANALYTICS reports. Scopes the retrieved data to a particular placement. Possible values: ALL_ON_TWITTER (default), PUBLISHER_NETWORK.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-segmentation-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">segmentation_type</span></code></p></td>
 <td><p>Specific to ANALYTICS reports. Specifies how the retrieved data should be segmented. Possible values can be found <a class="reference external" href="https://developer.twitter.com/en/docs/ads/analytics/overview/metrics-and-segmentation">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-platform</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">platform</span></code></p></td>
 <td><p>Specific to ANALYTICS reports. Required if segmentation_type is set to DEVICES or PLATFORM_VERSION. Possible values can be identified through the targeting_criteria/locations</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-country</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">country</span></code></p></td>
 <td><p>Specific to ANALYTICS reports. Required if segmentation_type is set to CITIES, POSTAL_CODES, or REGION. Possible values can be identified through the GET targeting_criteria/platforms endpoint.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-start-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_date</span></code></p></td>
 <td><p>Start date of the period to request (format: YYYY-MM-DD).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-end-date</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
 <td><p>End date of the period to request (format: YYYY-MM-DD).</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Date range. By default, not available in Twitter, so choose among ACK default values: YESTERDAY, LAST_7_DAYS, PREVIOUS_WEEK, PREVIOUS_MONTH, LAST_90_DAYS</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--twitter-add-request-date-to-report</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">add_request_date_to_report</span></code></p></td>
 <td><p>If set to True (default: False), the date on which the request is made will appear on each report record.</p></td>
 </tr>
 </tbody>
@@ -2017,12 +2320,12 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </div>
 <div class="section" id="yandex-readers">
 <h2>Yandex Readers<a class="headerlink" href="#yandex-readers" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id84">
-<h3>Source API<a class="headerlink" href="#id84" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id85">
+<h3>Source API<a class="headerlink" href="#id85" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://tech.yandex.com/direct/">Yandex Direct API</a></p>
 </div>
-<div class="section" id="id85">
-<h3>How to obtain credentials<a class="headerlink" href="#id85" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id86">
+<h3>How to obtain credentials<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h3>
 <p>In order to access Yandex Direct API, you need two accounts: an advertiser account and a developer account.
 Here is the process:</p>
 <ol class="arabic simple">
@@ -2030,7 +2333,7 @@ Here is the process:</p>
 <li><p>Create and register an app that will access Yandex Direct API via <a class="reference external" href="https://oauth.yandex.com/client/new">Yandex OAuth</a>.</p></li>
 <li><p>Keep app client id safe. Log in with your advertiser account and <a class="reference external" href="https://tech.yandex.com/oauth/doc/dg/tasks/get-oauth-token-docpage/">give permission to the app to access your data</a>.</p></li>
 <li><p>Store your token very carefully.</p></li>
-<li><p>Log out and log in as a developer and <a class="reference external" href="https://direct.yandex.com/registered/main.pl?cmd=apiSettings">ask permission to access Yandex Direct API</a> (ask for Full access). Fill in the form.</p></li>
+<li><p>Log out and log in as a developer and <a class="reference external" href="https://direct.yandex.com/registered/main.pl?CMD=apiSettings">ask permission to access Yandex Direct API</a> (ask for Full access). Fill in the form.</p></li>
 <li><p>Wait for Yandex support to reply but it should be within a week.</p></li>
 </ol>
 </div>
@@ -2038,110 +2341,93 @@ Here is the process:</p>
 <div class="section" id="yandex-campaign-reader">
 <h2>Yandex Campaign Reader<a class="headerlink" href="#yandex-campaign-reader" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://tech.yandex.com/direct/doc/ref-v5/campaigns/get-docpage/">Official documentation</a></p>
-<div class="section" id="id86">
-<h3>Quickstart<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id87">
+<h3>Quickstart<a class="headerlink" href="#id87" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves the daily budget of all your campaigns, since your account creation.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_yandex_campaigns --yandex-token &lt;TOKEN&gt; --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_yandex_campaigns --yandex-token &lt;TOKEN&gt; --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
-<div class="section" id="id87">
-<h3>Command name<a class="headerlink" href="#id87" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_yandex_campaigns</span></code></p>
-</div>
 <div class="section" id="id88">
-<h3>Command options<a class="headerlink" href="#id88" title="Permalink to this headline">¶</a></h3>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 18%" />
-<col style="width: 82%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
-<th class="head"><p>Definition</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-token</span></code></p></td>
-<td><p>Bear token that allows you to authenticate to the API</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-campaign-id</span></code></p></td>
-<td><p>(Optional) Selects campaigns with the specified IDs.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-campaign-state</span></code></p></td>
-<td><p>(Optional) Selects campaigns with the specified states. Possible values can be found <a class="reference external" href="https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status">here</a>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-campaign-status</span></code></p></td>
-<td><p>(Optional) Selects campaigns with the specified statuses. Possible values can be found <a class="reference external" href="https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status">here</a>.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-campaign-payment-status</span></code></p></td>
-<td><p>(Optional) Selects campaigns with the specified payment <a class="reference external" href="https://tech.yandex.com/direct/doc/dg/objects/campaign-docpage/#status">statuses</a>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-field-name</span></code></p></td>
-<td><p>Parameters to get that are common to all types of campaigns.</p></td>
-</tr>
-</tbody>
-</table>
+<h3>Command name<a class="headerlink" href="#id88" title="Permalink to this headline">¶</a></h3>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_yandex_campaigns</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">yandex_campaign</span></code></p>
+</div>
+<div class="section" id="id89">
+<h3>Command options<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="yandex-statistics-reader">
 <h2>Yandex Statistics Reader<a class="headerlink" href="#yandex-statistics-reader" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://tech.yandex.com/direct/doc/reports/reports-docpage/">Official documentation</a></p>
-<div class="section" id="id89">
-<h3>Quickstart<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id90">
+<h3>Quickstart<a class="headerlink" href="#id90" title="Permalink to this headline">¶</a></h3>
 <p>The following command retrieves a performance report for all your campaigns, since your account creation.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_yandex_statistics --yandex-token &lt;TOKEN&gt; --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_yandex_statistics --yandex-token &lt;TOKEN&gt; --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
 </div>
-<div class="section" id="id90">
-<h3>Command name<a class="headerlink" href="#id90" title="Permalink to this headline">¶</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">read_yandex_statistics</span></code></p>
-</div>
 <div class="section" id="id91">
-<h3>Command options<a class="headerlink" href="#id91" title="Permalink to this headline">¶</a></h3>
+<h3>Command name<a class="headerlink" href="#id91" title="Permalink to this headline">¶</a></h3>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">read_yandex_statistics</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">yandex_statistics</span></code></p>
+</div>
+<div class="section" id="id92">
+<h3>Command options<a class="headerlink" href="#id92" title="Permalink to this headline">¶</a></h3>
 <p>Detailed version <a class="reference external" href="https://tech.yandex.com/direct/doc/reports/spec-docpage/">here</a>.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 15%" />
-<col style="width: 85%" />
+<col style="width: 14%" />
+<col style="width: 9%" />
+<col style="width: 77%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Options</p></th>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
 <th class="head"><p>Definition</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-token</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">token</span></code></p></td>
 <td><p>Bear token that allows you to authenticate to the API</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-report-language</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_language</span></code></p></td>
 <td><p>(Optional) Language of the report. Possible values can be found <a class="reference external" href="https://tech.yandex.com/direct/doc/dg/concepts/headers-docpage/#headers__accept-language">here</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-filter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filters</span></code> (list)</p></td>
 <td><p>(Optional) Filters on a particular field.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-max-rows</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">max_rows</span></code></p></td>
 <td><p>(Optional) The maximum number of rows in the report.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-field-name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fields</span></code> (list)</p></td>
 <td><p>Information you want to collect. Possible values can be found <a class="reference external" href="https://tech.yandex.com/direct/doc/reports/fields-list-docpage/">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-report-type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_type</span></code></p></td>
 <td><p>Type of report. Linked to the fields you want to select.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-date-range</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_range</span></code></p></td>
 <td><p>Possible values can be found <a class="reference external" href="https://tech.yandex.com/direct/doc/reports/period-docpage/">here</a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-include-vat</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">include_vat</span></code></p></td>
 <td><p>Adds VAT to your expenses if set to True</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-date-start</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_start</span></code></p></td>
 <td><p>(Optional) Selects data on a specific period of time. Combined with <code class="docutils literal notranslate"><span class="pre">--yandex-date-stop</span></code> and  <code class="docutils literal notranslate"><span class="pre">--yandex-date-range</span></code> set to CUSTOM_DATE.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--yandex-date-stop</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">date_stop</span></code></p></td>
 <td><p>(Optional) Selects data on a specific period of time. Combined with <code class="docutils literal notranslate"><span class="pre">--yandex-date-start</span></code> and  <code class="docutils literal notranslate"><span class="pre">--yandex-date-range</span></code> set to CUSTOM_DATE.</p></td>
 </tr>
 </tbody>

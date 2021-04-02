@@ -16,3 +16,4 @@ Welcome to Artefactory Connectors Kit's documentation!
    ./streams.rst
    ./writers.rst
    ./to_go_further.rst
+   ./migration_to_v2.rst

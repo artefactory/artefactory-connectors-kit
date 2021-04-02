@@ -96,7 +96,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#launch-your-first-ack-command">Launch your first ACK command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launch-your-first-ack-command">Launch your first ACK command</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ack-full-command-line">ACK full command line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ack-with-a-json-config-file">ACK with a .json config file</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#normalize-field-names">Normalize field names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contribute">Contribute</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-develop-a-new-reader">How to develop a new reader</a></li>
@@ -110,6 +114,7 @@
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="writers.html">Writers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="to_go_further.html">To go further</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration_to_v2.html">Migration to v2 from v1</a></li>
 </ul>
 
             
@@ -260,11 +265,14 @@ You can launch a preview of these .html files in your brower with your code edit
 <div class="section" id="launch-your-first-ack-command">
 <h2>Launch your first ACK command<a class="headerlink" href="#launch-your-first-ack-command" title="Permalink to this headline">¶</a></h2>
 <p>Once this preliminary set-up is finalized, you can start using the application.</p>
+<p>There is two different way to use ACK commands. You can either build a full command by passing every argument you want or build a .json config file and pass it to ACK. Both ways are described below.</p>
+<div class="section" id="ack-full-command-line">
+<h3>ACK full command line<a class="headerlink" href="#ack-full-command-line" title="Permalink to this headline">¶</a></h3>
 <p>ACK commands can be broken down into 3 parts:</p>
 <ol class="arabic simple">
-<li><p>An entrypoint: all ACK commands are launched through the <code class="docutils literal notranslate"><span class="pre">ack/entrypoint.py</span></code> executable.</p></li>
+<li><p>An entrypoint: all ACK cli commands are launched through the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/cli/main.py</span></code> executable.</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
@@ -282,17 +290,73 @@ You can launch a preview of these .html files in your brower with your code edit
 <p>To execute the ACK command as a whole, we just have to put these 3 parts together.</p>
 <p>To simplify your first test, instead of the writer command <code class="docutils literal notranslate"><span class="pre">write_gcs</span></code>, we recommend you to use <code class="docutils literal notranslate"><span class="pre">write_console</span></code> (<em>it will write output stream records into your terminal</em>) or <code class="docutils literal notranslate"><span class="pre">write_local</span> <span class="pre">--local-directory</span> <span class="pre">&lt;PATH_TO_DESTINATION&gt;</span></code> (<em>it will write output stream records into a local file</em>). In practice, these writer commands are very convenient for debugging, as they are quite simple.</p>
 <p>In the end, if we use <code class="docutils literal notranslate"><span class="pre">write_console</span></code> as a writer command, the combined ACK command will be:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p>You can now execute it into your terminal.</p>
-<p><strong>Now that you understand how ack commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> and <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a>.</p>
+</div>
+<div class="section" id="ack-with-a-json-config-file">
+<h3>ACK with a .json config file<a class="headerlink" href="#ack-with-a-json-config-file" title="Permalink to this headline">¶</a></h3>
+<p>ACK can also use a .json config file to get all arguments. You can broke this command in 3 parts:</p>
+<ol class="arabic simple">
+<li><p>An entrypoint: all ACK commands are launched through the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/json/main.py</span></code> executable.</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/json/main.py
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>A path argument <code class="docutils literal notranslate"><span class="pre">--config-file</span></code> that will give to the entrypoint where to find the .json file with all the information.</p></li>
+<li><p>A .json config file organized as followed, with one reader and at least one writer:</p></li>
+</ol>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;reader&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;reader_name&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">],</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;writers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;writer_name&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here is a good example of a .json config file:</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;reader&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;twitter&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;consumer_key&quot;</span><span class="p">:</span> <span class="s2">&quot;****&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;consumer_secret&quot;</span><span class="p">:</span> <span class="s2">&quot;****&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;access_token&quot;</span><span class="p">:</span> <span class="s2">&quot;****&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;access_token_secret&quot;</span><span class="p">:</span> <span class="s2">&quot;*****&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;account_id&quot;</span><span class="p">:</span> <span class="s2">&quot;*****&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;report_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ANALYTICS&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;entity&quot;</span><span class="p">:</span> <span class="s2">&quot;PROMOTED_TWEET&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;metric_group&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ENGAGEMENT&quot;</span><span class="p">],</span>
+    <span class="nt">&quot;segmentation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;AGE&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;granularity&quot;</span><span class="p">:</span> <span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-02-25&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;end_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-03-04&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;writers&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;console&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Now that you understand how ACK commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> and <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a>.</p>
+</div>
 </div>
 <div class="section" id="normalize-field-names">
 <h2>Normalize field names<a class="headerlink" href="#normalize-field-names" title="Permalink to this headline">¶</a></h2>
 <p>Some destinations have specific requirements for field names. This is the case of BigQuery, that only accepts letters, digits and underscores.</p>
 <p>To normalize field names (i.e. replace any special character or white space by an underscore), you can add the option <code class="docutils literal notranslate"><span class="pre">--normalize-keys</span> <span class="pre">true</span></code> between <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">ack/entrypoint.py</span></code> and the invocated reader command. If we keep using the previous Google Analytics example, it would give:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoint.py --normalize-keys <span class="nb">true</span> read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py --normalize-keys <span class="nb">true</span> read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 </div>
@@ -313,8 +377,8 @@ You can launch a preview of these .html files in your brower with your code edit
 --- &lt;SOURCE_NAME&gt;/
 ---- cli.py
 ---- reader.py
+---- config.py
 ---- helper.py <span class="c1"># Optional</span>
----- config.py <span class="c1"># Optional</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code></p>
@@ -333,19 +397,30 @@ You can launch a preview of these .html files in your brower with your code edit
 <li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">read()</span></code> method, yielding a stream object. This stream object can be chosen from <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/tree/dev/ack/streams">available stream classes</a>, and has 2 attributes: a stream name and a source generator function named <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code>, yielding individual source records.</p></li>
 </ul>
 </div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">config.py</span></code></p>
+<p>This module gathers all configuration variables.</p>
+<p>In addition, it’s also managing reader’s data validation thanks to Pydantic. Each reader must have a configuration class complying with:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Class name should be <code class="docutils literal notranslate"><span class="pre">&lt;ReaderName&gt;Config()</span></code>.</p></li>
+<li><p>It should inherit from <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> from Pydantic.</p></li>
+<li><p>Each class attribute should be declared with its name, its type and its default value if the attribute isn’t required.</p></li>
+<li><p>If the reader has date inputs that follow the format ‘YYYY-MM-DD’, the class should have a <code class="docutils literal notranslate"><span class="pre">&#64;validator</span></code> function to support this format (an example can be found in some readers as <code class="docutils literal notranslate"><span class="pre">AdobeAnalytics14Reader</span></code>).</p></li>
+<li><p>If some attributes need additional processing, other <code class="docutils literal notranslate"><span class="pre">&#64;validator</span></code> functions should be created for each of them.</p></li>
+</ul>
+</div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
 <p>This module gathers all helper functions used in the <code class="docutils literal notranslate"><span class="pre">reader.py</span></code> module.</p>
-<p><code class="docutils literal notranslate"><span class="pre">config.py</span></code> (Optional)</p>
-<p>This module gathers all configuration variables.</p>
 <ol class="arabic" start="2">
 <li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
-<li><p>Add your click-decorated reader function to the <code class="docutils literal notranslate"><span class="pre">ack/readers/__init__.py</span></code> file</p></li>
+<li><p>Add your click-decorated reader function to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/cli/readers.py</span></code> file</p></li>
+<li><p>Add your reader class and your config class to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/json/readers.py</span></code> file as <code class="docutils literal notranslate"><span class="pre">(ClassReader,</span> <span class="pre">ClassConfig)</span></code></p></li>
 <li><p>Complete the documentation:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Add your reader to the list of existing readers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
 <li><p>Add your reader to the list of existing readers in the repo’s <code class="docutils literal notranslate"><span class="pre">./README.md</span></code>.</p></li>
-<li><p>Create dedicated documentation for your reader CLI command on the <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> page. It should include the followings sections: <em>Source API - How to obtain credentials - Quickstart - Command name - Command options</em></p></li>
+<li><p>Create dedicated documentation for your reader CLI and JSON command on the <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> page. It should include the followings sections: <em>Source API - How to obtain credentials - Quickstart - Command name - Command options</em></p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -373,8 +448,8 @@ You can launch a preview of these .html files in your brower with your code edit
 --- &lt;DESTINATION_NAME&gt;/
 ---- cli.py
 ---- writer.py
----- helper.py <span class="c1"># Optional</span>
 ---- config.py <span class="c1"># Optional</span>
+---- helper.py <span class="c1"># Optional</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code></p>
@@ -393,19 +468,29 @@ You can launch a preview of these .html files in your brower with your code edit
 <li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">write()</span></code> method, writing the stream object to the destination.</p></li>
 </ul>
 </div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
-<p>This module gathers all helper functions used in the <code class="docutils literal notranslate"><span class="pre">writer.py</span></code> module.</p>
 <p><code class="docutils literal notranslate"><span class="pre">config.py</span></code> (Optional)</p>
 <p>This module gathers all configuration variables.</p>
+<p>In addition, it’s also managing reader’s data validation thanks to Pydantic. Each writer needing attributes to work, must have a configuration class complying with:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Class name should be <code class="docutils literal notranslate"><span class="pre">&lt;WriterName&gt;Config()</span></code>.</p></li>
+<li><p>It should inherit from <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> from Pydantic.</p></li>
+<li><p>Each class attribute should be declared with its name, its type and its default value if the attribute isn’t required.</p></li>
+<li><p>If some attributes need additional processing, other <code class="docutils literal notranslate"><span class="pre">&#64;validator</span></code> functions should be created for each of them.</p></li>
+</ul>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
+<p>This module gathers all helper functions used in the <code class="docutils literal notranslate"><span class="pre">writer.py</span></code> module.</p>
 <ol class="arabic" start="2">
 <li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
-<li><p>Add your click-decorated writer function to the <code class="docutils literal notranslate"><span class="pre">ack/writers/__init__.py</span></code> file</p></li>
+<li><p>Add your click-decorated writer function to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/cli/writers.py</span></code> file</p></li>
+<li><p>Add your writer class and your config class to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/json/writers.py</span></code> file as <code class="docutils literal notranslate"><span class="pre">(ClassWriter,</span> <span class="pre">ClassConfig)</span></code>. If there is no config class, it should be <code class="docutils literal notranslate"><span class="pre">(ClassWriter,)</span></code></p></li>
 <li><p>Complete the documentation:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Add your writer to the list of existing writers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
 <li><p>Add your reader to the list of existing readers in the repo’s <code class="docutils literal notranslate"><span class="pre">./README.md</span></code>.</p></li>
-<li><p>Create dedicated documentation for your writer CLI command on the <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a> page. It should include the followings sections: <em>Quickstart - Command name - Command options</em></p></li>
+<li><p>Create dedicated documentation for your writer CLI and JSON command on the <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a> page. It should include the followings sections: <em>Quickstart - Command name - Command options</em></p></li>
 </ul>
 </div></blockquote>
 </li>
