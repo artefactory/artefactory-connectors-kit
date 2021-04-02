@@ -6,4 +6,4 @@ ignore =
     E203,  # Conflicts with black, see https://github.com/psf/black/issues/544
     W605,  # Invalid excape sequences like "\(" in string regexes
 
-per-file-ignores = nck/readers/adobe_reader.py:E731
+per-file-ignores = ack/readers/adobe_reader.py:E731

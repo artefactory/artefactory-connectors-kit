@@ -18,7 +18,7 @@
 import logging
 from unittest import TestCase
 
-from nck.utils.text import parse_decoded_line, get_report_generator_from_flat_file
+from ack.utils.text import parse_decoded_line, get_report_generator_from_flat_file
 
 
 class TestTextUtilsMethod(TestCase):
@@ -100,26 +100,12 @@ class TestTextUtilsMethod(TestCase):
             b"2020-01-01,5678,2000",
         ]
         expected = [
-            {
-                "Date": "2020-01-01",
-                "AdvertiserId": "1234",
-                "Reach": "1000",
-                "Campaign": "XMas Sale",
-                "Country": "France",
-            },
-            {
-                "Date": "2020-01-01",
-                "AdvertiserId": "5678",
-                "Reach": "2000",
-                "Campaign": "XMas Sale",
-                "Country": "France",
-            },
+            {"Date": "2020-01-01", "AdvertiserId": "1234", "Reach": "1000", "Campaign": "XMas Sale", "Country": "France"},
+            {"Date": "2020-01-01", "AdvertiserId": "5678", "Reach": "2000", "Campaign": "XMas Sale", "Country": "France"},
         ]
         line_iterator = iter(lines)
         output = get_report_generator_from_flat_file(
-            line_iterator,
-            add_column=True,
-            column_dict={"Campaign": "XMas Sale", "Country": "France"},
+            line_iterator, add_column=True, column_dict={"Campaign": "XMas Sale", "Country": "France"},
         )
         for output_record, expected_record in zip(output, expected):
             self.assertEqual(output_record, expected_record)
@@ -128,8 +114,7 @@ class TestTextUtilsMethod(TestCase):
         lines = [b"Just,Headers,in,this,empty,report"]
         line_iterator = iter(lines)
         self.assertFalse(
-            next(get_report_generator_from_flat_file(line_iterator), False),
-            "Data is not empty",
+            next(get_report_generator_from_flat_file(line_iterator), False), "Data is not empty",
         )
 
     def test_get_report_generator__skip_when_no_match_with_headers_length(self):
@@ -140,9 +125,7 @@ class TestTextUtilsMethod(TestCase):
             b"Copyrigth: report downloaded from Artefact.com",
         ]
         line_iterator = iter(lines)
-        output = get_report_generator_from_flat_file(
-            line_iterator, skip_n_first=0, skip_n_last=0
-        )
+        output = get_report_generator_from_flat_file(line_iterator, skip_n_first=0, skip_n_last=0)
         expected = [
             {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
             {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
@@ -158,9 +141,7 @@ class TestTextUtilsMethod(TestCase):
             b"2020-01-01,5678,20",
         ]
         line_iterator = iter(lines)
-        output = get_report_generator_from_flat_file(
-            line_iterator, skip_n_first=0, skip_n_last=0
-        )
+        output = get_report_generator_from_flat_file(line_iterator, skip_n_first=0, skip_n_last=0)
         expected = [
             {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
             {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
@@ -178,9 +159,7 @@ class TestTextUtilsMethod(TestCase):
             b"(Not desired last line)",
         ]
         line_iterator = iter(lines)
-        output = get_report_generator_from_flat_file(
-            line_iterator, skip_n_first=2, skip_n_last=1
-        )
+        output = get_report_generator_from_flat_file(line_iterator, skip_n_first=2, skip_n_last=1)
         expected = [
             {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
             {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
@@ -197,9 +176,7 @@ class TestTextUtilsMethod(TestCase):
             b"",
         ]
         line_iterator = iter(lines)
-        output = get_report_generator_from_flat_file(
-            line_iterator, skip_n_first=0, skip_n_last=1
-        )
+        output = get_report_generator_from_flat_file(line_iterator, skip_n_first=0, skip_n_last=1)
         expected = [
             {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
             {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},
@@ -214,9 +191,7 @@ class TestTextUtilsMethod(TestCase):
             b"2020-01-01,5678,20",
         ]
         line_iterator = iter(lines)
-        output = get_report_generator_from_flat_file(
-            line_iterator, skip_n_first=0, skip_n_last=0
-        )
+        output = get_report_generator_from_flat_file(line_iterator, skip_n_first=0, skip_n_last=0)
         expected = [
             {"Date": "2020-01-01", "AdvertiserId": "1234", "Impressions": "10"},
             {"Date": "2020-01-01", "AdvertiserId": "5678", "Impressions": "20"},

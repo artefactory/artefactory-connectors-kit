@@ -1,10 +1,10 @@
 repos:
   - repo: https://github.com/ambv/black
-    rev: stable
+    rev: 19.10b0
     hooks:
       - id: black
         entry: black
-        language_version: python3.7
+        language_version: python3
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v1.2.3
     hooks:
