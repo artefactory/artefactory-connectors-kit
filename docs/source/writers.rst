@@ -153,20 +153,22 @@ The following command would allow you to:
 Command name
 ------------
 
-``write_azure_blob``
+CMD: ``write_azure_blob``
+
+JSON: ``azure_blob_storage``
 
 ---------------
 Command options
 ---------------
 
-====================================  =====================================================================================================================
-Options                               Definition
-====================================  =====================================================================================================================
-``--azure-blob-connection-string``    Azure connection string, if not given it will try to get the environment variable 'AZURE_STORAGE_CONNECTION_STRING'
-``--azure-blob-container``            Azure Storage container name
-``--azure-blob-prefix``               Azure Storage blob prefix
-``--azure-blob-file-name``            Azure Storage blob name
-====================================  =====================================================================================================================
+====================================  ======================  =====================================================================================================================
+CMD Options                           JSON Options            Definition
+====================================  ======================  =====================================================================================================================
+``--azure-blob-connection-string``    ``connection_string``   Azure connection string, if not given it will try to get the environment variable 'AZURE_STORAGE_CONNECTION_STRING'
+``--azure-blob-container``            ``container``           Azure Storage container name
+``--azure-blob-prefix``               ``prefix``              Azure Storage blob prefix
+``--azure-blob-filename``             ``filename``            Azure Storage blob name
+====================================  ======================  =====================================================================================================================
 
 ============
 Local Writer
