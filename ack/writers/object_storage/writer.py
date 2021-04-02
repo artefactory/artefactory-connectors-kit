@@ -18,9 +18,7 @@
 import os
 
 from ack.config import logger
-from ack.writers import Writer
-
-# from ack.utils.retry import retry
+from ack.writers.writer import Writer
 
 
 class ObjectStorageWriter(Writer):

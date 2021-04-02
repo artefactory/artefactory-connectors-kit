@@ -25,7 +25,7 @@ from typing import Dict, List, NamedTuple, Tuple
 
 import numpy as np
 from ack.config import logger
-from ack.readers import Reader
+from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
 from ack.utils.retry import retry
 
