@@ -4,16 +4,17 @@
    contain the root `toctree` directive.
 
 Welcome to Artefactory Connectors Kit's documentation!
-===================================================
+======================================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   ./overview.rst
-   ./getting_started.rst
-   ./readers.rst
-   ./streams.rst
-   ./writers.rst
-   ./to_go_further.rst
-   ./migration_to_v2.rst
+   overview
+   getting_started/index
+   
+   readers
+   streams
+   writers
+   to_go_further
+   migration_to_v2

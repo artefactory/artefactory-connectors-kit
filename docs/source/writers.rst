@@ -4,7 +4,7 @@ Writers
 
 **Writers are writing output stream records to the destination of your choice.**
 
-*About to develop a new writer?* See the :ref:`getting_started:How to develop a new writer` section.
+*About to develop a new writer?* See the :ref:`devwriter` section.
 
 *Just want to use an existing writer?* This page provides you with documentation on available commands:
 
