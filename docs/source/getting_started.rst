@@ -1,6 +1,6 @@
-#########################
-Getting started as a user
-#########################
+###############
+Getting started
+###############
 
 ==================================
 Set-up your developing environment

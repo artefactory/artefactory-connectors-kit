@@ -11,8 +11,8 @@ Welcome to Artefactory Connectors Kit's documentation!
    :caption: Contents:
 
    overview
-   getting_started/index
-   
+   getting_started
+   contributing
    readers
    streams
    writers

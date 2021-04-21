@@ -1,6 +1,6 @@
-########################
-Getting started as a dev
-########################
+############
+Contributing
+############
 
 ==================================
 Set-up your developing environment
