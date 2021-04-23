@@ -77,8 +77,7 @@ class GoogleDCMReader(Reader):
         self.dcm_client.add_report_criteria(report, self.start_date, self.end_date, self.metrics, self.dimensions)
 
         for profile_id in self.profile_ids:
-            if not self.report_id:
-                self.dcm_client.add_dimension_filters(report, profile_id, self.filters)
+            self.dcm_client.add_dimension_filters(report, profile_id, self.filters)
 
             report_id, file_id = self.dcm_client.run_report(report, profile_id, self.report_id)
 
