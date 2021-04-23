@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Readers" href="readers.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
     <link rel="prev" title="Overview" href="overview.html" /> 
 </head>
 
@@ -90,10 +90,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#set-up-your-developing-environment">Set-up your developing environment</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#virtual-environment">Virtual environment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#linting">Linting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pre-commit-hooks">Pre-commit hooks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#tdd-test-driven-development">TDD (<em>Test-Driven Development</em>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#launch-your-first-ack-command">Launch your first ACK command</a><ul>
@@ -102,14 +98,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#normalize-field-names">Normalize field names</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#contribute">Contribute</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#how-to-develop-a-new-reader">How to develop a new reader</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-to-develop-a-new-stream">How to develop a new stream</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-to-develop-a-new-writer">How to develop a new writer</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="readers.html">Readers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="streams.html">Streams</a></li>
 <li class="toctree-l1"><a class="reference internal" href="writers.html">Writers</a></li>
@@ -199,67 +190,8 @@
 </div>
 <p>Install dependencies:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
-pip install -r requirements-dev.text
 </pre></div>
 </div>
-</div>
-<div class="section" id="linting">
-<h3>Linting<a class="headerlink" href="#linting" title="Permalink to this headline">¶</a></h3>
-<p>We are using <a class="reference external" href="https://pypi.org/project/black/">black</a> and <a class="reference external" href="https://flake8.pycqa.org/en/latest/">Flake8</a> for code linting.</p>
-<p>The black and Flake8 packages have already been installed in your virtual environment with dependencies. Also, a Flake8 configuration file (<code class="docutils literal notranslate"><span class="pre">.flake8</span></code>) and a black configuration file (<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>) are available at the root at this repository.</p>
-</div>
-<div class="section" id="pre-commit-hooks">
-<h3>Pre-commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permalink to this headline">¶</a></h3>
-<p>We are using <a class="reference external" href="https://pre-commit.com/">pre-commit</a> hooks to point out linting issues in our code before submission to code review.</p>
-<p>The pre-commit package has already been installed in your virtual environment with dependencies. Also, a pre-commit configuration file (<code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code>) is available at the root of this repository.</p>
-<p>To finalize the installation and install git hooks scripts, execute:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pre-commit install
-</pre></div>
-</div>
-<p>For now on, the <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> command will run automatically on every <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>.</p>
-</div>
-<div class="section" id="tdd-test-driven-development">
-<h3>TDD (<em>Test-Driven Development</em>)<a class="headerlink" href="#tdd-test-driven-development" title="Permalink to this headline">¶</a></h3>
-<p>We are running tests using <a class="reference external" href="https://nose.readthedocs.io/en/latest/usage.html">nose</a>, an extension of the Python <a class="reference external" href="https://docs.python.org/fr/3/library/unittest.html">unittest</a> framework.</p>
-<p>The nose package has already been installed in your virtual environment with dependencies.
-To run existing tests, execute:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>nosetests
-</pre></div>
-</div>
-</div>
-<div class="section" id="documentation">
-<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
-<p>We are using <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> with a ReadTheDocs theme to document the application.</p>
-<p>The Sphinx package has already been installed in your virtual environment with dependencies.</p>
-<p>Sphinx documentation is available under the <code class="docutils literal notranslate"><span class="pre">docs/source/</span></code> directory of the <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/tree/dev">GitHub repository</a> as .rst files (each file representing a page).
-It uses the reStructuredText (reST) syntax: to learn more about it, see the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">official documentation</a>.</p>
-<p>You can modify existing pages by editing the corresponding .rst files.</p>
-<p>If you want to create a new page, you should:</p>
-<ol class="arabic simple">
-<li><p>Create a new <code class="docutils literal notranslate"><span class="pre">&lt;YOUR_PAGE_NAME&gt;.rst</span></code> file under the <code class="docutils literal notranslate"><span class="pre">docs/source/</span></code> directory</p></li>
-<li><p>Add a <code class="docutils literal notranslate"><span class="pre">./&lt;YOUR_PAGE_NAME&gt;.rst</span></code> line in the <code class="docutils literal notranslate"><span class="pre">docs/source/index.rst</span></code> file as follows:</p></li>
-</ol>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">.. toctree:</span><span class="p p-Indicator">:</span>
-   <span class="l l-Scalar l-Scalar-Plain">:maxdepth</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">2</span>
-   <span class="nt">caption</span><span class="p">:</span> <span class="nt">Contents</span><span class="p">:</span>
-
-   <span class="l l-Scalar l-Scalar-Plain">./overview.rst</span>
-   <span class="l l-Scalar l-Scalar-Plain">./getting_started.rst</span>
-   <span class="l l-Scalar l-Scalar-Plain">./readers.rst</span>
-   <span class="l l-Scalar l-Scalar-Plain">./streams.rst</span>
-   <span class="l l-Scalar l-Scalar-Plain">./writers.rst</span>
-   <span class="l l-Scalar l-Scalar-Plain">./to_go_further.rst</span>
-   <span class="l l-Scalar l-Scalar-Plain">./&lt;YOUR_PAGE_NAME&gt;.rst</span>
-</pre></div>
-</div>
-<p>To preview your changes, execute:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> docs/
-make html
-</pre></div>
-</div>
-<p>It will create the .html files corresponding to your .rst source files in the <code class="docutils literal notranslate"><span class="pre">docs/build/</span></code> directory.
-You can launch a preview of these .html files in your brower with your code editor (with VSCode: right-click on any .html file &gt; Open with Live Server).</p>
-<p>Sphinx documentation is automatically deployed on GitHub Pages (by a dedicated GitHub workflow) each time code is pushed to the ‘dev’ branch of the repository.</p>
 </div>
 </div>
 <div class="section" id="launch-your-first-ack-command">
@@ -296,7 +228,7 @@ You can launch a preview of these .html files in your brower with your code edit
 <p>You can now execute it into your terminal.</p>
 </div>
 <div class="section" id="ack-with-a-json-config-file">
-<h3>ACK with a .json config file<a class="headerlink" href="#ack-with-a-json-config-file" title="Permalink to this headline">¶</a></h3>
+<span id="ackwithjson"></span><h3>ACK with a .json config file<a class="headerlink" href="#ack-with-a-json-config-file" title="Permalink to this headline">¶</a></h3>
 <p>ACK can also use a .json config file to get all arguments. You can broke this command in 3 parts:</p>
 <ol class="arabic simple">
 <li><p>An entrypoint: all ACK commands are launched through the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/json/main.py</span></code> executable.</p></li>
@@ -360,143 +292,6 @@ You can launch a preview of these .html files in your brower with your code edit
 </pre></div>
 </div>
 </div>
-<div class="section" id="contribute">
-<h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h2>
-<p>ACK is an open-source application initially developed by Artefact team: feel free to contribute!</p>
-<p>You can find open issues on <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/issues">this GitHub page</a>. If you identify additional enhancements/fixes that could be beneficial to the application, don’t hesitate to add them to the list.</p>
-<p>Here are a few tips/guidelines to help you efficiently contribute:</p>
-<div class="section" id="how-to-develop-a-new-reader">
-<h3>How to develop a new reader<a class="headerlink" href="#how-to-develop-a-new-reader" title="Permalink to this headline">¶</a></h3>
-<p><em>Readers are reading data from an API source, and transform it into a stream object.</em></p>
-<p>To create a new reader, you should:</p>
-<ol class="arabic simple">
-<li><p>Create a <code class="docutils literal notranslate"><span class="pre">ack/readers/&lt;SOURCE_NAME&gt;/</span></code> directory, having the following structure:</p></li>
-</ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- ack/
--- readers/
---- &lt;SOURCE_NAME&gt;/
----- cli.py
----- reader.py
----- config.py
----- helper.py <span class="c1"># Optional</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code></p>
-<p>This module should implement a click-decorated reader function:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>The reader function should be decorated with: a <code class="docutils literal notranslate"><span class="pre">&#64;click.command()</span></code> decorator, several <code class="docutils literal notranslate"><span class="pre">&#64;click.option()</span></code> decorators (<em>one for each input provided by end-users</em>) and a <code class="docutils literal notranslate"><span class="pre">&#64;processor()</span></code> decorator (<em>preventing secrets to appear in logs</em>). For further information on how to implement these decorators, please refer to <a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click documentation</a>.</p></li>
-<li><p>The reader function should return a reader class (<em>more details below</em>). The source prefix of each option will be removed when passed to the writer class, using the <code class="docutils literal notranslate"><span class="pre">extract_args()</span></code> function.</p></li>
-</ul>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">reader.py</span></code></p>
-<p>This module should implement a reader class:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Class attributes should be the previously defined click options.</p></li>
-<li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">read()</span></code> method, yielding a stream object. This stream object can be chosen from <a class="reference external" href="https://github.com/artefactory/artefactory-connectors-kit/tree/dev/ack/streams">available stream classes</a>, and has 2 attributes: a stream name and a source generator function named <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code>, yielding individual source records.</p></li>
-</ul>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">config.py</span></code></p>
-<p>This module gathers all configuration variables.</p>
-<p>In addition, it’s also managing reader’s data validation thanks to Pydantic. Each reader must have a configuration class complying with:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Class name should be <code class="docutils literal notranslate"><span class="pre">&lt;ReaderName&gt;Config()</span></code>.</p></li>
-<li><p>It should inherit from <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> from Pydantic.</p></li>
-<li><p>Each class attribute should be declared with its name, its type and its default value if the attribute isn’t required.</p></li>
-<li><p>If the reader has date inputs that follow the format ‘YYYY-MM-DD’, the class should have a <code class="docutils literal notranslate"><span class="pre">&#64;validator</span></code> function to support this format (an example can be found in some readers as <code class="docutils literal notranslate"><span class="pre">AdobeAnalytics14Reader</span></code>).</p></li>
-<li><p>If some attributes need additional processing, other <code class="docutils literal notranslate"><span class="pre">&#64;validator</span></code> functions should be created for each of them.</p></li>
-</ul>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
-<p>This module gathers all helper functions used in the <code class="docutils literal notranslate"><span class="pre">reader.py</span></code> module.</p>
-<ol class="arabic" start="2">
-<li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
-<li><p>Add your click-decorated reader function to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/cli/readers.py</span></code> file</p></li>
-<li><p>Add your reader class and your config class to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/json/readers.py</span></code> file as <code class="docutils literal notranslate"><span class="pre">(ClassReader,</span> <span class="pre">ClassConfig)</span></code></p></li>
-<li><p>Complete the documentation:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Add your reader to the list of existing readers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
-<li><p>Add your reader to the list of existing readers in the repo’s <code class="docutils literal notranslate"><span class="pre">./README.md</span></code>.</p></li>
-<li><p>Create dedicated documentation for your reader CLI and JSON command on the <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> page. It should include the followings sections: <em>Source API - How to obtain credentials - Quickstart - Command name - Command options</em></p></li>
-</ul>
-</div></blockquote>
-</li>
-</ol>
-</div>
-<div class="section" id="how-to-develop-a-new-stream">
-<h3>How to develop a new stream<a class="headerlink" href="#how-to-develop-a-new-stream" title="Permalink to this headline">¶</a></h3>
-<p><em>Streams are local objects used by writers to process individual records collected from the source.</em></p>
-<p>Each stream class should have:</p>
-<ul class="simple">
-<li><p>2 attributes : a stream name and a source generator function. Both values will be passed by the associated reader class (<em>the generator function is the</em> <code class="docutils literal notranslate"><span class="pre">result_generator()</span></code> <em>function defined in the reader class</em>).</p></li>
-<li><p>a <code class="docutils literal notranslate"><span class="pre">readlines()</span></code> method, yielding individual source records.</p></li>
-</ul>
-<p>Currently, these components are defined in the parent <code class="docutils literal notranslate"><span class="pre">Stream</span></code> class (<em>defined in the</em> <code class="docutils literal notranslate"><span class="pre">ack/streams/stream.py</span></code> <em>module</em>), and are inherited by all stream subclasses.</p>
-</div>
-<div class="section" id="how-to-develop-a-new-writer">
-<h3>How to develop a new writer<a class="headerlink" href="#how-to-develop-a-new-writer" title="Permalink to this headline">¶</a></h3>
-<p><em>Writers are writing the output stream object to the destination of your choice.</em></p>
-<p>To develop a new writer, you should:</p>
-<ol class="arabic simple">
-<li><p>Create a <code class="docutils literal notranslate"><span class="pre">ack/writers/&lt;DESTINATION_NAME&gt;/</span></code> directory, having the following structure:</p></li>
-</ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>- ack/
--- writers/
---- &lt;DESTINATION_NAME&gt;/
----- cli.py
----- writer.py
----- config.py <span class="c1"># Optional</span>
----- helper.py <span class="c1"># Optional</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code></p>
-<p>This module should implement a click-decorated writer function:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>The writer function should be decorated with: a <code class="docutils literal notranslate"><span class="pre">&#64;click.command()</span></code> decorator, several <code class="docutils literal notranslate"><span class="pre">&#64;click.option()</span></code> decorators (<em>one for each input provided by end-users</em>) and a <code class="docutils literal notranslate"><span class="pre">&#64;processor()</span></code> decorator (<em>preventing secrets to appear in logs</em>). For further information on how to implement these decorators, please refer to <a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click documentation</a>.</p></li>
-<li><p>The writer function should return a writer class (<em>more details below</em>). The destination prefix of each option will be removed when passed to the writer class, using the <code class="docutils literal notranslate"><span class="pre">extract_args()</span></code> function.</p></li>
-</ul>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">writer.py</span></code></p>
-<p>This module should implement a writer class:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Class attributes should be the previously defined click options.</p></li>
-<li><p>The class should have a <code class="docutils literal notranslate"><span class="pre">write()</span></code> method, writing the stream object to the destination.</p></li>
-</ul>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">config.py</span></code> (Optional)</p>
-<p>This module gathers all configuration variables.</p>
-<p>In addition, it’s also managing reader’s data validation thanks to Pydantic. Each writer needing attributes to work, must have a configuration class complying with:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Class name should be <code class="docutils literal notranslate"><span class="pre">&lt;WriterName&gt;Config()</span></code>.</p></li>
-<li><p>It should inherit from <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> from Pydantic.</p></li>
-<li><p>Each class attribute should be declared with its name, its type and its default value if the attribute isn’t required.</p></li>
-<li><p>If some attributes need additional processing, other <code class="docutils literal notranslate"><span class="pre">&#64;validator</span></code> functions should be created for each of them.</p></li>
-</ul>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">helper.py</span></code> (Optional)</p>
-<p>This module gathers all helper functions used in the <code class="docutils literal notranslate"><span class="pre">writer.py</span></code> module.</p>
-<ol class="arabic" start="2">
-<li><p>In parallell, create unit tests for your methods under the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory</p></li>
-<li><p>Add your click-decorated writer function to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/cli/writers.py</span></code> file</p></li>
-<li><p>Add your writer class and your config class to the <code class="docutils literal notranslate"><span class="pre">ack/entrypoints/json/writers.py</span></code> file as <code class="docutils literal notranslate"><span class="pre">(ClassWriter,</span> <span class="pre">ClassConfig)</span></code>. If there is no config class, it should be <code class="docutils literal notranslate"><span class="pre">(ClassWriter,)</span></code></p></li>
-<li><p>Complete the documentation:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Add your writer to the list of existing writers in the <a class="reference internal" href="overview.html#available-connectors"><span class="std std-ref">Available connectors</span></a> section.</p></li>
-<li><p>Add your reader to the list of existing readers in the repo’s <code class="docutils literal notranslate"><span class="pre">./README.md</span></code>.</p></li>
-<li><p>Create dedicated documentation for your writer CLI and JSON command on the <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a> page. It should include the followings sections: <em>Quickstart - Command name - Command options</em></p></li>
-</ul>
-</div></blockquote>
-</li>
-</ol>
-</div>
-</div>
 </div>
 
 
@@ -505,7 +300,7 @@ You can launch a preview of these .html files in your brower with your code edit
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="readers.html" class="btn btn-neutral float-right" title="Readers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

@@ -4,7 +4,7 @@ Readers
 
 **Readers are reading data from an API source, and transform it into a stream object.**
 
-*About to develop a new reader?* See the :ref:`getting_started:How to develop a new reader` section.
+*About to develop a new reader?* See the :ref:`devreader` section.
 
 *Just want to use an existing reader?* This page provides you with documentation on available commands:
 

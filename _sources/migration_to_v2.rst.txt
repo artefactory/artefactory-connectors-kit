@@ -51,4 +51,4 @@ Your first need to be sure that your ``python3 -V`` gives version 3.8 or more. I
     pip install -r requirements.txt
     pip install -r requirements-dev.text
 
-4. Change the entrypoint's path of all your commands from ``nck/entrypoint.py`` to ``ack/entrypoints/cli/main.py``. If you wish, you can also convert your commands into a json config file following the documentation in the :ref:`getting_started:ACK with a .json config file` section.
+4. Change the entrypoint's path of all your commands from ``nck/entrypoint.py`` to ``ack/entrypoints/cli/main.py``. If you wish, you can also convert your commands into a json config file following the documentation in the :ref:`ackwithjson` section.
