@@ -30,6 +30,7 @@ from ack.utils.processor import processor
 @click.option("--dcm-client-secret", required=True)
 @click.option("--dcm-refresh-token", required=True)
 @click.option("--dcm-profile-id", "dcm_profile_ids", required=True, multiple=True)
+@click.option("--dcm-report-id", "dcm_report_id", default=None)
 @click.option("--dcm-report-name", default="DCM Report")
 @click.option("--dcm-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(

@@ -35,6 +35,7 @@ class GoogleDCMReader(Reader):
         client_secret,
         refresh_token,
         profile_ids,
+        report_id,
         report_name,
         report_type,
         metrics,
@@ -46,6 +47,7 @@ class GoogleDCMReader(Reader):
     ):
         self.dcm_client = GoogleDCMClient(access_token, client_id, client_secret, refresh_token)
         self.profile_ids = list(profile_ids)
+        self.report_id = report_id
         self.report_name = report_name
         self.report_type = report_type
         self.metrics = list(metrics)
@@ -75,9 +77,10 @@ class GoogleDCMReader(Reader):
         self.dcm_client.add_report_criteria(report, self.start_date, self.end_date, self.metrics, self.dimensions)
 
         for profile_id in self.profile_ids:
-            self.dcm_client.add_dimension_filters(report, profile_id, self.filters)
+            if not self.report_id:
+                self.dcm_client.add_dimension_filters(report, profile_id, self.filters)
 
-            report_id, file_id = self.dcm_client.run_report(report, profile_id)
+            report_id, file_id = self.dcm_client.run_report(report, profile_id, self.report_id)
 
             self.dcm_client.assert_report_file_ready(file_id=file_id, report_id=report_id)
 

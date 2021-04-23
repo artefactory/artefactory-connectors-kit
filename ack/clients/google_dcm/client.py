@@ -82,9 +82,10 @@ class GoogleDCMClient:
                 else:
                     logger.info(f"Filter not found: {dimension_name} - {dimension_value}")
 
-    def run_report(self, report, profile_id):
-        inserted_report = self._service.reports().insert(profileId=profile_id, body=report).execute()
-        report_id = inserted_report["id"]
+    def run_report(self, report, profile_id, report_id):
+        if not report_id:
+            inserted_report = self._service.reports().insert(profileId=profile_id, body=report).execute()
+            report_id = inserted_report["id"]
         file = self._service.reports().run(profileId=profile_id, reportId=report_id).execute()
         file_id = file["id"]
         return report_id, file_id
