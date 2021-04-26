@@ -9,6 +9,7 @@ LOCATIONS = ("EU", "US")
 
 class GoogleBigQueryWriterConfig(BaseModel):
     dataset: str
+    project_id: str
     table: str
     bucket: str
     partition_column: str = None

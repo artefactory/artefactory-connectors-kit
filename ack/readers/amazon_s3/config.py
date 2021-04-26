@@ -13,3 +13,6 @@ class AmazonS3ReaderConfig(BaseModel):
     dest_key_split: int = 1
     csv_delimiter: str = ","
     csv_fieldnames: str = None
+    region_name: str
+    access_key_id: str
+    secret_access_key: str
