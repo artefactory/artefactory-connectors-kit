@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-from ack.writers.amazon_s3.cli import amazon_s3
-from ack.writers.azure_blob_storage.cli import azure_blob_storage
-from ack.writers.console.cli import console
-from ack.writers.google_bigquery.cli import google_bigquery
-from ack.writers.google_cloud_storage.cli import google_cloud_storage
-from ack.writers.local.cli import local
+import os
 
-writers = [amazon_s3, console, google_bigquery, google_cloud_storage, local, azure_blob_storage]
+from pydantic import BaseModel
+
+
+class AzureBlobStorageWriterConfig(BaseModel):
+    container: str
+    connection_string: str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+    prefix: str = None
+    filename: str = None

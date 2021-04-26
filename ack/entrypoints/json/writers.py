@@ -16,6 +16,8 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from ack.writers.amazon_s3.config import AmazonS3WriterConfig
+from ack.writers.azure_blob_storage.config import AzureBlobStorageWriterConfig
+from ack.writers.azure_blob_storage.writer import AzureBlobStorageWriter
 from ack.writers.google_bigquery.config import GoogleBigQueryWriterConfig
 from ack.writers.google_cloud_storage.config import GoogleCloudStorageWriterConfig
 from ack.writers.local.config import LocalWriterConfig
@@ -32,4 +34,5 @@ writers_classes = {
     "google_bigquery": (GoogleBigQueryWriter, GoogleBigQueryWriterConfig),
     "google_cloud_storage": (GoogleCloudStorageWriter, GoogleCloudStorageWriterConfig),
     "local": (LocalWriter, LocalWriterConfig),
+    "azure_blob_storage": (AzureBlobStorageWriter, AzureBlobStorageWriterConfig),
 }

@@ -68,4 +68,5 @@ Writers
 - **Files (.njson)**
     - Amazon S3
     - Google Cloud Storage
+    - Azure Blob Storage
     - Local file
