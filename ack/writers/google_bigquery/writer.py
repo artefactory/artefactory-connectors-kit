@@ -17,7 +17,6 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from google.cloud import bigquery
-from ack import config
 from ack.config import logger
 from ack.clients.google.client import GoogleClient
 from ack.streams.normalized_json_stream import NormalizedJSONStream
@@ -30,10 +29,10 @@ class GoogleBigQueryWriter(Writer, GoogleClient):
     _client = None
 
     def __init__(
-        self, dataset, table, bucket, partition_column, write_disposition, location, keep_files,
+        self, dataset, project_id, table, bucket, partition_column, write_disposition, location, keep_files,
     ):
 
-        self._project_id = config.PROJECT_ID
+        self._project_id = project_id
         self._client = bigquery.Client(credentials=self._get_credentials(), project=self._project_id)
         self._dataset = dataset
         self._table = table

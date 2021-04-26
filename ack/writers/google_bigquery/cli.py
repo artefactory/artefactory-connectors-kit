@@ -24,6 +24,7 @@ from ack.writers.google_bigquery.writer import GoogleBigQueryWriter
 
 @click.command(name="write_bq")
 @click.option("--bq-dataset", required=True)
+@click.option("--bq-project-id", required=True)
 @click.option("--bq-table", required=True)
 @click.option("--bq-bucket", required=True)
 @click.option("--bq-partition-column")

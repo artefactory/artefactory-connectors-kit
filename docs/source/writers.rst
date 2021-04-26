@@ -84,6 +84,7 @@ Command options
 CMD Options                     JSON Options            Definition
 ==============================  ======================  =================================================================================================================================================
 ``--bq-dataset``                ``dataset``             BigQuery dataset name
+``--bq-project-id``             ``project_id``          GCP project ID
 ``--bq-table``                  ``table``               BigQuery table name
 ``--bq-write-disposition``      ``write-disposition``   BigQuery write disposition. Possible values: TRUNCATE (default), APPEND
 ``--bq-partition-column``       ``partition-column``    (Optional) Field to be used as a partition column (more information on `this page <https://cloud.google.com/bigquery/docs/partitioned-tables>`__)

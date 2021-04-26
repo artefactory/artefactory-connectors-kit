@@ -18,7 +18,6 @@
 
 import tempfile
 
-from ack import config
 from ack.config import logger
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
@@ -27,7 +26,7 @@ from ack.utils.file_reader import create_file_reader
 
 class ObjectStorageReader(Reader):
     def __init__(self, bucket, prefix, file_format, dest_key_split, platform=None, **kwargs):
-        self._client = self.create_client(config)
+        self._client = self.create_client()
         self._bucket = self.create_bucket(self._client, bucket)
         self._prefix_list = prefix
         self._platform = platform
@@ -70,7 +69,7 @@ class ObjectStorageReader(Reader):
     def is_compatible_object(self, _object):
         return self.get_key(_object).endswith("." + self._format)
 
-    def create_client(self, config):
+    def create_client(self):
         raise NotImplementedError
 
     def create_bucket(self, client, bucket):

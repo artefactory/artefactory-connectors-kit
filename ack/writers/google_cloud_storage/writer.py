@@ -16,16 +16,14 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import click
 from google.cloud import storage
-from ack import config
 from ack.clients.google.client import GoogleClient
 from ack.writers.object_storage.writer import ObjectStorageWriter
 
 
 class GoogleCloudStorageWriter(ObjectStorageWriter, GoogleClient):
     def __init__(self, bucket, project_id, prefix=None, filename=None, **kwargs):
-        self._project_id = self.get_project_id(project_id)
+        self._project_id = project_id
         super().__init__(bucket, prefix, filename, platform="GCS", **kwargs)
 
     def _create_client(self):
@@ -43,14 +41,3 @@ class GoogleCloudStorageWriter(ObjectStorageWriter, GoogleClient):
 
     def _get_uri(self, file_name):
         return f"gs{self._get_file_path(file_name)}"
-
-    @staticmethod
-    def get_project_id(project_id):
-        if project_id is None:
-            try:
-                return config.PROJECT_ID
-            except Exception:
-                raise click.exceptions.MissingParameter(
-                    "Please provide a project id in ENV var or params.", param_type="--gcs-project-id",
-                )
-        return project_id

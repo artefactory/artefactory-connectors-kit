@@ -17,6 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
+
 from ack.readers.amazon_s3.reader import AmazonS3Reader
 from ack.utils.args import extract_args
 from ack.utils.processor import processor
@@ -26,6 +27,9 @@ from ack.utils.processor import processor
 @click.option("--s3-bucket", required=True)
 @click.option("--s3-prefix", required=True, multiple=True)
 @click.option("--s3-format", required=True, type=click.Choice(["csv", "gz", "njson"]))
+@click.option("--s3-region-name", required=True)
+@click.option("--s3-access-key-id", required=True)
+@click.option("--s3-secret-access-key", required=True)
 @click.option("--s3-dest-key-split", default=-1, type=int)
 @click.option("--s3-csv-delimiter", default=",")
 @click.option("--s3-csv-fieldnames", default=None)

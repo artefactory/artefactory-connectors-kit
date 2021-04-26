@@ -21,14 +21,17 @@ from ack.readers.object_storage.reader import ObjectStorageReader
 
 
 class AmazonS3Reader(ObjectStorageReader):
-    def __init__(self, bucket, prefix, format, dest_key_split=-1, **kwargs):
+    def __init__(self, bucket, prefix, format, region_name, access_key_id, secret_access_key, dest_key_split=-1, **kwargs):
+        self._access_key_id = access_key_id
+        self._secret_access_key = secret_access_key
+        self._region_name = region_name
         super().__init__(bucket, prefix, format, dest_key_split, platform="S3", **kwargs)
 
-    def create_client(self, config):
+    def create_client(self):
         boto_config = {
-            "region_name": config.REGION_NAME,
-            "aws_access_key_id": config.AWS_ACCESS_KEY_ID,
-            "aws_secret_access_key": config.AWS_SECRET_ACCESS_KEY,
+            "region_name": self._region_name,
+            "aws_access_key_id": self._access_key_id,
+            "aws_secret_access_key": self._secret_access_key,
         }
         return boto3.resource("s3", **boto_config)
 

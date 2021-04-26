@@ -10,6 +10,7 @@ class GoogleCloudStorageReaderConfig(BaseModel):
     bucket: str
     prefix: List[str]
     format: Literal[FORMATS]
+    project_id: str
     dest_key_split: int = -1
     csv_delimiter: str = ","
     fieldnames: str = None
