@@ -109,6 +109,7 @@ class GoogleDCMClient:
 
         if report_file["status"] == "REPORT_AVAILABLE":
             # Create a get request.
+            self.auth = f"{self._credentials.token_response['token_type']} {self._credentials.token_response['access_token']}"
             request = self._service.files().get_media(reportId=report_id, fileId=file_id)
             headers = request.headers
             headers.update({"Authorization": self.auth})
