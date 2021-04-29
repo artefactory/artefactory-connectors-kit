@@ -27,8 +27,12 @@ from ack.utils.formatter import format_reader, format_writers
 @click.option(
     "--config-file", help="Path of the json file used to build the command.", required=True, type=click.Path(exists=True),
 )
-def read_and_write(config_file):
+def read_and_write_from_json(config_file):
     data = read_json(config_file)
+    read_and_write(data)
+
+
+def read_and_write(data):
     if "normalize_keys" not in data.keys():
         data["normalize_keys"] = False
 
@@ -44,4 +48,4 @@ def read_and_write(config_file):
 
 
 if __name__ == "__main__":
-    read_and_write()
+    read_and_write_from_json()

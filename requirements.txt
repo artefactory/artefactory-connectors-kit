@@ -1,7 +1,7 @@
 addressable==1.4.2
 boto3==1.10.34
 botocore==1.13.34
-cachetools==3.1.1
+cachetools==4.2.2
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
@@ -35,7 +35,6 @@ num2words==0.5.10
 numpy==1.20.2
 oauth2client==1.5.2
 prettytable==0.7.2
-protobuf==3.11.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.7
 pycountry==19.8.18
@@ -65,3 +64,5 @@ pyjwt==1.7.1
 cryptography==3.3.2
 bs4==0.0.1
 pydantic==1.8.1
+streamlit==0.80.0
+protobuf==3.15.8
