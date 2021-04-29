@@ -48,4 +48,4 @@ def read_and_write(data):
 
 
 if __name__ == "__main__":
-    read_and_write()
+    read_and_write_from_json()

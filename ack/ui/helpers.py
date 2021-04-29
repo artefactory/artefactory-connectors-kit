@@ -55,12 +55,11 @@ def create_field_ui(field, field_name, col, d, title):
         default = field.get("default", 1)
         number_input(field_name, field["title"], default, key=f'{title}{field_name}')
     else :
-        print(NotImplementedError)
+        raise NotImplementedError
 
 
 def create_ui_schema(schema, col, d, fields):
     exp = col.beta_expander("params")
-    print(schema)
     for field, field_name, field_opt in zip(schema["properties"].values(), schema["properties"], fields):
         if field_opt.required:
             create_field_ui(field, field_name, exp, d, schema["title"])

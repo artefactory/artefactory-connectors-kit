@@ -2,7 +2,10 @@ import streamlit as st
 from ack.entrypoints.json.readers import readers_classes
 from ack.entrypoints.json.writers import writers_classes
 from ack.ui.helpers import create_ui_schema, datetimeconverter
+import pandas as pd
 import json
+import sys
+import io
 
 from ack.entrypoints.json.main import read_and_write
 
@@ -44,4 +47,13 @@ if jsonbutton :
 if lauchbutton :
     json_result = json.dumps(result_dict, default=datetimeconverter, indent=2)
     dict_final = json.loads(json_result)
-    read_and_write(dict_final)
+    if writer == "console":
+        out = io.TextIOWrapper(io.BytesIO())
+        sys.stdout = out
+        read_and_write(dict_final)
+        out.seek(0)
+        df = pd.read_json(out.read(), lines=True)
+        df
+        sys.stdout = sys.__stdout__
+    else :
+        read_and_write(dict_final)
