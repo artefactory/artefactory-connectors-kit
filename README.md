@@ -21,7 +21,7 @@ The application is composed of **3 main components** (*implemented as Python cla
 [Airbyte](https://github.com/airbytehq/airbyte) is an open source project that has a mission to make data integration pipelines a commodity.
 We love this project and would probably not encourage using ACK to connect data that could be already connected with Airbyte.
 You can still use ACK if some of your data has no connector available in Airbyte yet.
-The list of connectors unavailable in Airbyte will most certainly reduce over time following the introduction of the [Python Connector Development Kit](https://github.com/airbytehq/airbyte/tree/master/airbyte-cdk/python).
+The list of connectors unavailable in Airbyte will most certainly decrease over time following the introduction of the [Python Connector Development Kit](https://github.com/airbytehq/airbyte/tree/master/airbyte-cdk/python).
 
 ## Available connectors
 
