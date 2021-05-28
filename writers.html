@@ -113,16 +113,22 @@
 <li class="toctree-l3"><a class="reference internal" href="#id6">Command options</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#local-writer">Local Writer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#azure-blob-storage-writer">Azure Blob Storage Writer</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id7">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id8">Command name</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id9">Command options</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#console-writer">Console Writer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-writer">Local Writer</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id10">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id11">Command name</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id12">Command options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#console-writer">Console Writer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Command name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Command options</a></li>
 </ul>
 </li>
 </ul>
@@ -383,22 +389,76 @@
 </table>
 </div>
 </div>
-<div class="section" id="local-writer">
-<h2>Local Writer<a class="headerlink" href="#local-writer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="azure-blob-storage-writer">
+<h2>Azure Blob Storage Writer<a class="headerlink" href="#azure-blob-storage-writer" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id7">
 <h3>Quickstart<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
-<p>The following command would allow you to write a file <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code> on the <code class="docutils literal notranslate"><span class="pre">~/Desktop</span></code> directory of your local machine:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_local --local-directory ~/Desktop/ --local-file-name google_analytics_report_2020-01-01.njson
+<p>The following command would allow you to:</p>
+<ul class="simple">
+<li><p>write output stream records to a blob named <code class="docutils literal notranslate"><span class="pre">azure_report_2020-01-01.njson</span></code></p></li>
+<li><p>located under the container <code class="docutils literal notranslate"><span class="pre">ack_extracts</span></code></p></li>
+<li><p>organized according to the following path: <code class="docutils literal notranslate"><span class="pre">ack_extracts/FR/analytics/azure_report_2020-01-01.njson</span></code></p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_azure_blob --azure-blob-connection-string &lt;CONNECTION_STRING&gt; --azure-blob-container ack_extracts --azure-prefix FR/analytics --gcs-filename azure_report_2020-01-01.njson
 </pre></div>
 </div>
 </div>
 <div class="section" id="id8">
 <h3>Command name<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_local</span></code></p>
-<p>JSON: <code class="docutils literal notranslate"><span class="pre">local</span></code></p>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_azure_blob</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">azure_blob_storage</span></code></p>
 </div>
 <div class="section" id="id9">
 <h3>Command options<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 13%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>CMD Options</p></th>
+<th class="head"><p>JSON Options</p></th>
+<th class="head"><p>Definition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--azure-blob-connection-string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">connection_string</span></code></p></td>
+<td><p>Azure connection string, if not given it will try to get the environment variable ‘AZURE_STORAGE_CONNECTION_STRING’</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--azure-blob-container</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">container</span></code></p></td>
+<td><p>Azure Storage container name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--azure-blob-prefix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code></p></td>
+<td><p>Azure Storage blob prefix</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--azure-blob-filename</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">filename</span></code></p></td>
+<td><p>Azure Storage blob name</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="local-writer">
+<h2>Local Writer<a class="headerlink" href="#local-writer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h3>Quickstart<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>The following command would allow you to write a file <code class="docutils literal notranslate"><span class="pre">google_analytics_report_2020-01-01.njson</span></code> on the <code class="docutils literal notranslate"><span class="pre">~/Desktop</span></code> directory of your local machine:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_local --local-directory ~/Desktop/ --local-file-name google_analytics_report_2020-01-01.njson
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h3>Command name<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>CMD: <code class="docutils literal notranslate"><span class="pre">write_local</span></code></p>
+<p>JSON: <code class="docutils literal notranslate"><span class="pre">local</span></code></p>
+</div>
+<div class="section" id="id12">
+<h3>Command options<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 28%" />
@@ -426,20 +486,20 @@
 </div>
 <div class="section" id="console-writer">
 <h2>Console Writer<a class="headerlink" href="#console-writer" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id10">
-<h3>Quickstart<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id13">
+<h3>Quickstart<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <p>The following command would allow you to write stream output records directly into your terminal, which is very convenient for debugging:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>write_console
 </pre></div>
 </div>
 </div>
-<div class="section" id="id11">
-<h3>Command name<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h3>Command name<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">write_console</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">console</span></code></p>
 </div>
-<div class="section" id="id12">
-<h3>Command options<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id15">
+<h3>Command options<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p><em>This writer command expects no options.</em></p>
 </div>
 </div>
