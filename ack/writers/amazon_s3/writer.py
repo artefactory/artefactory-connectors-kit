@@ -18,13 +18,9 @@
 
 import boto3
 from ack.writers.object_storage.writer import ObjectStorageWriter
-from ack.utils.retry import retry
 
 
 class AmazonS3Writer(ObjectStorageWriter):
-
-    _write_aux = retry(ObjectStorageWriter._write_aux)
-
     def __init__(self, bucket_name, bucket_region, access_key_id, access_key_secret, prefix=None, filename=None, **kwargs):
         self.boto_config = {
             "region_name": bucket_region,

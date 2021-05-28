@@ -16,6 +16,13 @@ The application is composed of **3 main components** (*implemented as Python cla
 - [Streams](ack/streams) (*transparent to the end-user*) are local objects used by writers to process individual records collected from the source.
 - [Writers](ack/writers) are writing the output stream object to the destination of your choice.
 
+## Why not Airbyte ?
+
+[Airbyte](https://github.com/airbytehq/airbyte) is an open source project that has a mission to make data integration pipelines a commodity.
+We love this project and would probably not encourage using ACK to connect data that could be already connected with Airbyte.
+You can still use ACK if some of your data has no connector available in Airbyte yet.
+The list of connectors unavailable in Airbyte will most certainly decrease over time following the introduction of the [Python Connector Development Kit](https://github.com/airbytehq/airbyte/tree/master/airbyte-cdk/python).
+
 ## Available connectors
 
 As of now, the application is offering the following Readers & Writers:
@@ -25,42 +32,42 @@ As of now, the application is offering the following Readers & Writers:
 - **Analytics**
     - Adobe Analytics 1.4
     - Adobe Analytics 2.0
-    - Google Analytics
+    - Google Analytics (available in Airbyte)
 - **Advertising - Adserver**
     - Google Campaign Manager
 - **Advertising - DSP**
     - Google Display & Video 360
     - The Trade Desk
 - **Advertising - Search**
-    - Google Ads
+    - Google Ads (available in Airbyte)
     - Google Search Ads 360
     - Google Search Console
     - Yandex Campaign
     - Yandex Statistics
 - **Advertising - Social**
-    - Facebook Marketing
+    - Facebook Marketing (available in Airbyte)
     - MyTarget
     - Radarly
     - Twitter Ads
 - **CRM**
-    - SalesForce
+    - SalesForce (available in Airbyte)
 - **Databases**
-    - MySQL
+    - MySQL (available in Airbyte)
 - **DevTools**
     - Confluence
 - **Files (.csv, .njson)**
     - Amazon S3
     - Google Cloud Storage
-    - Google Sheets
+    - Google Sheets (available in Airbyte)
 
 ### Writers
 
 - **Data Warehouses**
-    - Google BigQuery
+    - Google BigQuery (available in Airbyte)
 - **Debugging**
     - Console
 - **Files (.njson)**
     - Amazon S3
     - Google Cloud Storage
     - Azure Blob Storage
-    - Local file
+    - Local file (available in Airbyte)
