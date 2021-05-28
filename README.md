@@ -69,4 +69,5 @@ As of now, the application is offering the following Readers & Writers:
 - **Files (.njson)**
     - Amazon S3
     - Google Cloud Storage
+    - Azure Blob Storage
     - Local file (available in Airbyte)
