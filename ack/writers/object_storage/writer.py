@@ -19,6 +19,7 @@ import os
 
 from ack.config import logger
 from ack.writers.writer import Writer
+from ack.writers.object_storage.config import S3_KEY_SIZE_LIMIT
 
 
 class ObjectStorageWriter(Writer):
@@ -58,7 +59,17 @@ class ObjectStorageWriter(Writer):
 
     def _set_valid_file_name(self, stream_name):
         file_format = os.path.splitext(stream_name)[-1]
-        self._file_name = f"{self._file_name}{file_format}" if self._file_name is not None else stream_name
+        temp_file_name = f"{self._file_name}{file_format}" if self._file_name is not None else stream_name
+        temp_key = os.path.join(self._prefix, temp_file_name)
+
+        if len(temp_key) > S3_KEY_SIZE_LIMIT and self._platform == 'S3':
+            logger.warning(f'The key {temp_key} is too long for S3, the file has been renamed as generic')
+            self._file_name = f"generic_file_name{file_format}"
+        else:
+            self._file_name = temp_file_name
+
+    def _create_final_name(self):
+        self.self._prefix, self._file_name, self._platform
 
     def _create_client(self):
         return NotImplementedError
