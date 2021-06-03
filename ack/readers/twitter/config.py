@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+from ack.readers.facebook.config import BATCH_SIZE_LIMIT
 from typing import List, Literal
 
 from twitter_ads.campaign import Campaign, FundingInstrument, LineItem
@@ -29,6 +30,7 @@ REP_DATEFORMAT = "%Y-%m-%d"
 MAX_WAITING_SEC = 3600
 MAX_ENTITY_IDS_PER_JOB = 20
 MAX_CONCURRENT_JOBS = 100
+BATCH_SIZE = 200
 
 REPORT_TYPES = ["ANALYTICS", "REACH", "ENTITY"]
 

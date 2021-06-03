@@ -30,6 +30,7 @@ from ack.readers.twitter.config import (
     MAX_CONCURRENT_JOBS,
     MAX_ENTITY_IDS_PER_JOB,
     REP_DATEFORMAT,
+    BATCH_SIZE
 )
 from ack.streams.json_stream import JSONStream
 from ack.utils.date_handler import build_date_range
@@ -321,7 +322,7 @@ class TwitterReader(Reader):
             if "card_uri" in tweet:
                 tweets_with_uris.append(tweet)
 
-        batch_tweets = [tweets_with_uris[i:i + 200] for i in range(0, len(tweets_with_uris), 200)]
+        batch_tweets = [tweets_with_uris[i:i + BATCH_SIZE] for i in range(0, len(tweets_with_uris), BATCH_SIZE)]
 
         for batch in batch_tweets:
 
