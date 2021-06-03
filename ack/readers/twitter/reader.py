@@ -324,14 +324,15 @@ class TwitterReader(Reader):
         batch_tweets = [tweets_with_uris[i:i + 200] for i in range(0, len(tweets_with_uris), 200)]
 
         for batch in batch_tweets:
-            
+
             card_cursor = self.get_card_fetch(card_uris=[tweet['card_uri'] for tweet in batch])
             card_dict = {card.card_uri : card for card in card_cursor}
 
             for tweet in batch:
+
                 card_fetch = card_dict.get(tweet["card_uri"])
+
                 card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
-               
                 record = {
                     "tweet_id": tweet["tweet_id"],
                     "card_uri": tweet["card_uri"],
@@ -374,7 +375,7 @@ class TwitterReader(Reader):
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/cards-fetch
         """
         return CardsFetch.load(self.account, card_uris=card_uris)
-        
+
     @retry(
         wait=wait_exponential(multiplier=60, max=600),
         stop=stop_after_delay(3600),
