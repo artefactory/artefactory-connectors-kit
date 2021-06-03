@@ -322,15 +322,14 @@ class TwitterReader(Reader):
                 tweets_with_uris.append(tweet)
 
         batch_tweets = [tweets_with_uris[i:i + 200] for i in range(0, len(tweets_with_uris), 200)]
+
         for batch in batch_tweets:
             
             card_cursor = self.get_card_fetch(card_uris=[tweet['card_uri'] for tweet in batch])
-            print(card_cursor.count)
             card_dict = {card.card_uri : card for card in card_cursor}
-            print(len(card_dict))
+
             for tweet in batch:
-                card_fetch = card_dict[tweet["card_uri"]]
-                print(tweet["card_uri"])
+                card_fetch = card_dict.get(tweet["card_uri"])
                 card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
                
                 record = {
