@@ -316,10 +316,23 @@ class TwitterReader(Reader):
         Supported entities: CARD
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/
         """
+        tweets_with_uris = []
         for tweet in self.get_published_tweets_generator():
             if "card_uri" in tweet:
-                card_fetch = self.get_card_fetch(card_uri=tweet["card_uri"])
+                tweets_with_uris.append(tweet)
+
+        batch_tweets = [tweets_with_uris[i:i + 200] for i in range(0, len(tweets_with_uris), 200)]
+        for batch in batch_tweets:
+            
+            card_cursor = self.get_card_fetch(card_uris=[tweet['card_uri'] for tweet in batch])
+            print(card_cursor.count)
+            card_dict = {card.card_uri : card for card in card_cursor}
+            print(len(card_dict))
+            for tweet in batch:
+                card_fetch = card_dict[tweet["card_uri"]]
+                print(tweet["card_uri"])
                 card_attributes = {attr: getattr(card_fetch, attr, None) for attr in self.entity_attributes}
+               
                 record = {
                     "tweet_id": tweet["tweet_id"],
                     "card_uri": tweet["card_uri"],
@@ -355,14 +368,14 @@ class TwitterReader(Reader):
         retry=retry_if_exception_type(RateLimit),
         before_sleep=before_sleep_log(logger, LEVEL),
     )
-    def get_card_fetch(self, card_uri):
+    def get_card_fetch(self, card_uris):
         """
         Step 2 of 'ENTITY - CARD' report generation process:
         Returns the CartFetch object associated with a specific card_uri
         Documentation: https://developer.twitter.com/en/docs/ads/creatives/api-reference/cards-fetch
         """
-        return CardsFetch.load(self.account, card_uris=[card_uri]).first
-
+        return CardsFetch.load(self.account, card_uris=card_uris)
+        
     @retry(
         wait=wait_exponential(multiplier=60, max=600),
         stop=stop_after_delay(3600),
