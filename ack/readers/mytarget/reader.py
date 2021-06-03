@@ -21,12 +21,13 @@ from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 import requests
-from ack.readers.mytarget.config import LIMIT_REQUEST_MYTARGET, REQUEST_CONFIG
+from ack.readers.mytarget.config import HTTP_STATUS_OK, LIMIT_REQUEST_MYTARGET, REQUEST_CONFIG
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
 from ack.utils.exceptions import MissingItemsInResponse
-from tenacity import retry, stop_after_delay, wait_exponential
+from tenacity import retry, stop_after_delay, wait_exponential, retry_if_exception_type
 from ack.utils.date_handler import build_date_range
+from ack.config import logger
 
 
 class MyTargetReader(Reader):
@@ -168,7 +169,11 @@ class MyTargetReader(Reader):
                 content_by_date.append(new_line)
         yield from content_by_date
 
-    @retry(wait=wait_exponential(multiplier=1, min=1, max=600), stop=stop_after_delay(600))
+    @retry(
+        wait=wait_exponential(multiplier=1, min=1, max=600),
+        stop=stop_after_delay(600),
+        retry=retry_if_exception_type(MissingItemsInResponse),
+    )
     def __get_response(self, name_content: str, offset=0) -> Dict[str, Any]:
         """This function makes a request to the api after building eveything necessary to get the
         desired results for a specific need which is defined by name_content.
@@ -182,10 +187,15 @@ class MyTargetReader(Reader):
         """
         parameters = self.__generate_params_dict(name_content, offset=offset)
         request = self.__create_request(name_content, parameters)
-        resp = requests.get(**request).json()
-        if "items" not in resp.keys():
-            raise MissingItemsInResponse("Can't retrieve any item from this response")
-        return resp
+        resp = requests.get(**request)
+        if resp.status_code != HTTP_STATUS_OK:
+            logger.error(f"Error for request with url: {REQUEST_CONFIG[name_content]['url']}")
+            raise Exception(resp.json())
+        else:
+            resp_dict = resp.json()
+            if "items" not in resp_dict.keys():
+                raise MissingItemsInResponse("Can't retrieve any item from this response")
+            return resp_dict
 
     def __create_request(self, name_content: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """This function creates the dict with all the parameters required to query the api
