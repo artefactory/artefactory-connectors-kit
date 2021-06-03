@@ -36,7 +36,7 @@ class YandexCampaignReader(Reader):
         api_client = ApiClient(self.token, YANDEX_DIRECT_API_BASE_URL)
         request_body = self._build_request_body()
         response = api_client.execute_request(url="campaigns", body=request_body, headers={})
-        if response.json()["result"]:
+        if response.json().get("result", {}):
             yield response.json()
 
     def _build_request_body(self):
