@@ -26,6 +26,8 @@ LIMIT_REQUEST_MYTARGET = 20
 
 REQUEST_TYPES = ["performance", "budget"]
 
+HTTP_STATUS_OK = 200
+
 REQUEST_CONFIG = {
     "refresh_agency_token": {
         "url": "https://target.my.com/api/v2/oauth2/token.json",
