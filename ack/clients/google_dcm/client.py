@@ -72,6 +72,16 @@ class GoogleDCMClient:
                 "endDate": report["criteria"]["dateRange"]["endDate"],
             }
             values = self._service.dimensionValues().query(profileId=profile_id, body=request).execute()
+            current_values = values
+
+            while current_values["items"]:
+                nextPageToken = current_values["nextPageToken"]
+                current_values = (
+                    self._service.dimensionValues()
+                    .query(profileId=profile_id, body=request, pageToken=nextPageToken)
+                    .execute()
+                )
+                values["items"] += current_values["items"]
 
             report["criteria"]["dimensionFilters"] = report["criteria"].get("dimensionFilters", [])
             if values["items"]:
