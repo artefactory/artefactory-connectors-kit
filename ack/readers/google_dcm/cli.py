@@ -36,13 +36,13 @@ from ack.utils.processor import processor
     "--dcm-metric",
     "dcm_metrics",
     multiple=True,
-    help="https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-metrics",
+    help="https://developers.google.com/doubleclick-advertisers/v3.5/dimensions/#standard-metrics",
 )
 @click.option(
     "--dcm-dimension",
     "dcm_dimensions",
     multiple=True,
-    help="https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-dimensions",
+    help="https://developers.google.com/doubleclick-advertisers/v3.5/dimensions/#standard-dimensions",
 )
 @click.option("--dcm-start-date", type=click.DateTime(), help="Start date of the report")
 @click.option("--dcm-end-date", type=click.DateTime(), help="End date of the report")
@@ -52,7 +52,7 @@ from ack.utils.processor import processor
     type=click.Tuple([str, str]),
     multiple=True,
     help="A filter is a tuple following this pattern: (dimensionName, dimensionValue). "
-    "https://developers.google.com/doubleclick-advertisers/v3.3/dimensions/#standard-filters",
+    "https://developers.google.com/doubleclick-advertisers/v3.5/dimensions/#standard-filters",
 )
 @click.option(
     "--dcm-date-range",

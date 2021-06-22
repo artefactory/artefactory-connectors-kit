@@ -29,7 +29,7 @@ DOWNLOAD_FORMAT = "CSV"
 
 class GoogleDCMClient:
     API_NAME = "dfareporting"
-    API_VERSION = "v3.3"
+    API_VERSION = "v3.5"
 
     def __init__(self, access_token, client_id, client_secret, refresh_token):
         self._credentials = client.GoogleCredentials(
