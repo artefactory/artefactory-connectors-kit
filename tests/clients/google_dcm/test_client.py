@@ -62,12 +62,42 @@ class GoogleDCMClientTest(TestCase):
         assert report == expected
 
     @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
-    @mock.patch.object(MockService, "execute", lambda *args: {"items": [{"value": "ok"}, {"value": "nok"}]})
+    @mock.patch.object(
+        MockService,
+        "execute",
+        new=mock.Mock(
+            side_effect=[
+                {"items": [{"value": "ok"}, {"value": "nok"}], "nextPageToken": "2"},
+                {"items": [], "nextPageToken": "2"},
+            ]
+        ),
+    )
     @mock.patch("tests.clients.google_dcm.test_client.MockService")
-    def test_add_dimension_filters(self, mock_filter):
+    def test_add_dimension_filters_value_in_first_iteration(self, mock_filter):
         report = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}}}
         profile_id = ""
         filters = [("filter", "ok")]
         GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
         expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "ok"}]}}
+        assert report == expected
+
+    @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
+    @mock.patch.object(
+        MockService,
+        "execute",
+        new=mock.Mock(
+            side_effect=[
+                {"items": [{"value": "ok"}, {"value": "nok"}], "nextPageToken": "2"},
+                {"items": [{"value": "foo"}, {"value": "bar"}], "nextPageToken": "4"},
+                {"items": [], "nextPageToken": "4"},
+            ]
+        ),
+    )
+    @mock.patch("tests.clients.google_dcm.test_client.MockService")
+    def test_add_dimension_filters_value_in_second_iteration(self, mock_filter):
+        report = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}}}
+        profile_id = ""
+        filters = [("filter", "foo")]
+        GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
+        expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]}}
         assert report == expected
