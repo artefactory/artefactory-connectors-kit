@@ -17,6 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from ack.config import logger
+from ack.utils.exceptions import FilterNotFoundError
 import httplib2
 import requests
 
@@ -29,7 +30,7 @@ DOWNLOAD_FORMAT = "CSV"
 
 class GoogleDCMClient:
     API_NAME = "dfareporting"
-    API_VERSION = "v3.3"
+    API_VERSION = "v3.5"
 
     def __init__(self, access_token, client_id, client_secret, refresh_token):
         self._credentials = client.GoogleCredentials(
@@ -72,6 +73,16 @@ class GoogleDCMClient:
                 "endDate": report["criteria"]["dateRange"]["endDate"],
             }
             values = self._service.dimensionValues().query(profileId=profile_id, body=request).execute()
+            current_values = values
+
+            while current_values["items"]:
+                nextPageToken = current_values["nextPageToken"]
+                current_values = (
+                    self._service.dimensionValues()
+                    .query(profileId=profile_id, body=request, pageToken=nextPageToken)
+                    .execute()
+                )
+                values["items"] += current_values["items"]
 
             report["criteria"]["dimensionFilters"] = report["criteria"].get("dimensionFilters", [])
             if values["items"]:
@@ -80,7 +91,7 @@ class GoogleDCMClient:
                 if filter_value:
                     report["criteria"]["dimensionFilters"].append(filter_value)
                 else:
-                    logger.info(f"Filter not found: {dimension_name} - {dimension_value}")
+                    raise FilterNotFoundError(f"Filter not found: {dimension_name} - {dimension_value}")
 
     def run_report(self, report, profile_id):
         inserted_report = self._service.reports().insert(profileId=profile_id, body=report).execute()

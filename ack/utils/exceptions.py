@@ -87,3 +87,9 @@ class ReportScheduleNotReadyError(Exception):
     """Raised when The Trade Desk report schedule is not ready yet"""
 
     pass
+
+
+class FilterNotFoundError(Exception):
+    """Raised when a dimension filter is not found"""
+
+    pass
