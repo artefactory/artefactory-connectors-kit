@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
-from ack.readers.google_dbm.config import POSSIBLE_REQUEST_TYPES
+from ack.readers.google_dbm.config import POSSIBLE_REQUEST_TYPES, POSSIBLE_FREQUENCIES, POSSIBLE_TIMEZONE_CODES
 from ack.readers.google_dbm.reader import GoogleDBMReader
 from ack.utils.args import extract_args
 from ack.utils.processor import processor
@@ -33,7 +33,8 @@ from ack.utils.processor import processor
 @click.option("--dbm-request-type", type=click.Choice(POSSIBLE_REQUEST_TYPES), required=True)
 @click.option("--dbm-query-id")
 @click.option("--dbm-query-title")
-@click.option("--dbm-query-frequency", default="ONE_TIME")
+@click.option("--dbm-query-frequency", type=click.Choice(POSSIBLE_FREQUENCIES), default="ONE_TIME")
+@click.option("--dbm-query-timezone-code", type=click.Choice(POSSIBLE_TIMEZONE_CODES), default="America/New_York")
 @click.option("--dbm-query-param-type", default="TYPE_TRUEVIEW")
 @click.option("--dbm-start-date", type=click.DateTime())
 @click.option("--dbm-end-date", type=click.DateTime())

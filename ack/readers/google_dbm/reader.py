@@ -55,9 +55,12 @@ class GoogleDBMReader(Reader):
 
         self.kwargs = kwargs
 
-        check_date_range_definition_conformity(
-            self.kwargs.get("start_date"), self.kwargs.get("end_date"), self.kwargs.get("day_range")
-        )
+        if self.kwargs.get("query_frequency") == "ONE_TIME":
+            check_date_range_definition_conformity(
+                self.kwargs.get("start_date"), self.kwargs.get("end_date"), self.kwargs.get("day_range")
+            )
+        else:
+            check_date_range_definition_conformity(self.kwargs.get("start_date"), self.kwargs.get("end_date"), None)
 
     def get_query(self, query_id):
         if query_id:
@@ -73,7 +76,8 @@ class GoogleDBMReader(Reader):
         else:
             raise ClickException(f"No query found with the id {query_id}")
 
-    def get_query_body(self):
+    def get_query_body(self, scheduled):
+        scheduled_body = self.create_scheduled_body(scheduled)
         body_q = {
             "kind": "doubleclickbidmanager#query",
             "metadata": {
@@ -87,9 +91,9 @@ class GoogleDBMReader(Reader):
                 "metrics": list(self.kwargs.get("query_metric", [])),
                 "filters": [{"type": filt[0], "value": str(filt[1])} for filt in self.kwargs.get("filter")],
             },
-            "schedule": {"frequency": self.kwargs.get("query_frequency", "ONE_TIME")},
+            "schedule": scheduled_body,
         }
-        if self.kwargs.get("start_date") is not None and self.kwargs.get("end_date") is not None:
+        if not scheduled and self.kwargs.get("start_date") is not None and self.kwargs.get("end_date") is not None:
             body_q["metadata"]["dataRange"] = "CUSTOM_DATES"
             body_q["reportDataStartTimeMs"] = 1000 * int(
                 (self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()
@@ -97,8 +101,19 @@ class GoogleDBMReader(Reader):
             body_q["reportDataEndTimeMs"] = 1000 * int((self.kwargs.get("end_date") + datetime.timedelta(days=1)).timestamp())
         return body_q
 
-    def create_and_get_query(self):
-        body_query = self.get_query_body()
+    def create_scheduled_body(self, scheduled):
+        if not scheduled:
+            return {"frequency": "ONE_TIME"}
+        else:
+            return {
+                "frequency": self.kwargs.get("query_frequency"),
+                "nextRunTimezoneCode": self.kwargs.get("query_timezone_code"),
+                "endTimeMs": 1000 * int((self.kwargs.get("end_date") + datetime.timedelta(days=1)).timestamp()),
+                "startTimeMs": 1000 * int((self.kwargs.get("start_date") + datetime.timedelta(days=1)).timestamp()),
+            }
+
+    def create_and_get_query(self, scheduled=False):
+        body_query = self.get_query_body(scheduled)
         query = self._client.queries().createquery(body=body_query).execute()
         return query
 
@@ -176,7 +191,9 @@ class GoogleDBMReader(Reader):
         if request_type == "existing_query":
             data = [self.get_existing_query()]
         elif request_type == "custom_query":
-            data = [self.create_and_get_query()]
+            data = [self.create_and_get_query(scheduled=False)]
+        elif request_type == "custom_scheduled_query":
+            data = [self.create_and_get_query(scheduled=True)]
         elif request_type == "existing_query_report":
             data = self.get_query_report(existing_query=True)
         elif request_type == "custom_query_report":
