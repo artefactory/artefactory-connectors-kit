@@ -79,8 +79,8 @@ class TestGoogleDBMReader(unittest.TestCase):
         reader = GoogleDBMReader(**kwargs)
         reader.kwargs = {
             "filter": [("FILTER_ADVERTISER", 1)],
-            "start_date": datetime.datetime(2020, 1, 15, tzinfo=datetime.timezone.utc),
-            "end_date": datetime.datetime(2020, 1, 18, tzinfo=datetime.timezone.utc),
+            "scheduled_start_date": datetime.datetime(2020, 1, 15, tzinfo=datetime.timezone.utc),
+            "scheduled_end_date": datetime.datetime(2020, 1, 18, tzinfo=datetime.timezone.utc),
             "day_range": "LAST_7_DAYS",
             "query_timezone_code": "America/New_York",
             "query_frequency": "DAILY",
@@ -102,4 +102,4 @@ class TestGoogleDBMReader(unittest.TestCase):
                 "startTimeMs": 1579132800000,
             },
         }
-        self.assertDictEqual(reader.get_query_body(scheduled=True), expected_query_body)
+        self.assertDictEqual(reader.get_query_body(is_scheduled=True), expected_query_body)
