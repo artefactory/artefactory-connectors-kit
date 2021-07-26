@@ -46,7 +46,7 @@ class TestGoogleDBMReader(unittest.TestCase):
             "schedule": {"frequency": "ONE_TIME"},
         }
 
-        self.assertDictEqual(reader.get_query_body(scheduled=False), expected_query_body)
+        self.assertDictEqual(reader.get_query_body(is_scheduled=False), expected_query_body)
 
     @mock.patch.object(GoogleDBMReader, "__init__", mock_dbm_reader)
     def test_get_query_body_ms_conversion(self):
@@ -71,7 +71,7 @@ class TestGoogleDBMReader(unittest.TestCase):
             "reportDataStartTimeMs": 1579132800000,
             "reportDataEndTimeMs": 1579392000000,
         }
-        self.assertDictEqual(reader.get_query_body(scheduled=False), expected_query_body)
+        self.assertDictEqual(reader.get_query_body(is_scheduled=False), expected_query_body)
 
     @mock.patch.object(GoogleDBMReader, "__init__", mock_dbm_reader)
     def test_get_scheduled_query_body_ms_conversion(self):
