@@ -35,6 +35,8 @@ from ack.utils.processor import processor
 @click.option("--dbm-query-title")
 @click.option("--dbm-query-frequency", type=click.Choice(POSSIBLE_FREQUENCIES), default="ONE_TIME")
 @click.option("--dbm-query-timezone-code", type=click.Choice(POSSIBLE_TIMEZONE_CODES), default="America/New_York")
+@click.option("--dbm-scheduled-start-date", type=click.DateTime())
+@click.option("--dbm-scheduled-end-date", type=click.DateTime())
 @click.option("--dbm-query-param-type", default="TYPE_TRUEVIEW")
 @click.option("--dbm-start-date", type=click.DateTime())
 @click.option("--dbm-end-date", type=click.DateTime())

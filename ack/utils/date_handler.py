@@ -69,6 +69,24 @@ def check_date_range_definition_conformity(start_date: date, end_date: date, dat
             raise DateDefinitionException("Report end date should be equal or ulterior to report start date.")
 
 
+def check_scheduled_parameters_definition_conformity(
+    scheduled_start_date: date, scheduled_end_date: date, frequency: str, date_range: str
+):
+
+    if not date_range:
+        raise DateDefinitionException("You must define a date_range for a scheduled report")
+    elif not frequency:
+        raise DateDefinitionException("You must define a frequency for a scheduled report")
+    else:
+        if not all([scheduled_start_date, scheduled_end_date]):
+            raise DateDefinitionException("You must define a couple (scheduled-start-date, scheduled-end-date)")
+        elif scheduled_end_date < scheduled_start_date:
+            raise DateDefinitionException(
+                "Report scheduled-end-date should be equal or ulterior to report \
+            scheduled-start-date."
+            )
+
+
 def get_date_start_and_date_stop_from_date_range(date_range: str) -> Tuple[date, date]:
     """Returns date start and date stop based on the date range provided
     and the current date.

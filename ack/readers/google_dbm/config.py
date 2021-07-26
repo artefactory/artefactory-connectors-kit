@@ -61,6 +61,9 @@ class GoogleDBMReaderConfig(BaseModel):
     query_id: str = None
     query_title: str = None
     query_frequency: str = "ONE_TIME"
+    query_timezone_code: str = "America/New_York"
+    scheduled_start_date: datetime
+    scheduled_end_date: datetime
     query_param_type: str = "TYPE_TRUEVIEW"
     start_date: datetime = None
     end_date: datetime = None

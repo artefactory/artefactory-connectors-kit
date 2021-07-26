@@ -4,6 +4,7 @@ from datetime import date, datetime
 from freezegun import freeze_time
 from ack.utils.date_handler import (
     check_date_range_definition_conformity,
+    check_scheduled_parameters_definition_conformity,
     get_date_start_and_date_stop_from_date_range,
     build_date_range,
 )
@@ -84,4 +85,49 @@ class TestDateHandler(unittest.TestCase):
     def test_build_date_range_with_dates(self):
         self.assertTupleEqual(
             build_date_range(datetime(2021, 1, 1), datetime(2021, 1, 31), None), (datetime(2021, 1, 1), datetime(2021, 1, 31))
+        )
+
+    def test_check_scheduled_parameters_definition_missing_frequency(self):
+        with self.assertRaises(DateDefinitionException):
+            self.assertIsNone(
+                check_scheduled_parameters_definition_conformity(
+                    datetime(2021, 1, 12), datetime(2021, 1, 31), None, "LAST_7_DAYS"
+                )
+            )
+
+    def test_check_scheduled_parameters_definition_missing_date_range(self):
+        with self.assertRaises(DateDefinitionException):
+            self.assertIsNone(
+                check_scheduled_parameters_definition_conformity(datetime(2021, 1, 12), datetime(2021, 1, 31), "DAILY", None)
+            )
+
+    @parameterized.expand(
+        [
+            (None, date(2021, 1, 12), "DAILY", "YESTERDAY"),
+            (None, date(2021, 1, 12), "DAILY", "YESTERDAY"),
+            (date(2021, 1, 12), None, "DAILY", "YESTERDAY"),
+            (date(2021, 1, 12), None, "DAILY", "YESTERDAY"),
+        ]
+    )
+    def test_check_scheduled_parameters_definition_missing_dates(
+        self, scheduled_start_date, scheduled_end_date, frequency, date_range
+    ):
+        with self.assertRaises(DateDefinitionException):
+            self.assertIsNone(
+                check_scheduled_parameters_definition_conformity(
+                    scheduled_start_date, scheduled_end_date, frequency, date_range
+                )
+            )
+
+    def test_check_scheduled_parameters_definition_inconsistent(self):
+        with self.assertRaises(DateDefinitionException):
+            self.assertIsNone(
+                check_scheduled_parameters_definition_conformity(date(2021, 1, 12), date(2021, 1, 11), "DAILY", "YESTERDAY")
+            )
+
+    def test_check_scheduled_parameters_definition_conformity(self):
+        self.assertIsNone(
+            check_scheduled_parameters_definition_conformity(
+                datetime(2021, 1, 12), datetime(2021, 1, 31), "DAILY", "LAST_7_DAYS"
+            )
         )
