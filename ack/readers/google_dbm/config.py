@@ -60,8 +60,8 @@ class GoogleDBMReaderConfig(BaseModel):
     request_type: Literal[tuple(POSSIBLE_REQUEST_TYPES)]
     query_id: str = None
     query_title: str = None
-    query_frequency: str = "ONE_TIME"
-    query_timezone_code: str = "America/New_York"
+    query_frequency: Literal[tuple(POSSIBLE_FREQUENCIES)]
+    query_timezone_code: Literal[tuple(POSSIBLE_TIMEZONE_CODES)]
     scheduled_start_date: datetime
     scheduled_end_date: datetime
     query_param_type: str = "TYPE_TRUEVIEW"
