@@ -63,7 +63,17 @@ class GoogleDCMClient:
             "dimensions": [{"name": dim} for dim in dimensions],
             "metricNames": metrics,
         }
-        report["criteria"] = criteria
+        if report['type'] == 'REACH':
+            report['reachCriteria'] = criteria
+        elif report['type'] == 'PATH_TO_CONVERSION':
+            report['pathToConversionCriteria'] = criteria
+        elif report['type'] == 'FLOODLIGHT':
+            report['floodlightCriteria'] = criteria
+        elif report['type'] == 'CROSS_DIMENSION_REACH':
+            report['crossDimensionReachCriteria'] = criteria
+        else: # Standard Report Criteria
+            report['criteria'] = criteria
+        
 
     def add_dimension_filters(self, report, profile_id, filters):
         for dimension_name, dimension_value in filters:
