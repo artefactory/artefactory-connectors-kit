@@ -73,14 +73,24 @@ class GoogleDCMClient:
             report['crossDimensionReachCriteria'] = criteria
         else: # Standard Report Criteria
             report['criteria'] = criteria
-        
 
     def add_dimension_filters(self, report, profile_id, filters):
+        if report['type'] == 'REACH':
+            criteria = 'reachCriteria'
+        elif report['type'] == 'PATH_TO_CONVERSION':
+            criteria = 'pathToConversionCriteria'
+        elif report['type'] == 'FLOODLIGHT':
+            criteria = 'floodlightCriteria'
+        elif report['type'] == 'CROSS_DIMENSION_REACH':
+            criteria = 'crossDimensionReachCriteria'
+        else: # Standard Report Criteria
+            criteria = 'criteria' 
+        
         for dimension_name, dimension_value in filters:
             request = {
                 "dimensionName": dimension_name,
-                "startDate": report["criteria"]["dateRange"]["startDate"],
-                "endDate": report["criteria"]["dateRange"]["endDate"],
+                "startDate": report[criteria]["dateRange"]["startDate"],
+                "endDate": report[criteria]["dateRange"]["endDate"],
             }
             values = self._service.dimensionValues().query(profileId=profile_id, body=request).execute()
             current_values = values
@@ -94,12 +104,12 @@ class GoogleDCMClient:
                 )
                 values["items"] += current_values["items"]
 
-            report["criteria"]["dimensionFilters"] = report["criteria"].get("dimensionFilters", [])
+            report[criteria]["dimensionFilters"] = report[criteria].get("dimensionFilters", [])
             if values["items"]:
                 # Add value as a filter to the report criteria.
                 filter_value = self.get_filter_value(dimension_value, values)
                 if filter_value:
-                    report["criteria"]["dimensionFilters"].append(filter_value)
+                    report[criteria]["dimensionFilters"].append(filter_value)
                 else:
                     raise FilterNotFoundError(f"Filter not found: {dimension_name} - {dimension_value}")
 
