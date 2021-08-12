@@ -71,7 +71,7 @@ class GoogleDCMClient:
             report['floodlightCriteria'] = criteria
         elif report['type'] == 'CROSS_DIMENSION_REACH':
             report['crossDimensionReachCriteria'] = criteria
-        else: # Standard Report Criteria
+        else:  # Standard Report Criteria
             report['criteria'] = criteria
 
     def add_dimension_filters(self, report, profile_id, filters):
@@ -83,9 +83,9 @@ class GoogleDCMClient:
             criteria = 'floodlightCriteria'
         elif report['type'] == 'CROSS_DIMENSION_REACH':
             criteria = 'crossDimensionReachCriteria'
-        else: # Standard Report Criteria
-            criteria = 'criteria' 
-        
+        else:  # Standard Report Criteria
+            criteria = 'criteria'
+
         for dimension_name, dimension_value in filters:
             request = {
                 "dimensionName": dimension_name,
