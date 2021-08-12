@@ -1,10 +1,6 @@
 from pydantic import BaseModel
-from enum import Enum
 
-
-class FileFormatEnum(str, Enum):
-    njson = "njson"
-    zstd = "zstd"
+from ack.writers.formatters.config import FileFormatEnum
 
 
 class LocalWriterConfig(BaseModel):
