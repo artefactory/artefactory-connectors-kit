@@ -102,4 +102,3 @@ class GoogleDCMClientTest(TestCase):
         expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]}}
         assert report == expected
 '''
-
