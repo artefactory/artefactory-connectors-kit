@@ -32,13 +32,13 @@ class LocalWriter(FileWriter):
         """
         Write file to disk at location given as parameter.
         """
-        file_name = self._file_name or stream.name
+        file_name_without_extension = self._file_name or '.'.join(stream.name.split(".")[:-1])
+        file_name = '.'.join([file_name_without_extension, self._file_format])
         path = os.path.join(self._directory, file_name)
 
         logger.info(f"Writing stream {file_name} to {path}")
-        logger.info(f"file format: {self._file_format}")
         file = stream.as_file()
-        with open(path, "wb") as h:
+        with self.formatter.open_file(path) as h:
             while True:
                 buffer = file.read(1024)
                 if len(buffer) > 0:
