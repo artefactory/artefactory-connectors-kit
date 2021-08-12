@@ -24,9 +24,9 @@ from ack.writers.object_storage.writer import ObjectStorageWriter
 
 
 class GoogleCloudStorageWriter(ObjectStorageWriter, GoogleClient):
-    def __init__(self, bucket, project_id, prefix=None, filename=None, **kwargs):
+    def __init__(self, bucket, project_id, prefix=None, file_name=None, **kwargs):
         self._project_id = self.get_project_id(project_id)
-        super().__init__(bucket, prefix, filename, platform="GCS", **kwargs)
+        super().__init__(bucket, prefix, file_name, platform="GCS", **kwargs)
 
     def _create_client(self):
         return storage.Client(credentials=self._get_credentials(), project=self._project_id)
