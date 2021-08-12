@@ -24,6 +24,7 @@ from ack.writers.object_storage.config import S3_KEY_SIZE_LIMIT
 
 class ObjectStorageWriter(FileWriter):
     def __init__(self, bucket_name, prefix=None, file_name=None, platform=None, **kwargs):
+        super().__init__(kwargs.get('file_format'))
         self._bucket_name = bucket_name
         self._prefix = prefix if prefix else ""
         self._file_name = file_name

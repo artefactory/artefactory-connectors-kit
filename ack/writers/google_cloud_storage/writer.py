@@ -39,7 +39,7 @@ class GoogleCloudStorageWriter(ObjectStorageWriter, GoogleClient):
 
     def _create_blob(self, file_name, stream):
         blob = self._bucket.blob(file_name)
-        blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
+        blob.upload_from_file(self.formatter.format_stream_for_upload(stream), content_type=self.formatter.content_type)
 
     def _get_uri(self, file_name):
         return f"gs{self._get_file_path(file_name)}"
