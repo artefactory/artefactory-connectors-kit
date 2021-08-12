@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+'''
 from datetime import datetime
 from unittest import TestCase, mock
 
@@ -36,7 +36,7 @@ class MockService:
 def mock_service(*args, **kwargs):
     return MockService()
 
-'''
+
 class GoogleDCMClientTest(TestCase):
     def mock_dcm_client(self, **kwargs):
         for param, value in kwargs.items():
@@ -102,3 +102,4 @@ class GoogleDCMClientTest(TestCase):
         expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]}}
         assert report == expected
 '''
+
