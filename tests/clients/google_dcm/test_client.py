@@ -52,7 +52,7 @@ class GoogleDCMClientTest(TestCase):
         elements = ["a", "b"]
         GoogleDCMClient(**self.kwargs).add_report_criteria(report, start, end, elements, elements)
         expected = {
-            "name": "report", "type": "REACH", 
+            "name": "report", "type": "REACH",
             "criteria": {
                 "dateRange": {"startDate": "2020-01-01", "endDate": "2020-02-01"},
                 "dimensions": [{"name": "a"}, {"name": "b"}],
