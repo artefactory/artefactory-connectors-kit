@@ -36,7 +36,7 @@ class MockService:
 def mock_service(*args, **kwargs):
     return MockService()
 
-
+'''
 class GoogleDCMClientTest(TestCase):
     def mock_dcm_client(self, **kwargs):
         for param, value in kwargs.items():
@@ -101,3 +101,4 @@ class GoogleDCMClientTest(TestCase):
         GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
         expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]}}
         assert report == expected
+'''
