@@ -18,11 +18,11 @@
 import os
 
 from ack.config import logger
-from ack.writers.writer import Writer
+from ack.writers.file_writer.writer import FileWriter
 from ack.writers.object_storage.config import S3_KEY_SIZE_LIMIT
 
 
-class ObjectStorageWriter(Writer):
+class ObjectStorageWriter(FileWriter):
     def __init__(self, bucket_name, prefix=None, file_name=None, platform=None, **kwargs):
         self._bucket_name = bucket_name
         self._prefix = prefix if prefix else ""

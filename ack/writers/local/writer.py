@@ -19,13 +19,14 @@
 import os
 
 from ack.config import logger
-from ack.writers.writer import Writer
+from ack.writers.file_writer.writer import FileWriter
 
 
-class LocalWriter(Writer):
-    def __init__(self, directory, file_name):
+class LocalWriter(FileWriter):
+    def __init__(self, directory, file_name, file_format):
         self._directory = directory
         self._file_name = file_name
+        super().__init__(file_format)
 
     def write(self, stream):
         """
@@ -35,6 +36,7 @@ class LocalWriter(Writer):
         path = os.path.join(self._directory, file_name)
 
         logger.info(f"Writing stream {file_name} to {path}")
+        logger.info(f"file format: {self._file_format}")
         file = stream.as_file()
         with open(path, "wb") as h:
             while True:
