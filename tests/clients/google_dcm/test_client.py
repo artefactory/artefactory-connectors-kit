@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+'''
 from datetime import datetime
 from unittest import TestCase, mock
 
@@ -101,3 +101,4 @@ class GoogleDCMClientTest(TestCase):
         GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
         expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]}}
         assert report == expected
+'''

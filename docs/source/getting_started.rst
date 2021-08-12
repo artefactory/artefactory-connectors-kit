@@ -3,6 +3,12 @@ Getting started
 ###############
 
 ==================================
+Requirements
+==================================
+
+Python 3.8+
+
+==================================
 Set-up your developing environment
 ==================================
 
@@ -28,6 +34,12 @@ Install dependencies:
 .. code-block:: shell
 
     pip install -r requirements.txt
+
+Set your environment variables:
+
+.. code-block:: shell
+
+    export PYTHONPATH=.
 
 =============================
 Launch your first ACK command
