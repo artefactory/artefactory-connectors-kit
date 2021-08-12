@@ -46,13 +46,13 @@ class GoogleDCMClientTest(TestCase):
 
     @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
     def test_add_report_criteria(self):
-        report = {"name": "report",  "type":"REACH"}
+        report = {"name": "report", "type": "REACH"}
         start = datetime(year=2020, month=1, day=1)
         end = datetime(year=2020, month=2, day=1)
         elements = ["a", "b"]
         GoogleDCMClient(**self.kwargs).add_report_criteria(report, start, end, elements, elements)
         expected = {
-            "name": "report", "type":"REACH", 
+            "name": "report", "type": "REACH", 
             "criteria": {
                 "dateRange": {"startDate": "2020-01-01", "endDate": "2020-02-01"},
                 "dimensions": [{"name": "a"}, {"name": "b"}],
