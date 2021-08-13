@@ -19,6 +19,8 @@ from datetime import datetime
 import time
 import io
 
+from ack.utils.iterstream import IterStream
+
 
 class Stream(object):
     _name = None
@@ -87,40 +89,4 @@ class Stream(object):
 
     @staticmethod
     def _iterable_to_stream(iterable, encode, buffer_size=io.DEFAULT_BUFFER_SIZE):
-        """
-        Credit goes to 'Mechanical snail'
-            at https://stackoverflow.com/questions/6657820/python-convert-an-iterable-to-a-stream
-
-        Lets you use an iterable (e.g. a generator) that yields bytestrings as a
-        read-only
-        input stream.
-
-        The stream implements Python 3's newer I/O API (available in Python 2's io
-        module).
-        For efficiency, the stream is buffered.
-        """
-
-        class IterStream(io.RawIOBase):
-            def __init__(self):
-                self.leftover = None
-                self.count = 0
-
-            def readable(self):
-                return True
-
-            def readinto(self, b):
-                try:
-                    chunk_length = len(b)  # We're supposed to return at most this much
-                    chunk = self.leftover or encode(next(iterable))
-                    output, self.leftover = chunk[:chunk_length], chunk[chunk_length:]
-                    b[: len(output)] = output
-                    self.count += len(output)
-                    return len(output)
-                except StopIteration:
-                    return 0  # indicate EOF
-
-            # tell should be implemented for GCS
-            def tell(self):
-                return self.count
-
-        return io.BufferedReader(IterStream(), buffer_size=buffer_size)
+        return io.BufferedReader(IterStream(encode, iterable), buffer_size=buffer_size)

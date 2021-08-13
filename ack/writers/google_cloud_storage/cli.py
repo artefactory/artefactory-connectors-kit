@@ -27,8 +27,9 @@ from ack.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
 @click.option("--gcs-prefix", help="GCS path to write the file.")
 @click.option("--gcs-project-id", help="GCS Project Id")
 @click.option(
-    "--gcs-filename", help="Override the default name of the file (don't add the extension)",
+    "--gcs-file-name", help="Override the default name of the file (don't add the extension)",
 )
+@click.option("--gcs-file-format", "-f", help="File's format", default="njson", type=click.Choice(['njson', 'zstd']))
 @processor()
 def google_cloud_storage(**kwargs):
     return GoogleCloudStorageWriter(**extract_args("gcs_", kwargs))

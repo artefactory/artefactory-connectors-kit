@@ -3,6 +3,8 @@ import json
 
 import zstandard
 
+from ack.utils.iterstream import IterStream
+
 
 class Formatter(object):
     file_format = None
@@ -35,35 +37,14 @@ class NJsonFormatter(Formatter):
 class ZStandardFormatter(Formatter):
     file_format = "zstd"
     content_type = "application/zstd"
+    zstd_context_compressor = zstandard.ZstdCompressor()
 
     def open_file(self, file, mode="wb"):
         return zstandard.open(file, mode)
 
+    def encode_record_as_bytes(self, record):
+        data = (json.dumps(record) + '\n').encode("utf-8")
+        return self.zstd_context_compressor.compress(data)
+
     def format_stream_for_upload(self, stream):
-        class IterStream(io.RawIOBase):
-            def __init__(self):
-                self.leftover = None
-                self.count = 0
-                self.zstd_context_compressor = zstandard.ZstdCompressor()
-
-            def readable(self):
-                return True
-
-            def readinto(self, b):
-                try:
-                    chunk_length = len(b)  # We're supposed to return at most this much
-                    data = next(iter(stream))
-                    encoded_data = (json.dumps(data) + '\n').encode('utf-8')
-                    chunk = self.leftover or self.zstd_context_compressor.compress(encoded_data)
-                    output, self.leftover = chunk[:chunk_length], chunk[chunk_length:]
-                    b[: len(output)] = output
-                    self.count += len(output)
-                    return len(output)
-                except StopIteration:
-                    return 0  # indicate EOF
-
-            # tell should be implemented for GCS
-            def tell(self):
-                return self.count
-
-        return io.BufferedReader(IterStream(), buffer_size=io.DEFAULT_BUFFER_SIZE)
+        return io.BufferedReader(IterStream(self.encode_record_as_bytes, iter(stream)), buffer_size=io.DEFAULT_BUFFER_SIZE)
