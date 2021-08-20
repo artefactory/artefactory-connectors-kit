@@ -18,13 +18,14 @@ Quickstart
 
 The following command would allow you to:
 
-- write output stream records to a blob named ``google_analytics_report_2020-01-01.njson``
+- write output stream records to a blob named ``google_analytics_report_2020-01-01``
+- format the file as an ``njson``
 - under the Amazon S3 bucket ``ack_extracts``
 - organized according to the following path: ``ack_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson``
 
 .. code-block:: shell
 
-    write_s3 --s3-bucket-name ack_extracts --s3-prefix FR/google_analytics --s3-filename google_analytics_report_2020-01-01.njson --s3-bucket-region <BUCKET_REGION> --s3-access-key-id <ACCESS_KEY_ID> --s3-access-key-secret <ACCESS_KEY_SECRET>
+    write_s3 --s3-bucket-name ack_extracts --s3-prefix FR/google_analytics --s3-filename google_analytics_report_2020-01-01 --s3-fileformat njson --s3-bucket-region <BUCKET_REGION> --s3-access-key-id <ACCESS_KEY_ID> --s3-access-key-secret <ACCESS_KEY_SECRET>
 
 ------------
 Command name
@@ -44,6 +45,7 @@ CMD Options                     JSON Options            Definition
 ``--s3-bucket-name``            ``bucket_name``         S3 bucket name
 ``--s3-prefix``                 ``prefix``              S3 blob prefix
 ``--s3-filename``               ``filename``            S3 blob name
+``--s3-fileformat``             ``fileformat``          (Optional) S3 Storage blob format (available format: njson, zstd) (default: njson)
 ``--s3-bucket-region``          ``bucket_region``       S3 bucket region
 ``--s3-access-key-id``          ``access_key_id``       S3 access key ID
 ``--s3-access-key-secret``      ``access_key_secret``   S3 access key secret
@@ -102,13 +104,14 @@ Quickstart
 
 The following command would allow you to:
 
-- write output stream records to a blob named ``google_analytics_report_2020-01-01.njson``
+- write output stream records to a blob named ``google_analytics_report_2020-01-01``
+- format the file as an ``njson``
 - located under the Cloud Storage bucket ``ack_extracts``
 - organized according to the following path: ``ack_extracts/FR/google_analytics/google_analytics_report_2020-01-01.njson``
 
 .. code-block:: shell
 
-    write_gcs --gcs-project-id <GCP_PROJECT_ID> --gcs-bucket ack_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01.njson
+    write_gcs --gcs-project-id <GCP_PROJECT_ID> --gcs-bucket ack_extracts --gcs-prefix FR/google_analytics --gcs-filename google_analytics_report_2020-01-01 --gcs-file-format njson
 
 ------------
 Command name
@@ -122,14 +125,15 @@ JSON: ``google_cloud_storage``
 Command options
 ---------------
 
-==============================  ===============  ==============================
+==============================  ===============  =======================================================================
 CMD Options                     JSON Options     Definition
-==============================  ===============  ==============================
+==============================  ===============  =======================================================================
 ``--gcs-project-id``            ``project_id``   GCP project ID
 ``--gcs-bucket``                ``bucket``       Cloud Storage bucket name
 ``--gcs-prefix``                ``prefix``       Cloud Storage blob prefix
 ``--gcs-file-name``             ``file_name``    Cloud Storage blob name
-==============================  ===============  ==============================
+``--gcs-file-format``           ``file_format``  (Optional) Cloud Storage blob format (available format: njson, zstd) (default: njson)
+==============================  ===============  =======================================================================
 
 =========================
 Azure Blob Storage Writer
@@ -141,13 +145,14 @@ Quickstart
 
 The following command would allow you to:
 
-- write output stream records to a blob named ``azure_report_2020-01-01.njson``
+- write output stream records to a blob named ``azure_report_2020-01-01``
+- format the file as an ``njson``
 - located under the container ``ack_extracts``
 - organized according to the following path: ``ack_extracts/FR/analytics/azure_report_2020-01-01.njson``
 
 .. code-block:: shell
 
-    write_azure_blob --azure-blob-connection-string <CONNECTION_STRING> --azure-blob-container ack_extracts --azure-prefix FR/analytics --gcs-filename azure_report_2020-01-01.njson
+    write_azure_blob --azure-blob-connection-string <CONNECTION_STRING> --azure-blob-container ack_extracts --azure-prefix FR/analytics --azure-blob-filename azure_report_2020-01-01 --azure-blob-fileformat njson
 
 ------------
 Command name
@@ -168,6 +173,7 @@ CMD Options                           JSON Options            Definition
 ``--azure-blob-container``            ``container``           Azure Storage container name
 ``--azure-blob-prefix``               ``prefix``              Azure Storage blob prefix
 ``--azure-blob-filename``             ``filename``            Azure Storage blob name
+``--azure-blob-fileformat``           ``fileformat``          (Optional) Azure Storage blob format (available format: njson, zstd) (default: njson)
 ====================================  ======================  =====================================================================================================================
 
 ============
@@ -182,7 +188,7 @@ The following command would allow you to write a file ``google_analytics_report_
 
 .. code-block:: shell
 
-    write_local --local-directory ~/Desktop/ --local-file-name google_analytics_report_2020-01-01.njson
+    write_local --local-directory ~/Desktop/ --local-file-name google_analytics_report_2020-01-01 --local-file-format njson
 
 ------------
 Command name
@@ -196,12 +202,13 @@ JSON: ``local``
 Command options
 ---------------
 
-==============================  ==============  ===============================================================
-CMD Options                     JSON Options    Definition
-==============================  ==============  ===============================================================
-``--local-directory (-d)``      ``directory``   Directory in which the file should be stored
-``--local-file-name (-n)``      ``file_name``   File name
-==============================  ==============  ===============================================================
+==============================  ===============  ========================================================================
+CMD Options                     JSON Options     Definition
+==============================  ===============  ========================================================================
+``--local-directory (-d)``      ``directory``    Directory in which the file should be stored
+``--local-file-name (-n)``      ``file_name``    File name
+``--local-file-format (-f)``    ``file_format``  (Optional) File format (currently available: njson, zstd) (default: njson)
+==============================  ===============  ========================================================================
 
 ==============
 Console Writer
