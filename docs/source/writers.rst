@@ -236,3 +236,25 @@ JSON: ``console``
 Command options
 ---------------
 *This writer command expects no options.*
+
+======
+Helper
+======
+
+---------------------
+How to read zstd file
+---------------------
+
+The following script shows you how to read ztsd file:
+
+.. code-block:: python
+
+    import zstandard
+    import io
+
+    with zstandard.open(path_to_your_file, "rb") as compressed_file:
+        buffered_reader = io.BufferedReader(compressed_file)
+        line = buffered_reader.readline()
+        while line != b'':
+            # do something with line
+            line = buffered_reader.readline()
