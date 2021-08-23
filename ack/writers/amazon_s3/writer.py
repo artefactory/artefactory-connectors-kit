@@ -17,17 +17,20 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import boto3
+
 from ack.writers.object_storage.writer import ObjectStorageWriter
 
 
 class AmazonS3Writer(ObjectStorageWriter):
-    def __init__(self, bucket_name, bucket_region, access_key_id, access_key_secret, prefix=None, filename=None, **kwargs):
+    def __init__(self, bucket_name, bucket_region, access_key_id, access_key_secret, fileformat, prefix=None,
+                 filename=None, **kwargs):
         self.boto_config = {
             "region_name": bucket_region,
             "aws_access_key_id": access_key_id,
             "aws_secret_access_key": access_key_secret,
         }
-        super().__init__(bucket_name=bucket_name, prefix=prefix, file_name=filename, platform="S3", **kwargs)
+        super().__init__(bucket_name=bucket_name, prefix=prefix, file_name=filename, platform="S3",
+                         file_format=fileformat, **kwargs)
 
     def _create_client(self):
         return boto3.resource("s3", **self.boto_config)
@@ -39,7 +42,7 @@ class AmazonS3Writer(ObjectStorageWriter):
         return client.buckets.all()
 
     def _create_blob(self, file_name, stream):
-        self._bucket.upload_fileobj(stream.as_file(), file_name)
+        self._bucket.upload_fileobj(self.formatter.format_stream_for_upload(stream), file_name)
 
     def _get_uri(self, file_name):
         return f"s3{self._get_file_path(file_name)}"
