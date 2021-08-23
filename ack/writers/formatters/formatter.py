@@ -43,7 +43,7 @@ class ZStandardFormatter(Formatter):
         return zstandard.open(file, mode)
 
     def encode_record_as_bytes(self, record):
-        data = (json.dumps(record) + '\n').encode("utf-8")
+        data = (json.dumps(record) + "\n").encode("utf-8")
         return self.zstd_context_compressor.compress(data)
 
     def format_stream_for_upload(self, stream):

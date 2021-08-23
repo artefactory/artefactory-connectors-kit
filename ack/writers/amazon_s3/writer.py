@@ -22,15 +22,17 @@ from ack.writers.object_storage.writer import ObjectStorageWriter
 
 
 class AmazonS3Writer(ObjectStorageWriter):
-    def __init__(self, bucket_name, bucket_region, access_key_id, access_key_secret, fileformat, prefix=None,
-                 filename=None, **kwargs):
+    def __init__(
+        self, bucket_name, bucket_region, access_key_id, access_key_secret, fileformat, prefix=None, filename=None, **kwargs
+    ):
         self.boto_config = {
             "region_name": bucket_region,
             "aws_access_key_id": access_key_id,
             "aws_secret_access_key": access_key_secret,
         }
-        super().__init__(bucket_name=bucket_name, prefix=prefix, file_name=filename, platform="S3",
-                         file_format=fileformat, **kwargs)
+        super().__init__(
+            bucket_name=bucket_name, prefix=prefix, file_name=filename, platform="S3", file_format=fileformat, **kwargs
+        )
 
     def _create_client(self):
         return boto3.resource("s3", **self.boto_config)

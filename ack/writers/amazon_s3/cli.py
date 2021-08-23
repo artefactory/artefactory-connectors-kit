@@ -29,7 +29,7 @@ from ack.writers.amazon_s3.writer import AmazonS3Writer
 @click.option("--s3-access-key-secret", required=True)
 @click.option("--s3-prefix", help="s3 Prefix", default=None)
 @click.option("--s3-filename", help="Override the default name of the file (don't add the extension)")
-@click.option("--s3-fileformat", help="File's format", default="njson", type=click.Choice(['njson', 'zstd']))
+@click.option("--s3-fileformat", help="File's format", default="njson", type=click.Choice(["njson", "zstd"]))
 @processor("s3_access_key_id", "s3_access_key_secret")
 def amazon_s3(**kwargs):
     return AmazonS3Writer(**extract_args("s3_", kwargs))

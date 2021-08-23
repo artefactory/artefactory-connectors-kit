@@ -32,8 +32,8 @@ class LocalWriter(FileWriter):
         """
         Write file to disk at location given as parameter.
         """
-        file_name_without_extension = self._file_name or '.'.join(stream.name.split(".")[:-1])
-        file_name = '.'.join([file_name_without_extension, self._file_format])
+        file_name_without_extension = self._file_name or ".".join(stream.name.split(".")[:-1])
+        file_name = ".".join([file_name_without_extension, self._file_format])
         path = os.path.join(self._directory, file_name)
 
         logger.info(f"Writing stream {file_name} to {path}")

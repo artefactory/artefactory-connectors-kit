@@ -20,9 +20,9 @@ from azure.storage.blob import BlobServiceClient
 
 
 class AzureBlobStorageWriter(ObjectStorageWriter):
-    def __init__(self, container, connection_string, file_format, prefix=None, filename=None, **kwargs):
+    def __init__(self, container, connection_string, fileformat, prefix=None, filename=None, **kwargs):
         self.connection_string = connection_string
-        super().__init__(container, file_format, prefix, filename, platform="Azure Blob Storage", **kwargs)
+        super().__init__(container, prefix, filename, file_format=fileformat, platform="Azure Blob Storage", **kwargs)
 
     def _create_client(self):
         return BlobServiceClient.from_connection_string(self.connection_string)
