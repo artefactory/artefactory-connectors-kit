@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from ack.writers.formatters.config import FileFormatEnum
+
 
 class AmazonS3WriterConfig(BaseModel):
     bucket_name: str
@@ -8,3 +10,4 @@ class AmazonS3WriterConfig(BaseModel):
     access_key_secret: str
     prefix: str = None
     filename: str
+    fileformat: FileFormatEnum = FileFormatEnum.njson

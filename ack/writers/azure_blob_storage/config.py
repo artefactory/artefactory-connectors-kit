@@ -19,9 +19,12 @@ import os
 
 from pydantic import BaseModel
 
+from ack.writers.formatters.config import FileFormatEnum
+
 
 class AzureBlobStorageWriterConfig(BaseModel):
     container: str
     connection_string: str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
     prefix: str = None
     filename: str = None
+    fileformat: FileFormatEnum = FileFormatEnum.njson
