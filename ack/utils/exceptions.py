@@ -93,3 +93,9 @@ class FilterNotFoundError(Exception):
     """Raised when a dimension filter is not found"""
 
     pass
+
+
+class RateLimitExceeded(Exception):
+    """Raised when the requests-per-time unit limit was exceeded"""
+
+    pass

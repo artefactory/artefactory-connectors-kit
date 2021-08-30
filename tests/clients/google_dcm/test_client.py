@@ -46,14 +46,33 @@ class GoogleDCMClientTest(TestCase):
 
     @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
     def test_add_report_criteria(self):
-        report = {"name": "report"}
+        report = {"name": "report", "type": "STANDARD"}
         start = datetime(year=2020, month=1, day=1)
         end = datetime(year=2020, month=2, day=1)
         elements = ["a", "b"]
         GoogleDCMClient(**self.kwargs).add_report_criteria(report, start, end, elements, elements)
         expected = {
             "name": "report",
+            "type": "STANDARD",
             "criteria": {
+                "dateRange": {"startDate": "2020-01-01", "endDate": "2020-02-01"},
+                "dimensions": [{"name": "a"}, {"name": "b"}],
+                "metricNames": ["a", "b"],
+            },
+        }
+        assert report == expected
+
+    @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
+    def test_add_report_reach_criteria(self):
+        report = {"name": "report", "type": "REACH"}
+        start = datetime(year=2020, month=1, day=1)
+        end = datetime(year=2020, month=2, day=1)
+        elements = ["a", "b"]
+        GoogleDCMClient(**self.kwargs).add_report_criteria(report, start, end, elements, elements)
+        expected = {
+            "name": "report",
+            "type": "REACH",
+            "reachCriteria": {
                 "dateRange": {"startDate": "2020-01-01", "endDate": "2020-02-01"},
                 "dimensions": [{"name": "a"}, {"name": "b"}],
                 "metricNames": ["a", "b"],
@@ -74,11 +93,14 @@ class GoogleDCMClientTest(TestCase):
     )
     @mock.patch("tests.clients.google_dcm.test_client.MockService")
     def test_add_dimension_filters_value_in_first_iteration(self, mock_filter):
-        report = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}}}
+        report = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}}, "type": "STANDARD"}
         profile_id = ""
         filters = [("filter", "ok")]
         GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
-        expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "ok"}]}}
+        expected = {
+            "criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "ok"}]},
+            "type": "STANDARD",
+        }
         assert report == expected
 
     @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
@@ -95,9 +117,59 @@ class GoogleDCMClientTest(TestCase):
     )
     @mock.patch("tests.clients.google_dcm.test_client.MockService")
     def test_add_dimension_filters_value_in_second_iteration(self, mock_filter):
-        report = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}}}
+        report = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}}, "type": "STANDARD"}
         profile_id = ""
         filters = [("filter", "foo")]
         GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
-        expected = {"criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]}}
+        expected = {
+            "criteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]},
+            "type": "STANDARD",
+        }
+        assert report == expected
+
+    @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
+    @mock.patch.object(
+        MockService,
+        "execute",
+        new=mock.Mock(
+            side_effect=[
+                {"items": [{"value": "ok"}, {"value": "nok"}], "nextPageToken": "2"},
+                {"items": [], "nextPageToken": "2"},
+            ]
+        ),
+    )
+    @mock.patch("tests.clients.google_dcm.test_client.MockService")
+    def test_add_dimension_filters_value_in_first_iteration_reach_report(self, mock_filter):
+        report = {"reachCriteria": {"dateRange": {"endDate": "", "startDate": ""}}, "type": "REACH"}
+        profile_id = ""
+        filters = [("filter", "ok")]
+        GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
+        expected = {
+            "reachCriteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "ok"}]},
+            "type": "REACH",
+        }
+        assert report == expected
+
+    @mock.patch.object(GoogleDCMClient, "__init__", mock_dcm_client)
+    @mock.patch.object(
+        MockService,
+        "execute",
+        new=mock.Mock(
+            side_effect=[
+                {"items": [{"value": "ok"}, {"value": "nok"}], "nextPageToken": "2"},
+                {"items": [{"value": "foo"}, {"value": "bar"}], "nextPageToken": "4"},
+                {"items": [], "nextPageToken": "4"},
+            ]
+        ),
+    )
+    @mock.patch("tests.clients.google_dcm.test_client.MockService")
+    def test_add_dimension_filters_value_in_second_iteration_reach_report(self, mock_filter):
+        report = {"reachCriteria": {"dateRange": {"endDate": "", "startDate": ""}}, "type": "REACH"}
+        profile_id = ""
+        filters = [("filter", "foo")]
+        GoogleDCMClient(**self.kwargs).add_dimension_filters(report, profile_id, filters)
+        expected = {
+            "reachCriteria": {"dateRange": {"endDate": "", "startDate": ""}, "dimensionFilters": [{"value": "foo"}]},
+            "type": "REACH",
+        }
         assert report == expected
