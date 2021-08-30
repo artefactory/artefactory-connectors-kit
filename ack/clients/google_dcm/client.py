@@ -63,29 +63,29 @@ class GoogleDCMClient:
             "dimensions": [{"name": dim} for dim in dimensions],
             "metricNames": metrics,
         }
-        if report['type'] == 'REACH':
-            report['reachCriteria'] = criteria
-        elif report['type'] == 'PATH_TO_CONVERSION':
-            report['pathToConversionCriteria'] = criteria
-        elif report['type'] == 'FLOODLIGHT':
-            report['floodlightCriteria'] = criteria
-        elif report['type'] == 'CROSS_DIMENSION_REACH':
-            report['crossDimensionReachCriteria'] = criteria
-        else: # Standard Report Criteria
-            report['criteria'] = criteria
+        if report["type"] == "REACH":
+            report["reachCriteria"] = criteria
+        elif report["type"] == "PATH_TO_CONVERSION":
+            report["pathToConversionCriteria"] = criteria
+        elif report["type"] == "FLOODLIGHT":
+            report["floodlightCriteria"] = criteria
+        elif report["type"] == "CROSS_DIMENSION_REACH":
+            report["crossDimensionReachCriteria"] = criteria
+        else:  # Standard Report Criteria
+            report["criteria"] = criteria
 
     def add_dimension_filters(self, report, profile_id, filters):
-        if report['type'] == 'REACH':
-            criteria = 'reachCriteria'
-        elif report['type'] == 'PATH_TO_CONVERSION':
-            criteria = 'pathToConversionCriteria'
-        elif report['type'] == 'FLOODLIGHT':
-            criteria = 'floodlightCriteria'
-        elif report['type'] == 'CROSS_DIMENSION_REACH':
-            criteria = 'crossDimensionReachCriteria'
-        else: # Standard Report Criteria
-            criteria = 'criteria' 
-        
+        if report["type"] == "REACH":
+            criteria = "reachCriteria"
+        elif report["type"] == "PATH_TO_CONVERSION":
+            criteria = "pathToConversionCriteria"
+        elif report["type"] == "FLOODLIGHT":
+            criteria = "floodlightCriteria"
+        elif report["type"] == "CROSS_DIMENSION_REACH":
+            criteria = "crossDimensionReachCriteria"
+        else:  # Standard Report Criteria
+            criteria = "criteria"
+
         for dimension_name, dimension_value in filters:
             request = {
                 "dimensionName": dimension_name,
