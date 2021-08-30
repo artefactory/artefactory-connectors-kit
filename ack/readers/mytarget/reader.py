@@ -189,9 +189,6 @@ class MyTargetReader(Reader):
         request = self.__create_request(name_content, parameters)
         resp = requests.get(**request)
         if resp.status_code == HTTP_STATUS_RATE_LIMIT_EXCEEDED:
-            logger.error(
-                f"Error for request with url: {REQUEST_CONFIG[name_content]['url']} and status code {resp.status_code}"
-            )
             raise RateLimitExceeded("The requests-per-time unit limit was exceeded")
         elif resp.status_code != HTTP_STATUS_OK:
             logger.error(
