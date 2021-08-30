@@ -21,10 +21,10 @@ from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 import requests
-from ack.readers.mytarget.config import HTTP_STATUS_OK, LIMIT_REQUEST_MYTARGET, REQUEST_CONFIG
+from ack.readers.mytarget.config import HTTP_STATUS_RATE_LIMIT_EXCEEDED, HTTP_STATUS_OK, LIMIT_REQUEST_MYTARGET, REQUEST_CONFIG
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
-from ack.utils.exceptions import MissingItemsInResponse
+from ack.utils.exceptions import MissingItemsInResponse, RateLimitExceeded
 from tenacity import retry, stop_after_delay, wait_exponential, retry_if_exception_type
 from ack.utils.date_handler import build_date_range
 from ack.config import logger
@@ -170,9 +170,9 @@ class MyTargetReader(Reader):
         yield from content_by_date
 
     @retry(
-        wait=wait_exponential(multiplier=1, min=1, max=600),
-        stop=stop_after_delay(600),
-        retry=retry_if_exception_type(MissingItemsInResponse),
+        wait=wait_exponential(multiplier=1, min=60, max=3600),
+        stop=stop_after_delay(3600),
+        retry=(retry_if_exception_type(MissingItemsInResponse) | retry_if_exception_type(RateLimitExceeded)),
     )
     def __get_response(self, name_content: str, offset=0) -> Dict[str, Any]:
         """This function makes a request to the api after building eveything necessary to get the
@@ -188,8 +188,15 @@ class MyTargetReader(Reader):
         parameters = self.__generate_params_dict(name_content, offset=offset)
         request = self.__create_request(name_content, parameters)
         resp = requests.get(**request)
-        if resp.status_code != HTTP_STATUS_OK:
-            logger.error(f"Error for request with url: {REQUEST_CONFIG[name_content]['url']}")
+        if resp.status_code == HTTP_STATUS_RATE_LIMIT_EXCEEDED:
+            logger.error(
+                f"Error for request with url: {REQUEST_CONFIG[name_content]['url']} and status code {resp.status_code}"
+            )
+            raise RateLimitExceeded("The requests-per-time unit limit was exceeded")
+        elif resp.status_code != HTTP_STATUS_OK:
+            logger.error(
+                f"Error for request with url: {REQUEST_CONFIG[name_content]['url']} and status code {resp.status_code}"
+            )
             raise Exception(resp.json())
         else:
             resp_dict = resp.json()
