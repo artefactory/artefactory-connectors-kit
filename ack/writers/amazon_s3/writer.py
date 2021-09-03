@@ -23,7 +23,7 @@ from ack.writers.object_storage.writer import ObjectStorageWriter
 
 class AmazonS3Writer(ObjectStorageWriter):
     def __init__(
-        self, bucket_name, bucket_region, access_key_id, access_key_secret, fileformat, prefix=None, filename=None, **kwargs
+        self, bucket_name, bucket_region, access_key_id, access_key_secret, fileformat="njson", prefix=None, filename=None, **kwargs
     ):
         self.boto_config = {
             "region_name": bucket_region,

@@ -60,7 +60,12 @@ class ObjectStorageWriter(FileWriter):
         return f"://{self._bucket_name}/{file_name}"
 
     def _set_valid_file_name(self, stream_name):
-        temp_file_name = f"{self._file_name}.{self._file_format}" if self._file_name is not None else stream_name
+        if self._file_name is not None:
+
+            temp_file_name = f"{self._file_name}.{self._file_format}"
+        else:
+            temp_file_name = f"{stream_name.split('.')[0]}.{self._file_format}"
+            # if self._file_name is not None else stream_name
         temp_key = os.path.join(self._prefix, temp_file_name)
 
         if len(temp_key) > S3_KEY_SIZE_LIMIT and self._platform == "S3":
