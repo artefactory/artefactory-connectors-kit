@@ -19,24 +19,26 @@
 import os
 
 from ack.config import logger
-from ack.writers.writer import Writer
+from ack.writers.file_writer.writer import FileWriter
 
 
-class LocalWriter(Writer):
-    def __init__(self, directory, file_name):
+class LocalWriter(FileWriter):
+    def __init__(self, directory, file_name, file_format):
         self._directory = directory
         self._file_name = file_name
+        super().__init__(file_format)
 
     def write(self, stream):
         """
         Write file to disk at location given as parameter.
         """
-        file_name = self._file_name or stream.name
+        file_name_without_extension = self._file_name or ".".join(stream.name.split(".")[:-1])
+        file_name = ".".join([file_name_without_extension, self._file_format])
         path = os.path.join(self._directory, file_name)
 
         logger.info(f"Writing stream {file_name} to {path}")
         file = stream.as_file()
-        with open(path, "wb") as h:
+        with self.formatter.open_file(path) as h:
             while True:
                 buffer = file.read(1024)
                 if len(buffer) > 0:

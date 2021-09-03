@@ -17,6 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
+
 from ack.utils.args import extract_args
 from ack.utils.processor import processor
 from ack.writers.local.writer import LocalWriter
@@ -25,6 +26,7 @@ from ack.writers.local.writer import LocalWriter
 @click.command(name="write_local")
 @click.option("--local-directory", "-d", required=True, help="Destination directory")
 @click.option("--local-file-name", "-n", help="Destination file name")
+@click.option("--local-file-format", "-f", help="File's format", default="njson", type=click.Choice(["njson", "zstd"]))
 @processor()
 def local(**kwargs):
     return LocalWriter(**extract_args("local_", kwargs))

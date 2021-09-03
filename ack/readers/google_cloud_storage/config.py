@@ -12,4 +12,4 @@ class GoogleCloudStorageReaderConfig(BaseModel):
     format: Literal[FORMATS]
     dest_key_split: int = -1
     csv_delimiter: str = ","
-    fieldnames: str = None
+    csv_fieldnames: str = None

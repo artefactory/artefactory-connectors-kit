@@ -32,6 +32,7 @@ from ack.writers.azure_blob_storage.writer import AzureBlobStorageWriter
 )
 @click.option("--azure-blob-prefix", help="Azure Prefix", default=None)
 @click.option("--azure-blob-filename", help="Override the default name of the file (don't add the extension)")
+@click.option("--azure-blob-fileformat", help="File's format", default="njson", type=click.Choice(["njson", "zstd"]))
 @processor("azure_blob_connection_string")
 def azure_blob_storage(**kwargs):
     return AzureBlobStorageWriter(**extract_args("azure_blob_", kwargs))

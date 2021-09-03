@@ -24,9 +24,9 @@ from ack.writers.object_storage.writer import ObjectStorageWriter
 
 
 class GoogleCloudStorageWriter(ObjectStorageWriter, GoogleClient):
-    def __init__(self, bucket, project_id, prefix=None, filename=None, **kwargs):
+    def __init__(self, bucket, project_id, file_format, prefix=None, file_name=None, **kwargs):
         self._project_id = self.get_project_id(project_id)
-        super().__init__(bucket, prefix, filename, platform="GCS", **kwargs)
+        super().__init__(bucket, file_format, prefix, file_name, platform="GCS", **kwargs)
 
     def _create_client(self):
         return storage.Client(credentials=self._get_credentials(), project=self._project_id)
@@ -39,7 +39,7 @@ class GoogleCloudStorageWriter(ObjectStorageWriter, GoogleClient):
 
     def _create_blob(self, file_name, stream):
         blob = self._bucket.blob(file_name)
-        blob.upload_from_file(stream.as_file(), content_type=stream.mime_type)
+        blob.upload_from_file(self.formatter.format_stream_for_upload(stream), content_type=self.formatter.content_type)
 
     def _get_uri(self, file_name):
         return f"gs{self._get_file_path(file_name)}"

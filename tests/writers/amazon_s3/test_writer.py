@@ -32,7 +32,7 @@ class AmazonS3WriterTest(TestCase):
             AmazonS3Writer("non-existing-bucket", "us-east-1", "", "")
 
     @parameterized.expand(
-        [(None, "stream_name.format", "stream_name.format"), ("file_name", "stream_name.format", "file_name.format")]
+        [(None, "stream_name.format", "stream_name.njson"), ("file_name", "stream_name.format", "file_name.njson")]
     )
     def test_valid_filename(self, file_name, stream_name, expected):
         writer = AmazonS3Writer("test", "us-east-1", "", "", prefix=None, filename=file_name)

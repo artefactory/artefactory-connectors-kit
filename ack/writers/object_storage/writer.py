@@ -18,15 +18,17 @@
 import os
 
 from ack.config import logger
-from ack.writers.writer import Writer
+from ack.writers.file_writer.writer import FileWriter
 from ack.writers.object_storage.config import S3_KEY_SIZE_LIMIT
 
 
-class ObjectStorageWriter(Writer):
-    def __init__(self, bucket_name, prefix=None, file_name=None, platform=None, **kwargs):
+class ObjectStorageWriter(FileWriter):
+    def __init__(self, bucket_name, file_format, prefix=None, file_name=None, platform=None, **kwargs):
+        super().__init__(file_format)
         self._bucket_name = bucket_name
         self._prefix = prefix if prefix else ""
         self._file_name = file_name
+        self._file_format = file_format
         self._platform = platform
         self._bucket = self._get_bucket_if_exist()
 
@@ -58,13 +60,15 @@ class ObjectStorageWriter(Writer):
         return f"://{self._bucket_name}/{file_name}"
 
     def _set_valid_file_name(self, stream_name):
-        file_format = os.path.splitext(stream_name)[-1]
-        temp_file_name = f"{self._file_name}{file_format}" if self._file_name is not None else stream_name
+        if self._file_name is not None:
+            temp_file_name = f"{self._file_name}.{self._file_format}"
+        else:
+            temp_file_name = f"{stream_name.split('.')[0]}.{self._file_format}"
         temp_key = os.path.join(self._prefix, temp_file_name)
 
-        if len(temp_key) > S3_KEY_SIZE_LIMIT and self._platform == 'S3':
-            logger.warning(f'The key {temp_key} is too long for S3, the file has been renamed as generic')
-            self._file_name = f"generic_file_name{file_format}"
+        if len(temp_key) > S3_KEY_SIZE_LIMIT and self._platform == "S3":
+            logger.warning(f"The key {temp_key} is too long for S3, the file has been renamed as generic")
+            self._file_name = f"generic_file_name{self._file_format}"
         else:
             self._file_name = temp_file_name
 
