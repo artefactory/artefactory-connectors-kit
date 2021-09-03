@@ -66,3 +66,4 @@ cryptography==3.3.2
 bs4==0.0.1
 pydantic==1.8.2
 azure-storage-blob==12.8.0
+zstandard==0.15.2
