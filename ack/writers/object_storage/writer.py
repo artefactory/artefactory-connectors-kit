@@ -20,6 +20,7 @@ import os
 from ack.config import logger
 from ack.writers.writer import Writer
 from ack.writers.object_storage.config import S3_KEY_SIZE_LIMIT
+from datetime import datetime
 
 
 class ObjectStorageWriter(Writer):
@@ -62,9 +63,9 @@ class ObjectStorageWriter(Writer):
         temp_file_name = f"{self._file_name}{file_format}" if self._file_name is not None else stream_name
         temp_key = os.path.join(self._prefix, temp_file_name)
 
-        if len(temp_key) > S3_KEY_SIZE_LIMIT and self._platform == 'S3':
-            logger.warning(f'The key {temp_key} is too long for S3, the file has been renamed as generic')
-            self._file_name = f"generic_file_name{file_format}"
+        if len(temp_key) > S3_KEY_SIZE_LIMIT and self._platform == "S3":
+            logger.warning(f"The key {temp_key} is too long for S3, the file has been renamed as generic")
+            self._file_name = f"generic_file_name_{datetime.today().strftime('%Y-%m-%d-%H-%M-%S')}{file_format}"
         else:
             self._file_name = temp_file_name
 
