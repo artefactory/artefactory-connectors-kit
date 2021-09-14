@@ -1,73 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Readers &mdash; Artefactory Connectors Kit  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Streams" href="streams.html" />
     <link rel="prev" title="Contributing" href="contributing.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> Artefactory Connectors Kit
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -75,18 +36,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
@@ -278,110 +228,69 @@
 <li class="toctree-l1"><a class="reference internal" href="migration_to_v2.html">Migration to v2 from v1</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Artefactory Connectors Kit</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Readers</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/readers.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="readers">
-<h1>Readers<a class="headerlink" href="#readers" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="readers">
+<h1>Readers<a class="headerlink" href="#readers" title="Permalink to this headline"></a></h1>
 <p><strong>Readers are reading data from an API source, and transform it into a stream object.</strong></p>
 <p><em>About to develop a new reader?</em> See the <a class="reference internal" href="contributing.html#devreader"><span class="std std-ref">How to develop a new reader</span></a> section.</p>
 <p><em>Just want to use an existing reader?</em> This page provides you with documentation on available commands:</p>
-<div class="section" id="adobe-analytics-readers">
-<h2>Adobe Analytics Readers<a class="headerlink" href="#adobe-analytics-readers" title="Permalink to this headline">¶</a></h2>
+<section id="adobe-analytics-readers">
+<h2>Adobe Analytics Readers<a class="headerlink" href="#adobe-analytics-readers" title="Permalink to this headline"></a></h2>
 <p>As of May 2020 (last update of this section of the documentation), <strong>two versions of Adobe Analytics Reporting API are  coexisting: 1.4 and 2.0</strong>. As some functionalities of API 1.4 have not been made available in API 2.0 yet (Data Warehouse reports in particular), our Adobe Analytics Readers are also available in these two versions.</p>
-<div class="section" id="how-to-obtain-credentials">
-<h3>How to obtain credentials<a class="headerlink" href="#how-to-obtain-credentials" title="Permalink to this headline">¶</a></h3>
+<section id="how-to-obtain-credentials">
+<h3>How to obtain credentials<a class="headerlink" href="#how-to-obtain-credentials" title="Permalink to this headline"></a></h3>
 <p>Both Adobe Analytics Readers use the <strong>JWT authentication framework</strong>.</p>
 <ul class="simple">
 <li><p>Get developer access to Adobe Analytics (documentation can be found <a class="reference external" href="https://helpx.adobe.com/enterprise/using/manage-developers.html">here</a>)</p></li>
 <li><p>Create a Service Account integration to Adobe Analytics on <a class="reference external" href="https://console.adobe.io/">Adobe Developer Console</a></p></li>
 <li><p>Use the generated JWT credentials (Client ID, Client Secret, Technical Account ID, Organization ID and private.key file) to retrieve your Global Company ID (to be requested to <a class="reference external" href="https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/discovery.md">Discovery API</a>). All these parameters will be passed to Adobe Analytics Readers.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="adobe-analytics-reader-1-4">
-<h2>Adobe Analytics Reader 1.4<a class="headerlink" href="#adobe-analytics-reader-1-4" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="source-api">
-<h3>Source API<a class="headerlink" href="#source-api" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="adobe-analytics-reader-1-4">
+<h2>Adobe Analytics Reader 1.4<a class="headerlink" href="#adobe-analytics-reader-1-4" title="Permalink to this headline"></a></h2>
+<section id="source-api">
+<h3>Source API<a class="headerlink" href="#source-api" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://github.com/AdobeDocs/analytics-1.4-apis">Analytics API v1.4</a></p>
-</div>
-<div class="section" id="quickstart">
-<h3>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="quickstart">
+<h3>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline"></a></h3>
 <p>Call example to Adobe Analytics Reader 1.4, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_adobe --adobe-client-id &lt;CLIENT_ID&gt; --adobe-client-secret &lt;CLIENT_SECRET&gt; --adobe-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-org-id &lt;ORG_ID&gt; --adobe-private-key &lt;PRIVATE_KEY&gt; --adobe-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-date-granularity day --adobe-report-element-id trackingcode --adobe-report-metric-id visits --adobe-start-date <span class="m">2020</span>-01-01 --adobe-end-date <span class="m">2020</span>-01-31 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="command-name">
-<h3>Command name<a class="headerlink" href="#command-name" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="command-name">
+<h3>Command name<a class="headerlink" href="#command-name" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_adobe</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">adobe_analytics_1_4</span></code></p>
-</div>
-<div class="section" id="command-options">
-<h3>Command options<a class="headerlink" href="#command-options" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="command-options">
+<h3>Command options<a class="headerlink" href="#command-options" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 13%" />
@@ -449,37 +358,37 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="addtional-information">
-<h3>Addtional information<a class="headerlink" href="#addtional-information" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="addtional-information">
+<h3>Addtional information<a class="headerlink" href="#addtional-information" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p><strong>The full list of available elements and metrics</strong> can be retrieved with the <a class="reference external" href="https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_GetElements.md">GetElements</a> and <a class="reference external" href="https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/reporting-api/methods/r_GetMetrics.md">GetMetrics</a> methods.</p></li>
 <li><p><strong>Adobe Analytics Reader 1.4 requests Data Warehouse reports</strong> (the “source” parameter is set to “warehouse” in the report description), allowing it to efficiently process multiple-dimension requests.</p></li>
 <li><p><strong>If you need further information</strong>, the documentation of Adobe APIs 1.4 can be found <a class="reference external" href="https://github.com/AdobeDocs/analytics-1.4-apis">here</a>.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="adobe-analytics-reader-2-0">
-<h2>Adobe Analytics Reader 2.0<a class="headerlink" href="#adobe-analytics-reader-2-0" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>Source API<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="adobe-analytics-reader-2-0">
+<h2>Adobe Analytics Reader 2.0<a class="headerlink" href="#adobe-analytics-reader-2-0" title="Permalink to this headline"></a></h2>
+<section id="id1">
+<h3>Source API<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://github.com/AdobeDocs/analytics-2.0-apis">Analytics API v2.0</a></p>
-</div>
-<div class="section" id="id2">
-<h3>Quickstart<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id2">
+<h3>Quickstart<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
 <p>Call example to Adobe Analytics Reader 2.0, getting the number of visits per day and tracking code for a specified Report Suite, between 2020-01-01 and 2020-01-31:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_adobe_2_0 --adobe-2-0-client-id &lt;CLIENT_ID&gt; --adobe-2-0-client-secret &lt;CLIENT_SECRET&gt; --adobe-2-0-tech-account-id &lt;TECH_ACCOUNT_ID&gt; --adobe-2-0-org-id &lt;ORG_ID&gt; --adobe-2-0-private-key &lt;PRIVATE_KEY&gt; --adobe-2-0-global-company-id &lt;GLOBAL_COMPANY_ID&gt; --adobe-2-0-report-suite-id &lt;REPORT_SUITE_ID&gt; --adobe-2-0-dimension daterangeday --adobe-2-0-dimension campaign --adobe-2-0-start-date <span class="m">2020</span>-01-01 --adobe-2-0-end-date <span class="m">2020</span>-01-31 --adobe-2-0-metric visits write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id3">
-<h3>Command name<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id3">
+<h3>Command name<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_adobe_2_0</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">adobe_analytics_2_0</span></code></p>
-</div>
-<div class="section" id="id4">
-<h3>Command options<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id4">
+<h3>Command options<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 15%" />
@@ -543,25 +452,25 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="additional-information">
-<h3>Additional information<a class="headerlink" href="#additional-information" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="additional-information">
+<h3>Additional information<a class="headerlink" href="#additional-information" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p><strong>In API 2.0, dimension and metric names are slightly different from API 1.4</strong>. To get new metric and dimension names and reproduce the behavior of Adobe Analytics UI as closely as possible, <a class="reference external" href="https://github.com/AdobeDocs/analytics-2.0-apis/blob/master/reporting-tricks.md">enable the Debugger feature in Adobe Analytics Workspace</a>: it allow you to visualize the back-end JSON requests made by Adobe Analytics UI to Reporting API 2.0.</p></li>
 <li><p><strong>In API 2.0, the date granularity parameter was removed, and should now be handled as a dimension</strong>: a request featuring <code class="docutils literal notranslate"><span class="pre">--adobe-dimension</span> <span class="pre">daterangeday</span></code> will produce a report with a day granularity.</p></li>
 <li><p><strong>API 2.0 does not feature Data Warehouse reports yet</strong> (along with other features, that are indicated on the “Current limitations” section of <a class="reference external" href="https://www.adobe.io/apis/experiencecloud/analytics/docs.html#!AdobeDocs/analytics-2.0-apis/master/migration-guide.md">this page</a>). For this reason, if you wish to collect multiple-dimension reports, Adobe Analytics Reader 1.4 might be a more efficient solution in terms of processing time.</p></li>
 <li><p><strong>If you need any further information</strong>, the documentation of Adobe APIs 2.0 can be found <a class="reference external" href="https://github.com/AdobeDocs/analytics-2.0-apis">here</a>.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="amazon-s3-reader">
-<h2>Amazon S3 Reader<a class="headerlink" href="#amazon-s3-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id5">
-<h3>Source API<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="amazon-s3-reader">
+<h2>Amazon S3 Reader<a class="headerlink" href="#amazon-s3-reader" title="Permalink to this headline"></a></h2>
+<section id="id5">
+<h3>Source API<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://boto3.amazonaws.com/v1/documentation/api/latest/index.html">AWS SDK for Python (Boto3)</a></p>
-</div>
-<div class="section" id="id6">
-<h3>Quickstart<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id6">
+<h3>Quickstart<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h3>
 <p>Execute the following commands to set your credentials:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">REGION_NAME</span><span class="o">=</span>&lt;S3 bucket region&gt;
 <span class="nb">export</span> <span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>&lt;S3 access key ID&gt;
@@ -573,14 +482,14 @@
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id7">
-<h3>Command name<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id7">
+<h3>Command name<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_s3</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">amazon_s3</span></code></p>
-</div>
-<div class="section" id="id8">
-<h3>Command options<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id8">
+<h3>Command options<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 7%" />
@@ -620,30 +529,30 @@
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="confluence-reader">
-<h2>Confluence Reader<a class="headerlink" href="#confluence-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id9">
-<h3>Source API<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="confluence-reader">
+<h2>Confluence Reader<a class="headerlink" href="#confluence-reader" title="Permalink to this headline"></a></h2>
+<section id="id9">
+<h3>Source API<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developer.atlassian.com/cloud/confluence/rest/intro/">Confluence Cloud REST API</a></p>
-</div>
-<div class="section" id="id10">
-<h3>Quickstart<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id10">
+<h3>Quickstart<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h3>
 <p>The Confluence Reader handles calls to the <strong>Get Content endpoint</strong> of Confluence Cloud REST API.</p>
 <p>The following command retrieves the titles, space names, tiny links and label names of all pages located under the Atlassian domain &lt;ATLASSIAN_DOMAIN&gt;, filtered on the spacekeys &lt;KEY_1&gt; and &lt;KEY_2&gt;.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_confluence --confluence-user-login &lt;USER_LOGIN&gt; --confluence-api-token &lt;API_TOKEN&gt; --confluence-atlassian-domain &lt;ATLASSIAN_DOMAIN&gt; --confluence-content-type <span class="s2">&quot;page&quot;</span> --confluence-field <span class="s2">&quot;title&quot;</span> --confluence-field <span class="s2">&quot;space.name&quot;</span> --confluence-field <span class="s2">&quot;tiny_link&quot;</span> --confluence-field <span class="s2">&quot;label_names&quot;</span> --confluence-spacekey &lt;KEY_1&gt; --confluence-spacekey &lt;KEY_2&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id11">
-<h3>Command name<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id11">
+<h3>Command name<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_confluence</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">confluence</span></code></p>
-</div>
-<div class="section" id="id12">
-<h3>Command options<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id12">
+<h3>Command options<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 14%" />
@@ -715,16 +624,16 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="facebook-marketing-reader">
-<h2>Facebook Marketing Reader<a class="headerlink" href="#facebook-marketing-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id13">
-<h3>Source API<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="facebook-marketing-reader">
+<h2>Facebook Marketing Reader<a class="headerlink" href="#facebook-marketing-reader" title="Permalink to this headline"></a></h2>
+<section id="id13">
+<h3>Source API<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.facebook.com/docs/marketing-api/reference/v7.0">Facebook Marketing API</a></p>
-</div>
-<div class="section" id="id14">
-<h3>Quickstart<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id14">
+<h3>Quickstart<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h3>
 <p>The Facebook Marketing Reader handles calls to 2 endpoints of the Facebook Marketing API: <strong>Facebook Ad Insights</strong> (to retrieve performance data), and <strong>Facebook Ad Management</strong> (to retrieve configuration data).</p>
 <p><em>Example of Ad Insights Request</em></p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_facebook --facebook-access-token &lt;ACCESS_TOKEN&gt; --facebook-object-id &lt;OBJECT_ID&gt; --facebook-breakdown age --facebook-breakdown gender --facebook-action-breakdown action_type --facebook-field ad_id --facebook-field ad_name --facebook-field impressions --facebook-field clicks --facebook-field actions<span class="o">[</span>action_type:post_engagement<span class="o">]</span> --facebook-field actions<span class="o">[</span>action_type:video_view<span class="o">]</span> --facebook-field age --facebook-field gender --facebook-time-increment <span class="m">1</span> --facebook-start-date <span class="m">2020</span>-01-01 --facebook-end-date <span class="m">2020</span>-01-03 write_console
@@ -735,14 +644,14 @@
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id15">
-<h3>Command name<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id15">
+<h3>Command name<a class="headerlink" href="#id15" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_facebook</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">facebook</span></code></p>
-</div>
-<div class="section" id="id16">
-<h3>Command options<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id16">
+<h3>Command options<a class="headerlink" href="#id16" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 12%" />
@@ -914,23 +823,23 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;actions[action_type:video_view]&quot;</span>: <span class="s2">&quot;17&quot;</span>, <span class="s2">&quot;actions[action_type:post_engagement]&quot;</span>: <span class="s2">&quot;25&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="google-readers">
-<h2>Google Readers<a class="headerlink" href="#google-readers" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="authentication">
-<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-readers">
+<h2>Google Readers<a class="headerlink" href="#google-readers" title="Permalink to this headline"></a></h2>
+<section id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline"></a></h3>
 <p>You can authenticate to most of the Readers of the Google Suite following the same schema. You’ll need to generate a <strong>refresh token</strong> to connect via the OAuth flow. A full script to do this can be found in this <a class="reference external" href="https://github.com/artefactory/Refresh-token-generator-for-google-oauth">refresh token generator</a>.</p>
-</div>
-</div>
-<div class="section" id="google-ads-reader">
-<h2>Google Ads Reader<a class="headerlink" href="#google-ads-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id17">
-<h3>Source API<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-ads-reader">
+<h2>Google Ads Reader<a class="headerlink" href="#google-ads-reader" title="Permalink to this headline"></a></h2>
+<section id="id17">
+<h3>Source API<a class="headerlink" href="#id17" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/adwords/api/docs/guides/start">AdWords API</a></p>
-</div>
-<div class="section" id="id18">
-<h3>How to obtain credentials<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id18">
+<h3>How to obtain credentials<a class="headerlink" href="#id18" title="Permalink to this headline"></a></h3>
 <p>Using the AdWords API requires four things:</p>
 <ul class="simple">
 <li><p>A developer token (Generated at a company level - one per company -, takes around 2 days to be approved by Google) which can be completely independant from the Google Ads Account you will be calling (though you need a Manager Google Ads Account to request a token for your company)</p></li>
@@ -940,22 +849,22 @@
 </ul>
 <p>See the <a class="reference external" href="https://developers.google.com/adwords/api/docs/guides/signup">documentation here</a> to apply for access if your Company does not already have a developer token (granting you the right to use the API).</p>
 <p>See the <a class="reference external" href="https://developers.google.com/adwords/api/docs/guides/first-api-call">documentation here</a> to set-up your OAuth2 credentials and refresh token specifically for your Google Ads Accounts.</p>
-</div>
-<div class="section" id="id19">
-<h3>Quickstart<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id19">
+<h3>Quickstart<a class="headerlink" href="#id19" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves insights about the Ads of <code class="docutils literal notranslate"><span class="pre">my_first_campaign</span></code> and <code class="docutils literal notranslate"><span class="pre">my_second_campaign</span></code> in the Google Ads Account &lt;CLIENT_CUSTOMER_ID&gt;.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_googleads --googleads-developer-token &lt;DEVELOPER_TOKEN&gt; --googleads-client-id &lt;CLIENT_ID&gt; --googleads-client-secret &lt;CLIENT_SECRET&gt; --googleads-refresh-token &lt;REFRESH_TOKEN&gt; --googleads-client-customer-id &lt;XXX-XXX-XXXX CLIENT_CUSTOMER_ID&gt; --googleads-report-type AD_PERFORMANCE_REPORT --googleads-date-range-type LAST_7_DAYS --googleads-field CampaignName --googleads-field AdGroupName --googleads-field Headline --googleads-field Date --googleads-field Impressions --googleads-report-filter <span class="s2">&quot;{&#39;field&#39;:&#39;CampaignName&#39;,&#39;operator&#39;:&#39;IN&#39;,&#39;values&#39;:[&#39;my_first_campaign&#39;,&#39;my_second_campaign&#39;]}&quot;</span>
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id20">
-<h3>Command name<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id20">
+<h3>Command name<a class="headerlink" href="#id20" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_googleads</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_ads</span></code></p>
-</div>
-<div class="section" id="id21">
-<h3>Command options<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id21">
+<h3>Command options<a class="headerlink" href="#id21" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 15%" />
@@ -1040,29 +949,29 @@
 <li><p><a class="reference external" href="https://developers.google.com/adwords/api/docs/guides/reporting#create_a_report_definition">Reporting basics</a></p></li>
 <li><p><a class="reference external" href="https://developers.google.com/adwords/api/docs/appendix/reports#available-reports">Available reports and associated fields</a></p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="google-analytics-reader">
-<h2>Google Analytics Reader<a class="headerlink" href="#google-analytics-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id22">
-<h3>Source API<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-analytics-reader">
+<h2>Google Analytics Reader<a class="headerlink" href="#google-analytics-reader" title="Permalink to this headline"></a></h2>
+<section id="id22">
+<h3>Source API<a class="headerlink" href="#id22" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/analytics/devguides/reporting/core/v4">Analytics Reporting API</a></p>
-</div>
-<div class="section" id="id23">
-<h3>Quickstart<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id23">
+<h3>Quickstart<a class="headerlink" href="#id23" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves sessions, pageviews and bounces volumes by date from 2020-01-01 to 2020-01-03, for the Analytics View &lt;VIEW_ID&gt;.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_ga --ga-client-id &lt;CLIENT_ID&gt; --ga-client-secret &lt;CLIENT_SECRET&gt; --ga-view-id &lt;VIEW_ID&gt; --ga-refresh-token &lt;REFRESH_TOKEN&gt; --ga-dimension ga:date --ga-metric sessions --ga-metric ga:pageviews --ga-metric ga:bounces --ga-start-date <span class="m">2020</span>-01-01 --ga-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id24">
-<h3>Command name<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id24">
+<h3>Command name<a class="headerlink" href="#id24" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_ga</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_analytics</span></code></p>
-</div>
-<div class="section" id="id25">
-<h3>Command options<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id25">
+<h3>Command options<a class="headerlink" href="#id25" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 12%" />
@@ -1139,16 +1048,16 @@
 </tbody>
 </table>
 <p>See documentation <a class="reference external" href="https://developers.google.com/analytics/devguides/reporting/core/v4/basics">here</a> for a better understanding of the parameters.</p>
-</div>
-</div>
-<div class="section" id="google-cloud-storage-reader">
-<h2>Google Cloud Storage Reader<a class="headerlink" href="#google-cloud-storage-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id26">
-<h3>Source API<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-cloud-storage-reader">
+<h2>Google Cloud Storage Reader<a class="headerlink" href="#google-cloud-storage-reader" title="Permalink to this headline"></a></h2>
+<section id="id26">
+<h3>Source API<a class="headerlink" href="#id26" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://googleapis.dev/python/storage/latest/client.html">GCP Client Library for Cloud Storage</a></p>
-</div>
-<div class="section" id="id27">
-<h3>Quickstart<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id27">
+<h3>Quickstart<a class="headerlink" href="#id27" title="Permalink to this headline"></a></h3>
 <p>Follow these steps to set your credentials:</p>
 <ul class="simple">
 <li><p>In your GCP project, create a Service Account with a ‘Storage Object Viewer’ role</p></li>
@@ -1164,14 +1073,14 @@
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id28">
-<h3>Command name<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id28">
+<h3>Command name<a class="headerlink" href="#id28" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_gcs</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_cloud_storage</span></code></p>
-</div>
-<div class="section" id="id29">
-<h3>Command options<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id29">
+<h3>Command options<a class="headerlink" href="#id29" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 7%" />
@@ -1211,29 +1120,29 @@
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="google-campaign-manager-reader">
-<h2>Google Campaign Manager Reader<a class="headerlink" href="#google-campaign-manager-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id30">
-<h3>Source API<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-campaign-manager-reader">
+<h2>Google Campaign Manager Reader<a class="headerlink" href="#google-campaign-manager-reader" title="Permalink to this headline"></a></h2>
+<section id="id30">
+<h3>Source API<a class="headerlink" href="#id30" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/doubleclick-advertisers/v3.3">DCM/DFA Reporting and Trafficking API</a></p>
-</div>
-<div class="section" id="id31">
-<h3>Quickstart<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id31">
+<h3>Quickstart<a class="headerlink" href="#id31" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves impressions, clicks and cost volumes from 2020-01-01 to 2020-01-03.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_dcm --dcm-client-id &lt;CLIENT_ID&gt; --dcm-client-secret &lt;CLIENT_SECRET&gt; --dcm-refresh-token &lt;REFRESH_TOKEN&gt; --dcm-profile-id &lt;PROFILE_ID&gt; --dcm-dimension dfa:date --dcm-metric dfa:impressions --dcm-metric dfa:clicks --dcm-metric dfa:mediaCost --dcm-start-date <span class="m">2020</span>-01-01 --dcm-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id32">
-<h3>Command name<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id32">
+<h3>Command name<a class="headerlink" href="#id32" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_dcm</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_dcm</span></code></p>
-</div>
-<div class="section" id="id33">
-<h3>Command options<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id33">
+<h3>Command options<a class="headerlink" href="#id33" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 8%" />
@@ -1301,29 +1210,29 @@
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="google-doubleclick-bid-manager-reader-dbm">
-<h2>Google DoubleClick Bid Manager Reader (DBM)<a class="headerlink" href="#google-doubleclick-bid-manager-reader-dbm" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id34">
-<h3>Source API<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-doubleclick-bid-manager-reader-dbm">
+<h2>Google DoubleClick Bid Manager Reader (DBM)<a class="headerlink" href="#google-doubleclick-bid-manager-reader-dbm" title="Permalink to this headline"></a></h2>
+<section id="id34">
+<h3>Source API<a class="headerlink" href="#id34" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/bid-manager/v1">Doubleclick Bid Manager API</a></p>
-</div>
-<div class="section" id="id35">
-<h3>Quickstart<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id35">
+<h3>Quickstart<a class="headerlink" href="#id35" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves impressions, clicks and cost volumes filtered on a specific &lt;ADVERTISER_ID&gt; from 2020-01-01 to 2020-01-03.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_dbm --dbm-client-id &lt;CLIENT_ID&gt; --dbm-client-secret &lt;CLIENT_SECRET&gt; —dbm-refresh-token &lt;REFRESH_TOKEN&gt; —dbm-filter FILTER_ADVERTISER &lt;ADVERTISER_ID&gt; --dbm-query-dimension FILTER_DATE  --dbm-query-metric METRIC_IMPRESSIONS --dbm-query-metric METRIC_CLICKS --dbm-query-metric METRIC_MEDIA_COST_ADVERTISER --dbm-query-param-type TYPE_GENERAL --dbm-request-type custom_query_report --dbm-start-date <span class="m">2020</span>-01-01 --dbm-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id36">
-<h3>Command name<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id36">
+<h3>Command name<a class="headerlink" href="#id36" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_dbm</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_dbm</span></code></p>
-</div>
-<div class="section" id="id37">
-<h3>Command options<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id37">
+<h3>Command options<a class="headerlink" href="#id37" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 8%" />
@@ -1411,16 +1320,16 @@
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="google-dv360-reader">
-<h2>Google DV360 Reader<a class="headerlink" href="#google-dv360-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id38">
-<h3>Source API<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-dv360-reader">
+<h2>Google DV360 Reader<a class="headerlink" href="#google-dv360-reader" title="Permalink to this headline"></a></h2>
+<section id="id38">
+<h3>Source API<a class="headerlink" href="#id38" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/display-video/api/guides/getting-started/overview">DV360 API</a></p>
-</div>
-<div class="section" id="id39">
-<h3>How to obtain credentials<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id39">
+<h3>How to obtain credentials<a class="headerlink" href="#id39" title="Permalink to this headline"></a></h3>
 <p>As for DBM, the DV360 API uses OAuth 2.0 for authentication. There is not a single way to generate credentials but one is descrived below:</p>
 <ul class="simple">
 <li><p>Enable DV360 API in a GCP project</p></li>
@@ -1435,22 +1344,22 @@
 </li>
 </ul>
 <p>You should now have an access token and a refresh token. Save them carefully.</p>
-</div>
-<div class="section" id="id40">
-<h3>Quickstart<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id40">
+<h3>Quickstart<a class="headerlink" href="#id40" title="Permalink to this headline"></a></h3>
 <p>Say you want to get a SDF file for all campaigns of a specific advertiser. You can run:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_dv360 --dv360-client-id &lt;CLIENT_ID&gt; --dv360-client-secret &lt;CLIENT_SECRET&gt; --dv360-refresh-token &lt;REFRESH_TOKEN&gt; --dv360-access-token &lt;ACCESS_TOKEN&gt; --dv360-advertiser-id &lt;ADVERTISER_ID&gt; --dv360-filter-type <span class="s1">&#39;FILTER_TYPE_NONE&#39;</span> --dv360-file-type <span class="s1">&#39;FILE_TYPE_CAMPAIGN&#39;</span> write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id41">
-<h3>Command name<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id41">
+<h3>Command name<a class="headerlink" href="#id41" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_dv360</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_dv360</span></code></p>
-</div>
-<div class="section" id="id42">
-<h3>Command options<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id42">
+<h3>Command options<a class="headerlink" href="#id42" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 26%" />
@@ -1498,38 +1407,38 @@
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="google-search-console-reader">
-<h2>Google Search Console Reader<a class="headerlink" href="#google-search-console-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id43">
-<h3>Source API<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-search-console-reader">
+<h2>Google Search Console Reader<a class="headerlink" href="#google-search-console-reader" title="Permalink to this headline"></a></h2>
+<section id="id43">
+<h3>Source API<a class="headerlink" href="#id43" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/">Search Console API (Search Analytics endpoint)</a></p>
-</div>
-<div class="section" id="id44">
-<h3>How to obtain credentials<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id44">
+<h3>How to obtain credentials<a class="headerlink" href="#id44" title="Permalink to this headline"></a></h3>
 <p>Using the Google Search Console API requires three main parameters:</p>
 <ul class="simple">
 <li><p>OAuth2 credentials: &lt;CLIENT_ID&gt; and &lt;CLIENT_SECRET&gt;</p></li>
 <li><p>A refresh token, created with the email address able to access to your Google Search Console Account.</p></li>
 <li><p>The URLs whose performance you want to see</p></li>
 </ul>
-</div>
-<div class="section" id="id45">
-<h3>Quickstart<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id45">
+<h3>Quickstart<a class="headerlink" href="#id45" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves insights about the URL &lt;SITE_URL&gt; from 2020-01-01 to 2020-01-03.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_search_console --search-console-client-id &lt;CLIENT_ID&gt; --search-console-refresh-token &lt;REFRESH_TOKEN&gt; --search-console-site-url &lt;SITE_URL&gt; --search-console-dimensions country --search-console-dimensions device --search-console-start-date <span class="m">2020</span>-01-01 --search-console-end-date <span class="m">2020</span>-01-03 write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id46">
-<h3>Command name<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id46">
+<h3>Command name<a class="headerlink" href="#id46" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_search_console</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_search_console</span></code></p>
-</div>
-<div class="section" id="id47">
-<h3>Command options<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id47">
+<h3>Command options<a class="headerlink" href="#id47" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 13%" />
@@ -1590,37 +1499,37 @@
 </tbody>
 </table>
 <p>See documentation <a class="reference external" href="https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query">here</a> for a better understanding of the parameters.</p>
-</div>
-</div>
-<div class="section" id="google-search-ads-360-reader">
-<h2>Google Search Ads 360 Reader<a class="headerlink" href="#google-search-ads-360-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id48">
-<h3>Source API<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-search-ads-360-reader">
+<h2>Google Search Ads 360 Reader<a class="headerlink" href="#google-search-ads-360-reader" title="Permalink to this headline"></a></h2>
+<section id="id48">
+<h3>Source API<a class="headerlink" href="#id48" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/search-ads/v2/reference">Search Ads 360 API</a></p>
-</div>
-<div class="section" id="id49">
-<h3>How to obtain credentials<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id49">
+<h3>How to obtain credentials<a class="headerlink" href="#id49" title="Permalink to this headline"></a></h3>
 <p>Using the Search Ads API requires two things:
 - OAuth2 credentials: &lt;CLIENT_ID&gt; and &lt;CLIENT_SECRET&gt;
 - A refresh token, created with the email address able to access to all the Search Ads 360 Account you will be calling</p>
 <p>See the <a class="reference external" href="https://developers.google.com/search-ads/v2/authorizing&quot;SA360Authentication&quot;">documentation here</a>
 to set-up your OAuth2 credentials and refresh token specifically for Search Ads 360 Reporting.</p>
-</div>
-<div class="section" id="id50">
-<h3>Quickstart<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id50">
+<h3>Quickstart<a class="headerlink" href="#id50" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves insights about the Ads in the Search Ads 360 Account &lt;ADVERTISER_ID&gt; from the agency &lt;AGENCY_ID&gt;.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_sa360 --sa360-client-id &lt;CLIENT_ID&gt; --sa360-client-secret &lt;CLIENT_SECRET&gt; --sa360-refresh-token &lt;REFRESH_TOKEN&gt; --sa360-agency-id &lt;AGENCY_ID&gt; --sa360-advertiser-id &lt;ADVERTISER_ID&gt; --sa360-report-type keyword --sa360-column date --sa360-column impr --sa360-column clicks --sa360-start-date <span class="m">2020</span>-01-01 --sa360-end-date <span class="m">2020</span>-01-01
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id51">
-<h3>Command name<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id51">
+<h3>Command name<a class="headerlink" href="#id51" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_sa360</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_sa360</span></code></p>
-</div>
-<div class="section" id="id52">
-<h3>Command options<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id52">
+<h3>Command options<a class="headerlink" href="#id52" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 14%" />
@@ -1689,16 +1598,16 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tbody>
 </table>
 <p>See documentation <a class="reference external" href="https://developers.google.com/search-ads/v2/how-tos/reporting">here</a> for a better understanding of the parameters.</p>
-</div>
-</div>
-<div class="section" id="google-sheets-reader">
-<h2>Google Sheets Reader<a class="headerlink" href="#google-sheets-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id53">
-<h3>Source API<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="google-sheets-reader">
+<h2>Google Sheets Reader<a class="headerlink" href="#google-sheets-reader" title="Permalink to this headline"></a></h2>
+<section id="id53">
+<h3>Source API<a class="headerlink" href="#id53" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developers.google.com/sheets/api">Google Sheets API</a></p>
-</div>
-<div class="section" id="id54">
-<h3>How to obtain credentials<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id54">
+<h3>How to obtain credentials<a class="headerlink" href="#id54" title="Permalink to this headline"></a></h3>
 <p>To use the Google Sheets Reader you must first retrieve your credentials. In order to do so, head to console.cloud.google.com. In the header, chose your project or create a new one. Next step is to enable the Google Drive and Google Sheets APIs in the API Library. You’ll find it in the <em>APIs &amp; Services</em> tab. Now that Google Drive API is enabled, click on the <em>Create credentials</em> button on the upper-right corner and enter these informations :</p>
 <ul class="simple">
 <li><p>Which API are you using? &gt; Google Drive API</p></li>
@@ -1707,22 +1616,22 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 <li><p>Are you planning to use this API with App Engine or Compute Engine? &gt; No, I’m not using them</p></li>
 </ul>
 <p>Click on <em>What credentials do I need</em> and complete the form. You will find the credentials you need in the .JSON file that will start downloading automatically right after.</p>
-</div>
-<div class="section" id="id55">
-<h3>Quickstart<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id55">
+<h3>Quickstart<a class="headerlink" href="#id55" title="Permalink to this headline"></a></h3>
 <p>This command allows you to retrieve the desired information from a Google Sheet file row-by-row in a dictionary format. For example, given 3 columns a, b, c and 2 rows with respectively the values d, e, f and g, h, i, we would obtain such a dictionary:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;a&quot;</span>: <span class="s2">&quot;d&quot;</span>, <span class="s2">&quot;b&quot;</span>: <span class="s2">&quot;e&quot;</span>, <span class="s2">&quot;c&quot;</span>: <span class="s2">&quot;f&quot;</span><span class="o">}</span>
 <span class="o">{</span><span class="s2">&quot;a&quot;</span>: <span class="s2">&quot;g&quot;</span>, <span class="s2">&quot;b&quot;</span>: <span class="s2">&quot;h&quot;</span>, <span class="s2">&quot;c&quot;</span>: <span class="s2">&quot;i&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="id56">
-<h3>Command name<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id56">
+<h3>Command name<a class="headerlink" href="#id56" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_gs</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">google_sheets</span></code></p>
-</div>
-<div class="section" id="id57">
-<h3>Command options<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id57">
+<h3>Command options<a class="headerlink" href="#id57" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 14%" />
@@ -1770,22 +1679,22 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="mytarget-reader">
-<h2>MyTarget Reader<a class="headerlink" href="#mytarget-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id58">
-<h3>Source API<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="mytarget-reader">
+<h2>MyTarget Reader<a class="headerlink" href="#mytarget-reader" title="Permalink to this headline"></a></h2>
+<section id="id58">
+<h3>Source API<a class="headerlink" href="#id58" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://target.my.com/help/advertisers/api_arrangement/en">Mytarget API</a></p>
-</div>
-<div class="section" id="id59">
-<h3>How to obtain credentials<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id59">
+<h3>How to obtain credentials<a class="headerlink" href="#id59" title="Permalink to this headline"></a></h3>
 <p>The mytarget API uses the OAuth2 protocol. There is not a single way to generate credentials, you can find the 3 ways to retrieve your credentials below :</p>
 <p><a class="reference external" href="https://target.my.com/help/advertisers/api_authorization/en">Get your mytarget credentials</a></p>
 <p>You should now have an access token and a refresh token. Save them carefully.</p>
-</div>
-<div class="section" id="id60">
-<h3>Quickstart<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id60">
+<h3>Quickstart<a class="headerlink" href="#id60" title="Permalink to this headline"></a></h3>
 <p>Say you want to retrieve for all campaigns and its associated banners and stats of a specific advertiser from the 01/01/2020 to the 07/01/2020. You can run:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_mytarget --mytarget-client-id &lt;CLIENT_ID&gt; --mytarget-client-secret &lt;CLIENT_SECRET&gt; --mytarget-refresh-token &lt;REFRESH_TOKEN&gt; --mytarget-request-type <span class="s1">&#39;general&#39;</span> --mytarget-start-date &lt;START_DATE&gt; --mytarget-end-date &lt;END_DATE&gt; write_console
 </pre></div>
@@ -1795,14 +1704,14 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id61">
-<h3>Command name<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id61">
+<h3>Command name<a class="headerlink" href="#id61" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_mytarget</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">mytarget</span></code></p>
-</div>
-<div class="section" id="id62">
-<h3>Command options<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id62">
+<h3>Command options<a class="headerlink" href="#id62" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 15%" />
@@ -1846,29 +1755,29 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="mysql-reader">
-<h2>MySQL Reader<a class="headerlink" href="#mysql-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="source-orm">
-<h3>Source ORM<a class="headerlink" href="#source-orm" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="mysql-reader">
+<h2>MySQL Reader<a class="headerlink" href="#mysql-reader" title="Permalink to this headline"></a></h2>
+<section id="source-orm">
+<h3>Source ORM<a class="headerlink" href="#source-orm" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://docs.sqlalchemy.org/en/13/">SQL Alchemy</a> (using the <code class="docutils literal notranslate"><span class="pre">mysql+pymysql</span></code> engine)</p>
-</div>
-<div class="section" id="id63">
-<h3>Quickstart<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id63">
+<h3>Quickstart<a class="headerlink" href="#id63" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves all records from the table &lt;TABLE_NAME&gt; (equivalent to <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">&lt;TABLE_NAME&gt;</span></code>).</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_mysql --mysql-user &lt;DATABASE_USER&gt; --mysql-password &lt;DATABASE_PASSWORD&gt; --mysql-host &lt;DATABASE_HOST&gt; --mysql-port &lt;DATABASE_PORT&gt; --mysql-database &lt;DATABASE_NAME&gt; --mysql-table &lt;TABLE_NAME&gt; write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id64">
-<h3>Command name<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id64">
+<h3>Command name<a class="headerlink" href="#id64" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_mysql</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">mysql</span></code></p>
-</div>
-<div class="section" id="id65">
-<h3>Command options<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id65">
+<h3>Command options<a class="headerlink" href="#id65" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 22%" />
@@ -1936,29 +1845,29 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="radarly-reader">
-<h2>Radarly Reader<a class="headerlink" href="#radarly-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id66">
-<h3>Source API<a class="headerlink" href="#id66" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="radarly-reader">
+<h2>Radarly Reader<a class="headerlink" href="#radarly-reader" title="Permalink to this headline"></a></h2>
+<section id="id66">
+<h3>Source API<a class="headerlink" href="#id66" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://github.com/linkfluence/radarly-py">Radarly API</a></p>
-</div>
-<div class="section" id="id67">
-<h3>Quickstart<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id67">
+<h3>Quickstart<a class="headerlink" href="#id67" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves data from posts located under the project <code class="docutils literal notranslate"><span class="pre">&lt;PROJECT_ID&gt;</span></code> and associated to the focus IDs <code class="docutils literal notranslate"><span class="pre">00001</span></code> and <code class="docutils literal notranslate"><span class="pre">00002</span></code>, from 2020-01-01 to 2020-01-03.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_radarly --radarly-client-id &lt;CLIENT_ID&gt; --radarly-client-secret &lt;CLIENT_SECRET&gt; --radarly-pid &lt;PROJECT_ID&gt; --radarly-focus-id <span class="m">00001</span> --radarly-focus-id <span class="m">00002</span> --radarly-start-date <span class="m">2020</span>-01-01 --radarly-end-date <span class="m">2020</span>-01-03
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id68">
-<h3>Command name<a class="headerlink" href="#id68" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id68">
+<h3>Command name<a class="headerlink" href="#id68" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_radarly</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">radarly</span></code></p>
-</div>
-<div class="section" id="id69">
-<h3>Command options<a class="headerlink" href="#id69" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id69">
+<h3>Command options<a class="headerlink" href="#id69" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 15%" />
@@ -2022,33 +1931,33 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="salesforce-reader">
-<h2>Salesforce Reader<a class="headerlink" href="#salesforce-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id70">
-<h3>Source API<a class="headerlink" href="#id70" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="salesforce-reader">
+<h2>Salesforce Reader<a class="headerlink" href="#salesforce-reader" title="Permalink to this headline"></a></h2>
+<section id="id70">
+<h3>Source API<a class="headerlink" href="#id70" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developer.salesforce.com/docs/atlas.en-us.212.0.api_rest.meta/api_rest/intro_what_is_rest_api.html">Lightning Platform REST API</a></p>
-</div>
-<div class="section" id="id71">
-<h3>Quickstart<a class="headerlink" href="#id71" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id71">
+<h3>Quickstart<a class="headerlink" href="#id71" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves name field values from all Account records.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_salesforce --salesforce-consumer-key &lt;CONSUMER_KEY&gt; --salesforce-consumer-secret &lt;CONSUMER_SECRET&gt; --salesforce-user &lt;USERNAME&gt; --salesforce-password &lt;PASSWORD&gt; --salesforce-query <span class="s1">&#39;SELECT name FROM Account&#39;</span> --salesforce-query-name ack-account-name-query write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id72">
-<h3>How to obtain credentials<a class="headerlink" href="#id72" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id72">
+<h3>How to obtain credentials<a class="headerlink" href="#id72" title="Permalink to this headline"></a></h3>
 <p>Create a Connected App by following the instructions detailed <a class="reference external" href="https://developer.salesforce.com/docs/atlas.en-us.212.0.api_rest.meta/api_rest/quickstart_oauth.html">on this page</a>: it will generate your authentication credentials.</p>
-</div>
-<div class="section" id="id73">
-<h3>Command name<a class="headerlink" href="#id73" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id73">
+<h3>Command name<a class="headerlink" href="#id73" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_salesforce</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">salesforce</span></code></p>
-</div>
-<div class="section" id="id74">
-<h3>Command options<a class="headerlink" href="#id74" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id74">
+<h3>Command options<a class="headerlink" href="#id74" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -2100,24 +2009,24 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="the-trade-desk-reader">
-<h2>The Trade Desk Reader<a class="headerlink" href="#the-trade-desk-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id75">
-<h3>Source API<a class="headerlink" href="#id75" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="the-trade-desk-reader">
+<h2>The Trade Desk Reader<a class="headerlink" href="#the-trade-desk-reader" title="Permalink to this headline"></a></h2>
+<section id="id75">
+<h3>Source API<a class="headerlink" href="#id75" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview">The Trade Desk API</a></p>
-</div>
-<div class="section" id="id76">
-<h3>How to obtain credentials<a class="headerlink" href="#id76" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id76">
+<h3>How to obtain credentials<a class="headerlink" href="#id76" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p>Ask your Account Representative to <strong>give you access to The Trade Desk API and UI</strong></p></li>
 <li><p>He will generally provide you with <strong>two distinct accounts</strong>:  an <strong>API account</strong>, allowing you to make API calls (<em>Login: ttd_api_{XXXXX}&#64;client.com</em>), and a <strong>UI account</strong>, allowing you to navigate on The Trade Desk UI to create Report Templates (<em>Login: your professional e-mail address</em>)</p></li>
 <li><p>Pass <strong>the Login and Password of your API account</strong> to The Trade Desk connector</p></li>
 </ul>
-</div>
-<div class="section" id="id77">
-<h3>Quickstart<a class="headerlink" href="#id77" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id77">
+<h3>Quickstart<a class="headerlink" href="#id77" title="Permalink to this headline"></a></h3>
 <p>To request dimensions and metrics to The Trade Desk API, you should first <strong>create a Report Template in The Trade Desk UI</strong>, by following the below process:</p>
 <ul class="simple">
 <li><p>Connect to <a class="reference external" href="https://desk.thetradedesk.com/">The Trade Desk UI</a> using the Login and Password of your UI account</p></li>
@@ -2130,14 +2039,14 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </pre></div>
 </div>
 <p>Didn’t work? See [troubleshooting](#troubleshooting) section.</p>
-</div>
-<div class="section" id="id78">
-<h3>Command name<a class="headerlink" href="#id78" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id78">
+<h3>Command name<a class="headerlink" href="#id78" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_ttd</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">the_trade_desk</span></code></p>
-</div>
-<div class="section" id="id79">
-<h3>Command options<a class="headerlink" href="#id79" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id79">
+<h3>Command options<a class="headerlink" href="#id79" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 12%" />
@@ -2186,25 +2095,25 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tbody>
 </table>
 <p>If you need any further information, the documentation of The Trade Desk API can be found <a class="reference external" href="https://api.thetradedesk.com/v3/portal/api/doc/ApiOverview">here</a>.</p>
-</div>
-</div>
-<div class="section" id="twitter-ads-reader">
-<h2>Twitter Ads Reader<a class="headerlink" href="#twitter-ads-reader" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id80">
-<h3>Source API<a class="headerlink" href="#id80" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="twitter-ads-reader">
+<h2>Twitter Ads Reader<a class="headerlink" href="#twitter-ads-reader" title="Permalink to this headline"></a></h2>
+<section id="id80">
+<h3>Source API<a class="headerlink" href="#id80" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://developer.twitter.com/en/docs/ads/general/overview">Twitter Ads API</a></p>
-</div>
-<div class="section" id="id81">
-<h3>How to obtain credentials<a class="headerlink" href="#id81" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id81">
+<h3>How to obtain credentials<a class="headerlink" href="#id81" title="Permalink to this headline"></a></h3>
 <ul class="simple">
 <li><p><strong>Apply for a developer account</strong> through <a class="reference external" href="https://developer.twitter.com/en/apply">this link</a>.</p></li>
 <li><p><strong>Create a Twitter app</strong> on the developer portal: it will generate your authentication credentials.</p></li>
 <li><p><strong>Apply for Twitter Ads API access</strong> by filling out <a class="reference external" href="https://developer.twitter.com/en/docs/ads/general/overview/adsapi-application">this form</a>. Receiving Twitter approval may take up to 7 business days.</p></li>
 <li><p><strong>Get access to the Twitter Ads account</strong> you wish to retrieve data for, on the &#64;handle that you used to create your Twitter App. Be careful, access levels matter: with an <em>Ad Manager</em> access, you will be able to request all report types; with a <em>Campaign Analyst</em> access, you will be able to request all report types, except ENTITY reports on Card entities.</p></li>
 </ul>
-</div>
-<div class="section" id="id82">
-<h3>Quickstart<a class="headerlink" href="#id82" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id82">
+<h3>Quickstart<a class="headerlink" href="#id82" title="Permalink to this headline"></a></h3>
 <p>The Twitter Ads Reader can collect <strong>3 types of reports</strong>, making calls to 4 endpoints of the Twitter Ads API:</p>
 <ul class="simple">
 <li><p><strong>ANALYTICS reports</strong>, making calls to the <a class="reference external" href="https://developer.twitter.com/en/docs/ads/analytics/api-reference/asynchronous">Asynchronous Analytics endpoint</a>. These reports return performance data for a wide range of metrics, that <strong>can be aggregated over time</strong>. Output data <strong>can be splitted by day</strong> when requested over a larger time period.</p></li>
@@ -2224,14 +2133,14 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id83">
-<h3>Command name<a class="headerlink" href="#id83" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id83">
+<h3>Command name<a class="headerlink" href="#id83" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_twitter</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">twitter</span></code></p>
-</div>
-<div class="section" id="id84">
-<h3>Command options<a class="headerlink" href="#id84" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id84">
+<h3>Command options<a class="headerlink" href="#id84" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 14%" />
@@ -2320,16 +2229,16 @@ to set-up your OAuth2 credentials and refresh token specifically for Search Ads 
 </tbody>
 </table>
 <p>If you need any further information, the documentation of Twitter Ads API can be found <a class="reference external" href="https://developer.twitter.com/en/docs/ads/general/overview">here</a>. To get a better understanding of <strong>Twitter Ads Hierrarchy and Terminology</strong>, we advise you to have a look at <a class="reference external" href="https://developer.twitter.com/en/docs/tutorials/ads-api-hierarchy-terminology">this page</a>.</p>
-</div>
-</div>
-<div class="section" id="yandex-readers">
-<h2>Yandex Readers<a class="headerlink" href="#yandex-readers" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id85">
-<h3>Source API<a class="headerlink" href="#id85" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="yandex-readers">
+<h2>Yandex Readers<a class="headerlink" href="#yandex-readers" title="Permalink to this headline"></a></h2>
+<section id="id85">
+<h3>Source API<a class="headerlink" href="#id85" title="Permalink to this headline"></a></h3>
 <p><a class="reference external" href="https://tech.yandex.com/direct/">Yandex Direct API</a></p>
-</div>
-<div class="section" id="id86">
-<h3>How to obtain credentials<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id86">
+<h3>How to obtain credentials<a class="headerlink" href="#id86" title="Permalink to this headline"></a></h3>
 <p>In order to access Yandex Direct API, you need two accounts: an advertiser account and a developer account.
 Here is the process:</p>
 <ol class="arabic simple">
@@ -2340,46 +2249,46 @@ Here is the process:</p>
 <li><p>Log out and log in as a developer and <a class="reference external" href="https://direct.yandex.com/registered/main.pl?CMD=apiSettings">ask permission to access Yandex Direct API</a> (ask for Full access). Fill in the form.</p></li>
 <li><p>Wait for Yandex support to reply but it should be within a week.</p></li>
 </ol>
-</div>
-</div>
-<div class="section" id="yandex-campaign-reader">
-<h2>Yandex Campaign Reader<a class="headerlink" href="#yandex-campaign-reader" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="yandex-campaign-reader">
+<h2>Yandex Campaign Reader<a class="headerlink" href="#yandex-campaign-reader" title="Permalink to this headline"></a></h2>
 <p><a class="reference external" href="https://tech.yandex.com/direct/doc/ref-v5/campaigns/get-docpage/">Official documentation</a></p>
-<div class="section" id="id87">
-<h3>Quickstart<a class="headerlink" href="#id87" title="Permalink to this headline">¶</a></h3>
+<section id="id87">
+<h3>Quickstart<a class="headerlink" href="#id87" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves the daily budget of all your campaigns, since your account creation.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_yandex_campaigns --yandex-token &lt;TOKEN&gt; --yandex-field-name Id --yandex-field-name Name --yandex-field-name DailyBudget write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id88">
-<h3>Command name<a class="headerlink" href="#id88" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id88">
+<h3>Command name<a class="headerlink" href="#id88" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_yandex_campaigns</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">yandex_campaign</span></code></p>
-</div>
-<div class="section" id="id89">
-<h3>Command options<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-<div class="section" id="yandex-statistics-reader">
-<h2>Yandex Statistics Reader<a class="headerlink" href="#yandex-statistics-reader" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id89">
+<h3>Command options<a class="headerlink" href="#id89" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="yandex-statistics-reader">
+<h2>Yandex Statistics Reader<a class="headerlink" href="#yandex-statistics-reader" title="Permalink to this headline"></a></h2>
 <p><a class="reference external" href="https://tech.yandex.com/direct/doc/reports/reports-docpage/">Official documentation</a></p>
-<div class="section" id="id90">
-<h3>Quickstart<a class="headerlink" href="#id90" title="Permalink to this headline">¶</a></h3>
+<section id="id90">
+<h3>Quickstart<a class="headerlink" href="#id90" title="Permalink to this headline"></a></h3>
 <p>The following command retrieves a performance report for all your campaigns, since your account creation.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python ack/entrypoints/cli/main.py read_yandex_statistics --yandex-token &lt;TOKEN&gt; --yandex-report-type AD_PERFORMANCE_REPORT --yandex-field-name AdFormat --yandex-field-name AdId --yandex-field-name Impressions --yandex-include-vat True --yandex-report-language en --yandex-field-name AdGroupName --yandex-field-name AdGroupId --yandex-field-name AdNetworkType --yandex-field-name CampaignId --yandex-field-name CampaignName --yandex-field-name CampaignType --yandex-field-name Date --yandex-field-name Device --yandex-field-name Clicks --yandex-field-name Conversions --yandex-field-name Cost --yandex-date-range ALL_TIME write_console
 </pre></div>
 </div>
 <p><em>Didn’t work?</em> See the <a class="reference internal" href="#troubleshooting">Troubleshooting</a> section.</p>
-</div>
-<div class="section" id="id91">
-<h3>Command name<a class="headerlink" href="#id91" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id91">
+<h3>Command name<a class="headerlink" href="#id91" title="Permalink to this headline"></a></h3>
 <p>CMD: <code class="docutils literal notranslate"><span class="pre">read_yandex_statistics</span></code></p>
 <p>JSON: <code class="docutils literal notranslate"><span class="pre">yandex_statistics</span></code></p>
-</div>
-<div class="section" id="id92">
-<h3>Command options<a class="headerlink" href="#id92" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id92">
+<h3>Command options<a class="headerlink" href="#id92" title="Permalink to this headline"></a></h3>
 <p>Detailed version <a class="reference external" href="https://tech.yandex.com/direct/doc/reports/spec-docpage/">here</a>.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -2436,10 +2345,10 @@ Here is the process:</p>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline"></a></h2>
 <p>You encountered an issue when running a Reader command and you don’t know what’s going on?
 You may find an answer in the troubleshooting guide below.</p>
 <ol class="arabic simple">
@@ -2447,55 +2356,38 @@ You may find an answer in the troubleshooting guide below.</p>
 <li><p>Have you set <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variable to the root of ACK folder?</p></li>
 <li><p>Have you checked logs? The code has been implemented so that every error is logged.</p></li>
 </ol>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="streams.html" class="btn btn-neutral float-right" title="Streams" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="contributing.html" class="btn btn-neutral float-left" title="Contributing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="streams.html" class="btn btn-neutral float-right" title="Streams" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Artefact.
-
-    </p>
+    <p>&#169; Copyright 2021, Artefact.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
