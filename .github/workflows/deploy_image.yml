@@ -41,17 +41,6 @@ env:
   CLOUDSDK_PYTHON_SITEPACKAGES: 1
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Build and publish Docker image
-        run: |
-          make build_base_image
 
   build-and-deploy:
 
