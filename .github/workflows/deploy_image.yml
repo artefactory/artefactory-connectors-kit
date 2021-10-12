@@ -17,7 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 # TO CONFIGURE THIS WORKFLOW
-# 1. Set up secrets in your workspace: 
+# 1. Set up secrets in your workspace:
 # - GCP_PROJECT with the name of the project
 # - GCP_EMAIL with the service account email
 # - GCP_KEY with the service account key
@@ -50,7 +50,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Setup gcloud CLI
         uses: google-github-actions/setup-gcloud@master
