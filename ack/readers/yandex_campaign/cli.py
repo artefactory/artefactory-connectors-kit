@@ -25,20 +25,18 @@ from ack.utils.processor import processor
 
 @click.command(name="read_yandex_campaigns")
 @click.option("--yandex-campaigns-token", "yandex_token", required=True)
-@click.option("--yandex-campaigns-campaign-id", "yandex_campaign_ids", multiple=True)
-@click.option("--yandex-campaigns-campaign-state", "yandex_campaign_states", multiple=True, type=click.Choice(CAMPAIGN_STATES))
+@click.option("--yandex-campaigns-campaign-id", multiple=True)
+@click.option("--yandex-campaigns-campaign-state", multiple=True, type=click.Choice(CAMPAIGN_STATES))
 @click.option(
-    "--yandex-campaigns-campaign-status", "yandex_campaign_statuses", multiple=True, type=click.Choice(CAMPAIGN_STATUSES)
+    "--yandex-campaigns-campaign-status", multiple=True, type=click.Choice(CAMPAIGN_STATUSES)
 )
 @click.option(
     "--yandex-campaigns-campaign-payment-status",
-    "yandex_campaign_payment_statuses",
     multiple=True,
     type=click.Choice(CAMPAIGN_PAYMENT_STATUSES),
 )
 @click.option(
     "--yandex-campaigns-field-name",
-    "yandex_fields",
     multiple=True,
     type=click.Choice(CAMPAIGN_FIELDS),
     required=True,

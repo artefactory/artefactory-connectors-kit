@@ -34,7 +34,6 @@ from ack.utils.processor import processor
 )
 @click.option(
     "--googleads-client-customer-id",
-    "googleads_client_customer_ids",
     multiple=True,
     help="Google Ads Client Account(s) to be called, thanks to their IDs.\n "
     "This field is ignored if manager_id is specified (replaced by the accounts linked to the MCC)",
@@ -55,7 +54,6 @@ from ack.utils.processor import processor
 @click.option("--googleads-end-date", type=click.DateTime())
 @click.option(
     "--googleads-field",
-    "googleads_fields",
     multiple=True,
     help="Google Ads API fields for the request\n"
     "https://developers.google.com/adwords/api/docs/appendix/reports#available-reports",

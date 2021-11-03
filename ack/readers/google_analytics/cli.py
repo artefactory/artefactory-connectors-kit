@@ -27,7 +27,7 @@ from ack.utils.processor import processor
 @click.option("--ga-refresh-token", required=True)
 @click.option("--ga-client-id", required=True)
 @click.option("--ga-client-secret", required=True)
-@click.option("--ga-view-id", default="", multiple=True)
+@click.option("--ga-view-id", default=[], multiple=True)
 @click.option("--ga-account-id", default=[], multiple=True)
 @click.option("--ga-dimension", multiple=True)
 @click.option("--ga-metric", multiple=True)

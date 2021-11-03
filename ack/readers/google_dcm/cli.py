@@ -29,18 +29,16 @@ from ack.utils.processor import processor
 @click.option("--dcm-client-id", required=True)
 @click.option("--dcm-client-secret", required=True)
 @click.option("--dcm-refresh-token", required=True)
-@click.option("--dcm-profile-id", "dcm_profile_ids", required=True, multiple=True)
+@click.option("--dcm-profile-id", required=True, multiple=True)
 @click.option("--dcm-report-name", default="DCM Report")
 @click.option("--dcm-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
     "--dcm-metric",
-    "dcm_metrics",
     multiple=True,
     help="https://developers.google.com/doubleclick-advertisers/v3.5/dimensions/#standard-metrics",
 )
 @click.option(
     "--dcm-dimension",
-    "dcm_dimensions",
     multiple=True,
     help="https://developers.google.com/doubleclick-advertisers/v3.5/dimensions/#standard-dimensions",
 )
@@ -48,7 +46,6 @@ from ack.utils.processor import processor
 @click.option("--dcm-end-date", type=click.DateTime(), help="End date of the report")
 @click.option(
     "--dcm-filter",
-    "dcm_filters",
     type=click.Tuple([str, str]),
     multiple=True,
     help="A filter is a tuple following this pattern: (dimensionName, dimensionValue). "
