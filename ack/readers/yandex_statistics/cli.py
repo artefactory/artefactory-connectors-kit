@@ -39,14 +39,12 @@ STR_LIST_TYPE = StrList()
 @click.option("--yandex-statistics-report-language", "yandex_report_language", type=click.Choice(LANGUAGES), default="en")
 @click.option(
     "--yandex-statistics-filter",
-    "yandex_filters",
     multiple=True,
     type=click.Tuple([click.Choice(STATS_FIELDS), click.Choice(OPERATORS), STR_LIST_TYPE]),
 )
 @click.option("--yandex-statistics-max-rows", "yandex_max_rows", type=int)
 @click.option(
     "--yandex-statistics-field-name",
-    "yandex_fields",
     multiple=True,
     type=click.Choice(STATS_FIELDS),
     required=True,

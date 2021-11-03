@@ -32,18 +32,16 @@ from ack.utils.processor import processor
 @click.option("--sa360-agency-id", required=True)
 @click.option(
     "--sa360-advertiser-id",
-    "sa360_advertiser_ids",
     multiple=True,
     help="If empty, all advertisers from agency will be requested",
 )
 @click.option("--sa360-report-name", default="SA360 Report")
 @click.option("--sa360-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option(
-    "--sa360-column", "sa360_columns", multiple=True, help="https://developers.google.com/search-ads/v2/report-types",
+    "--sa360-column", multiple=True, help="https://developers.google.com/search-ads/v2/report-types",
 )
 @click.option(
     "--sa360-saved-column",
-    "sa360_saved_columns",
     multiple=True,
     help="https://developers.google.com/search-ads/v2/how-tos/reporting/saved-columns",
 )
