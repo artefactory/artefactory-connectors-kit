@@ -36,6 +36,6 @@ from ack.utils.processor import processor
 )
 @click.option("--mytarget-start-date", type=click.DateTime())
 @click.option("--mytarget-end-date", type=click.DateTime())
-@processor("mytarget_client_id", "mytarget_client_secret", "mytarget_refresh_token")
+@processor("mytarget_client_secret", "mytarget_refresh_token")
 def mytarget(**kwargs):
     return MyTargetReader(**extract_args("mytarget_", kwargs))

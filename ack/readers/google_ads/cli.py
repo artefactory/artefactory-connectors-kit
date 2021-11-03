@@ -87,6 +87,6 @@ from ack.utils.processor import processor
     help="A boolean indicating whether the Account ID should be included as a field in the output stream\n"
     "(because AccountId is not available as a report field in the API)",
 )
-@processor("googleads_developer_token", "googleads_app_secret", "googleads_refresh_token")
+@processor("googleads_developer_token", "googleads_client_secret", "googleads_refresh_token")
 def google_ads(**kwargs):
     return GoogleAdsReader(**extract_args("googleads_", kwargs))

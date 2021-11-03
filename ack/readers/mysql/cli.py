@@ -36,7 +36,7 @@ from ack.utils.processor import processor
 @click.option("--mysql-redis-state-service-name")
 @click.option("--mysql-redis-state-service-host")
 @click.option("--mysql-redis-state-service-port", default=6379)
-@processor("mysql_password")
+@processor("mysql_user", "mysql_password")
 def mysql(**kwargs):
     query_key = "mysql_query"
     query_name_key = "mysql_query_name"

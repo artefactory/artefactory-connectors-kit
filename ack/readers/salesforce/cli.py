@@ -35,7 +35,7 @@ from ack.utils.processor import processor
 @click.option("--salesforce-redis-state-service-name")
 @click.option("--salesforce-redis-state-service-host")
 @click.option("--salesforce-redis-state-service-port", default=6379)
-@processor("salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_password")
+@processor("salesforce_consumer_key", "salesforce_consumer_secret", "salesforce_user", "salesforce_password")
 def salesforce(**kwargs):
     query_key = "salesforce_query"
     query_name_key = "salesforce_query_name"

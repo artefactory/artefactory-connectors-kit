@@ -74,7 +74,7 @@ def format_key_if_needed(ctx, param, value):
 )
 @click.option("--adobe-start-date", type=click.DateTime())
 @click.option("--adobe-end-date", default=None, type=click.DateTime())
-@processor("adobe_password", "adobe_username")
+@processor("adobe_client_secret", "adobe_private_key")
 def adobe_analytics_1_4(**kwargs):
     # Should handle valid combinations dimensions/metrics in the API
     return AdobeAnalytics14Reader(**extract_args("adobe_", kwargs))
