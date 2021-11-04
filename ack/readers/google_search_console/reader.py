@@ -78,7 +78,7 @@ class GoogleSearchConsoleReader(Reader):
             http = credentials.authorize(httplib2.Http())
             credentials.refresh(http)
 
-            self._service = build(serviceName="webmasters", version="v3", credentials=credentials, cache_discovery=False)
+            self._service = build(serviceName="searchconsole", version="v1", credentials=credentials, cache_discovery=False)
 
     @staticmethod
     def check_end_date(end_date):
