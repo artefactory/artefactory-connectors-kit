@@ -152,45 +152,45 @@
 <li><p>A path argument <code class="docutils literal notranslate"><span class="pre">--config-file</span></code> that will give to the entrypoint where to find the .json file with all the information.</p></li>
 <li><p>A .json config file organized as followed, with one reader and at least one writer:</p></li>
 </ol>
-<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;reader&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;reader_name&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">],</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;writers&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;writer_name&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;option_name&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-    <span class="p">},</span>
-  <span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;option_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;reader&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;reader_name&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;option_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;option_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;value2&quot;</span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;writers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;writer_name&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;option_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Here is a good example of a .json config file:</p>
-<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;reader&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;twitter&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;consumer_key&quot;</span><span class="p">:</span> <span class="s2">&quot;****&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;consumer_secret&quot;</span><span class="p">:</span> <span class="s2">&quot;****&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;access_token&quot;</span><span class="p">:</span> <span class="s2">&quot;****&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;access_token_secret&quot;</span><span class="p">:</span> <span class="s2">&quot;*****&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;account_id&quot;</span><span class="p">:</span> <span class="s2">&quot;*****&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;report_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ANALYTICS&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;entity&quot;</span><span class="p">:</span> <span class="s2">&quot;PROMOTED_TWEET&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;metric_group&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ENGAGEMENT&quot;</span><span class="p">],</span>
-    <span class="nt">&quot;segmentation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;AGE&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;granularity&quot;</span><span class="p">:</span> <span class="s2">&quot;DAY&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-02-25&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;end_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-03-04&quot;</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;writers&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;console&quot;</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;reader&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;twitter&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;consumer_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;****&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;consumer_secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;****&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;access_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;****&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;access_token_secret&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*****&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;account_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*****&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;report_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ANALYTICS&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PROMOTED_TWEET&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;metric_group&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ENGAGEMENT&quot;</span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;segmentation_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AGE&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;granularity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DAY&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;start_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-02-25&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;end_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-03-04&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;writers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;console&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p><strong>Now that you understand how ACK commands are structured, you can follow these links to find the full documentation on available</strong> <a class="reference internal" href="readers.html#readers"><span class="std std-ref">Readers</span></a> and <a class="reference internal" href="writers.html#writers"><span class="std std-ref">Writers</span></a>.</p>
