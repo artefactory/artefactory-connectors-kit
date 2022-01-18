@@ -65,7 +65,7 @@ class AwinAdvertiserReader(Reader):
             build_url
         )
         json_response = response.json()
-        logger.debug(f"Response: {json_response}")    
+        logger.debug(f"Response: {json_response}")
         return json_response
 
     @staticmethod
@@ -74,6 +74,7 @@ class AwinAdvertiserReader(Reader):
 
     def read(self):
         data = request()
+        
         def result_generator():
             if data:
                 yield from data
