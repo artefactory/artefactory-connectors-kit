@@ -37,7 +37,7 @@ from ack.readers.radarly.config import RadarlyReaderConfig
 from ack.readers.adobe_analytics_1_4.reader import AdobeAnalytics14Reader
 from ack.readers.adobe_analytics_2_0.reader import AdobeAnalytics20Reader
 from ack.readers.amazon_s3.reader import AmazonS3Reader
-from ack.readers.awin_advertiser import AwinAdvertiserReader
+from ack.readers.awin_advertiser.reader import AwinAdvertiserReader
 from ack.readers.confluence.reader import ConfluenceReader
 from ack.readers.facebook.reader import FacebookReader
 from ack.readers.google_ads.reader import GoogleAdsReader

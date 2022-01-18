@@ -17,6 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import requests
+from datetime import datetime
 from urllib import request
 from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.config import logger
@@ -24,7 +25,6 @@ from ack.readers.awin_advertiser.config import AWIN_API_ENDPOINT, DATEFORMAT
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
 from ack.utils.retry import retry
-# from ack.utils.date_handler import check_date_range_definition_conformity
 
 
 class AwinAdvertiserReader(Reader):
@@ -39,11 +39,7 @@ class AwinAdvertiserReader(Reader):
         self.start_date = start_date
         self.end_date = end_date
         self.download_format = "CSV"
-        self.kwargs = kwargs
-        # check_date_range_definition_conformity(
-        #     self.kwargs.get("start_date"), self.kwargs.get("end_date"), self.kwargs.get("day_range")
-        # )
-        
+
     @retry
     def request(self):
         auth_token = self.auth_token
@@ -51,8 +47,8 @@ class AwinAdvertiserReader(Reader):
         report_type = self.report_type
         region = self.region
         timezone = self.timezone
-        start_date = self.start_date
-        end_date = self.end_date
+        start_date = self.start_date.strftime(DATEFORMAT)
+        end_date = self.end_date.strftime(DATEFORMAT)
 
         if report_type == REPORT_TYPES[0]:
             build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}/reports/publisher?startDate={start_date}&endDate={end_date}&timezone={timezone}&accessToken={auth_token}"
@@ -73,7 +69,7 @@ class AwinAdvertiserReader(Reader):
         return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
 
     def read(self):
-        data = request()
+        data = self.request()
 
         def result_generator():
             if data:
