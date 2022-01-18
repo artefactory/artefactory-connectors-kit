@@ -74,7 +74,7 @@ class AwinAdvertiserReader(Reader):
 
     def read(self):
         data = request()
-        
+
         def result_generator():
             if data:
                 yield from data

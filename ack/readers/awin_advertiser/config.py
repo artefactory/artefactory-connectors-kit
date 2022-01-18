@@ -54,4 +54,3 @@ class AwinAdvertiserReaderConfig(BaseModel):
             except ValueError:
                 raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
         return v
-    
