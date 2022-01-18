@@ -64,19 +64,16 @@ class AwinAdvertiserReader(Reader):
             build_url
         )
         json_response = response.json()
-        logger.debug(f"Response: {json_response}")      
-        return json_response       
-        
+        logger.debug(f"Response: {json_response}")    
+        return json_response
 
     @staticmethod
     def create_date_range(start_date, end_date):
         return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
-
+    
     def read(self):
         data = request()
-        
         def result_generator():
             if data:
                 yield from data
-        
         yield JSONStream("results_", result_generator())
