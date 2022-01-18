@@ -43,6 +43,7 @@ class AwinAdvertiserReader(Reader):
         # check_date_range_definition_conformity(
         #     self.kwargs.get("start_date"), self.kwargs.get("end_date"), self.kwargs.get("day_range")
         # )
+        
     @retry
     def request(self):
         auth_token = self.auth_token
@@ -51,15 +52,15 @@ class AwinAdvertiserReader(Reader):
         region = self.region
         timezone = self.timezone
         start_date = self.start_date
-        end_date = self.end_date        
-        
+        end_date = self.end_date
+
         if report_type == REPORT_TYPES[0]:
             build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}/reports/publisher?startDate={start_date}&endDate={end_date}&timezone={timezone}&accessToken={auth_token}"
         elif report_type == REPORT_TYPES[1]:
             build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}/reports/creative?startDate={start_date}&endDate={end_date}&region={region}&timezone={timezone}&accessToken={auth_token}"
         elif report_type == REPORT_TYPES[2]:
             build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}/reports/campaign?startDate={start_date}&endDate={end_date}&accessToken={auth_token}"
-        
+
         response = requests.get(
             build_url
         )
@@ -70,7 +71,7 @@ class AwinAdvertiserReader(Reader):
     @staticmethod
     def create_date_range(start_date, end_date):
         return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
-    
+
     def read(self):
         data = request()
         def result_generator():

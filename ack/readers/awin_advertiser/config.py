@@ -25,7 +25,7 @@ DATEFORMAT = "%Y-%m-%d"
 AWIN_API_ENDPOINT = "https://api.awin.com/advertisers/"
 LIMIT_NVIEWS_PER_REQ = 5
 MAX_WAIT_REPORT_DELAY = 4096
-#DAY_RANGE = ("PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS")
+# DAY_RANGE = ("PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS")
 
 # https://wiki.awin.com/index.php/Advertiser_Service_API
 REPORT_TYPES = [
@@ -33,6 +33,7 @@ REPORT_TYPES = [
     "creative",
     "campaign"
 ]
+
 
 class AwinAdvertiserReaderConfig(BaseModel):
     auth_token: str
@@ -43,7 +44,7 @@ class AwinAdvertiserReaderConfig(BaseModel):
     start_date: datetime = None
     end_date: datetime = None
     date_range: Tuple[datetime, datetime] = None
-    #day_range: Literal[DAY_RANGE] = None
+    # day_range: Literal[DAY_RANGE] = None
 
     @validator("start_date", "end_date", pre=True)
     def date_format(cls, v):
@@ -53,4 +54,3 @@ class AwinAdvertiserReaderConfig(BaseModel):
             except ValueError:
                 raise ValueError("Datetime format must follow 'YYYY-MM-DD'")
         return v
-    

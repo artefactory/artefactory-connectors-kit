@@ -20,12 +20,12 @@ import click
 from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.readers.awin_advertiser.reader import AwinAdvertiserReader
 from ack.utils.args import extract_args
-from ack.utils.processor import processor
+# from ack.utils.processor import processor
 
 @click.command(name="read_awin")
 @click.option("--awin-auth-token", required=True)
 @click.option("--awin-advertiser-id", required=True)
-@click.option("--awin-report-type", type = click.Choice(REPORT_TYPES), default = REPORT_TYPES[0])
+@click.option("--awin-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option("--awin-region", required=True)
 @click.option("--awin-timezone", required=True)
 @click.option("--awin-start-date", type=click.DateTime())
