@@ -17,12 +17,14 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import requests
-from urllib import request
+from datetime import datetime
 from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.config import logger
+from typing import Tuple
 from ack.readers.awin_advertiser.config import AWIN_API_ENDPOINT, DATEFORMAT
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
+from ack.utils.date_handler import build_date_range
 from ack.utils.retry import retry
 
 
@@ -35,32 +37,24 @@ class AwinAdvertiserReader(Reader):
         self.report_type = report_type
         self.region = region
         self.timezone = timezone
-        self.start_date = start_date
-        self.end_date = end_date
+        self.start_date = start_date.strftime(DATEFORMAT)
+        self.end_date = end_date.strftime(DATEFORMAT)
         self.download_format = "CSV"
 
     @retry
     def request(self):
-        auth_token = self.auth_token
-        advertiser_id = self.advertiser_id
-        report_type = self.report_type
-        region = self.region
-        timezone = self.timezone
-        start_date = self.start_date.strftime(DATEFORMAT)
-        end_date = self.end_date.strftime(DATEFORMAT)
-
-        if report_type == REPORT_TYPES[0]:
-            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}"\
-                f"/reports/publisher?startDate={start_date}&endDate={end_date}"\
-                f"&timezone={timezone}&accessToken={auth_token}"
-        elif report_type == REPORT_TYPES[1]:
-            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}"\
-                f"/reports/creative?startDate={start_date}&endDate={end_date}"\
-                f"&region={region}&timezone={timezone}&accessToken={auth_token}"
-        elif report_type == REPORT_TYPES[2]:
-            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}"\
-                f"/reports/campaign?startDate={start_date}&endDate={end_date}"\
-                f"&accessToken={auth_token}"
+        if self.report_type == REPORT_TYPES[0]:
+            build_url = f"{AWIN_API_ENDPOINT}{self.advertiser_id}"\
+                f"/reports/{self.report_type}?startDate={self.start_date}&endDate={self.end_date}"\
+                f"&timezone={self.timezone}&accessToken={self.auth_token}"
+        elif self.report_type == REPORT_TYPES[1]:
+            build_url = f"{AWIN_API_ENDPOINT}{self.advertiser_id}"\
+                f"/reports/{self.report_type}?startDate={self.start_date}&endDate={self.end_date}"\
+                f"&region={self.region}&timezone={self.timezone}&accessToken={self.auth_token}"
+        elif self.report_type == REPORT_TYPES[2]:
+            build_url = f"{AWIN_API_ENDPOINT}{self.advertiser_id}"\
+                f"/reports/{self.report_type}?startDate={self.start_date}&endDate={self.end_date}"\
+                f"&accessToken={self.auth_token}"
 
         response = requests.get(
             build_url
@@ -69,9 +63,8 @@ class AwinAdvertiserReader(Reader):
         logger.debug(f"Response: {json_response}")
         return json_response
 
-    @staticmethod
-    def create_date_range(start_date, end_date):
-        return {"min": start_date.strftime(DATEFORMAT), "max": end_date.strftime(DATEFORMAT)}
+    # def build_date_range(start_date: date, end_date: date, date_range: str) -> Tuple[datetime, datetime]:
+    #     return build_date_range
 
     def read(self):
         data = self.request()
