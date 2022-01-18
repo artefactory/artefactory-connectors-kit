@@ -20,16 +20,16 @@ import requests
 from urllib import request
 from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.config import logger
-from ack.readers.awin_advertiser.config import AWIN_API_ENDPOINT, DATEFORMAT 
+from ack.readers.awin_advertiser.config import AWIN_API_ENDPOINT, DATEFORMAT
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
 from ack.utils.retry import retry
-#from ack.utils.date_handler import check_date_range_definition_conformity
+# from ack.utils.date_handler import check_date_range_definition_conformity
 
 
 class AwinAdvertiserReader(Reader):
     def __init__(
-        self, auth_token, advertiser_id, report_type, region, timezone, start_date, end_date, **kwargs 
+        self, auth_token, advertiser_id, report_type, region, timezone, start_date, end_date, **kwargs
     ):
         self.auth_token = auth_token
         self.advertiser_id = advertiser_id
@@ -40,11 +40,9 @@ class AwinAdvertiserReader(Reader):
         self.end_date = end_date
         self.download_format = "CSV"
         self.kwargs = kwargs
-        
         # check_date_range_definition_conformity(
         #     self.kwargs.get("start_date"), self.kwargs.get("end_date"), self.kwargs.get("day_range")
         # )
-    
     @retry
     def request(self):
         auth_token = self.auth_token
