@@ -17,7 +17,6 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import requests
-from datetime import datetime
 from urllib import request
 from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.config import logger
@@ -51,11 +50,17 @@ class AwinAdvertiserReader(Reader):
         end_date = self.end_date.strftime(DATEFORMAT)
 
         if report_type == REPORT_TYPES[0]:
-            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}/reports/publisher?startDate={start_date}&endDate={end_date}&timezone={timezone}&accessToken={auth_token}"
+            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}"\
+                f"/reports/publisher?startDate={start_date}&endDate={end_date}"\
+                f"&timezone={timezone}&accessToken={auth_token}"
         elif report_type == REPORT_TYPES[1]:
-            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}/reports/creative?startDate={start_date}&endDate={end_date}&region={region}&timezone={timezone}&accessToken={auth_token}"
+            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}"\
+                f"/reports/creative?startDate={start_date}&endDate={end_date}"\
+                f"&region={region}&timezone={timezone}&accessToken={auth_token}"
         elif report_type == REPORT_TYPES[2]:
-            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}/reports/campaign?startDate={start_date}&endDate={end_date}&accessToken={auth_token}"
+            build_url = f"{AWIN_API_ENDPOINT}{advertiser_id}"\
+                f"/reports/campaign?startDate={start_date}&endDate={end_date}"\
+                f"&accessToken={auth_token}"
 
         response = requests.get(
             build_url
