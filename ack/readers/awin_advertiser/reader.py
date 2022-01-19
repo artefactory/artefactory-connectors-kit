@@ -17,14 +17,11 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import requests
-# from datetime import datetime
 from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.config import logger
-# from typing import Tuple
 from ack.readers.awin_advertiser.config import AWIN_API_ENDPOINT, DATEFORMAT
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
-# from ack.utils.date_handler import build_date_range
 from ack.utils.retry import retry
 
 
@@ -39,7 +36,6 @@ class AwinAdvertiserReader(Reader):
         self.timezone = timezone
         self.start_date = start_date.strftime(DATEFORMAT)
         self.end_date = end_date.strftime(DATEFORMAT)
-        self.download_format = "CSV"
 
     @retry
     def request(self):
@@ -62,9 +58,6 @@ class AwinAdvertiserReader(Reader):
         json_response = response.json()
         logger.debug(f"Response: {json_response}")
         return json_response
-
-    # def build_date_range(start_date: date, end_date: date, date_range: str) -> Tuple[datetime, datetime]:
-    #     return build_date_range
 
     def read(self):
         data = self.request()

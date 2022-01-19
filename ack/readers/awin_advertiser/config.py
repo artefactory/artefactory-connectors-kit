@@ -25,7 +25,6 @@ DATEFORMAT = "%Y-%m-%d"
 AWIN_API_ENDPOINT = "https://api.awin.com/advertisers/"
 LIMIT_NVIEWS_PER_REQ = 5
 MAX_WAIT_REPORT_DELAY = 4096
-# DAY_RANGE = ("PREVIOUS_DAY", "LAST_30_DAYS", "LAST_7_DAYS", "LAST_90_DAYS")
 
 # https://wiki.awin.com/index.php/Advertiser_Service_API
 REPORT_TYPES = [
