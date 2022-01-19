@@ -17,9 +17,8 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import requests
-from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.config import logger
-from ack.readers.awin_advertiser.config import AWIN_API_ENDPOINT, DATEFORMAT
+from ack.readers.awin_advertiser.config import AWIN_API_ENDPOINT, DATEFORMAT, REPORT_TYPES
 from ack.readers.reader import Reader
 from ack.streams.json_stream import JSONStream
 from ack.utils.retry import retry
