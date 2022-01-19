@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, validator
 
@@ -36,7 +37,7 @@ REPORT_TYPES = [
 class AwinAdvertiserReaderConfig(BaseModel):
     auth_token: str
     advertiser_id: str
-    report_type: str
+    report_type: Literal[tuple(REPORT_TYPES)]
     region: str
     timezone: str
     start_date: datetime = None

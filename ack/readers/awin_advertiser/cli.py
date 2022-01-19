@@ -29,7 +29,7 @@ from ack.utils.processor import processor
 @click.option("--awin-report-type", type=click.Choice(REPORT_TYPES), default=REPORT_TYPES[0])
 @click.option("--awin-region", required=True)
 @click.option("--awin-timezone", required=True)
-@click.option("--awin-start-date", type=click.DateTime())
+@click.option("--awin-start-date", default=None, type=click.DateTime())
 @click.option("--awin-end-date", default=None, type=click.DateTime())
 @processor("awin_auth_token", "awin_advertiser_id")
 def awin_advertiser(**kwargs):
