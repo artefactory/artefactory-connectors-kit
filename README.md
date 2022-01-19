@@ -49,6 +49,8 @@ As of now, the application is offering the following Readers & Writers:
     - MyTarget
     - Radarly
     - Twitter Ads
+- **Affiliates**
+    - AWIN Advertiser
 - **CRM**
     - SalesForce (available in Airbyte)
 - **Databases**

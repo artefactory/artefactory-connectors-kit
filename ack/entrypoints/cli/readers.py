@@ -18,6 +18,7 @@
 from ack.readers.adobe_analytics_1_4.cli import adobe_analytics_1_4
 from ack.readers.adobe_analytics_2_0.cli import adobe_analytics_2_0
 from ack.readers.amazon_s3.cli import amazon_s3
+from ack.readers.awin_advertiser.cli import awin_advertiser
 from ack.readers.confluence.cli import confluence
 from ack.readers.facebook.cli import facebook
 from ack.readers.google_ads.cli import google_ads
@@ -44,6 +45,7 @@ readers = [
     adobe_analytics_1_4,
     adobe_analytics_2_0,
     amazon_s3,
+    awin_advertiser,
     confluence,
     facebook,
     google_ads,

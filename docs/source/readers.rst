@@ -197,6 +197,52 @@ CMD Options                     JSON Options                         Definition
 ``--s3-csv-fieldnames``         ``fieldnames``        List of field names. If set to None (default), the values in the first row of .csv file will be used as field names.
 ==============================  ====================  =======================================================================================================================================================================================================================================================================================================================================================================================================================
 
+================
+AWIN Advertiser Reader
+================
+
+----------
+Source API
+----------
+
+`AWIN Advertiser API <https://wiki.awin.com/index.php/Advertiser_Service_API>`__
+
+----------
+Quickstart
+----------
+
+Call example to AWIN Advertiser Reader, getting the advertiser report aggregated by publisher, between 2020-01-01 and 2020-01-31:
+
+.. code-block:: shell
+
+    python ack/entrypoints/cli/main.py read_awin --awin-auth-token <AUTH TOKEN> --awin-advertiser-id <AWIN ADVERTISER ID> --awin-report-type <REPORT TYPE> --awin-region <REGION> --awin-timezone <TIMEZONE> --awin-start-date 2020-01-01 --awin-end-date 2020-01-31 write_console
+
+*Didn't work?* See the `Troubleshooting`_ section.
+
+------------
+Command name
+------------
+
+CMD: ``read_awin``
+
+JSON: ``awin_advertiser``
+
+---------------
+Command options
+---------------
+
+=========================  =======================  =================================================================================================================================================================================
+CMD Options                JSON Options             Definition
+=========================  =======================  =================================================================================================================================================================================
+``--awin-auth-token``      ``auth_token``           Authorisation Token, which can request through the AWIN API documentation website
+``--awin-advertiser-id``   ``advertiser_id``        Advertiser ID, which you can find on the AWIN Platform
+``--awin-report-type``     ``report_type``          Report Type, which are defined in the Advertiser API documentation
+``--awin-region``          ``region``               Region, which must be as a country code, e.g. 'FR' for France
+``--awin-timezone``        ``timezone``             Timezone, which can be found in the formatting of the aggregated report, in the documentation
+``--awin-start-date``      ``start_date``           Start date of the period to request (format: YYYY-MM-DD)
+``--awin-end-date``        ``end_date``             Start date of the period to request (format: YYYY-MM-DD)
+=========================  =======================  =================================================================================================================================================================================
+
 =================
 Confluence Reader
 =================
