@@ -39,6 +39,7 @@ class AwinAdvertiserReader(Reader):
 
     @retry
     def request(self):
+        build_url = f"{AWIN_API_ENDPOINT}{self.advertiser_id}/reports/{self.report_type}?"
         if self.report_type == REPORT_TYPES[0]:
             payload = {
                 'startDate': self.start_date,
@@ -46,7 +47,6 @@ class AwinAdvertiserReader(Reader):
                 'timezone': self.timezone,
                 'accessToken': self.auth_token
             }
-            build_url = f"{AWIN_API_ENDPOINT}{self.advertiser_id}/reports/{self.report_type}?"
         elif self.report_type == REPORT_TYPES[1]:
             payload = {
                 'startDate': self.start_date,
@@ -55,14 +55,12 @@ class AwinAdvertiserReader(Reader):
                 'timezone': self.timezone,
                 'accessToken': self.auth_token
             }
-            build_url = f"{AWIN_API_ENDPOINT}{self.advertiser_id}/reports/{self.report_type}?"
         elif self.report_type == REPORT_TYPES[2]:
             payload = {
                 'startDate': self.start_date,
                 'endDate': self.end_date,
                 'accessToken': self.auth_token
             }
-            build_url = f"{AWIN_API_ENDPOINT}{self.advertiser_id}/reports/{self.report_type}?"
 
         response = requests.get(
             build_url, params=payload

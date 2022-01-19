@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from datetime import datetime
-from typing import Tuple
 
 from pydantic import BaseModel, validator
 
@@ -42,8 +41,6 @@ class AwinAdvertiserReaderConfig(BaseModel):
     timezone: str
     start_date: datetime = None
     end_date: datetime = None
-    date_range: Tuple[datetime, datetime] = None
-    # day_range: Literal[DAY_RANGE] = None
 
     @validator("start_date", "end_date", pre=True)
     def date_format(cls, v):
