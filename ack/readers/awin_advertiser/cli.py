@@ -31,6 +31,6 @@ from ack.utils.processor import processor
 @click.option("--awin-timezone", required=True)
 @click.option("--awin-start-date", type=click.DateTime())
 @click.option("--awin-end-date", default=None, type=click.DateTime())
-@processor("awin-auth-token", "awin-advertiser-id")
+@processor("awin_auth_token", "awin_advertiser_id")
 def awin_advertiser(**kwargs):
     return AwinAdvertiserReader(**extract_args("awin_", kwargs))
