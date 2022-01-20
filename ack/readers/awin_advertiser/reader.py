@@ -26,7 +26,7 @@ from ack.utils.retry import retry
 
 class AwinAdvertiserReader(Reader):
     def __init__(
-        self, auth_token, advertiser_id, report_type, region, campaign, timezone, interval, remove_tags, start_date, end_date, **kwargs
+        self, auth_token, advertiser_id, report_type, region, campaign, timezone, interval, remove_tags, start_date, end_date
     ):
         self.auth_token = auth_token
         self.advertiser_id = advertiser_id
