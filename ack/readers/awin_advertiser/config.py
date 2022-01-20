@@ -39,9 +39,9 @@ class AwinAdvertiserReaderConfig(BaseModel):
     advertiser_id: str
     report_type: Literal[tuple(REPORT_TYPES)]
     region: str
-    campaign: str = None
+    campaign: str
     timezone: str
-    interval: str = None
+    interval: str
     start_date: datetime = None
     end_date: datetime = None
 
