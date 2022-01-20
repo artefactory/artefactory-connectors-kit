@@ -46,6 +46,8 @@ Readers
     - MyTarget
     - Radarly
     - Twitter Ads
+- **Affiliates**
+    - AWIN Advertiser
 - **CRM**
     - SalesForce
 - **Databases**
