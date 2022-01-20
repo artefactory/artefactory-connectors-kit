@@ -71,7 +71,7 @@ class AwinAdvertiserReader(Reader):
         )
         json_response = response.json()
         # if report is not a campaign report, remove tags from the response
-        if self.remove_tags == 'True' and self.report_type != REPORT_TYPES[2]:
+        if self.remove_tags and self.report_type != REPORT_TYPES[2]:
             for element in json_response:
                 element.pop('tags')
         logger.debug(f"Response: {json_response}")

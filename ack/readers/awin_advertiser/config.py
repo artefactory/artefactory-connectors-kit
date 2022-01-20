@@ -42,7 +42,7 @@ class AwinAdvertiserReaderConfig(BaseModel):
     campaign: str = None
     timezone: str
     interval: str = None
-    remove_tags: str = 'False'
+    remove_tags: bool = False
     start_date: datetime = None
     end_date: datetime = None
 

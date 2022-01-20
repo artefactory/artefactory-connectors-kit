@@ -31,7 +31,7 @@ from ack.utils.processor import processor
 @click.option("--awin-campaign", default=None)
 @click.option("--awin-timezone", required=True)
 @click.option("--awin-interval", default=None)
-@click.option("--awin-remove-tags", default='False')
+@click.option("--awin-remove-tags", default=False)
 @click.option("--awin-start-date", default=None, type=click.DateTime())
 @click.option("--awin-end-date", default=None, type=click.DateTime())
 @processor("awin_auth_token", "awin_advertiser_id")
