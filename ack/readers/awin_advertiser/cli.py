@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-from xmlrpc.client import Boolean
 import click
 from ack.readers.awin_advertiser.config import REPORT_TYPES
 from ack.readers.awin_advertiser.reader import AwinAdvertiserReader
@@ -32,7 +31,7 @@ from ack.utils.processor import processor
 @click.option("--awin-campaign", default=None)
 @click.option("--awin-timezone", required=True)
 @click.option("--awin-interval", default=None)
-@click.option("--awin-remove-tags", default=False, type=Boolean)
+@click.option("--awin-remove-tags", default=False, type=click.BOOL)
 @click.option("--awin-start-date", default=None, type=click.DateTime())
 @click.option("--awin-end-date", default=None, type=click.DateTime())
 @processor("awin_auth_token", "awin_advertiser_id")
