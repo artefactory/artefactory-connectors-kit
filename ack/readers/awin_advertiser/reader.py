@@ -26,7 +26,7 @@ from ack.utils.retry import retry
 
 class AwinAdvertiserReader(Reader):
     def __init__(
-        self, auth_token, advertiser_id, report_type, region, campaign, timezone, interval, start_date, end_date, **kwargs
+        self, auth_token, advertiser_id, report_type, region, campaign, timezone, interval, remove_tags, start_date, end_date, **kwargs
     ):
         self.auth_token = auth_token
         self.advertiser_id = advertiser_id
@@ -35,6 +35,7 @@ class AwinAdvertiserReader(Reader):
         self.campaign = campaign
         self.timezone = timezone
         self.interval = interval
+        self.remove_tags = remove_tags
         self.start_date = start_date.strftime(DATEFORMAT)
         self.end_date = end_date.strftime(DATEFORMAT)
 
@@ -70,7 +71,7 @@ class AwinAdvertiserReader(Reader):
         )
         json_response = response.json()
         # if report is not a campaign report, remove tags from the response
-        if self.report_type != REPORT_TYPES[2]:
+        if self.remove_tags == 'True' and self.report_type != REPORT_TYPES[2]:
             for element in json_response:
                 element.pop('tags')
         logger.debug(f"Response: {json_response}")

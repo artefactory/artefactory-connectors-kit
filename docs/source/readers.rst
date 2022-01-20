@@ -241,6 +241,7 @@ CMD Options                JSON Options             Definition
 ``--awin-campaign``        ``campaign``             AWIN Campaign Name, only required for Campaign reports
 ``--awin-timezone``        ``timezone``             Timezone, which can be found in the formatting of the aggregated report, in the documentation
 ``--awin-interval``        ``interval``             Interval to collect, only required for Campaign reports
+``--awin-remove-tags``     ``remove_tags``          Remove the Publisher Tags from the response, if preferred, this defaults to False
 ``--awin-start-date``      ``start_date``           Start date of the period to request (format: YYYY-MM-DD)
 ``--awin-end-date``        ``end_date``             Start date of the period to request (format: YYYY-MM-DD)
 =========================  =======================  =================================================================================================================================================================================
