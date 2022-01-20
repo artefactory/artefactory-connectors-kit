@@ -238,7 +238,9 @@ CMD Options                JSON Options             Definition
 ``--awin-advertiser-id``   ``advertiser_id``        Advertiser ID, which you can find on the AWIN Platform
 ``--awin-report-type``     ``report_type``          Report Type, which are defined in the Advertiser API documentation
 ``--awin-region``          ``region``               Region, which must be as a country code, e.g. 'FR' for France
+``--awin-campaign``        ``campaign``             AWIN Campaign Name, only required for Campaign reports
 ``--awin-timezone``        ``timezone``             Timezone, which can be found in the formatting of the aggregated report, in the documentation
+``--awin-interval``        ``interval``             Interval to collect, only required for Campaign reports
 ``--awin-start-date``      ``start_date``           Start date of the period to request (format: YYYY-MM-DD)
 ``--awin-end-date``        ``end_date``             Start date of the period to request (format: YYYY-MM-DD)
 =========================  =======================  =================================================================================================================================================================================

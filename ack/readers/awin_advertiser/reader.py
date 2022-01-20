@@ -26,13 +26,15 @@ from ack.utils.retry import retry
 
 class AwinAdvertiserReader(Reader):
     def __init__(
-        self, auth_token, advertiser_id, report_type, region, timezone, start_date, end_date, **kwargs
+        self, auth_token, advertiser_id, report_type, region, campaign, timezone, interval, start_date, end_date, **kwargs
     ):
         self.auth_token = auth_token
         self.advertiser_id = advertiser_id
         self.report_type = report_type
         self.region = region
+        self.campaign = campaign
         self.timezone = timezone
+        self.interval = interval
         self.start_date = start_date.strftime(DATEFORMAT)
         self.end_date = end_date.strftime(DATEFORMAT)
 
@@ -56,6 +58,8 @@ class AwinAdvertiserReader(Reader):
             }
         elif self.report_type == REPORT_TYPES[2]:
             payload = {
+                'campaign': self.campaign,
+                'interval': self.interval,
                 'startDate': self.start_date,
                 'endDate': self.end_date,
                 'accessToken': self.auth_token
@@ -65,6 +69,10 @@ class AwinAdvertiserReader(Reader):
             build_url, params=payload
         )
         json_response = response.json()
+        # publisher tags are not necessary
+        if self.report_type == REPORT_TYPES[0]:
+            for element in json_response:
+                element.pop('tags')
         logger.debug(f"Response: {json_response}")
         return json_response
 
