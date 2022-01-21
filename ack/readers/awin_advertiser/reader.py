@@ -70,6 +70,11 @@ class AwinAdvertiserReader(Reader):
             build_url, params=payload
         )
         json_response = response.json()
+        # there is no date in API response, add this in here
+        for entry in json_response:
+            if 'date' not in entry and self.start_date == self.end_date:
+                entry['date'] = self.start_date
+
         # if report is not a campaign report, remove tags from the response
         if self.remove_tags and self.report_type != REPORT_TYPES[2]:
             for element in json_response:
