@@ -39,6 +39,6 @@ from ack.utils.processor import processor
     type=click.Choice(DEFAULT_DATE_RANGE_FUNCTIONS.keys()),
     help=f"One of the available ACK default date ranges: {DEFAULT_DATE_RANGE_FUNCTIONS.keys()}",
 )
-@processor()
+@processor("search_console_client_secret", "search_console_access_token", "search_console_refresh_token")
 def google_search_console(**params):
     return GoogleSearchConsoleReader(**extract_args("search_console_", params))

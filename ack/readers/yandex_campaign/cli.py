@@ -48,6 +48,6 @@ from ack.utils.processor import processor
         "see https://tech.yandex.com/direct/doc/reports/fields-list-docpage/"
     ),
 )
-@processor("yandex_token")
+@processor("yandex_campaigns_token")
 def yandex_campaigns(**kwargs):
     return YandexCampaignReader(**extract_args("yandex_", kwargs))
