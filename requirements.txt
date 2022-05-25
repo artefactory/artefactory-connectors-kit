@@ -61,7 +61,7 @@ urllib3==1.26.5
 Werkzeug==0.16.0
 googleads==22.0.0
 twitter-ads==9.0.0
-pyjwt==1.7.1
+pyjwt==2.4.0
 cryptography==3.3.2
 bs4==0.0.1
 pydantic==1.8.2
