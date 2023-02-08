@@ -62,7 +62,7 @@ Werkzeug==0.16.0
 googleads==22.0.0
 twitter-ads==9.0.0
 pyjwt==1.7.1
-cryptography==3.3.2
+cryptography==39.0.1
 bs4==0.0.1
 pydantic==1.8.2
 azure-storage-blob==12.8.0
