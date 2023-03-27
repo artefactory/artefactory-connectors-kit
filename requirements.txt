@@ -45,7 +45,7 @@ python-dateutil==2.8.0
 pytz==2019.3
 PyYAML==5.4
 radarly-py==1.0.10
-redis==3.3.11
+redis==4.5.3
 requests==2.22.0
 requests-toolbelt==0.9.1
 rsa==4.7.2
