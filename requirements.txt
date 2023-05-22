@@ -46,7 +46,7 @@ pytz==2019.3
 PyYAML==5.4
 radarly-py==1.0.10
 redis==3.3.11
-requests==2.22.0
+requests==2.31.0
 requests-toolbelt==0.9.1
 rsa==4.7.2
 s3transfer==0.2.1
