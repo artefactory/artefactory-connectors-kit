@@ -2,7 +2,7 @@ addressable==1.4.2
 boto3==1.10.34
 botocore==1.13.34
 cachetools==3.1.1
-certifi==2019.11.28
+certifi==2023.7.22
 chardet==3.0.4
 Click==7.0
 colorama==0.4.3
