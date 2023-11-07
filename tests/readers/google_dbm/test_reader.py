@@ -29,7 +29,7 @@ class TestGoogleDBMReader(unittest.TestCase):
             setattr(self, param, value)
 
     @mock.patch.object(GoogleDBMReader, "__init__", mock_dbm_reader)
-    def test_get_query_body(self):
+    def test_get_query_body_not_scheduled(self):
         kwargs = {}
         reader = GoogleDBMReader(**kwargs)
         reader.kwargs = {"filter": [("FILTER_ADVERTISER", 1)]}
@@ -46,7 +46,7 @@ class TestGoogleDBMReader(unittest.TestCase):
             "schedule": {"frequency": "ONE_TIME"},
         }
 
-        self.assertDictEqual(reader.get_query_body(), expected_query_body)
+        self.assertDictEqual(reader.get_query_body(is_scheduled=False), expected_query_body)
 
     @mock.patch.object(GoogleDBMReader, "__init__", mock_dbm_reader)
     def test_get_query_body_ms_conversion(self):
@@ -71,4 +71,35 @@ class TestGoogleDBMReader(unittest.TestCase):
             "reportDataStartTimeMs": 1579132800000,
             "reportDataEndTimeMs": 1579392000000,
         }
-        self.assertDictEqual(reader.get_query_body(), expected_query_body)
+        self.assertDictEqual(reader.get_query_body(is_scheduled=False), expected_query_body)
+
+    @mock.patch.object(GoogleDBMReader, "__init__", mock_dbm_reader)
+    def test_get_scheduled_query_body_ms_conversion(self):
+        kwargs = {}
+        reader = GoogleDBMReader(**kwargs)
+        reader.kwargs = {
+            "filter": [("FILTER_ADVERTISER", 1)],
+            "scheduled_start_date": datetime.datetime(2020, 1, 15, tzinfo=datetime.timezone.utc),
+            "scheduled_end_date": datetime.datetime(2020, 1, 18, tzinfo=datetime.timezone.utc),
+            "day_range": "LAST_7_DAYS",
+            "query_timezone_code": "America/New_York",
+            "query_frequency": "DAILY",
+        }
+
+        expected_query_body = {
+            "kind": "doubleclickbidmanager#query",
+            "metadata": {"format": "CSV", "title": "NO_TITLE_GIVEN", "dataRange": "LAST_7_DAYS"},
+            "params": {
+                "type": "TYPE_TRUEVIEW",
+                "groupBys": [],
+                "metrics": [],
+                "filters": [{"type": "FILTER_ADVERTISER", "value": "1"}],
+            },
+            "schedule": {
+                "frequency": "DAILY",
+                "nextRunTimezoneCode": "America/New_York",
+                "endTimeMs": 1579392000000,
+                "startTimeMs": 1579132800000,
+            },
+        }
+        self.assertDictEqual(reader.get_query_body(is_scheduled=True), expected_query_body)

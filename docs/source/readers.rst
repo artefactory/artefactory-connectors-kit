@@ -773,10 +773,13 @@ CMD Options                     JSON Options                 Definition
 ``--dbm-client-secret``         ``client_secret``            OAuth2 secret
 ``--dbm-access-token``          ``access_token``             (Optional) Access token for OAuth2
 ``--dbm-refresh-token``         ``refresh_token``            Refresh token for OAuth2
-``--dbm-query-request-type``    ``query_request_type``       Doubleclick Bid Manager API request type. Possible values: existing_query, custom_query, existing_query_report, custom_query_report, lineitems_objects, sdf_objects and list_reports.
+``--dbm-query-request-type``    ``query_request_type``       Doubleclick Bid Manager API request type. Possible values: existing_query, custom_query, existing_query_report, custom_query_report, custom_scheduled_query, lineitems_objects, sdf_objects and list_reports.
 ``--dbm-query-id``              ``query_id``                 Query ID.
 ``--dbm-query-title``           ``query_title``              Query title, used to name the reports generated from this query in DV360 UI.
 ``--dbm-query-frequency``       ``query_frequency``          How often the query is run. Possible values can be found `here <https://developers.google.com/bid-manager/v1/queries#schedule.frequency>`__. Default: ONE_TIME.
+``--dbm-query-timezone-code``   ``query_timezone_code``      Canonical timezone code for report generation time. Defaults to America/New_York.  
+``--dbm-scheduled-start-date``  ``scheduled_start_date``     Date to start running scheduled query, in milliseconds since the Unix epoch. Not applicable to ONE_TIME frequency.
+``--dbm-scheduled-end-date``    ``scheduled_end_date``       Date to stop running scheduled query, in milliseconds since the Unix epoch.
 ``--dbm-filter``                ``filter`` (list(tuple))     <FILTER_TYPE> <FILTER_VALUE> association, used to narrow the scope of the report. For instance "FILTER_ADVERTISER XXXXX" will narrow report scope to the performance of Advertiser ID XXXXX. Possible filter types can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#filters)>`__.
 ``--dbm-query-dimension``       ``query_dimension`` (list)   Dimensions to include in the report. Possible values can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#filters>`__.
 ``--dbm-query-metric``          ``query_metric`` (list)      Metrics to include in the report. Possible values can be found `here <https://developers.google.com/bid-manager/v1/filters-metrics#metrics>`__.

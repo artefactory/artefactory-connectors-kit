@@ -23,9 +23,26 @@ from pydantic import BaseModel, validator
 GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 
 DAY_RANGES = ("PREVIOUS_DAY", "LAST_30_DAYS", "LAST_90_DAYS", "LAST_7_DAYS", "PREVIOUS_MONTH", "PREVIOUS_WEEK")
+POSSIBLE_FREQUENCIES = ("DAILY", "MONTHLY", "ONE_TIME", "QUARTERLY", "SEMI_MONTHLY", "WEEKLY")
+POSSIBLE_TIMEZONE_CODES = (
+    "Africa/Johannesburg",
+    "America/Los_Angeles",
+    "America/New_York",
+    "America/Sao_Paulo",
+    "Asia/Dubai",
+    "Asia/Hong_Kong",
+    "Asia/Jerusalem",
+    "Asia/Shanghai",
+    "Asia/Tokyo",
+    "Australia/Sydney",
+    "Europe/London",
+    "Europe/Paris",
+    "Pacific/Auckland",
+)
 POSSIBLE_REQUEST_TYPES = [
     "existing_query",
     "custom_query",
+    "custom_scheduled_query",
     "existing_query_report",
     "custom_query_report",
     "lineitems_objects",
@@ -43,7 +60,10 @@ class GoogleDBMReaderConfig(BaseModel):
     request_type: Literal[tuple(POSSIBLE_REQUEST_TYPES)]
     query_id: str = None
     query_title: str = None
-    query_frequency: str = "ONE_TIME"
+    query_frequency: Literal[tuple(POSSIBLE_FREQUENCIES)]
+    query_timezone_code: Literal[tuple(POSSIBLE_TIMEZONE_CODES)]
+    scheduled_start_date: datetime
+    scheduled_end_date: datetime
     query_param_type: str = "TYPE_TRUEVIEW"
     start_date: datetime = None
     end_date: datetime = None
