@@ -17,6 +17,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import click
+
 from ack.readers.google_cloud_storage.reader import GoogleCloudStorageReader
 from ack.utils.args import extract_args
 from ack.utils.processor import processor
@@ -29,6 +30,7 @@ from ack.utils.processor import processor
 @click.option("--gcs-dest-key-split", default=-1, type=int)
 @click.option("--gcs-csv-delimiter", default=",")
 @click.option("--gcs-csv-fieldnames", default=None)
+@click.option("--gcs-project-id", required=True)
 @processor()
 def google_cloud_storage(**kwargs):
     return GoogleCloudStorageReader(**extract_args("gcs_", kwargs))

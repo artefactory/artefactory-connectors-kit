@@ -24,11 +24,12 @@ from ack.readers.object_storage.reader import ObjectStorageReader
 
 
 class GoogleCloudStorageReader(ObjectStorageReader, GoogleClient):
-    def __init__(self, bucket, prefix, format, dest_key_split=-1, **kwargs):
+    def __init__(self, bucket, prefix, format, project_id, dest_key_split=-1, **kwargs):
+        self._project_id = project_id
         super().__init__(bucket, prefix, format, dest_key_split, platform="GCS", **kwargs)
 
-    def create_client(self, config):
-        return storage.Client(credentials=self._get_credentials(), project=config.project_id)
+    def create_client(self):
+        return storage.Client(credentials=self._get_credentials(), project=self._project_id)
 
     def create_bucket(self, client, bucket):
         return client.bucket(bucket)

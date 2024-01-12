@@ -25,7 +25,7 @@ from ack.writers.google_cloud_storage.writer import GoogleCloudStorageWriter
 @click.command(name="write_gcs")
 @click.option("--gcs-bucket", help="GCS Bucket", required=True)
 @click.option("--gcs-prefix", help="GCS path to write the file.")
-@click.option("--gcs-project-id", help="GCS Project Id")
+@click.option("--gcs-project-id", help="GCS Project Id", required=True)
 @click.option(
     "--gcs-filename", help="Override the default name of the file (don't add the extension)",
 )

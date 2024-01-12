@@ -158,15 +158,7 @@ Source API
 Quickstart
 ----------
 
-Execute the following commands to set your credentials:
-
-.. code-block:: shell
-
-    export REGION_NAME=<S3 bucket region>
-    export AWS_ACCESS_KEY_ID=<S3 access key ID>
-    export AWS_SECRET_ACCESS_KEY=<S3 access key secret>
-
-Once done, launch your S3 reader command. The following command retrieves the blobs located under the Amazon S3 bucket ``daily_reports`` and the blob prefix ``FR/offline_sales/``.
+The following command retrieves the blobs located under the Amazon S3 bucket ``daily_reports`` and the blob prefix ``FR/offline_sales/``.
 
 .. code-block:: shell
 
@@ -192,6 +184,9 @@ CMD Options                     JSON Options                         Definition
 ``--s3-bucket``                 ``bucket``            S3 bucket name
 ``--s3-prefix``                 ``prefix`` (list)     S3 blob prefix. Several prefixes can be provided in a single command.
 ``--s3-format``                 ``format``            S3 blob format. Possible values: csv, gz.
+``--s3-region-name``            ``region_name``       Name of the bucket's region
+``--s3-access-key-id``          ``access_key_id``     Access key Id for AWS
+``--s3-secret-access-key``      ``secret_access_key`` Secret access key for AWS
 ``--s3-dest-key-split``         ``dest_key_split``    Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. Default: -1 (split on all occurences).
 ``--s3-csv-delimiter``          ``csv_delimiter``     Delimiter that should be used to read the .csv file. Default: ,
 ``--s3-csv-fieldnames``         ``fieldnames``        List of field names. If set to None (default), the values in the first row of .csv file will be used as field names.
@@ -642,11 +637,10 @@ Follow these steps to set your credentials:
 
 - In your GCP project, create a Service Account with a 'Storage Object Viewer' role
 - Create a .JSON key for this Service Account, and download the key file locally
-- Execute the following commands:
+- Execute the following command:
 
 .. code-block:: shell
 
-    export project_id=<GCP project ID>
     export GCP_KEY_PATH=<Path to the Service Account key file>
 
 Once done, launch your Google Cloud Storage reader command. The following command retrieves the blobs located under the Google Cloud Storage bucket ``daily_reports`` and the blob prefix ``FR/offline_sales/``:
@@ -675,6 +669,7 @@ CMD Options                     JSON Options         Definition
 ``--gcs-bucket``                ``bucket``           Cloud Storage bucket name
 ``--gcs-prefix``                ``prefix`` (list)    Cloud Storage blob prefix. Several prefixes can be provided in a single command.
 ``--gcs-format``                ``format``           Cloud Storage blob format. *Possible values: csv, gz*
+``--gcs-project-id``            ``project_id``       GCP project ID
 ``--gcs-dest-key-split``        ``dest_key-split``   Indicates how to retrieve a blob name from a blob key (a blob key being the combination of a blob prefix and a blob name: <BLOB_PREFIX>/<BLOB_NAME>). The reader splits the blob key on the "/" character: the last element of the output list is considered as the blob name, and is used to name the stream produced by the reader. This option defines how many splits to do. *Default: -1 (split on all occurences)*
 ``--gcs-csv-delimiter``         ``csv_delimiter``    Delimiter that should be used to read the .csv file. *Default: ,*
 ``--gcs-csv-fieldnames``        ``csv_fieldnames``   List of field names. If set to *None* (*default*), the values in the first row of .csv file will be used as field names.
